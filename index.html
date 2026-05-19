@@ -311,7 +311,96 @@ button{
   border-radius:8px;
 
 }
+/* TOPO ALUNOS */
 
+.topo-alunos{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+/* BOTÃO + */
+
+.btn-add{
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  font-size:30px;
+  background:#0d6efd;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
+
+/* LISTA */
+
+.item-aluno{
+  background:white;
+  padding:15px;
+  border-radius:10px;
+  margin-top:10px;
+
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.btn-editar{
+  width:45px;
+  height:45px;
+  border-radius:50%;
+  border:none;
+  background:#0d6efd;
+  color:white;
+  cursor:pointer;
+  font-size:18px;
+}
+
+/* MODAL */
+
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+
+  background:rgba(0,0,0,0.5);
+
+  display:none;
+
+  justify-content:center;
+  align-items:center;
+
+  z-index:999;
+}
+
+.modal-box{
+  width:80%;
+  max-width:500px;
+
+  background:white;
+
+  border-radius:15px;
+
+  padding:20px;
+}
+
+.modal-topo{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.fechar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:red;
+  color:white;
+  border:none;
+  cursor:pointer;
+}
   </style>
 
 
@@ -503,14 +592,54 @@ button{
 
     <div id="alunos" style="display:none">
 
+  <div class="topo-alunos">
 
-      <h1>Alunos</h1>
+    <h1>Alunos</h1>
 
+    <button class="btn-add" onclick="abrirModalAluno()">
+      +
+    </button>
 
-      <p>Área de alunos futuramente.</p>
+  </div>
 
+  <div id="listaAlunos"></div>
+
+</div>
+
+<!-- MODAL -->
+
+<div class="modal" id="modalAluno">
+
+  <div class="modal-box">
+
+    <div class="modal-topo">
+
+      <h2 id="tituloModal">
+        Novo Aluno
+      </h2>
+
+      <button
+        class="fechar"
+        onclick="fecharModalAluno()"
+      >
+        ✕
+      </button>
 
     </div>
+
+    <input
+      type="text"
+      id="nomeAluno"
+      placeholder="Nome do aluno"
+    >
+
+    <button onclick="salvarAluno()">
+      Salvar
+    </button>
+
+  </div>
+
+</div>
 
 
   </div>
@@ -536,26 +665,21 @@ function toggleSidebar(){
 
 function mostrarTela(tela){
 
-
   document.getElementById('frequencia')
-
     .style.display = 'none'
-
 
   document.getElementById('relatorios')
-
     .style.display = 'none'
-
 
   document.getElementById('alunos')
-
     .style.display = 'none'
 
-
   document.getElementById(tela)
-
     .style.display = 'block'
 
+  if(tela === 'alunos'){
+    carregarListaAlunos()
+  }
 }
 
     const supabaseUrl =
@@ -811,7 +935,135 @@ function mostrarTela(tela){
 
 
     verificarLogin()
+let alunoEditando = null
 
+async function carregarListaAlunos(){
+
+  const { data, error } =
+    await clienteSupabase
+      .from('alunos')
+      .select('*')
+      .order('nome')
+
+  if(error){
+    console.log(error)
+    return
+  }
+
+  const lista =
+    document.getElementById('listaAlunos')
+
+  lista.innerHTML = ''
+
+  data.forEach(aluno => {
+
+    lista.innerHTML += `
+
+      <div class="item-aluno">
+
+        <span>${aluno.nome}</span>
+
+        <button
+          class="btn-editar"
+          onclick="editarAluno(
+            ${aluno.id},
+            '${aluno.nome}'
+          )"
+        >
+          ✏️
+        </button>
+
+      </div>
+
+    `
+  })
+}
+
+function abrirModalAluno(){
+
+  alunoEditando = null
+
+  document.getElementById('tituloModal')
+    .innerText = 'Novo Aluno'
+
+  document.getElementById('nomeAluno')
+    .value = ''
+
+  document.getElementById('modalAluno')
+    .style.display = 'flex'
+}
+
+function fecharModalAluno(){
+
+  document.getElementById('modalAluno')
+    .style.display = 'none'
+}
+
+function editarAluno(id, nome){
+
+  alunoEditando = id
+
+  document.getElementById('tituloModal')
+    .innerText = 'Editar Aluno'
+
+  document.getElementById('nomeAluno')
+    .value = nome
+
+  document.getElementById('modalAluno')
+    .style.display = 'flex'
+}
+
+async function salvarAluno(){
+
+  const nome =
+    document.getElementById('nomeAluno')
+      .value.trim()
+
+  if(!nome){
+    alert('Digite o nome')
+    return
+  }
+
+  let error = null
+
+  if(alunoEditando){
+
+    const resposta =
+      await clienteSupabase
+        .from('alunos')
+        .update({
+          nome: nome
+        })
+        .eq('id', alunoEditando)
+
+    error = resposta.error
+
+  }else{
+
+    const resposta =
+      await clienteSupabase
+        .from('alunos')
+        .insert([
+          {
+            nome: nome
+          }
+        ])
+
+    error = resposta.error
+  }
+
+  if(error){
+    console.log(error)
+    alert('Erro ao salvar aluno')
+    return
+  }
+
+  fecharModalAluno()
+
+  carregarListaAlunos()
+
+  carregarAlunos()
+}
 
   </script>
 
