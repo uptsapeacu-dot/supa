@@ -3,471 +3,190 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Controle de Frequência</title>
+  <title>Controle de Frequência - Chamada UPT</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
-
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#f1f1f1;
+    :root {
+      --bg-principal: #f1f3f6;
+      --sidebar-dark: #0b192c; /* Azul escuro idêntico ao da imagem */
+      --sidebar-hover: rgba(255, 255, 255, 0.08);
+      --sidebar-ativo: rgba(255, 255, 255, 0.15);
+      --azul-primary: #0d6efd;
     }
 
-    .login-box{
-      width:400px;
-      background:white;
-      margin:80px auto;
-      padding:20px;
-      border-radius:12px;
-      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: var(--bg-principal);
+      color: #333;
     }
 
-    .login-box h2{
-      text-align:center;
-      margin-bottom:20px;
-      color:#0d6efd;
+    /* TELA DE LOGIN */
+    .login-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f1f3f6;
     }
 
-    input, select{
-      width:100%;
-      padding:12px;
-      margin-top:10px;
-      border:1px solid #ccc;
-      border-radius:8px;
-      box-sizing:border-box;
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
-    button{
-      width:100%;
-      padding:12px;
-      margin-top:20px;
-      border:none;
-      border-radius:8px;
-      background:#0d6efd;
-      color:white;
-      font-size:16px;
-      cursor:pointer;
+    .login-box h2 {
+      text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
+      color: var(--azul-primary);
     }
 
-    #app{
-      max-width:700px;
-      margin:auto;
-      padding:20px;
-      display:none;
+    input, select {
+      width: 100%;
+      padding: 12px;
+      margin-top: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 14px;
     }
 
-    .aluno{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
-
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-body{
-  margin:0;
-  font-family:Arial;
-  background:#f1f3f6;
-}
-
-/* SIDEBAR */
-
-.sidebar{
-  width:240px;
-  height:100vh;
-  background:#0d6efd;
-  position:fixed;
-  left:0;
-  top:0;
-  color:white;
-  transition:0.3s;
-  overflow:hidden;
-}
-
-.sidebar.fechado{
-  width:70px;
-}
-
-.logo{
-  font-size:24px;
-  font-weight:bold;
-  text-align:center;
-  padding:25px 10px;
-  border-bottom:1px solid rgba(255,255,255,0.2);
-}
-
-.menu-btn{
-  width:100%;
-  border:none;
-  background:none;
-  color:white;
-  font-size:24px;
-  padding:15px;
-  cursor:pointer;
-}
-
-.menu{
-  display:flex;
-  flex-direction:column;
-}
-
-.menu button{
-  background:none;
-  border:none;
-  color:white;
-  padding:18px;
-  text-align:left;
-  cursor:pointer;
-  font-size:16px;
-  transition:0.2s;
-}
-
-.menu button:hover{
-  background:rgba(255,255,255,0.15);
-}
-
-/* CONTEÚDO */
-
-.conteudo{
-  margin-left:240px;
-  padding:30px;
-  transition:0.3s;
-}
-
-.sidebar.fechado + .conteudo{
-  margin-left:70px;
-}
-
-/* ALUNOS */
-
-.aluno{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-top:10px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-input, select{
-  padding:10px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-
-h1{
-  margin-top:0;
-}
-
-button{
-  border-radius:8px;
-}
-  </style>
-
-</head>
-<body>
-
-  <!-- LOGIN -->
-
-  <div class="login-box" id="loginBox">
-
-    <h2>Chamada UPT</h2>
-
-    <input
-      type="email"
-      id="email"
-      placeholder="Usuário"
-    >
-
-    <input
-      type="password"
-      id="senha"
-      placeholder="Senha"
-    >
-
-    <button onclick="fazerLogin()">
-      Entrar
-    </button>
-
-  </div>
-
-  <!-- APP -->
-
-  <div id="app">
-
-    <h1>Controle de Frequência</h1>
-
-    <input type="date" id="data">
-
-    <div id="lista"></div>
-
-    <button onclick="salvarFrequencia()">
-      Salvar Frequência
-    </button>
-
-    <button onclick="logout()">
-      Sair
-    </button>
-
-  </div>
-<body>
-
-  <!-- SIDEBAR -->
-
-  <div class="sidebar" id="sidebar">
-
-    <div class="logo">
-      Chamada UPT
-    </div>
-
-    <button class="menu-btn" onclick="toggleSidebar()">
-      ☰
-    </button>
-
-    <div class="menu">
-
-      <button onclick="mostrarTela('frequencia')">
-        📋 Frequência
-      </button>
-
-      <button onclick="mostrarTela('relatorios')">
-        📊 Relatórios
-      </button>
-
-      <button onclick="mostrarTela('alunos')">
-        👨‍🎓 Alunos
-      </button>
-
-      <button onclick="logout()">
-        🚪 Sair
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- CONTEÚDO -->
-
-  <div class="conteudo" id="conteudo">
-
-    <!-- TELA FREQUÊNCIA -->
-
-    <div id="frequencia">
-
-      <h1>Controle de Frequência</h1>
-
-      <input type="date" id="data">
-
-      <div id="lista"></div>
-
-      <button onclick="salvarFrequencia()">
-        Salvar Frequência
-      </button>
-
-    </div>
-
-    <!-- RELATÓRIOS -->
-
-    <div id="relatorios" style="display:none">
-
-      <h1>Relatórios</h1>
-
-      <p>Área de relatórios futuramente.</p>
-
-    </div>
-
-    <!-- ALUNOS -->
-
-    <div id="alunos" style="display:none">
-
-      <h1>Alunos</h1>
-
-      <p>Área de alunos futuramente.</p>
-
-    </div>
-
-  </div>
-
-</body>
-  <script>
-function toggleSidebar(){
-
-  document
-    .getElementById('sidebar')
-    .classList
-    .toggle('fechado')
-}
-
-function mostrarTela(tela){
-
-  document.getElementById('frequencia')
-    .style.display = 'none'
-
-  document.getElementById('relatorios')
-    .style.display = 'none'
-
-  document.getElementById('alunos')
-    .style.display = 'none'
-
-  document.getElementById(tela)
-    .style.display = 'block'
-}
-    const supabaseUrl =
-      'https://mkgvobuacvuxcgedpfbf.supabase.co'
-
-    const supabaseKey =
-      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
-
-    const clienteSupabase =
-      window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-      )
-
-    let alunos = []
-
-    async function fazerLogin(){
-
-      const email =
-        document.getElementById('email').value
-
-      const senha =
-        document.getElementById('senha').value
-
-      const { error } =
-        await clienteSupabase.auth.signInWithPassword({
-          email: email,
-          password: senha
-        })
-
-      if(error){
-        alert('Login inválido')
-        return
-      }
-
-      iniciarSistema()
+    .btn-primary {
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      border: none;
+      border-radius: 8px;
+      background: var(--azul-primary);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
     }
 
-    async function iniciarSistema(){
-
-      document.getElementById('loginBox')
-        .style.display = 'none'
-
-      document.getElementById('app')
-        .style.display = 'block'
-
-      carregarAlunos()
+    .btn-primary:hover {
+      background: #0b5ed7;
     }
 
-    async function carregarAlunos(){
-
-      const { data, error } =
-        await clienteSupabase
-          .from('alunos')
-          .select('*')
-          .order('nome')
-
-      if(error){
-        console.log(error)
-        alert('Erro ao carregar alunos')
-        return
-      }
-
-      alunos = data
-
-      const lista =
-        document.getElementById('lista')
-
-      lista.innerHTML = ''
-
-      alunos.forEach(aluno => {
-
-        lista.innerHTML += `
-          <div class="aluno">
-
-            <span>${aluno.nome}</span>
-
-            <select id="status-${aluno.id}">
-              <option value="presente">
-                Presente
-              </option>
-
-              <option value="ausente">
-                Ausente
-              </option>
-            </select>
-
-          </div>
-        `
-      })
+    /* ESTRUTURA DO APLICATIVO (PÓS-LOGIN) */
+    #app-container {
+      display: none; /* Só aparece após login */
     }
 
-    async function salvarFrequencia(){
-
-      const dataSelecionada =
-        document.getElementById('data').value
-
-      if(!dataSelecionada){
-        alert('Escolha uma data')
-        return
-      }
-
-      for(const aluno of alunos){
-
-        const status =
-          document.getElementById(
-            `status-${aluno.id}`
-          ).value
-
-        const { error } =
-          await clienteSupabase
-            .from('frequencia')
-            .insert([
-              {
-                aluno_id: aluno.id,
-                data: dataSelecionada,
-                status: status
-              }
-            ])
-
-        if(error){
-          console.log(error)
-          alert('Erro ao salvar')
-          return
-        }
-      }
-
-      alert('Frequência salva!')
+    /* SIDEBAR ESTILO COMPLETO DA IMAGEM */
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      background: var(--sidebar-dark);
+      position: fixed;
+      left: 0;
+      top: 0;
+      color: white;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      overflow-x: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+      z-index: 100;
     }
 
-    async function logout(){
-
-      await clienteSupabase.auth.signOut()
-
-      location.reload()
+    .sidebar.fechado {
+      width: 70px;
     }
 
-    async function verificarLogin(){
-
-      const {
-        data: { session }
-      } = await clienteSupabase.auth.getSession()
-
-      if(session){
-        iniciarSistema()
-      }
+    .sidebar-top {
+      display: flex;
+      flex-direction: column;
     }
 
-    verificarLogin()
+    .logo {
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      padding: 20px 10px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
 
-  </script>
+    .sidebar.fechado .logo {
+      opacity: 0;
+      padding: 20px 0;
+      height: 0;
+      overflow: hidden;
+      border-bottom: none;
+    }
 
-</body>
-</html>
+    .menu-btn {
+      width: 100%;
+      border: none;
+      background: none;
+      color: white;
+      font-size: 20px;
+      padding: 15px;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s;
+    }
+
+    .menu-btn:hover {
+      background: var(--sidebar-hover);
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      margin-top: 10px;
+    }
+
+    .menu button {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.8);
+      padding: 16px 22px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      white-space: nowrap;
+      border-radius: 0;
+    }
+
+    .menu button span.icon {
+      font-size: 18px;
+      margin-right: 15px;
+      min-width: 25px;
+      text-align: center;
+    }
+
+    .menu button span.text {
+      transition: opacity 0.2s;
+    }
+
+    /* Quando fechar a barra, esconde o texto mantendo o ícone centralizado */
+    .sidebar.fechado .menu button span.text {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar.fechado .menu button {
+      padding: 16px 0;
+      justify-content: center;
+    }
+
+    .sidebar.fechado .menu button span.icon {
+      margin-right: 0;
+    }
+
+    .
