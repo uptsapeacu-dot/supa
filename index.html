@@ -18,47 +18,37 @@
 
     body {
       margin: 0;
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: Arial, sans-serif;
       background: var(--bg-principal);
       color: #333;
     }
 
     /* TELA DE LOGIN */
-    .login-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background: #f1f3f6;
-    }
-
     .login-box {
-      width: 100%;
-      max-width: 400px;
+      width: 400px;
       background: white;
-      padding: 30px;
+      margin: 80px auto;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
 
     .login-box h2 {
       text-align: center;
-      margin-top: 0;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       color: var(--azul-primary);
     }
 
     input, select {
       width: 100%;
       padding: 12px;
-      margin-top: 12px;
+      margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
       box-sizing: border-box;
-      font-size: 14px;
     }
 
-    .btn-primary {
+    button {
       width: 100%;
       padding: 12px;
       margin-top: 20px;
@@ -67,35 +57,28 @@
       background: var(--azul-primary);
       color: white;
       font-size: 16px;
-      font-weight: bold;
       cursor: pointer;
-      transition: background 0.2s;
     }
 
-    .btn-primary:hover {
-      background: #0b5ed7;
-    }
-
-    /* ESTRUTURA DO APLICATIVO (PÓS-LOGIN) */
-    #app-container {
-      display: none; /* Só aparece após login */
+    /* CONTAINER PRINCIPAL DO APP (PÓS-LOGIN) */
+    #app {
+      display: none; /* Controlado pelo seu JS original */
     }
 
     /* SIDEBAR ESTILO COMPLETO DA IMAGEM */
     .sidebar {
-      width: 250px;
+      width: 240px;
       height: 100vh;
       background: var(--sidebar-dark);
       position: fixed;
       left: 0;
       top: 0;
       color: white;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: 0.3s;
       overflow-x: hidden;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
       z-index: 100;
     }
 
@@ -109,10 +92,10 @@
     }
 
     .logo {
-      font-size: 20px;
+      font-size: 24px;
       font-weight: bold;
       text-align: center;
-      padding: 20px 10px;
+      padding: 25px 10px;
       border-bottom: 1px solid rgba(255,255,255,0.1);
       white-space: nowrap;
       transition: opacity 0.2s;
@@ -131,36 +114,30 @@
       border: none;
       background: none;
       color: white;
-      font-size: 20px;
+      font-size: 24px;
       padding: 15px;
       cursor: pointer;
       text-align: center;
-      transition: background 0.2s;
-    }
-
-    .menu-btn:hover {
-      background: var(--sidebar-hover);
     }
 
     .menu {
       display: flex;
       flex-direction: column;
-      margin-top: 10px;
     }
 
     .menu button {
       background: none;
       border: none;
-      color: rgba(255, 255, 255, 0.8);
-      padding: 16px 22px;
+      color: white;
+      padding: 18px;
       text-align: left;
       cursor: pointer;
-      font-size: 15px;
-      transition: all 0.2s;
+      font-size: 16px;
+      transition: 0.2s;
       display: flex;
       align-items: center;
       white-space: nowrap;
-      border-radius: 0;
+      margin-top: 0;
     }
 
     .menu button span.icon {
@@ -170,18 +147,13 @@
       text-align: center;
     }
 
-    .menu button span.text {
-      transition: opacity 0.2s;
-    }
-
-    /* Quando fechar a barra, esconde o texto mantendo o ícone centralizado */
+    /* Esconde o texto quando fechar a barra */
     .sidebar.fechado .menu button span.text {
-      opacity: 0;
-      pointer-events: none;
+      display: none;
     }
 
     .sidebar.fechado .menu button {
-      padding: 16px 0;
+      padding: 18px 0;
       justify-content: center;
     }
 
@@ -189,4 +161,224 @@
       margin-right: 0;
     }
 
-    .
+    .menu button:hover {
+      background: var(--sidebar-hover);
+    }
+
+    .menu button.ativo {
+      background: var(--sidebar-ativo);
+      border-left: 4px solid var(--azul-primary);
+    }
+
+    /* Rodapé da Sidebar */
+    .sidebar-footer {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding: 10px 0;
+    }
+
+    /* CONTEÚDO PRINCIPAL REORGANIZADO */
+    .conteudo {
+      margin-left: 240px;
+      padding: 30px;
+      transition: 0.3s;
+    }
+
+    .sidebar.fechado + .conteudo {
+      margin-left: 70px;
+    }
+
+    /* DESIGN DA LISTA DE ALUNOS */
+    .aluno {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .aluno select {
+      width: auto;
+      margin-top: 0;
+      padding: 10px;
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    #data {
+      max-width: 250px;
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-box" id="loginBox">
+    <h2>Chamada UPT</h2>
+    <input type="email" id="email" placeholder="Usuário">
+    <input type="password" id="senha" placeholder="Senha">
+    <button onclick="fazerLogin()">Entrar</button>
+  </div>
+
+  <div id="app">
+    
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-top">
+        <div class="logo">Chamada UPT</div>
+        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
+        
+        <div class="menu">
+          <button id="btn-frequencia" class="ativo" onclick="mostrarTela('frequencia')">
+            <span class="icon">📋</span>
+            <span class="text">Frequência</span>
+          </button>
+          <button id="btn-relatorios" onclick="mostrarTela('relatorios')">
+            <span class="icon">📊</span>
+            <span class="text">Relatórios</span>
+          </button>
+          <button id="btn-alunos" onclick="mostrarTela('alunos')">
+            <span class="icon">👨‍🎓</span>
+            <span class="text">Alunos</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="sidebar-footer">
+        <div class="menu">
+          <button onclick="logout()">
+            <span class="icon">🚪</span>
+            <span class="text">Sair</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="conteudo" id="conteudo">
+
+      <div id="frequencia">
+        <h1>Controle de Frequência</h1>
+        <input type="date" id="data">
+        <div id="lista"></div>
+        <button onclick="salvarFrequencia()" style="max-width: 250px;">Salvar Frequência</button>
+      </div>
+
+      <div id="relatorios" style="display:none">
+        <h1>Relatórios</h1>
+        <p>Área de relatórios futuramente.</p>
+      </div>
+
+      <div id="alunos" style="display:none">
+        <h1>Alunos</h1>
+        <p>Área de alunos futuramente.</p>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co';
+    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH';
+    const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+    let alunos = [];
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('fechado');
+    }
+
+    function mostrarTela(tela) {
+      // Esconder todas as telas
+      document.getElementById('frequencia').style.display = 'none';
+      document.getElementById('relatorios').style.display = 'none';
+      document.getElementById('alunos').style.display = 'none';
+
+      // Remover classe ativo de todos os botões do menu
+      document.getElementById('btn-frequencia').classList.remove('ativo');
+      document.getElementById('btn-relatorios').classList.remove('ativo');
+      document.getElementById('btn-alunos').classList.remove('ativo');
+
+      // Mostrar a tela selecionada e ativar o respectivo botão
+      document.getElementById(tela).style.display = 'block';
+      document.getElementById('btn-' + tela).classList.add('ativo');
+    }
+
+    async function fazerLogin() {
+      const email = document.getElementById('email').value;
+      const senha = document.getElementById('senha').value;
+
+      const { error } = await clienteSupabase.auth.signInWithPassword({
+        email: email,
+        password: senha
+      });
+
+      if (error) {
+        alert('Login inválido');
+        return;
+      }
+
+      iniciarSistema();
+    }
+
+    async function iniciarSistema() {
+      document.getElementById('loginBox').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+
+      carregarAlunos();
+    }
+
+    async function carregarAlunos() {
+      const { data, error } = await clienteSupabase
+        .from('alunos')
+        .select('*')
+        .order('nome');
+
+      if (error) {
+        console.log(error);
+        alert('Erro ao carregar alunos');
+        return;
+      }
+
+      alunos = data;
+      const lista = document.getElementById('lista');
+      lista.innerHTML = '';
+
+      alunos.forEach(aluno => {
+        lista.innerHTML += `
+          <div class="aluno">
+            <span>${aluno.nome}</span>
+            <select id="status-${aluno.id}">
+              <option value="presente">Presente</option>
+              <option value="ausente">Ausente</option>
+            </select>
+          </div>
+        `;
+      });
+    }
+
+    async function salvarFrequencia() {
+      const dataSelecionada = document.getElementById('data').value;
+
+      if (!dataSelecionada) {
+        alert('Escolha uma data');
+        return;
+      }
+
+      for (const aluno of alunos) {
+        const status = document.getElementById(`status-${aluno.id}`).value;
+
+        const { error } = await clienteSupabase
+          .from('frequencia')
+          .insert([
+            {
+              aluno_id: aluno.id,
+              data: dataSelecionada,
+              status: status
+            }
+          ]);
+
+        if (error)
