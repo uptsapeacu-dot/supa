@@ -1,179 +1,165 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle de Presença UPT</title>
+  <title>Controle de Frequência</title>
 
-  <link rel="manifest" href="manifest.webmanifest">
-  <meta name="theme-color" content="#1a73e8">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
-    body { font-family: 'Nunito', sans-serif; padding: 15px; background: #f0f2f5; max-width: 550px; margin: auto; }
-    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    #conteudo-principal { display: none; }
 
-    input, select, button {
-      width: 100%;
-      padding: 12px;
-      margin: 6px 0;
-      border-radius: 8px;
-      border: 1px solid #ddd;
-      box-sizing: border-box;
+    body{
+      font-family: Arial;
+      max-width: 700px;
+      margin:auto;
+      padding:20px;
+      background:#f5f5f5;
     }
 
-    button { background: #1a73e8; color: white; border: none; font-weight: bold; cursor: pointer; }
-
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th { background: #1a73e8; color: white; padding: 10px; text-align: left; }
-    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 16px; }
-    tr:nth-child(even) { background-color: #f8f9fa; }
-
-    /* STATUS */
-    select { background: #eee; font-weight: bold; }
-    select.presente { background: #d4edda; color: #155724; }
-    select.ausente { background: #f8d7da; color: #721c24; }
-
-    /* POPUPS */
-    #popup-msg {
-      display:none;
-      position:fixed;
-      top:50%; left:50%;
-      transform:translate(-50%,-50%);
-      background:#d4edda;
-      padding:20px 30px;
-      border-radius:12px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.3);
-      font-weight:bold;
-      color:#155724;
-      z-index:1000;
+    h1{
       text-align:center;
     }
 
-    #popup-sair {
-      display:none;
-      position:fixed;
-      top:50%; left:50%;
-      transform:translate(-50%,-50%);
+    .topo{
+      margin:20px 0;
+    }
+
+    .aluno{
       background:white;
-      padding:20px 30px;
-      border-radius:12px;
-      box-shadow:0 4px 15px rgba(0,0,0,0.3);
-      z-index:1000;
-      text-align:center;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
     }
 
-    #popup-sair p { margin-bottom:15px; font-weight:bold; }
-
-    #popup-sair button {
-      padding:8px 15px;
+    button{
+      width:100%;
+      margin-top:20px;
+      padding:15px;
       border:none;
-      border-radius:6px;
-      font-weight:bold;
+      border-radius:10px;
+      font-size:16px;
       cursor:pointer;
-      margin: 0 5px;
     }
 
-    #confirma-sair { background:#dc3545; color:white; }
-    #cancelar-sair { background:#6c757d; color:white; }
   </style>
-</head>
 
+</head>
 <body>
 
-  <!-- LOGIN -->
-  <div id="tela-login" class="card">
-    <h3 style="text-align:center">Chamada UPT</h3>
-    <input type="text" id="user" placeholder="Usuário">
-    <input type="password" id="pass" placeholder="Senha">
-    <button id="btnEntrar" onclick="login()">Entrar</button>
+  <h1>Controle de Frequência</h1>
+
+  <div class="topo">
+    <label>Escolha a data:</label>
+    <input type="date" id="data">
   </div>
 
-  <!-- SISTEMA -->
-  <div id="conteudo-principal" class="card">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
-      <span id="nome-prof" style="font-weight:bold"></span>
-      <button id="btnSair" style="width:auto; padding:5px 10px; background:#dc3545">Sair</button>
-    </div>
+  <div id="lista"></div>
 
-    <input type="date" id="data-input">
-    <button id="btnCarregar" onclick="carregar()">Carregar Lista</button>
+  <button onclick="salvarFrequencia()">
+    Salvar Frequência
+  </button>
 
-    <table id="tabela">
-      <thead>
-        <tr><th>Estudante</th><th>Status</th></tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+  <script>
 
-    <button id="btnSalvar" onclick="salvar()" style="background:#28a745; margin-top:15px; display:none">
-      Salvar Alterações
-    </button>
-  </div>
+    // COLE AQUI
+    const supabaseUrl = 'SUA_URL'
+    const supabaseKey = 'SUA_CHAVE'
 
-  <!-- POPUPS -->
-  <div id="popup-msg"></div>
+    const supabase =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
 
-  <div id="popup-sair">
-    <p>Você realmente deseja sair do sistema?</p>
-    <button id="confirma-sair">Sim</button>
-    <button id="cancelar-sair">Cancelar</button>
-  </div>
+    let alunos = []
 
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxQ4Ot-dGngyh9YMQqx3Ax3Ms25TTrU1WVWFzT9NkHwhK_AcoUtyQLwNohrufApEin7/exec";
+    async function carregarAlunos(){
 
-let userLogado = "";
+      const { data, error } = await supabase
+        .from('alunos')
+        .select('*')
+        .order('nome')
 
-// LOGIN
-async function login() {
-  const btn = document.getElementById("btnEntrar");
-  btn.disabled = true;
-  btn.innerText = "Entrando...";
+      if(error){
+        alert('Erro ao carregar alunos')
+        console.log(error)
+        return
+      }
 
-  const u = document.getElementById("user").value;
-  const p = document.getElementById("pass").value;
+      alunos = data
 
-  try {
-    const resposta = await fetch(
-  `${API_URL}?action=validarLogin&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`
-);
+      const lista =
+        document.getElementById('lista')
 
-    const res = await resposta.json();
+      lista.innerHTML = ''
 
-    if (res.sucesso) {
-      userLogado = res.user;
-      document.getElementById("tela-login").style.display = "none";
-      document.getElementById("conteudo-principal").style.display = "block";
-      document.getElementById("nome-prof").innerText = "Olá, " + res.nome;
-    } else {
-      alert("Login incorreto!");
-      btn.disabled = false;
-      btn.innerText = "Entrar";
+      alunos.forEach(aluno => {
+
+        lista.innerHTML += `
+          <div class="aluno">
+
+            <span>${aluno.nome}</span>
+
+            <select id="status-${aluno.id}">
+              <option value="presente">
+                Presente
+              </option>
+
+              <option value="ausente">
+                Ausente
+              </option>
+            </select>
+
+          </div>
+        `
+      })
     }
-  } catch (erro) {
-    alert("Erro ao conectar com o servidor.");
-    console.error(erro);
-    btn.disabled = false;
-    btn.innerText = "Entrar";
-  }
-}
 
-// CARREGAR
-async function carregar() {
-  const data = document.getElementById("data-input").value;
-  if (!data) return alert("Selecione a data!");
+    async function salvarFrequencia(){
 
-  const btn = document.getElementById("btnCarregar");
-  btn.innerText = "Buscando...";
-  btn.disabled = true;
+      const dataSelecionada =
+        document.getElementById('data').value
 
-  try {
-    const resposta = await fetch(`${API_URL}?action=getAlunosComPresenca&data=${encodeURIComponent(data)}`);
-    const res = await resposta.json();
+      if(!dataSelecionada){
+        alert('Escolha uma data')
+        return
+      }
 
-    const alunos = res.alunos;
-    const salvos = res.salvos;
+      for(const aluno of alunos){
 
-    const tbody = document.querySelector("#tabela tbody");
-   
+        const status =
+          document.getElementById(
+            `status-${aluno.id}`
+          ).value
+
+        const { error } = await supabase
+          .from('frequencia')
+          .insert([
+            {
+              aluno_id: aluno.id,
+              data: dataSelecionada,
+              status: status
+            }
+          ])
+
+        if(error){
+          console.log(error)
+          alert('Erro ao salvar')
+          return
+        }
+      }
+
+      alert('Frequência salva com sucesso!')
+    }
+
+    carregarAlunos()
+
+  </script>
+
+</body>
+</html>
