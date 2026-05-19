@@ -2,845 +2,543 @@
 <html lang="pt-BR">
 <head>
 
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Chamada UPT</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-  <style>
-
-    *{
-      box-sizing:border-box;
-    }
-
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#f1f3f6;
-    }
-
-    /* LOGIN */
-
-    .login-container{
-      width:100%;
-      height:100vh;
-
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
-    .login-box{
-      width:400px;
-      background:white;
-      padding:30px;
-      border-radius:15px;
-      box-shadow:0 0 15px rgba(0,0,0,0.1);
-    }
-
-    .login-box h2{
-      text-align:center;
-      color:#0d6efd;
-      margin-bottom:25px;
-    }
-
-    input, select{
-      width:100%;
-      padding:12px;
-      margin-top:10px;
-      border:1px solid #ccc;
-      border-radius:8px;
-    }
-
-    button{
-      border:none;
-      cursor:pointer;
-    }
-
-    .btn-login{
-      width:100%;
-      padding:12px;
-      margin-top:20px;
-      border-radius:8px;
-      background:#0d6efd;
-      color:white;
-      font-size:16px;
-    }
-
-    /* APP */
-
-    #app{
-      display:none;
-    }
-
-    /* SIDEBAR */
-
-    .sidebar{
-      width:240px;
-      height:100vh;
-      background:#0d6efd;
-
-      position:fixed;
-      left:0;
-      top:0;
-
-      color:white;
-
-      transition:0.3s;
-      overflow:hidden;
-    }
-
-    .sidebar.fechado{
-      width:70px;
-    }
-
-    .logo{
-      font-size:24px;
-      font-weight:bold;
-      text-align:center;
-      padding:25px 10px;
-
-      border-bottom:1px solid rgba(255,255,255,0.2);
-    }
-
-    .menu-btn{
-      width:100%;
-      background:none;
-      color:white;
-      font-size:24px;
-      padding:15px;
-    }
-
-    .menu{
-      display:flex;
-      flex-direction:column;
-    }
-
-    .menu button{
-      background:none;
-      color:white;
-      padding:18px;
-      text-align:left;
-      font-size:16px;
-      transition:0.2s;
-    }
-
-    .menu button:hover{
-      background:rgba(255,255,255,0.15);
-    }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Chamada UPT</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+    }
+
+    body{
+      margin:0;
+      font-family:Arial;
+      background:#f1f3f6;
+    }
+
+    /* LOGIN */
+
+    .login-container{
+      width:100%;
+      height:100vh;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .login-box{
+      width:400px;
+      background:white;
+      padding:30px;
+      border-radius:15px;
+      box-shadow:0 0 15px rgba(0,0,0,0.1);
+    }
+
+    .login-box h2{
+      text-align:center;
+      color:#0d6efd;
+      margin-bottom:25px;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+    }
+
+    button{
+      border:none;
+      cursor:pointer;
+    }
+
+    .btn-login{
+      width:100%;
+      padding:12px;
+      margin-top:20px;
+      border-radius:8px;
+      background:#0d6efd;
+      color:white;
+      font-size:16px;
+    }
+
+    /* APP */
+
+    #app{
+      display:none;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar{
+      width:240px;
+      height:100vh;
+      background:#0d6efd;
+
+      position:fixed;
+      left:0;
+      top:0;
+
+      color:white;
+
+      transition:0.3s;
+      overflow:hidden;
+    }
+
+    .sidebar.fechado{
+      width:70px;
+    }
+
+    .logo{
+      font-size:24px;
+      font-weight:bold;
+      text-align:center;
+      padding:25px 10px;
+
+      border-bottom:1px solid rgba(255,255,255,0.2);
+    }
+
+    .menu-btn{
+      width:100%;
+      background:none;
+      color:white;
+      font-size:24px;
+      padding:15px;
+    }
+
+    .menu{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .menu button{
+      background:none;
+      color:white;
+      padding:18px;
+      text-align:left;
+      font-size:16px;
+      transition:0.2s;
+    }
+
+    .menu button:hover{
+      background:rgba(255,255,255,0.15);
+    }
 
-    /* CONTEÚDO */
+    /* CONTEÚDO */
 
-    .conteudo{
-      margin-left:240px;
-      padding:30px;
-      transition:0.3s;
-    }
+    .conteudo{
+      margin-left:240px;
+      padding:30px;
+      transition:0.3s;
+    }
 
-    .sidebar.fechado + .conteudo{
-      margin-left:70px;
-    }
+    .sidebar.fechado + .conteudo{
+      margin-left:70px;
+    }
 
-    h1{
-      margin-top:0;
-    }
+    h1{
+      margin-top:0;
+    }
 
-    /* FREQUÊNCIA */
+    /* FREQUÊNCIA */
 
-    .aluno{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
+    .aluno{
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
 
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-    .btn-salvar{
-      width:100%;
-      padding:15px;
-      margin-top:20px;
+    .btn-salvar{
+      width:100%;
+      padding:15px;
+      margin-top:20px;
 
-      border-radius:10px;
+      border-radius:10px;
 
-      background:#0d6efd;
-      color:white;
-      font-size:16px;
-    }
+      background:#0d6efd;
+      color:white;
+      font-size:16px;
+    }
 
-    /* ALUNOS */
+    /* ALUNOS */
 
-    .topo-alunos{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+    .topo-alunos{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-    .btn-add{
-      width:50px;
-      height:50px;
+    .btn-add{
+      width:50px;
+      height:50px;
 
-      border-radius:50%;
+      border-radius:50%;
 
-      background:#0d6efd;
-      color:white;
+      background:#0d6efd;
+      color:white;
 
-      font-size:30px;
-    }
+      font-size:30px;
+    }
 
-    .item-aluno{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
+    .item-aluno{
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
 
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-    .btn-editar{
-      width:45px;
-      height:45px;
+    .btn-editar{
+      width:45px;
+      height:45px;
 
-      border-radius:50%;
+      border-radius:50%;
 
-      background:#0d6efd;
-      color:white;
+      background:#0d6efd;
+      color:white;
 
-      font-size:18px;
-    }
+      font-size:18px;
+    }
 
-    /* MODAL */
+    /* MODAL */
 
-    .modal{
-      position:fixed;
-      top:0;
-      left:0;
+    .modal{
+      position:fixed;
+      top:0;
+      left:0;
 
-      width:100%;
-      height:100%;
+      width:100%;
+      height:100%;
 
-      background:rgba(0,0,0,0.5);
+      background:rgba(0,0,0,0.5);
 
-      display:none;
+      display:none;
 
-      justify-content:center;
-      align-items:center;
+      justify-content:center;
+      align-items:center;
 
-      z-index:999;
-    }
+      z-index:999;
+    }
 
-    .modal-box{
-      width:80%;
-      max-width:500px;
+    .modal-box{
+      width:80%;
+      max-width:500px;
 
-      background:white;
+      background:white;
 
-      border-radius:15px;
+      border-radius:15px;
 
-      padding:20px;
-    }
+      padding:20px;
+    }
 
-    .modal-topo{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
+    .modal-topo{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-    .fechar{
-      width:40px;
-      height:40px;
+    .fechar{
+      width:40px;
+      height:40px;
 
-      border-radius:50%;
+      border-radius:50%;
 
-      background:red;
-      color:white;
-    }
+      background:red;
+      color:white;
+    }
 
-  </style>
+  </style>
 
 </head>
 <body>
 
-  <!-- LOGIN -->
+  <div class="login-container" id="loginBox">
 
-  <div class="login-container" id="loginBox">
+    <div class="login-box">
 
-    <div class="login-box">
+      <h2>Chamada UPT</h2>
 
-      <h2>Chamada UPT</h2>
+      <input
+        type="email"
+        id="email"
+        placeholder="Usuário"
+      >
 
-      <input
-        type="email"
-        id="email"
-        placeholder="Usuário"
-      >
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+      >
 
-      <input
-        type="password"
-        id="senha"
-        placeholder="Senha"
-      >
+      <button
+        class="btn-login"
+        onclick="fazerLogin()"
+      >
+        Entrar
+      </button>
 
-      <button
-        class="btn-login"
-        onclick="fazerLogin()"
-      >
-        Entrar
-      </button>
+    </div>
 
-    </div>
+  </div>
 
-  </div>
+  <div id="app">
 
-  <!-- APP -->
+    <div class="sidebar" id="sidebar">
 
-  <div id="app">
+      <div class="logo">
+        Chamada UPT
+      </div>
 
-    <!-- SIDEBAR -->
+      <button
+        class="menu-btn"
+        onclick="toggleSidebar()"
+      >
+        ☰
+      </button>
 
-    <div class="sidebar" id="sidebar">
+      <div class="menu">
 
-      <div class="logo">
-        Chamada UPT
-      </div>
+        <button onclick="mostrarTela('frequencia')">
+          📋 Frequência
+        </button>
 
-      <button
-        class="menu-btn"
-        onclick="toggleSidebar()"
-      >
-        ☰
-      </button>
+        <button onclick="mostrarTela('alunos')">
+          👨‍🎓 Alunos
+        </button>
 
-      <div class="menu">
+        <button onclick="mostrarTela('relatorios')">
+          📊 Relatórios
+        </button>
 
-        <button onclick="mostrarTela('frequencia')">
-          📋 Frequência
-        </button>
+        <button onclick="logout()">
+          🚪 Sair
+        </button>
 
-        <button onclick="mostrarTela('alunos')">
-          👨‍🎓 Alunos
-        </button>
+      </div>
 
-        <button onclick="mostrarTela('relatorios')">
-          📊 Relatórios
-        </button>
+    </div>
 
-        <button onclick="logout()">
-          🚪 Sair
-        </button>
+    <div class="conteudo">
 
-      </div>
+      <div id="frequencia">
 
-    </div>
+        <h1>Controle de Frequência</h1>
 
-    <!-- CONTEÚDO -->
+        <input type="date" id="data">
 
-    <div class="conteudo">
+        <div id="lista"></div>
 
-      <!-- FREQUÊNCIA -->
+        <button
+          class="btn-salvar"
+          onclick="salvarFrequencia()"
+        >
+          Salvar Frequência
+        </button>
 
-      <div id="frequencia">
+      </div>
 
-        <h1>Controle de Frequência</h1>
+      <div id="alunos" style="display:none">
 
-        <input type="date" id="data">
+        <div class="topo-alunos">
 
-        <div id="lista"></div>
+          <h1>Alunos</h1>
 
-        <button
-          class="btn-salvar"
-          onclick="salvarFrequencia()"
-        >
-          Salvar Frequência
-        </button>
+          <button
+            class="btn-add"
+            onclick="abrirModalAluno()"
+          >
+            +
+          </button>
 
-      </div>
+        </div>
 
-      <!-- ALUNOS -->
+        <div id="listaAlunos"></div>
 
-      <div id="alunos" style="display:none">
+      </div>
 
-        <div class="topo-alunos">
+      <div id="relatorios" style="display:none">
 
-          <h1>Alunos</h1>
+        <h1>Relatórios</h1>
 
-          <button
-            class="btn-add"
-            onclick="abrirModalAluno()"
-          >
-            +
-          </button>
+        <p>Área de relatórios futuramente.</p>
 
-        </div>
+      </div>
 
-        <div id="listaAlunos"></div>
+    </div>
 
-      </div>
+  </div>
 
-      <!-- RELATÓRIOS -->
+  <div class="modal" id="modalAluno">
 
-      <div id="relatorios" style="display:none">
+    <div class="modal-box">
 
-        <h1>Relatórios</h1>
+      <div class="modal-topo">
 
-        <p>Área de relatórios futuramente.</p>
+        <h2 id="tituloModal">
+          Novo Aluno
+        </h2>
 
-      </div>
+        <button
+          class="fechar"
+          onclick="fecharModalAluno()"
+        >
+          ✕
+        </button>
 
-    </div>
+      </div>
 
-  </div>
+      <input
+        type="text"
+        id="nomeAluno"
+        placeholder="Nome do aluno"
+      >
 
-  <!-- MODAL -->
+      <input
+        type="text"
+        id="telefoneAluno"
+        placeholder="Telefone"
+      >
 
-  <div class="modal" id="modalAluno">
+      <input
+        type="email"
+        id="emailAluno"
+        placeholder="Email"
+      >
 
-    <div class="modal-box">
-<div class="modal-box">
+      <input
+        type="text"
+        id="enderecoAluno"
+        placeholder="Endereço"
+      >
 
-  <div class="modal-topo">
+      <input
+        type="text"
+        id="serieAluno"
+        placeholder="Série"
+      >
 
-    <h2 id="tituloModal">
-      Novo Aluno
-    </h2>
+      <button
+        class="btn-login"
+        onclick="salvarAluno()"
+      >
+        Salvar
+      </button>
 
-    <button
-      class="fechar"
-      onclick="fecharModalAluno()"
-    >
-      ✕
-    </button>
+    </div>
 
-  </div>
+  </div>
 
-  <input
-    type="text"
-    id="nomeAluno"
-    placeholder="Nome do aluno"
-  >
+  <script>
 
-  <input
-    type="text"
-    id="telefoneAluno"
-    placeholder="Telefone"
-  >
+    const supabaseUrl =
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
 
-  <input
-    type="email"
-    id="emailAluno"
-    placeholder="Email"
-  >
+    const supabaseKey =
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
 
-  <input
-    type="text"
-    id="enderecoAluno"
-    placeholder="Endereço"
-  >
+    const clienteSupabase =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
 
-  <input
-    type="text"
-    id="serieAluno"
-    placeholder="Série"
-  >
+    let alunos = []
 
-  <button
-    class="btn-login"
-    onclick="salvarAluno()"
-  >
-    Salvar
-  </button>
+    let alunoEditando = null
 
-</div>
-      
-    </div>
+    /* LOGIN */
 
-  </div>
+    async function fazerLogin(){
 
-  <script>
+      const email =
+        document.getElementById('email').value
 
-    const supabaseUrl =
-      'https://mkgvobuacvuxcgedpfbf.supabase.co'
+      const senha =
+        document.getElementById('senha').value
 
-    const supabaseKey =
-      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+      const { error } =
+        await clienteSupabase.auth.signInWithPassword({
+          email: email,
+          password: senha
+        })
 
-    const clienteSupabase =
-      window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-      )
+      if(error){
+        alert('Login inválido')
+        return
+      }
 
-    let alunos = []
+      iniciarSistema()
+    }
 
-    let alunoEditando = null
+    async function iniciarSistema(){
 
-    /* LOGIN */
+      document.getElementById('loginBox')
+        .style.display = 'none'
 
-    async function fazerLogin(){
+      document.getElementById('app')
+        .style.display = 'block'
 
-      const email =
-        document.getElementById('email').value
+      carregarAlunos()
+    }
 
-      const senha =
-        document.getElementById('senha').value
+    async function logout(){
 
-      const { error } =
-        await clienteSupabase.auth.signInWithPassword({
-          email: email,
-          password: senha
-        })
+      await clienteSupabase.auth.signOut()
 
-      if(error){
-        alert('Login inválido')
-        return
-      }
+      location.reload()
+    }
 
-      iniciarSistema()
-    }
+    async function verificarLogin(){
 
-    async function iniciarSistema(){
+      const {
+        data: { session }
+      } = await clienteSupabase.auth.getSession()
 
-      document.getElementById('loginBox')
-        .style.display = 'none'
+      if(session){
+        iniciarSistema()
+      }
+    }
 
-      document.getElementById('app')
-        .style.display = 'block'
+    verificarLogin()
 
-      carregarAlunos()
-    }
+    /* SIDEBAR */
 
-    async function logout(){
+    function toggleSidebar(){
 
-      await clienteSupabase.auth.signOut()
+      document
+        .getElementById('sidebar')
+        .classList
+        .toggle('fechado')
+    }
 
-      location.reload()
-    }
+    function mostrarTela(tela){
 
-    async function verificarLogin(){
+      document.getElementById('frequencia')
+        .style.display = 'none'
 
-      const {
-        data: { session }
-      } = await clienteSupabase.auth.getSession()
+      document.getElementById('alunos')
+        .style.display = 'none'
 
-      if(session){
-        iniciarSistema()
-      }
-    }
+      document.getElementById('relatorios')
+        .style.display = 'none'
 
-    verificarLogin()
+      document.getElementById(tela)
+        .style.display = 'block'
 
-    /* SIDEBAR */
-
-    function toggleSidebar(){
-
-      document
-        .getElementById('sidebar')
-        .classList
-        .toggle('fechado')
-    }
-
-    function mostrarTela(tela){
-
-      document.getElementById('frequencia')
-        .style.display = 'none'
-
-      document.getElementById('alunos')
-        .style.display = 'none'
-
-      document.getElementById('relatorios')
-        .style.display = 'none'
-
-      document.getElementById(tela)
-        .style.display = 'block'
-
-      if(tela === 'alunos'){
-        carregarListaAlunos()
-      }
-    }
-
-    /* FREQUÊNCIA */
-
-    async function carregarAlunos(){
-
-      const { data, error } =
-        await clienteSupabase
-          .from('alunos')
-          .select('*')
-          .order('nome')
-
-      if(error){
-        console.log(error)
-        alert('Erro ao carregar alunos')
-        return
-      }
-
-      alunos = data
-
-      const lista =
-        document.getElementById('lista')
-
-      lista.innerHTML = ''
-
-      alunos.forEach(aluno => {
-
-        lista.innerHTML += `
-          <div class="aluno">
-
-            <span>${aluno.nome}</span>
-
-            <select id="status-${aluno.id}">
-
-              <option value="presente">
-                Presente
-              </option>
-
-              <option value="ausente">
-                Ausente
-              </option>
-
-            </select>
-
-          </div>
-        `
-      })
-    }
-
-    async function salvarFrequencia(){
-
-      const dataSelecionada =
-        document.getElementById('data').value
-
-      if(!dataSelecionada){
-        alert('Escolha uma data')
-        return
-      }
-
-      for(const aluno of alunos){
-
-        const status =
-          document.getElementById(
-            `status-${aluno.id}`
-          ).value
-
-        const { error } =
-          await clienteSupabase
-            .from('frequencia')
-            .insert([
-              {
-                aluno_id: aluno.id,
-                data: dataSelecionada,
-                status: status
-              }
-            ])
-
-        if(error){
-          console.log(error)
-          alert('Erro ao salvar frequência')
-          return
-        }
-      }
-
-      alert('Frequência salva!')
-    }
-
-    /* ALUNOS */
-
-    async function carregarListaAlunos(){
-
-  const { data, error } =
-    await clienteSupabase
-      .from('alunos')
-      .select('*')
-      .order('nome')
-
-  if(error){
-    console.log(error)
-    return
-  }
-
-  const lista =
-    document.getElementById('listaAlunos')
-
-  lista.innerHTML = ''
-
-  data.forEach(aluno => {
-
-    lista.innerHTML += `
-
-      <div class="item-aluno">
-
-        <div>
-
-          <strong>${aluno.nome}</strong><br>
-
-          📞 ${aluno.telefone || '-'}<br>
-
-          ✉️ ${aluno.email || '-'}<br>
-
-          🎓 ${aluno.serie || '-'}
-
-        </div>
-
-        <button
-          class="btn-editar"
-          onclick="editarAluno(
-            ${aluno.id},
-            '${aluno.nome || ''}',
-            '${aluno.telefone || ''}',
-            '${aluno.email || ''}',
-            '${aluno.endereco || ''}',
-            '${aluno.serie || ''}'
-          )"
-        >
-          ✏️
-        </button>
-
-      </div>
-
-    `
-  })
-}
-
-    function abrirModalAluno(){
-
-      alunoEditando = null
-
-     document.getElementById('tituloModal')
-    .innerText = 'Novo Aluno'
-
-  document.getElementById('nomeAluno')
-    .value = ''
-
-  document.getElementById('telefoneAluno')
-    .value = ''
-
-  document.getElementById('emailAluno')
-    .value = ''
-
-  document.getElementById('enderecoAluno')
-    .value = ''
-
-  document.getElementById('serieAluno')
-    .value = ''
-
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-    }
-
-    function fecharModalAluno(){
-
-      document.getElementById('modalAluno')
-        .style.display = 'none'
-    }
-
-    function editarAluno( id,
-  nome,
-  telefone,
-  email,
-  endereco,
-  serie){
-
-      alunoEditando = id
-
-     document.getElementById('tituloModal')
-    .innerText = 'Editar Aluno'
-
-  document.getElementById('nomeAluno')
-    .value = nome || ''
-
-  document.getElementById('telefoneAluno')
-    .value = telefone || ''
-
-  document.getElementById('emailAluno')
-    .value = email || ''
-
-  document.getElementById('enderecoAluno')
-    .value = endereco || ''
-
-  document.getElementById('serieAluno')
-    .value = serie || ''
-
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-    }
-
-    async function salvarAluno(){
-
-  const nome =
-    document.getElementById('nomeAluno')
-      .value.trim()
-
-  const telefone =
-    document.getElementById('telefoneAluno')
-      .value.trim()
-
-  const email =
-    document.getElementById('emailAluno')
-      .value.trim()
-
-  const endereco =
-    document.getElementById('enderecoAluno')
-      .value.trim()
-
-  const serie =
-    document.getElementById('serieAluno')
-      .value.trim()
-
-  if(!nome){
-    alert('Digite o nome')
-    return
-  }
-
-  let error = null
-
-  const dadosAluno = {
-    nome,
-    telefone,
-    email,
-    endereco,
-    serie
-  }
-
-  if(alunoEditando){
-
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .update(dadosAluno)
-        .eq('id', alunoEditando)
-
-    error = resposta.error
-
-  }else{
-
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .insert([dadosAluno])
-
-    error = resposta.error
-  }
-
-  if(error){
-    console.log(error)
-    alert('Erro ao salvar aluno')
-    return
-  }
-
-  fecharModalAluno()
-
-  carregarListaAlunos()
-
-  carregarAlunos()
-}
-
-  </script>
-
-</body>
-</html>
+      if(tela === 'alunos'){
+        carregar
