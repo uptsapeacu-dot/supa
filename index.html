@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Controle de Frequência</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
@@ -66,11 +67,13 @@
 
   <script>
 
-    // COLE AQUI
-    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
-    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+    const supabaseUrl =
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
 
-    const supabase =
+    const supabaseKey =
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+    const clienteSupabase =
       window.supabase.createClient(
         supabaseUrl,
         supabaseKey
@@ -80,14 +83,15 @@
 
     async function carregarAlunos(){
 
-      const { data, error } = await supabase
-        .from('alunos')
-        .select('*')
-        .order('nome')
+      const { data, error } =
+        await clienteSupabase
+          .from('alunos')
+          .select('*')
+          .order('nome')
 
       if(error){
-        alert('Erro ao carregar alunos')
         console.log(error)
+        alert('Erro ao carregar alunos')
         return
       }
 
@@ -106,6 +110,7 @@
             <span>${aluno.nome}</span>
 
             <select id="status-${aluno.id}">
+
               <option value="presente">
                 Presente
               </option>
@@ -113,6 +118,7 @@
               <option value="ausente">
                 Ausente
               </option>
+
             </select>
 
           </div>
@@ -137,19 +143,20 @@
             `status-${aluno.id}`
           ).value
 
-        const { error } = await supabase
-          .from('frequencia')
-          .insert([
-            {
-              aluno_id: aluno.id,
-              data: dataSelecionada,
-              status: status
-            }
-          ])
+        const { error } =
+          await clienteSupabase
+            .from('frequencia')
+            .insert([
+              {
+                aluno_id: aluno.id,
+                data: dataSelecionada,
+                status: status
+              }
+            ])
 
         if(error){
           console.log(error)
-          alert('Erro ao salvar')
+          alert('Erro ao salvar frequência')
           return
         }
       }
