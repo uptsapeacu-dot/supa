@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Controle de Presença UPT</title>
+
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#1a73e8">
+
+  <style>
+    body { font-family: 'Nunito', sans-serif; padding: 15px; background: #f0f2f5; max-width: 550px; margin: auto; }
+    .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    #conteudo-principal { display: none; }
+
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 6px 0;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      box-sizing: border-box;
+    }
+
+    button { background: #1a73e8; color: white; border: none; font-weight: bold; cursor: pointer; }
+
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th { background: #1a73e8; color: white; padding: 10px; text-align: left; }
+    td { padding: 10px; border-bottom: 1px solid #eee; font-size: 16px; }
+    tr:nth-child(even) { background-color: #f8f9fa; }
+
+    /* STATUS */
+    select { background: #eee; font-weight: bold; }
+    select.presente { background: #d4edda; color: #155724; }
+    select.ausente { background: #f8d7da; color: #721c24; }
+
+    /* POPUPS */
+    #popup-msg {
+      display:none;
+      position:fixed;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:#d4edda;
+      padding:20px 30px;
+      border-radius:12px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+      font-weight:bold;
+      color:#155724;
+      z-index:1000;
+      text-align:center;
+    }
+
+    #popup-sair {
+      display:none;
+      position:fixed;
+      top:50%; left:50%;
+      transform:translate(-50%,-50%);
+      background:white;
+      padding:20px 30px;
+      border-radius:12px;
+      box-shadow:0 4px 15px rgba(0,0,0,0.3);
+      z-index:1000;
+      text-align:center;
+    }
+
+    #popup-sair p { margin-bottom:15px; font-weight:bold; }
+
+    #popup-sair button {
+      padding:8px 15px;
+      border:none;
+      border-radius:6px;
+      font-weight:bold;
+      cursor:pointer;
+      margin: 0 5px;
+    }
+
+    #confirma-sair { background:#dc3545; color:white; }
+    #cancelar-sair { background:#6c757d; color:white; }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div id="tela-login" class="card">
+    <h3 style="text-align:center">Chamada UPT</h3>
+    <input type="text" id="user" placeholder="Usuário">
+    <input type="password" id="pass" placeholder="Senha">
+    <button id="btnEntrar" onclick="login()">Entrar</button>
+  </div>
+
+  <!-- SISTEMA -->
+  <div id="conteudo-principal" class="card">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+      <span id="nome-prof" style="font-weight:bold"></span>
+      <button id="btnSair" style="width:auto; padding:5px 10px; background:#dc3545">Sair</button>
+    </div>
+
+    <input type="date" id="data-input">
+    <button id="btnCarregar" onclick="carregar()">Carregar Lista</button>
+
+    <table id="tabela">
+      <thead>
+        <tr><th>Estudante</th><th>Status</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button id="btnSalvar" onclick="salvar()" style="background:#28a745; margin-top:15px; display:none">
+      Salvar Alterações
+    </button>
+  </div>
+
+  <!-- POPUPS -->
+  <div id="popup-msg"></div>
+
+  <div id="popup-sair">
+    <p>Você realmente deseja sair do sistema?</p>
+    <button id="confirma-sair">Sim</button>
+    <button id="cancelar-sair">Cancelar</button>
+  </div>
+
+<script>
+const API_URL = "https://script.google.com/macros/s/AKfycbxQ4Ot-dGngyh9YMQqx3Ax3Ms25TTrU1WVWFzT9NkHwhK_AcoUtyQLwNohrufApEin7/exec";
+
+let userLogado = "";
+
+// LOGIN
+async function login() {
+  const btn = document.getElementById("btnEntrar");
+  btn.disabled = true;
+  btn.innerText = "Entrando...";
+
+  const u = document.getElementById("user").value;
+  const p = document.getElementById("pass").value;
+
+  try {
+    const resposta = await fetch(
+  `${API_URL}?action=validarLogin&user=${encodeURIComponent(u)}&pass=${encodeURIComponent(p)}`
+);
+
+    const res = await resposta.json();
+
+    if (res.sucesso) {
+      userLogado = res.user;
+      document.getElementById("tela-login").style.display = "none";
+      document.getElementById("conteudo-principal").style.display = "block";
+      document.getElementById("nome-prof").innerText = "Olá, " + res.nome;
+    } else {
+      alert("Login incorreto!");
+      btn.disabled = false;
+      btn.innerText = "Entrar";
+    }
+  } catch (erro) {
+    alert("Erro ao conectar com o servidor.");
+    console.error(erro);
+    btn.disabled = false;
+    btn.innerText = "Entrar";
+  }
+}
+
+// CARREGAR
+async function carregar() {
+  const data = document.getElementById("data-input").value;
+  if (!data) return alert("Selecione a data!");
+
+  const btn = document.getElementById("btnCarregar");
+  btn.innerText = "Buscando...";
+  btn.disabled = true;
+
+  try {
+    const resposta = await fetch(`${API_URL}?action=getAlunosComPresenca&data=${encodeURIComponent(data)}`);
+    const res = await resposta.json();
+
+    const alunos = res.alunos;
+    const salvos = res.salvos;
+
+    const tbody = document.querySelector("#tabela tbody");
+   
