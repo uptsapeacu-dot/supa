@@ -11,19 +11,52 @@
   <style>
 
     body{
-      font-family: Arial;
-      max-width: 700px;
+      margin:0;
+      font-family:Arial;
+      background:#f1f1f1;
+    }
+
+    .login-box{
+      width:400px;
+      background:white;
+      margin:80px auto;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+
+    .login-box h2{
+      text-align:center;
+      margin-bottom:20px;
+      color:#0d6efd;
+    }
+
+    input, select{
+      width:100%;
+      padding:12px;
+      margin-top:10px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      box-sizing:border-box;
+    }
+
+    button{
+      width:100%;
+      padding:12px;
+      margin-top:20px;
+      border:none;
+      border-radius:8px;
+      background:#0d6efd;
+      color:white;
+      font-size:16px;
+      cursor:pointer;
+    }
+
+    #app{
+      max-width:700px;
       margin:auto;
       padding:20px;
-      background:#f5f5f5;
-    }
-
-    h1{
-      text-align:center;
-    }
-
-    .topo{
-      margin:20px 0;
+      display:none;
     }
 
     .aluno{
@@ -37,33 +70,54 @@
       align-items:center;
     }
 
-    button{
-      width:100%;
-      margin-top:20px;
-      padding:15px;
-      border:none;
-      border-radius:10px;
-      font-size:16px;
-      cursor:pointer;
-    }
-
   </style>
 
 </head>
 <body>
 
-  <h1>Controle de Frequência</h1>
+  <!-- LOGIN -->
 
-  <div class="topo">
-    <label>Escolha a data:</label>
-    <input type="date" id="data">
+  <div class="login-box" id="loginBox">
+
+    <h2>Chamada UPT</h2>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Usuário"
+    >
+
+    <input
+      type="password"
+      id="senha"
+      placeholder="Senha"
+    >
+
+    <button onclick="fazerLogin()">
+      Entrar
+    </button>
+
   </div>
 
-  <div id="lista"></div>
+  <!-- APP -->
 
-  <button onclick="salvarFrequencia()">
-    Salvar Frequência
-  </button>
+  <div id="app">
+
+    <h1>Controle de Frequência</h1>
+
+    <input type="date" id="data">
+
+    <div id="lista"></div>
+
+    <button onclick="salvarFrequencia()">
+      Salvar Frequência
+    </button>
+
+    <button onclick="logout()">
+      Sair
+    </button>
+
+  </div>
 
   <script>
 
@@ -80,6 +134,39 @@
       )
 
     let alunos = []
+
+    async function fazerLogin(){
+
+      const email =
+        document.getElementById('email').value
+
+      const senha =
+        document.getElementById('senha').value
+
+      const { error } =
+        await clienteSupabase.auth.signInWithPassword({
+          email: email,
+          password: senha
+        })
+
+      if(error){
+        alert('Login inválido')
+        return
+      }
+
+      iniciarSistema()
+    }
+
+    async function iniciarSistema(){
+
+      document.getElementById('loginBox')
+        .style.display = 'none'
+
+      document.getElementById('app')
+        .style.display = 'block'
+
+      carregarAlunos()
+    }
 
     async function carregarAlunos(){
 
@@ -110,7 +197,6 @@
             <span>${aluno.nome}</span>
 
             <select id="status-${aluno.id}">
-
               <option value="presente">
                 Presente
               </option>
@@ -118,7 +204,6 @@
               <option value="ausente">
                 Ausente
               </option>
-
             </select>
 
           </div>
@@ -156,15 +241,33 @@
 
         if(error){
           console.log(error)
-          alert('Erro ao salvar frequência')
+          alert('Erro ao salvar')
           return
         }
       }
 
-      alert('Frequência salva com sucesso!')
+      alert('Frequência salva!')
     }
 
-    carregarAlunos()
+    async function logout(){
+
+      await clienteSupabase.auth.signOut()
+
+      location.reload()
+    }
+
+    async function verificarLogin(){
+
+      const {
+        data: { session }
+      } = await clienteSupabase.auth.getSession()
+
+      if(session){
+        iniciarSistema()
+      }
+    }
+
+    verificarLogin()
 
   </script>
 
