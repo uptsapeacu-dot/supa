@@ -1,384 +1,821 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
+
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Controle de Frequência - Chamada UPT</title>
+
+
+  <title>Controle de Frequência</title>
+
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
+
   <style>
-    :root {
-      --bg-principal: #f1f3f6;
-      --sidebar-dark: #0b192c; /* Azul escuro idêntico ao da imagem */
-      --sidebar-hover: rgba(255, 255, 255, 0.08);
-      --sidebar-ativo: rgba(255, 255, 255, 0.15);
-      --azul-primary: #0d6efd;
+
+
+    body{
+
+      margin:0;
+
+      font-family:Arial;
+
+      background:#f1f1f1;
+
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: var(--bg-principal);
-      color: #333;
+
+    .login-box{
+
+      width:400px;
+
+      background:white;
+
+      margin:80px auto;
+
+      padding:20px;
+
+      border-radius:12px;
+
+      box-shadow:0 0 10px rgba(0,0,0,0.1);
+
     }
 
-    /* TELA DE LOGIN */
-    .login-box {
-      width: 400px;
-      background: white;
-      margin: 80px auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+
+    .login-box h2{
+
+      text-align:center;
+
+      margin-bottom:20px;
+
+      color:#0d6efd;
+
     }
 
-    .login-box h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: var(--azul-primary);
+
+    input, select{
+
+      width:100%;
+
+      padding:12px;
+
+      margin-top:10px;
+
+      border:1px solid #ccc;
+
+      border-radius:8px;
+
+      box-sizing:border-box;
+
     }
 
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      box-sizing: border-box;
+
+    button{
+
+      width:100%;
+
+      padding:12px;
+
+      margin-top:20px;
+
+      border:none;
+
+      border-radius:8px;
+
+      background:#0d6efd;
+
+      color:white;
+
+      font-size:16px;
+
+      cursor:pointer;
+
     }
 
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 20px;
-      border: none;
-      border-radius: 8px;
-      background: var(--azul-primary);
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
+
+    #app{
+
+      max-width:700px;
+
+      margin:auto;
+
+      padding:20px;
+
+      display:none;
+
     }
 
-    /* CONTAINER PRINCIPAL DO APP (PÓS-LOGIN) */
-    #app {
-      display: none; /* Controlado pelo seu JS original */
+
+    .aluno{
+
+      background:white;
+
+      padding:15px;
+
+      border-radius:10px;
+
+      margin-top:10px;
+
+
+      display:flex;
+
+      justify-content:space-between;
+
+      align-items:center;
+
     }
 
-    /* SIDEBAR ESTILO COMPLETO DA IMAGEM */
-    .sidebar {
-      width: 240px;
-      height: 100vh;
-      background: var(--sidebar-dark);
-      position: fixed;
-      left: 0;
-      top: 0;
-      color: white;
-      transition: 0.3s;
-      overflow-x: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      z-index: 100;
-    }
+body{
 
-    .sidebar.fechado {
-      width: 70px;
-    }
+  margin:0;
 
-    .sidebar-top {
-      display: flex;
-      flex-direction: column;
-    }
+  font-family:Arial;
 
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      text-align: center;
-      padding: 25px 10px;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      white-space: nowrap;
-      transition: opacity 0.2s;
-    }
+  background:#f1f3f6;
 
-    .sidebar.fechado .logo {
-      opacity: 0;
-      padding: 20px 0;
-      height: 0;
-      overflow: hidden;
-      border-bottom: none;
-    }
+}
 
-    .menu-btn {
-      width: 100%;
-      border: none;
-      background: none;
-      color: white;
-      font-size: 24px;
-      padding: 15px;
-      cursor: pointer;
-      text-align: center;
-    }
 
-    .menu {
-      display: flex;
-      flex-direction: column;
-    }
+/* SIDEBAR */
 
-    .menu button {
-      background: none;
-      border: none;
-      color: white;
-      padding: 18px;
-      text-align: left;
-      cursor: pointer;
-      font-size: 16px;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
-      white-space: nowrap;
-      margin-top: 0;
-    }
 
-    .menu button span.icon {
-      font-size: 18px;
-      margin-right: 15px;
-      min-width: 25px;
-      text-align: center;
-    }
+.sidebar{
 
-    /* Esconde o texto quando fechar a barra */
-    .sidebar.fechado .menu button span.text {
-      display: none;
-    }
+  width:240px;
 
-    .sidebar.fechado .menu button {
-      padding: 18px 0;
-      justify-content: center;
-    }
+  height:100vh;
 
-    .sidebar.fechado .menu button span.icon {
-      margin-right: 0;
-    }
+  background:#0d6efd;
 
-    .menu button:hover {
-      background: var(--sidebar-hover);
-    }
+  position:fixed;
 
-    .menu button.ativo {
-      background: var(--sidebar-ativo);
-      border-left: 4px solid var(--azul-primary);
-    }
+  left:0;
 
-    /* Rodapé da Sidebar */
-    .sidebar-footer {
-      border-top: 1px solid rgba(255,255,255,0.1);
-      padding: 10px 0;
-    }
+  top:0;
 
-    /* CONTEÚDO PRINCIPAL REORGANIZADO */
-    .conteudo {
-      margin-left: 240px;
-      padding: 30px;
-      transition: 0.3s;
-    }
+  color:white;
 
-    .sidebar.fechado + .conteudo {
-      margin-left: 70px;
-    }
+  transition:0.3s;
 
-    /* DESIGN DA LISTA DE ALUNOS */
-    .aluno {
-      background: white;
-      padding: 15px;
-      border-radius: 10px;
-      margin-top: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-    }
+  overflow:hidden;
 
-    .aluno select {
-      width: auto;
-      margin-top: 0;
-      padding: 10px;
-    }
+}
 
-    h1 {
-      margin-top: 0;
-    }
 
-    #data {
-      max-width: 250px;
-      margin-bottom: 20px;
-    }
+.sidebar.fechado{
+
+  width:70px;
+
+}
+
+
+.logo{
+
+  font-size:24px;
+
+  font-weight:bold;
+
+  text-align:center;
+
+  padding:25px 10px;
+
+  border-bottom:1px solid rgba(255,255,255,0.2);
+
+}
+
+
+.menu-btn{
+
+  width:100%;
+
+  border:none;
+
+  background:none;
+
+  color:white;
+
+  font-size:24px;
+
+  padding:15px;
+
+  cursor:pointer;
+
+}
+
+
+.menu{
+
+  display:flex;
+
+  flex-direction:column;
+
+}
+
+
+.menu button{
+
+  background:none;
+
+  border:none;
+
+  color:white;
+
+  padding:18px;
+
+  text-align:left;
+
+  cursor:pointer;
+
+  font-size:16px;
+
+  transition:0.2s;
+
+}
+
+
+.menu button:hover{
+
+  background:rgba(255,255,255,0.15);
+
+}
+
+
+/* CONTEÚDO */
+
+
+.conteudo{
+
+  margin-left:240px;
+
+  padding:30px;
+
+  transition:0.3s;
+
+}
+
+
+.sidebar.fechado + .conteudo{
+
+  margin-left:70px;
+
+}
+
+
+/* ALUNOS */
+
+
+.aluno{
+
+  background:white;
+
+  padding:15px;
+
+  border-radius:10px;
+
+  margin-top:10px;
+
+
+  display:flex;
+
+  justify-content:space-between;
+
+  align-items:center;
+
+}
+
+
+input, select{
+
+  padding:10px;
+
+  border-radius:8px;
+
+  border:1px solid #ccc;
+
+}
+
+
+h1{
+
+  margin-top:0;
+
+}
+
+
+button{
+
+  border-radius:8px;
+
+}
+
   </style>
+
+
 </head>
+
 <body>
 
+
+  <!-- LOGIN -->
+
+
   <div class="login-box" id="loginBox">
+
+
     <h2>Chamada UPT</h2>
-    <input type="email" id="email" placeholder="Usuário">
-    <input type="password" id="senha" placeholder="Senha">
-    <button onclick="fazerLogin()">Entrar</button>
+
+
+    <input
+
+      type="email"
+
+      id="email"
+
+      placeholder="Usuário"
+
+    >
+
+
+    <input
+
+      type="password"
+
+      id="senha"
+
+      placeholder="Senha"
+
+    >
+
+
+    <button onclick="fazerLogin()">
+
+      Entrar
+
+    </button>
+
+
   </div>
+
+
+  <!-- APP -->
+
 
   <div id="app">
-    
-    <div class="sidebar" id="sidebar">
-      <div class="sidebar-top">
-        <div class="logo">Chamada UPT</div>
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        
-        <div class="menu">
-          <button id="btn-frequencia" class="ativo" onclick="mostrarTela('frequencia')">
-            <span class="icon">📋</span>
-            <span class="text">Frequência</span>
-          </button>
-          <button id="btn-relatorios" onclick="mostrarTela('relatorios')">
-            <span class="icon">📊</span>
-            <span class="text">Relatórios</span>
-          </button>
-          <button id="btn-alunos" onclick="mostrarTela('alunos')">
-            <span class="icon">👨‍🎓</span>
-            <span class="text">Alunos</span>
-          </button>
-        </div>
-      </div>
 
-      <div class="sidebar-footer">
-        <div class="menu">
-          <button onclick="logout()">
-            <span class="icon">🚪</span>
-            <span class="text">Sair</span>
-          </button>
-        </div>
-      </div>
-    </div>
 
-    <div class="conteudo" id="conteudo">
+    <h1>Controle de Frequência</h1>
 
-      <div id="frequencia">
-        <h1>Controle de Frequência</h1>
-        <input type="date" id="data">
-        <div id="lista"></div>
-        <button onclick="salvarFrequencia()" style="max-width: 250px;">Salvar Frequência</button>
-      </div>
 
-      <div id="relatorios" style="display:none">
-        <h1>Relatórios</h1>
-        <p>Área de relatórios futuramente.</p>
-      </div>
+    <input type="date" id="data">
 
-      <div id="alunos" style="display:none">
-        <h1>Alunos</h1>
-        <p>Área de alunos futuramente.</p>
-      </div>
 
-    </div>
+    <div id="lista"></div>
+
+
+    <button onclick="salvarFrequencia()">
+
+      Salvar Frequência
+
+    </button>
+
+
+    <button onclick="logout()">
+
+      Sair
+
+    </button>
+
 
   </div>
 
+<body>
+
+
+  <!-- SIDEBAR -->
+
+
+  <div class="sidebar" id="sidebar">
+
+
+    <div class="logo">
+
+      Chamada UPT
+
+    </div>
+
+
+    <button class="menu-btn" onclick="toggleSidebar()">
+
+      ☰
+
+    </button>
+
+
+    <div class="menu">
+
+
+      <button onclick="mostrarTela('frequencia')">
+
+        📋 Frequência
+
+      </button>
+
+
+      <button onclick="mostrarTela('relatorios')">
+
+        📊 Relatórios
+
+      </button>
+
+
+      <button onclick="mostrarTela('alunos')">
+
+        👨‍🎓 Alunos
+
+      </button>
+
+
+      <button onclick="logout()">
+
+        🚪 Sair
+
+      </button>
+
+
+    </div>
+
+
+  </div>
+
+
+  <!-- CONTEÚDO -->
+
+
+  <div class="conteudo" id="conteudo">
+
+
+    <!-- TELA FREQUÊNCIA -->
+
+
+    <div id="frequencia">
+
+
+      <h1>Controle de Frequência</h1>
+
+
+      <input type="date" id="data">
+
+
+      <div id="lista"></div>
+
+
+      <button onclick="salvarFrequencia()">
+
+        Salvar Frequência
+
+      </button>
+
+
+    </div>
+
+
+    <!-- RELATÓRIOS -->
+
+
+    <div id="relatorios" style="display:none">
+
+
+      <h1>Relatórios</h1>
+
+
+      <p>Área de relatórios futuramente.</p>
+
+
+    </div>
+
+
+    <!-- ALUNOS -->
+
+
+    <div id="alunos" style="display:none">
+
+
+      <h1>Alunos</h1>
+
+
+      <p>Área de alunos futuramente.</p>
+
+
+    </div>
+
+
+  </div>
+
+
+</body>
+
   <script>
-    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co';
-    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH';
-    const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-    let alunos = [];
+function toggleSidebar(){
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('fechado');
-    }
 
-    function mostrarTela(tela) {
-      // Esconder todas as telas
-      document.getElementById('frequencia').style.display = 'none';
-      document.getElementById('relatorios').style.display = 'none';
-      document.getElementById('alunos').style.display = 'none';
+  document
 
-      // Remover classe ativo de todos os botões do menu
-      document.getElementById('btn-frequencia').classList.remove('ativo');
-      document.getElementById('btn-relatorios').classList.remove('ativo');
-      document.getElementById('btn-alunos').classList.remove('ativo');
+    .getElementById('sidebar')
 
-      // Mostrar a tela selecionada e ativar o respectivo botão
-      document.getElementById(tela).style.display = 'block';
-      document.getElementById('btn-' + tela).classList.add('ativo');
-    }
+    .classList
 
-    async function fazerLogin() {
-      const email = document.getElementById('email').value;
-      const senha = document.getElementById('senha').value;
+    .toggle('fechado')
 
-      const { error } = await clienteSupabase.auth.signInWithPassword({
-        email: email,
-        password: senha
-      });
+}
 
-      if (error) {
-        alert('Login inválido');
-        return;
+
+function mostrarTela(tela){
+
+
+  document.getElementById('frequencia')
+
+    .style.display = 'none'
+
+
+  document.getElementById('relatorios')
+
+    .style.display = 'none'
+
+
+  document.getElementById('alunos')
+
+    .style.display = 'none'
+
+
+  document.getElementById(tela)
+
+    .style.display = 'block'
+
+}
+
+    const supabaseUrl =
+
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
+
+
+    const supabaseKey =
+
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+
+    const clienteSupabase =
+
+      window.supabase.createClient(
+
+        supabaseUrl,
+
+        supabaseKey
+
+      )
+
+
+    let alunos = []
+
+
+    async function fazerLogin(){
+
+
+      const email =
+
+        document.getElementById('email').value
+
+
+      const senha =
+
+        document.getElementById('senha').value
+
+
+      const { error } =
+
+        await clienteSupabase.auth.signInWithPassword({
+
+          email: email,
+
+          password: senha
+
+        })
+
+
+      if(error){
+
+        alert('Login inválido')
+
+        return
+
       }
 
-      iniciarSistema();
+
+      iniciarSistema()
+
     }
 
-    async function iniciarSistema() {
-      document.getElementById('loginBox').style.display = 'none';
-      document.getElementById('app').style.display = 'block';
 
-      carregarAlunos();
+    async function iniciarSistema(){
+
+
+      document.getElementById('loginBox')
+
+        .style.display = 'none'
+
+
+      document.getElementById('app')
+
+        .style.display = 'block'
+
+
+      carregarAlunos()
+
     }
 
-    async function carregarAlunos() {
-      const { data, error } = await clienteSupabase
-        .from('alunos')
-        .select('*')
-        .order('nome');
 
-      if (error) {
-        console.log(error);
-        alert('Erro ao carregar alunos');
-        return;
+    async function carregarAlunos(){
+
+
+      const { data, error } =
+
+        await clienteSupabase
+
+          .from('alunos')
+
+          .select('*')
+
+          .order('nome')
+
+
+      if(error){
+
+        console.log(error)
+
+        alert('Erro ao carregar alunos')
+
+        return
+
       }
 
-      alunos = data;
-      const lista = document.getElementById('lista');
-      lista.innerHTML = '';
+
+      alunos = data
+
+
+      const lista =
+
+        document.getElementById('lista')
+
+
+      lista.innerHTML = ''
+
 
       alunos.forEach(aluno => {
+
+
         lista.innerHTML += `
+
           <div class="aluno">
+
+
             <span>${aluno.nome}</span>
+
+
             <select id="status-${aluno.id}">
-              <option value="presente">Presente</option>
-              <option value="ausente">Ausente</option>
+
+              <option value="presente">
+
+                Presente
+
+              </option>
+
+
+              <option value="ausente">
+
+                Ausente
+
+              </option>
+
             </select>
+
+
           </div>
-        `;
-      });
+
+        `
+
+      })
+
     }
 
-    async function salvarFrequencia() {
-      const dataSelecionada = document.getElementById('data').value;
 
-      if (!dataSelecionada) {
-        alert('Escolha uma data');
-        return;
+    async function salvarFrequencia(){
+
+
+      const dataSelecionada =
+
+        document.getElementById('data').value
+
+
+      if(!dataSelecionada){
+
+        alert('Escolha uma data')
+
+        return
+
       }
 
-      for (const aluno of alunos) {
-        const status = document.getElementById(`status-${aluno.id}`).value;
 
-        const { error } = await clienteSupabase
-          .from('frequencia')
-          .insert([
-            {
-              aluno_id: aluno.id,
-              data: dataSelecionada,
-              status: status
-            }
-          ]);
+      for(const aluno of alunos){
 
-        if (error)
+
+        const status =
+
+          document.getElementById(
+
+            `status-${aluno.id}`
+
+          ).value
+
+
+        const { error } =
+
+          await clienteSupabase
+
+            .from('frequencia')
+
+            .insert([
+
+              {
+
+                aluno_id: aluno.id,
+
+                data: dataSelecionada,
+
+                status: status
+
+              }
+
+            ])
+
+
+        if(error){
+
+          console.log(error)
+
+          alert('Erro ao salvar')
+
+          return
+
+        }
+
+      }
+
+
+      alert('Frequência salva!')
+
+    }
+
+
+    async function logout(){
+
+
+      await clienteSupabase.auth.signOut()
+
+
+      location.reload()
+
+    }
+
+
+    async function verificarLogin(){
+
+
+      const {
+
+        data: { session }
+
+      } = await clienteSupabase.auth.getSession()
+
+
+      if(session){
+
+        iniciarSistema()
+
+      }
+
+    }
+
+
+    verificarLogin()
+
+
+  </script>
+
+
+</body>
+
+</html>
