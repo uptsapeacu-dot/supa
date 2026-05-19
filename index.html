@@ -402,6 +402,63 @@
   <div class="modal" id="modalAluno">
 
     <div class="modal-box">
+<div class="modal-box">
+
+  <div class="modal-topo">
+
+    <h2 id="tituloModal">
+      Novo Aluno
+    </h2>
+
+    <button
+      class="fechar"
+      onclick="fecharModalAluno()"
+    >
+      ✕
+    </button>
+
+  </div>
+
+  <input
+    type="text"
+    id="nomeAluno"
+    placeholder="Nome do aluno"
+  >
+
+  <input
+    type="text"
+    id="telefoneAluno"
+    placeholder="Telefone"
+  >
+
+  <input
+    type="email"
+    id="emailAluno"
+    placeholder="Email"
+  >
+
+  <input
+    type="text"
+    id="enderecoAluno"
+    placeholder="Endereço"
+  >
+
+  <input
+    type="text"
+    id="serieAluno"
+    placeholder="Série"
+  >
+
+  <button
+    class="btn-login"
+    onclick="salvarAluno()"
+  >
+    Salvar
+  </button>
+
+</div>
+      
+    </div>
 
       <div class="modal-topo">
 
@@ -626,56 +683,84 @@
 
     async function carregarListaAlunos(){
 
-      const { data, error } =
-        await clienteSupabase
-          .from('alunos')
-          .select('*')
-          .order('nome')
+  const { data, error } =
+    await clienteSupabase
+      .from('alunos')
+      .select('*')
+      .order('nome')
 
-      if(error){
-        console.log(error)
-        return
-      }
+  if(error){
+    console.log(error)
+    return
+  }
 
-      const lista =
-        document.getElementById('listaAlunos')
+  const lista =
+    document.getElementById('listaAlunos')
 
-      lista.innerHTML = ''
+  lista.innerHTML = ''
 
-      data.forEach(aluno => {
+  data.forEach(aluno => {
 
-        lista.innerHTML += `
-          <div class="item-aluno">
+    lista.innerHTML += `
 
-            <span>${aluno.nome}</span>
+      <div class="item-aluno">
 
-            <button
-              class="btn-editar"
-              onclick="editarAluno(
-                ${aluno.id},
-                '${aluno.nome}'
-              )"
-            >
-              ✏️
-            </button>
+        <div>
 
-          </div>
-        `
-      })
-    }
+          <strong>${aluno.nome}</strong><br>
+
+          📞 ${aluno.telefone || '-'}<br>
+
+          ✉️ ${aluno.email || '-'}<br>
+
+          🎓 ${aluno.serie || '-'}
+
+        </div>
+
+        <button
+          class="btn-editar"
+          onclick="editarAluno(
+            ${aluno.id},
+            '${aluno.nome || ''}',
+            '${aluno.telefone || ''}',
+            '${aluno.email || ''}',
+            '${aluno.endereco || ''}',
+            '${aluno.serie || ''}'
+          )"
+        >
+          ✏️
+        </button>
+
+      </div>
+
+    `
+  })
+}
 
     function abrirModalAluno(){
 
       alunoEditando = null
 
-      document.getElementById('tituloModal')
-        .innerText = 'Novo Aluno'
+     document.getElementById('tituloModal')
+    .innerText = 'Novo Aluno'
 
-      document.getElementById('nomeAluno')
-        .value = ''
+  document.getElementById('nomeAluno')
+    .value = ''
 
-      document.getElementById('modalAluno')
-        .style.display = 'flex'
+  document.getElementById('telefoneAluno')
+    .value = ''
+
+  document.getElementById('emailAluno')
+    .value = ''
+
+  document.getElementById('enderecoAluno')
+    .value = ''
+
+  document.getElementById('serieAluno')
+    .value = ''
+
+  document.getElementById('modalAluno')
+    .style.display = 'flex'
     }
 
     function fecharModalAluno(){
@@ -684,71 +769,106 @@
         .style.display = 'none'
     }
 
-    function editarAluno(id, nome){
+    function editarAluno( id,
+  nome,
+  telefone,
+  email,
+  endereco,
+  serie){
 
       alunoEditando = id
 
-      document.getElementById('tituloModal')
-        .innerText = 'Editar Aluno'
+     document.getElementById('tituloModal')
+    .innerText = 'Editar Aluno'
 
-      document.getElementById('nomeAluno')
-        .value = nome
+  document.getElementById('nomeAluno')
+    .value = nome || ''
 
-      document.getElementById('modalAluno')
-        .style.display = 'flex'
+  document.getElementById('telefoneAluno')
+    .value = telefone || ''
+
+  document.getElementById('emailAluno')
+    .value = email || ''
+
+  document.getElementById('enderecoAluno')
+    .value = endereco || ''
+
+  document.getElementById('serieAluno')
+    .value = serie || ''
+
+  document.getElementById('modalAluno')
+    .style.display = 'flex'
     }
 
     async function salvarAluno(){
 
-      const nome =
-        document.getElementById('nomeAluno')
-          .value.trim()
+  const nome =
+    document.getElementById('nomeAluno')
+      .value.trim()
 
-      if(!nome){
-        alert('Digite o nome')
-        return
-      }
+  const telefone =
+    document.getElementById('telefoneAluno')
+      .value.trim()
 
-      let error = null
+  const email =
+    document.getElementById('emailAluno')
+      .value.trim()
 
-      if(alunoEditando){
+  const endereco =
+    document.getElementById('enderecoAluno')
+      .value.trim()
 
-        const resposta =
-          await clienteSupabase
-            .from('alunos')
-            .update({
-              nome: nome
-            })
-            .eq('id', alunoEditando)
+  const serie =
+    document.getElementById('serieAluno')
+      .value.trim()
 
-        error = resposta.error
+  if(!nome){
+    alert('Digite o nome')
+    return
+  }
 
-      }else{
+  let error = null
 
-        const resposta =
-          await clienteSupabase
-            .from('alunos')
-            .insert([
-              {
-                nome: nome
-              }
-            ])
+  const dadosAluno = {
+    nome,
+    telefone,
+    email,
+    endereco,
+    serie
+  }
 
-        error = resposta.error
-      }
+  if(alunoEditando){
 
-      if(error){
-        console.log(error)
-        alert('Erro ao salvar aluno')
-        return
-      }
+    const resposta =
+      await clienteSupabase
+        .from('alunos')
+        .update(dadosAluno)
+        .eq('id', alunoEditando)
 
-      fecharModalAluno()
+    error = resposta.error
 
-      carregarListaAlunos()
+  }else{
 
-      carregarAlunos()
-    }
+    const resposta =
+      await clienteSupabase
+        .from('alunos')
+        .insert([dadosAluno])
+
+    error = resposta.error
+  }
+
+  if(error){
+    console.log(error)
+    alert('Erro ao salvar aluno')
+    return
+  }
+
+  fecharModalAluno()
+
+  carregarListaAlunos()
+
+  carregarAlunos()
+}
 
   </script>
 
