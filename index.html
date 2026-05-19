@@ -1,1044 +1,756 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
-
 <head>
 
   <meta charset="UTF-8">
-
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-
-  <title>Controle de Frequência</title>
-
+  <title>Chamada UPT</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
-
   <style>
 
+    *{
+      box-sizing:border-box;
+    }
 
     body{
-
       margin:0;
-
       font-family:Arial;
-
-      background:#f1f1f1;
-
+      background:#f1f3f6;
     }
 
+    /* LOGIN */
+
+    .login-container{
+      width:100%;
+      height:100vh;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
 
     .login-box{
-
       width:400px;
-
       background:white;
-
-      margin:80px auto;
-
-      padding:20px;
-
-      border-radius:12px;
-
-      box-shadow:0 0 10px rgba(0,0,0,0.1);
-
+      padding:30px;
+      border-radius:15px;
+      box-shadow:0 0 15px rgba(0,0,0,0.1);
     }
-
 
     .login-box h2{
-
       text-align:center;
-
-      margin-bottom:20px;
-
       color:#0d6efd;
-
+      margin-bottom:25px;
     }
-
 
     input, select{
-
       width:100%;
-
       padding:12px;
-
       margin-top:10px;
-
       border:1px solid #ccc;
-
       border-radius:8px;
-
-      box-sizing:border-box;
-
     }
 
-
     button{
-
-      width:100%;
-
-      padding:12px;
-
-      margin-top:20px;
-
       border:none;
+      cursor:pointer;
+    }
 
+    .btn-login{
+      width:100%;
+      padding:12px;
+      margin-top:20px;
       border-radius:8px;
-
       background:#0d6efd;
+      color:white;
+      font-size:16px;
+    }
+
+    /* APP */
+
+    #app{
+      display:none;
+    }
+
+    /* SIDEBAR */
+
+    .sidebar{
+      width:240px;
+      height:100vh;
+      background:#0d6efd;
+
+      position:fixed;
+      left:0;
+      top:0;
 
       color:white;
 
+      transition:0.3s;
+      overflow:hidden;
+    }
+
+    .sidebar.fechado{
+      width:70px;
+    }
+
+    .logo{
+      font-size:24px;
+      font-weight:bold;
+      text-align:center;
+      padding:25px 10px;
+
+      border-bottom:1px solid rgba(255,255,255,0.2);
+    }
+
+    .menu-btn{
+      width:100%;
+      background:none;
+      color:white;
+      font-size:24px;
+      padding:15px;
+    }
+
+    .menu{
+      display:flex;
+      flex-direction:column;
+    }
+
+    .menu button{
+      background:none;
+      color:white;
+      padding:18px;
+      text-align:left;
       font-size:16px;
-
-      cursor:pointer;
-
+      transition:0.2s;
     }
 
-
-    #app{
-
-      max-width:700px;
-
-      margin:auto;
-
-      padding:20px;
-
-      display:none;
-
+    .menu button:hover{
+      background:rgba(255,255,255,0.15);
     }
 
+    /* CONTEÚDO */
+
+    .conteudo{
+      margin-left:240px;
+      padding:30px;
+      transition:0.3s;
+    }
+
+    .sidebar.fechado + .conteudo{
+      margin-left:70px;
+    }
+
+    h1{
+      margin-top:0;
+    }
+
+    /* FREQUÊNCIA */
 
     .aluno{
-
       background:white;
-
       padding:15px;
+      border-radius:10px;
+      margin-top:10px;
+
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+
+    .btn-salvar{
+      width:100%;
+      padding:15px;
+      margin-top:20px;
 
       border-radius:10px;
 
-      margin-top:10px;
-
-
-      display:flex;
-
-      justify-content:space-between;
-
-      align-items:center;
-
+      background:#0d6efd;
+      color:white;
+      font-size:16px;
     }
 
-body{
+    /* ALUNOS */
 
-  margin:0;
+    .topo-alunos{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-  font-family:Arial;
+    .btn-add{
+      width:50px;
+      height:50px;
 
-  background:#f1f3f6;
+      border-radius:50%;
 
-}
+      background:#0d6efd;
+      color:white;
 
+      font-size:30px;
+    }
 
-/* SIDEBAR */
+    .item-aluno{
+      background:white;
+      padding:15px;
+      border-radius:10px;
+      margin-top:10px;
 
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-.sidebar{
+    .btn-editar{
+      width:45px;
+      height:45px;
 
-  width:240px;
+      border-radius:50%;
 
-  height:100vh;
+      background:#0d6efd;
+      color:white;
 
-  background:#0d6efd;
+      font-size:18px;
+    }
 
-  position:fixed;
+    /* MODAL */
 
-  left:0;
+    .modal{
+      position:fixed;
+      top:0;
+      left:0;
 
-  top:0;
+      width:100%;
+      height:100%;
 
-  color:white;
+      background:rgba(0,0,0,0.5);
 
-  transition:0.3s;
+      display:none;
 
-  overflow:hidden;
+      justify-content:center;
+      align-items:center;
 
-}
+      z-index:999;
+    }
 
+    .modal-box{
+      width:80%;
+      max-width:500px;
 
-.sidebar.fechado{
+      background:white;
 
-  width:70px;
+      border-radius:15px;
 
-}
+      padding:20px;
+    }
 
+    .modal-topo{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
 
-.logo{
+    .fechar{
+      width:40px;
+      height:40px;
 
-  font-size:24px;
+      border-radius:50%;
 
-  font-weight:bold;
+      background:red;
+      color:white;
+    }
 
-  text-align:center;
-
-  padding:25px 10px;
-
-  border-bottom:1px solid rgba(255,255,255,0.2);
-
-}
-
-
-.menu-btn{
-
-  width:100%;
-
-  border:none;
-
-  background:none;
-
-  color:white;
-
-  font-size:24px;
-
-  padding:15px;
-
-  cursor:pointer;
-
-}
-
-
-.menu{
-
-  display:flex;
-
-  flex-direction:column;
-
-}
-
-
-.menu button{
-
-  background:none;
-
-  border:none;
-
-  color:white;
-
-  padding:18px;
-
-  text-align:left;
-
-  cursor:pointer;
-
-  font-size:16px;
-
-  transition:0.2s;
-
-}
-
-
-.menu button:hover{
-
-  background:rgba(255,255,255,0.15);
-
-}
-
-
-/* CONTEÚDO */
-
-
-.conteudo{
-
-  margin-left:240px;
-
-  padding:30px;
-
-  transition:0.3s;
-
-}
-
-
-.sidebar.fechado + .conteudo{
-
-  margin-left:70px;
-
-}
-
-
-/* ALUNOS */
-
-
-.aluno{
-
-  background:white;
-
-  padding:15px;
-
-  border-radius:10px;
-
-  margin-top:10px;
-
-
-  display:flex;
-
-  justify-content:space-between;
-
-  align-items:center;
-
-}
-
-
-input, select{
-
-  padding:10px;
-
-  border-radius:8px;
-
-  border:1px solid #ccc;
-
-}
-
-
-h1{
-
-  margin-top:0;
-
-}
-
-
-button{
-
-  border-radius:8px;
-
-}
-/* TOPO ALUNOS */
-
-.topo-alunos{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-/* BOTÃO + */
-
-.btn-add{
-  width:50px;
-  height:50px;
-  border-radius:50%;
-  font-size:30px;
-  background:#0d6efd;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
-
-/* LISTA */
-
-.item-aluno{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-top:10px;
-
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.btn-editar{
-  width:45px;
-  height:45px;
-  border-radius:50%;
-  border:none;
-  background:#0d6efd;
-  color:white;
-  cursor:pointer;
-  font-size:18px;
-}
-
-/* MODAL */
-
-.modal{
-  position:fixed;
-  top:0;
-  left:0;
-  width:100%;
-  height:100%;
-
-  background:rgba(0,0,0,0.5);
-
-  display:none;
-
-  justify-content:center;
-  align-items:center;
-
-  z-index:999;
-}
-
-.modal-box{
-  width:80%;
-  max-width:500px;
-
-  background:white;
-
-  border-radius:15px;
-
-  padding:20px;
-}
-
-.modal-topo{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-.fechar{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  background:red;
-  color:white;
-  border:none;
-  cursor:pointer;
-}
   </style>
 
-
 </head>
-
 <body>
-
 
   <!-- LOGIN -->
 
-
-  <div class="login-box" >
-
-
-    <h2>Chamada UPT</h2>
-
-
-    <input
-
-      type="email"
-
-      id="email"
-
-      placeholder="Usuário"
-
-    >
-
-
-    <input
-
-      type="password"
-
-      id="senha"
-
-      placeholder="Senha"
-
-    >
-
-
-    <button onclick="fazerLogin()">
-
-      Entrar
-
-    </button>
-
-
-  </div>
-
-
-  
-
-
-
-
-  <!-- SIDEBAR -->
-
-
-  <div class="sidebar" id="sidebar">
-
-
-    <div class="logo">
-
-      Chamada UPT
-
-    </div>
-
-
-    <button class="menu-btn" onclick="toggleSidebar()">
-
-      ☰
-
-    </button>
-
-
-    <div class="menu">
-
-
-      <button onclick="mostrarTela('frequencia')">
-
-        📋 Frequência
-
-      </button>
-
-
-      <button onclick="mostrarTela('relatorios')">
-
-        📊 Relatórios
-
-      </button>
-
-
-      <button onclick="mostrarTela('alunos')">
-
-        👨‍🎓 Alunos
-
-      </button>
-
-
-      <button onclick="logout()">
-
-        🚪 Sair
-
-      </button>
-
-
-    </div>
-
-
-  </div>
-
-
-  <!-- CONTEÚDO -->
-
-
-  <div class="conteudo" id="conteudo">
-
-
-    <!-- TELA FREQUÊNCIA -->
-
-
-    
-
-
-      <h1>Controle de Frequência</h1>
-
-
-      <input type="date" id="data">
-
-
-      <div id="lista"></div>
-
-
-      <button onclick="salvarFrequencia()">
-
-        Salvar Frequência
-
-      </button>
-
-
-    </div>
-
-
-    <!-- RELATÓRIOS -->
-
-
-    <div id="relatorios" style="display:none">
-
-
-      <h1>Relatórios</h1>
-
-
-      <p>Área de relatórios futuramente.</p>
-
-
-    </div>
-
-
-    <!-- ALUNOS -->
-
-
-    <div id="alunos" style="display:none">
-
-  <div class="topo-alunos">
-
-    <h1>Alunos</h1>
-
-    <button class="btn-add" onclick="abrirModalAluno()">
-      +
-    </button>
-
-  </div>
-
-  <div id="listaAlunos"></div>
-
-</div>
-
-<!-- MODAL -->
-
-<div class="modal" id="modalAluno">
-
-  <div class="modal-box">
-
-    <div class="modal-topo">
-
-      <h2 id="tituloModal">
-        Novo Aluno
-      </h2>
+  <div class="login-container" id="loginBox">
+
+    <div class="login-box">
+
+      <h2>Chamada UPT</h2>
+
+      <input
+        type="email"
+        id="email"
+        placeholder="Usuário"
+      >
+
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+      >
 
       <button
-        class="fechar"
-        onclick="fecharModalAluno()"
+        class="btn-login"
+        onclick="fazerLogin()"
       >
-        ✕
+        Entrar
       </button>
 
     </div>
 
-    <input
-      type="text"
-      id="nomeAluno"
-      placeholder="Nome do aluno"
-    >
-
-    <button onclick="salvarAluno()">
-      Salvar
-    </button>
-
   </div>
 
-</div>
+  <!-- APP -->
 
+  <div id="app">
 
-  </div>
+    <!-- SIDEBAR -->
 
+    <div class="sidebar" id="sidebar">
 
+      <div class="logo">
+        Chamada UPT
+      </div>
 
+      <button
+        class="menu-btn"
+        onclick="toggleSidebar()"
+      >
+        ☰
+      </button>
 
-  <script>
+      <div class="menu">
 
-function toggleSidebar(){
+        <button onclick="mostrarTela('frequencia')">
+          📋 Frequência
+        </button>
 
+        <button onclick="mostrarTela('alunos')">
+          👨‍🎓 Alunos
+        </button>
 
-  document
+        <button onclick="mostrarTela('relatorios')">
+          📊 Relatórios
+        </button>
 
-    .getElementById('sidebar')
-
-    .classList
-
-    .toggle('fechado')
-
-}
-
-
-function mostrarTela(tela){
-
-  document.getElementById('frequencia')
-    .style.display = 'none'
-
-  document.getElementById('relatorios')
-    .style.display = 'none'
-
-  document.getElementById('alunos')
-    .style.display = 'none'
-
-  document.getElementById(tela)
-    .style.display = 'block'
-
-  if(tela === 'alunos'){
-    carregarListaAlunos()
-  }
-}
-
-    const supabaseUrl =
-
-      'https://mkgvobuacvuxcgedpfbf.supabase.co'
-
-
-    const supabaseKey =
-
-      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
-
-
-    const clienteSupabase =
-
-      window.supabase.createClient(
-
-        supabaseUrl,
-
-        supabaseKey
-
-      )
-
-
-    let alunos = []
-
-
-    async function fazerLogin(){
-
-
-      const email =
-
-        document.getElementById('email').value
-
-
-      const senha =
-
-        document.getElementById('senha').value
-
-
-      const { error } =
-
-        await clienteSupabase.auth.signInWithPassword({
-
-          email: email,
-
-          password: senha
-
-        })
-
-
-      if(error){
-
-        alert('Login inválido')
-
-        return
-
-      }
-
-
-      iniciarSistema()
-
-    }
-
-
-    async function iniciarSistema(){
-
-
-      document.getElementById('loginBox')
-
-        .style.display = 'none'
-
-
-      document.getElementById('app')
-
-        .style.display = 'block'
-
-
-      carregarAlunos()
-
-    }
-
-
-    async function carregarAlunos(){
-
-
-      const { data, error } =
-
-        await clienteSupabase
-
-          .from('alunos')
-
-          .select('*')
-
-          .order('nome')
-
-
-      if(error){
-
-        console.log(error)
-
-        alert('Erro ao carregar alunos')
-
-        return
-
-      }
-
-
-      alunos = data
-
-
-      const lista =
-
-        document.getElementById('lista')
-
-
-      lista.innerHTML = ''
-
-
-      alunos.forEach(aluno => {
-
-
-        lista.innerHTML += `
-
-          <div class="aluno">
-
-
-            <span>${aluno.nome}</span>
-
-
-            <select id="status-${aluno.id}">
-
-              <option value="presente">
-
-                Presente
-
-              </option>
-
-
-              <option value="ausente">
-
-                Ausente
-
-              </option>
-
-            </select>
-
-
-          </div>
-
-        `
-
-      })
-
-    }
-
-
-    async function salvarFrequencia(){
-
-
-      const dataSelecionada =
-
-        document.getElementById('data').value
-
-
-      if(!dataSelecionada){
-
-        alert('Escolha uma data')
-
-        return
-
-      }
-
-
-      for(const aluno of alunos){
-
-
-        const status =
-
-          document.getElementById(
-
-            `status-${aluno.id}`
-
-          ).value
-
-
-        const { error } =
-
-          await clienteSupabase
-
-            .from('frequencia')
-
-            .insert([
-
-              {
-
-                aluno_id: aluno.id,
-
-                data: dataSelecionada,
-
-                status: status
-
-              }
-
-            ])
-
-
-        if(error){
-
-          console.log(error)
-
-          alert('Erro ao salvar')
-
-          return
-
-        }
-
-      }
-
-
-      alert('Frequência salva!')
-
-    }
-
-
-    async function logout(){
-
-
-      await clienteSupabase.auth.signOut()
-
-
-      location.reload()
-
-    }
-
-
-    async function verificarLogin(){
-
-
-      const {
-
-        data: { session }
-
-      } = await clienteSupabase.auth.getSession()
-
-
-      if(session){
-
-        iniciarSistema()
-
-      }
-
-    }
-
-
-    verificarLogin()
-let alunoEditando = null
-
-async function carregarListaAlunos(){
-
-  const { data, error } =
-    await clienteSupabase
-      .from('alunos')
-      .select('*')
-      .order('nome')
-
-  if(error){
-    console.log(error)
-    return
-  }
-
-  const lista =
-    document.getElementById('listaAlunos')
-
-  lista.innerHTML = ''
-
-  data.forEach(aluno => {
-
-    lista.innerHTML += `
-
-      <div class="item-aluno">
-
-        <span>${aluno.nome}</span>
-
-        <button
-          class="btn-editar"
-          onclick="editarAluno(
-            ${aluno.id},
-            '${aluno.nome}'
-          )"
-        >
-          ✏️
+        <button onclick="logout()">
+          🚪 Sair
         </button>
 
       </div>
 
-    `
-  })
-}
+    </div>
 
-function abrirModalAluno(){
+    <!-- CONTEÚDO -->
 
-  alunoEditando = null
+    <div class="conteudo">
 
-  document.getElementById('tituloModal')
-    .innerText = 'Novo Aluno'
+      <!-- FREQUÊNCIA -->
 
-  document.getElementById('nomeAluno')
-    .value = ''
+      <div id="frequencia">
 
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-}
+        <h1>Controle de Frequência</h1>
 
-function fecharModalAluno(){
+        <input type="date" id="data">
 
-  document.getElementById('modalAluno')
-    .style.display = 'none'
-}
+        <div id="lista"></div>
 
-function editarAluno(id, nome){
+        <button
+          class="btn-salvar"
+          onclick="salvarFrequencia()"
+        >
+          Salvar Frequência
+        </button>
 
-  alunoEditando = id
+      </div>
 
-  document.getElementById('tituloModal')
-    .innerText = 'Editar Aluno'
+      <!-- ALUNOS -->
 
-  document.getElementById('nomeAluno')
-    .value = nome
+      <div id="alunos" style="display:none">
 
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-}
+        <div class="topo-alunos">
 
-async function salvarAluno(){
+          <h1>Alunos</h1>
 
-  const nome =
-    document.getElementById('nomeAluno')
-      .value.trim()
+          <button
+            class="btn-add"
+            onclick="abrirModalAluno()"
+          >
+            +
+          </button>
 
-  if(!nome){
-    alert('Digite o nome')
-    return
-  }
+        </div>
 
-  let error = null
+        <div id="listaAlunos"></div>
 
-  if(alunoEditando){
+      </div>
 
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .update({
-          nome: nome
+      <!-- RELATÓRIOS -->
+
+      <div id="relatorios" style="display:none">
+
+        <h1>Relatórios</h1>
+
+        <p>Área de relatórios futuramente.</p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL -->
+
+  <div class="modal" id="modalAluno">
+
+    <div class="modal-box">
+
+      <div class="modal-topo">
+
+        <h2 id="tituloModal">
+          Novo Aluno
+        </h2>
+
+        <button
+          class="fechar"
+          onclick="fecharModalAluno()"
+        >
+          ✕
+        </button>
+
+      </div>
+
+      <input
+        type="text"
+        id="nomeAluno"
+        placeholder="Nome do aluno"
+      >
+
+      <button
+        class="btn-login"
+        onclick="salvarAluno()"
+      >
+        Salvar
+      </button>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const supabaseUrl =
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
+
+    const supabaseKey =
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+    const clienteSupabase =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
+
+    let alunos = []
+
+    let alunoEditando = null
+
+    /* LOGIN */
+
+    async function fazerLogin(){
+
+      const email =
+        document.getElementById('email').value
+
+      const senha =
+        document.getElementById('senha').value
+
+      const { error } =
+        await clienteSupabase.auth.signInWithPassword({
+          email: email,
+          password: senha
         })
-        .eq('id', alunoEditando)
 
-    error = resposta.error
+      if(error){
+        alert('Login inválido')
+        return
+      }
 
-  }else{
+      iniciarSistema()
+    }
 
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .insert([
-          {
-            nome: nome
-          }
-        ])
+    async function iniciarSistema(){
 
-    error = resposta.error
-  }
+      document.getElementById('loginBox')
+        .style.display = 'none'
 
-  if(error){
-    console.log(error)
-    alert('Erro ao salvar aluno')
-    return
-  }
+      document.getElementById('app')
+        .style.display = 'block'
 
-  fecharModalAluno()
+      carregarAlunos()
+    }
 
-  carregarListaAlunos()
+    async function logout(){
 
-  carregarAlunos()
-}
+      await clienteSupabase.auth.signOut()
+
+      location.reload()
+    }
+
+    async function verificarLogin(){
+
+      const {
+        data: { session }
+      } = await clienteSupabase.auth.getSession()
+
+      if(session){
+        iniciarSistema()
+      }
+    }
+
+    verificarLogin()
+
+    /* SIDEBAR */
+
+    function toggleSidebar(){
+
+      document
+        .getElementById('sidebar')
+        .classList
+        .toggle('fechado')
+    }
+
+    function mostrarTela(tela){
+
+      document.getElementById('frequencia')
+        .style.display = 'none'
+
+      document.getElementById('alunos')
+        .style.display = 'none'
+
+      document.getElementById('relatorios')
+        .style.display = 'none'
+
+      document.getElementById(tela)
+        .style.display = 'block'
+
+      if(tela === 'alunos'){
+        carregarListaAlunos()
+      }
+    }
+
+    /* FREQUÊNCIA */
+
+    async function carregarAlunos(){
+
+      const { data, error } =
+        await clienteSupabase
+          .from('alunos')
+          .select('*')
+          .order('nome')
+
+      if(error){
+        console.log(error)
+        alert('Erro ao carregar alunos')
+        return
+      }
+
+      alunos = data
+
+      const lista =
+        document.getElementById('lista')
+
+      lista.innerHTML = ''
+
+      alunos.forEach(aluno => {
+
+        lista.innerHTML += `
+          <div class="aluno">
+
+            <span>${aluno.nome}</span>
+
+            <select id="status-${aluno.id}">
+
+              <option value="presente">
+                Presente
+              </option>
+
+              <option value="ausente">
+                Ausente
+              </option>
+
+            </select>
+
+          </div>
+        `
+      })
+    }
+
+    async function salvarFrequencia(){
+
+      const dataSelecionada =
+        document.getElementById('data').value
+
+      if(!dataSelecionada){
+        alert('Escolha uma data')
+        return
+      }
+
+      for(const aluno of alunos){
+
+        const status =
+          document.getElementById(
+            `status-${aluno.id}`
+          ).value
+
+        const { error } =
+          await clienteSupabase
+            .from('frequencia')
+            .insert([
+              {
+                aluno_id: aluno.id,
+                data: dataSelecionada,
+                status: status
+              }
+            ])
+
+        if(error){
+          console.log(error)
+          alert('Erro ao salvar frequência')
+          return
+        }
+      }
+
+      alert('Frequência salva!')
+    }
+
+    /* ALUNOS */
+
+    async function carregarListaAlunos(){
+
+      const { data, error } =
+        await clienteSupabase
+          .from('alunos')
+          .select('*')
+          .order('nome')
+
+      if(error){
+        console.log(error)
+        return
+      }
+
+      const lista =
+        document.getElementById('listaAlunos')
+
+      lista.innerHTML = ''
+
+      data.forEach(aluno => {
+
+        lista.innerHTML += `
+          <div class="item-aluno">
+
+            <span>${aluno.nome}</span>
+
+            <button
+              class="btn-editar"
+              onclick="editarAluno(
+                ${aluno.id},
+                '${aluno.nome}'
+              )"
+            >
+              ✏️
+            </button>
+
+          </div>
+        `
+      })
+    }
+
+    function abrirModalAluno(){
+
+      alunoEditando = null
+
+      document.getElementById('tituloModal')
+        .innerText = 'Novo Aluno'
+
+      document.getElementById('nomeAluno')
+        .value = ''
+
+      document.getElementById('modalAluno')
+        .style.display = 'flex'
+    }
+
+    function fecharModalAluno(){
+
+      document.getElementById('modalAluno')
+        .style.display = 'none'
+    }
+
+    function editarAluno(id, nome){
+
+      alunoEditando = id
+
+      document.getElementById('tituloModal')
+        .innerText = 'Editar Aluno'
+
+      document.getElementById('nomeAluno')
+        .value = nome
+
+      document.getElementById('modalAluno')
+        .style.display = 'flex'
+    }
+
+    async function salvarAluno(){
+
+      const nome =
+        document.getElementById('nomeAluno')
+          .value.trim()
+
+      if(!nome){
+        alert('Digite o nome')
+        return
+      }
+
+      let error = null
+
+      if(alunoEditando){
+
+        const resposta =
+          await clienteSupabase
+            .from('alunos')
+            .update({
+              nome: nome
+            })
+            .eq('id', alunoEditando)
+
+        error = resposta.error
+
+      }else{
+
+        const resposta =
+          await clienteSupabase
+            .from('alunos')
+            .insert([
+              {
+                nome: nome
+              }
+            ])
+
+        error = resposta.error
+      }
+
+      if(error){
+        console.log(error)
+        alert('Erro ao salvar aluno')
+        return
+      }
+
+      fecharModalAluno()
+
+      carregarListaAlunos()
+
+      carregarAlunos()
+    }
 
   </script>
 
-
 </body>
-
 </html>
