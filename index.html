@@ -1,863 +1,948 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <title>Chamada UPT</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
-  <style>
-
-    *{
-      box-sizing:border-box;
-    }
-
-    body{
-      margin:0;
-      font-family:Arial;
-      background:#f1f3f6;
-    }
-
-    /* LOGIN */
-
-    .login-container{
-      width:100%;
-      height:100vh;
-
-      display:flex;
-      justify-content:center;
-      align-items:center;
-    }
-
-    .login-box{
-      width:400px;
-      background:white;
-      padding:30px;
-      border-radius:15px;
-      box-shadow:0 0 15px rgba(0,0,0,0.1);
-    }
-
-    .login-box h2{
-      text-align:center;
-      color:#0d6efd;
-      margin-bottom:25px;
-    }
-
-    input, select{
-      width:100%;
-      padding:12px;
-      margin-top:10px;
-      border:1px solid #ccc;
-      border-radius:8px;
-    }
-
-    button{
-      border:none;
-      cursor:pointer;
-    }
-
-    .btn-login{
-      width:100%;
-      padding:12px;
-      margin-top:20px;
-      border-radius:8px;
-      background:#0d6efd;
-      color:white;
-      font-size:16px;
-    }
-
-    /* APP */
-
-    #app{
-      display:none;
-    }
-
-    /* SIDEBAR */
-
-    .sidebar{
-      width:240px;
-      height:100vh;
-      background:#0d6efd;
-
-      position:fixed;
-      left:0;
-      top:0;
-
-      color:white;
-
-      transition:0.3s;
-      overflow:hidden;
-    }
-
-    .sidebar.fechado{
-      width:70px;
-    }
-
-    .logo{
-      font-size:24px;
-      font-weight:bold;
-      text-align:center;
-      padding:25px 10px;
-
-      border-bottom:1px solid rgba(255,255,255,0.2);
-    }
-
-    .menu-btn{
-      width:100%;
-      background:none;
-      color:white;
-      font-size:24px;
-      padding:15px;
-    }
-
-    .menu{
-      display:flex;
-      flex-direction:column;
-    }
-
-    .menu button{
-      background:none;
-      color:white;
-      padding:18px;
-      text-align:left;
-      font-size:16px;
-      transition:0.2s;
-    }
-
-    .menu button:hover{
-      background:rgba(255,255,255,0.15);
-    }
-
-    /* CONTEÚDO */
-
-    .conteudo{
-      margin-left:240px;
-      padding:30px;
-      transition:0.3s;
-    }
-
-    .sidebar.fechado + .conteudo{
-      margin-left:70px;
-    }
-
-    h1{
-      margin-top:0;
-    }
-
-    /* FREQUÊNCIA */
-
-    .aluno{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
-
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .btn-salvar{
-      width:100%;
-      padding:15px;
-      margin-top:20px;
-
-      border-radius:10px;
-
-      background:#0d6efd;
-      color:white;
-      font-size:16px;
-    }
-
-    /* ALUNOS */
-
-    .topo-alunos{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .btn-add{
-      width:50px;
-      height:50px;
-
-      border-radius:50%;
-
-      background:#0d6efd;
-      color:white;
-
-      font-size:30px;
-    }
-
-    .item-aluno{
-      background:white;
-      padding:15px;
-      border-radius:10px;
-      margin-top:10px;
-
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .btn-editar{
-      width:45px;
-      height:45px;
-
-      border-radius:50%;
-
-      background:#0d6efd;
-      color:white;
-
-      font-size:18px;
-    }
-
-    /* MODAL */
-
-    .modal{
-      position:fixed;
-      top:0;
-      left:0;
-
-      width:100%;
-      height:100%;
-
-      background:rgba(0,0,0,0.5);
-
-      display:none;
-
-      justify-content:center;
-      align-items:center;
-
-      z-index:999;
-    }
-
-    .modal-box{
-      width:80%;
-      max-width:500px;
-
-      background:white;
-
-      border-radius:15px;
-
-      padding:20px;
-    }
-
-    .modal-topo{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-    }
-
-    .fechar{
-      width:40px;
-      height:40px;
-
-      border-radius:50%;
-
-      background:red;
-      color:white;
-    }
-
-  </style>
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Chamada UPT</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #0f0f0f;
+      color: #f1f1f1;
+    }
+
+    button,
+    input,
+    select {
+      font-family: inherit;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 13px 14px;
+      border: 1px solid #3f3f3f;
+      border-radius: 10px;
+      background: #121212;
+      color: #f1f1f1;
+      outline: none;
+      font-size: 15px;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: #3ea6ff;
+    }
+
+    /* LOGIN */
+
+    .login-container {
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      background: #0f0f0f;
+    }
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      background: #181818;
+      padding: 30px;
+      border-radius: 14px;
+      border: 1px solid #2a2a2a;
+      box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
+    }
+
+    .login-box h2 {
+      text-align: center;
+      color: #fff;
+      margin: 0 0 25px;
+    }
+
+    .login-box input {
+      margin-top: 12px;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 13px;
+      margin-top: 18px;
+      border-radius: 10px;
+      background: #3ea6ff;
+      color: #050505;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .btn-login:disabled {
+      opacity: 0.7;
+      cursor: wait;
+    }
+
+    /* APP */
+
+    #app {
+      display: none;
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      width: 240px;
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      background: #0f0f0f;
+      border-right: 1px solid #272727;
+      padding: 12px;
+      z-index: 50;
+    }
+
+    .brand {
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 10px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .brand-icon {
+      width: 34px;
+      height: 24px;
+      border-radius: 7px;
+      background: #ff0033;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+    }
+
+    .menu {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      margin-top: 12px;
+    }
+
+    .menu button {
+      width: 100%;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      padding: 0 14px;
+      border-radius: 10px;
+      background: transparent;
+      color: #f1f1f1;
+      font-size: 15px;
+      text-align: left;
+    }
+
+    .menu button:hover,
+    .menu button.active {
+      background: #272727;
+    }
+
+    .logout-area {
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 14px;
+    }
+
+    .conteudo {
+      margin-left: 240px;
+      min-height: 100vh;
+      padding: 26px;
+      background: #0f0f0f;
+    }
+
+    .topbar-mobile {
+      display: none;
+      height: 56px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    .mobile-menu-btn {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #272727;
+      color: #fff;
+      font-size: 22px;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.55);
+      z-index: 40;
+    }
+
+    h1 {
+      margin: 0 0 22px;
+      font-size: 28px;
+      color: #fff;
+    }
+
+    /* HOME */
+
+    .home-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(140px, 1fr));
+      gap: 18px;
+    }
+
+    .home-card {
+      aspect-ratio: 1 / 1;
+      border-radius: 14px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      transition: 0.2s;
+    }
+
+    .home-card:hover {
+      background: #272727;
+      transform: translateY(-2px);
+    }
+
+    .home-card .icon {
+      font-size: 38px;
+    }
+
+    .home-card .label {
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    /* ALUNOS */
+
+    .page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 18px;
+    }
+
+    .btn-add {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #3ea6ff;
+      color: #050505;
+      font-size: 30px;
+      font-weight: bold;
+      flex: 0 0 auto;
+    }
+
+    .tools-row {
+      display: grid;
+      grid-template-columns: 1fr 220px auto;
+      gap: 12px;
+      margin-bottom: 18px;
+      align-items: center;
+    }
+
+    .btn-clear {
+      padding: 13px 16px;
+      border-radius: 10px;
+      background: #272727;
+      color: #fff;
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .btn-clear:hover {
+      background: #3a3a3a;
+    }
+
+    .lista-alunos {
+      display: grid;
+      gap: 10px;
+    }
+
+    .item-aluno {
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      padding: 16px;
+      border-radius: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .item-aluno strong {
+      color: #fff;
+      font-size: 16px;
+    }
+
+    .aluno-info {
+      margin-top: 6px;
+      color: #aaa;
+      line-height: 1.5;
+      font-size: 14px;
+    }
+
+    .btn-editar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: #272727;
+      color: #fff;
+      font-size: 18px;
+      flex: 0 0 auto;
+    }
+
+    .empty-state {
+      padding: 22px;
+      border-radius: 12px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      color: #aaa;
+      text-align: center;
+    }
+
+    .placeholder-page {
+      max-width: 720px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 12px;
+      padding: 22px;
+      color: #aaa;
+    }
+
+    /* MODAL */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.72);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 100;
+      padding: 18px;
+    }
+
+    .modal-box {
+      width: 100%;
+      max-width: 520px;
+      background: #181818;
+      border: 1px solid #2a2a2a;
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .modal-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+
+    .modal-topo h2 {
+      margin: 0;
+      color: #fff;
+    }
+
+    .fechar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #272727;
+      color: white;
+      font-size: 18px;
+    }
+
+    .modal-box input {
+      margin-top: 10px;
+    }
+
+    @media (max-width: 1100px) {
+      .home-grid {
+        grid-template-columns: repeat(3, minmax(140px, 1fr));
+      }
+    }
+
+    @media (max-width: 760px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: 0.25s;
+      }
+
+      .sidebar.aberto {
+        transform: translateX(0);
+      }
+
+      .overlay.ativo {
+        display: block;
+      }
+
+      .conteudo {
+        margin-left: 0;
+        padding: 16px;
+      }
+
+      .topbar-mobile {
+        display: flex;
+      }
+
+      .home-grid {
+        grid-template-columns: repeat(2, minmax(130px, 1fr));
+        gap: 12px;
+      }
+
+      .tools-row {
+        grid-template-columns: 1fr;
+      }
+
+      .page-header {
+        align-items: center;
+      }
+
+      h1 {
+        font-size: 24px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      .home-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .home-card {
+        aspect-ratio: 16 / 9;
+      }
+
+      .item-aluno {
+        align-items: flex-start;
+      }
+    }
+  </style>
 </head>
+
 <body>
-
-  <!-- LOGIN -->
-
-  <div class="login-container" id="loginBox">
-
-    <div class="login-box">
-
-      <h2>Chamada UPT</h2>
-
-      <input
-        type="email"
-        id="email"
-        placeholder="Usuário"
-      >
-
-      <input
-        type="password"
-        id="senha"
-        placeholder="Senha"
-      >
-
-      <button
-        class="btn-login"
-        onclick="fazerLogin()"
-      >
-        Entrar
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- APP -->
-
-  <div id="app">
-
-    <!-- SIDEBAR -->
-
-    <div class="sidebar" id="sidebar">
-
-      <div class="logo">
-        Chamada UPT
-      </div>
-
-      <button
-        class="menu-btn"
-        onclick="toggleSidebar()"
-      >
-        ☰
-      </button>
-
-      <div class="menu">
-
-        <button onclick="mostrarTela('frequencia')">
-          📋 Frequência
-        </button>
-
-        <button onclick="mostrarTela('alunos')">
-          👨‍🎓 Alunos
-        </button>
-
-        <button onclick="mostrarTela('relatorios')">
-          📊 Relatórios
-        </button>
-
-        <button onclick="logout()">
-          🚪 Sair
-        </button>
-
-      </div>
-
-    </div>
-
-    <!-- CONTEÚDO -->
-
-    <div class="conteudo">
-
-      <!-- FREQUÊNCIA -->
-
-      <div id="frequencia">
-
-        <h1>Controle de Frequência</h1>
-
-        <input type="date" id="data">
-
-        <div id="lista"></div>
-
-        <button
-          class="btn-salvar"
-          onclick="salvarFrequencia()"
-        >
-          Salvar Frequência
-        </button>
-
-      </div>
-
-      <!-- ALUNOS -->
-
-      <div id="alunos" style="display:none">
-
-        <div class="topo-alunos">
-
-          <h1>Alunos</h1>
-
-          <button
-            class="btn-add"
-            onclick="abrirModalAluno()"
-          >
-            +
-          </button>
-
-        </div>
-
-        <div id="listaAlunos"></div>
-
-      </div>
-
-      <!-- RELATÓRIOS -->
-
-      <div id="relatorios" style="display:none">
-
-        <h1>Relatórios</h1>
-
-        <p>Área de relatórios futuramente.</p>
-
-      </div>
-
-    </div>
-
-  </div>
-
-  <!-- MODAL -->
-
-  <div class="modal" id="modalAluno">
-
-    <div class="modal-box">
-
-
-  <div class="modal-topo">
-
-    <h2 id="tituloModal">
-      Novo Aluno
-    </h2>
-
-    <button
-      class="fechar"
-      onclick="fecharModalAluno()"
-    >
-      ✕
-    </button>
-
-  </div>
-
-  <input
-    type="text"
-    id="nomeAluno"
-    placeholder="Nome do aluno"
-  >
-
-  <input
-    type="text"
-    id="telefoneAluno"
-    placeholder="Telefone"
-  >
-
-  <input
-    type="email"
-    id="emailAluno"
-    placeholder="Email"
-  >
-
-  <input
-    type="text"
-    id="enderecoAluno"
-    placeholder="Endereço"
-  >
-
-  <input
-    type="text"
-    id="serieAluno"
-    placeholder="Série"
-  >
-
-  <button
-    class="btn-login"
-    onclick="salvarAluno()"
-  >
-    Salvar
-  </button>
-
-</div>
-      
-    </div>
-
-  
-
-      <input
-        type="text"
-        id="nomeAluno"
-        placeholder="Nome do aluno"
-      >
-
-      <button
-        class="btn-login"
-        onclick="salvarAluno()"
-      >
-        Salvar
-      </button>
-
-    </div>
-
-  </div>
-
-  <script>
-
-    const supabaseUrl =
-      'https://mkgvobuacvuxcgedpfbf.supabase.co'
-
-    const supabaseKey =
-      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
-
-    const clienteSupabase =
-      window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-      )
-
-    let alunos = []
-
-    let alunoEditando = null
-
-    /* LOGIN */
-
-    async function fazerLogin(){
-
-      const email =
-        document.getElementById('email').value
-
-      const senha =
-        document.getElementById('senha').value
-
-      const { error } =
-        await clienteSupabase.auth.signInWithPassword({
-          email: email,
-          password: senha
-        })
-
-      if(error){
-        alert('Login inválido')
-        return
-      }
-
-      iniciarSistema()
-    }
-
-    async function iniciarSistema(){
-
-      document.getElementById('loginBox')
-        .style.display = 'none'
-
-      document.getElementById('app')
-        .style.display = 'block'
-
-      carregarAlunos()
-    }
-
-    async function logout(){
-
-      await clienteSupabase.auth.signOut()
-
-      location.reload()
-    }
-
-    async function verificarLogin(){
-
-      const {
-        data: { session }
-      } = await clienteSupabase.auth.getSession()
-
-      if(session){
-        iniciarSistema()
-      }
-    }
-
-    verificarLogin()
-
-    /* SIDEBAR */
-
-    function toggleSidebar(){
-
-      document
-        .getElementById('sidebar')
-        .classList
-        .toggle('fechado')
-    }
-
-    function mostrarTela(tela){
-
-      document.getElementById('frequencia')
-        .style.display = 'none'
-
-      document.getElementById('alunos')
-        .style.display = 'none'
-
-      document.getElementById('relatorios')
-        .style.display = 'none'
-
-      document.getElementById(tela)
-        .style.display = 'block'
-
-      if(tela === 'alunos'){
-        carregarListaAlunos()
-      }
-    }
-
-    /* FREQUÊNCIA */
-
-    async function carregarAlunos(){
-
-      const { data, error } =
-        await clienteSupabase
-          .from('alunos')
-          .select('*')
-          .order('nome')
-
-      if(error){
-        console.log(error)
-        alert('Erro ao carregar alunos')
-        return
-      }
-
-      alunos = data
-
-      const lista =
-        document.getElementById('lista')
-
-      lista.innerHTML = ''
-
-      alunos.forEach(aluno => {
-
-        lista.innerHTML += `
-          <div class="aluno">
-
-            <span>${aluno.nome}</span>
-
-            <select id="status-${aluno.id}">
-
-              <option value="presente">
-                Presente
-              </option>
-
-              <option value="ausente">
-                Ausente
-              </option>
-
-            </select>
-
-          </div>
-        `
-      })
-    }
-
-    async function salvarFrequencia(){
-
-      const dataSelecionada =
-        document.getElementById('data').value
-
-      if(!dataSelecionada){
-        alert('Escolha uma data')
-        return
-      }
-
-      for(const aluno of alunos){
-
-        const status =
-          document.getElementById(
-            `status-${aluno.id}`
-          ).value
-
-        const { error } =
-          await clienteSupabase
-            .from('frequencia')
-            .insert([
-              {
-                aluno_id: aluno.id,
-                data: dataSelecionada,
-                status: status
-              }
-            ])
-
-        if(error){
-          console.log(error)
-          alert('Erro ao salvar frequência')
-          return
-        }
-      }
-
-      alert('Frequência salva!')
-    }
-
-    /* ALUNOS */
-
-    async function carregarListaAlunos(){
-
-  const { data, error } =
-    await clienteSupabase
-      .from('alunos')
-      .select('*')
-      .order('nome')
-
-  if(error){
-    console.log(error)
-    return
-  }
-
-  const lista =
-    document.getElementById('listaAlunos')
-
-  lista.innerHTML = ''
-
-  data.forEach(aluno => {
-
-    lista.innerHTML += `
-
-      <div class="item-aluno">
-
-        <div>
-
-          <strong>${aluno.nome}</strong><br>
-
-          📞 ${aluno.telefone || '-'}<br>
-
-          ✉️ ${aluno.email || '-'}<br>
-
-          🎓 ${aluno.serie || '-'}
-
-        </div>
-
-        <button
-          class="btn-editar"
-          onclick="editarAluno(
-            ${aluno.id},
-            '${aluno.nome || ''}',
-            '${aluno.telefone || ''}',
-            '${aluno.email || ''}',
-            '${aluno.endereco || ''}',
-            '${aluno.serie || ''}'
-          )"
-        >
-          ✏️
-        </button>
-
-      </div>
-
-    `
-  })
-}
-
-    function abrirModalAluno(){
-
-      alunoEditando = null
-
-     document.getElementById('tituloModal')
-    .innerText = 'Novo Aluno'
-
-  document.getElementById('nomeAluno')
-    .value = ''
-
-  document.getElementById('telefoneAluno')
-    .value = ''
-
-  document.getElementById('emailAluno')
-    .value = ''
-
-  document.getElementById('enderecoAluno')
-    .value = ''
-
-  document.getElementById('serieAluno')
-    .value = ''
-
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-    }
-
-    function fecharModalAluno(){
-
-      document.getElementById('modalAluno')
-        .style.display = 'none'
-    }
-
-    function editarAluno( id,
-  nome,
-  telefone,
-  email,
-  endereco,
-  serie){
-
-      alunoEditando = id
-
-     document.getElementById('tituloModal')
-    .innerText = 'Editar Aluno'
-
-  document.getElementById('nomeAluno')
-    .value = nome || ''
-
-  document.getElementById('telefoneAluno')
-    .value = telefone || ''
-
-  document.getElementById('emailAluno')
-    .value = email || ''
-
-  document.getElementById('enderecoAluno')
-    .value = endereco || ''
-
-  document.getElementById('serieAluno')
-    .value = serie || ''
-
-  document.getElementById('modalAluno')
-    .style.display = 'flex'
-    }
-
-    async function salvarAluno(){
-
-  const nome =
-    document.getElementById('nomeAluno')
-      .value.trim()
-
-  const telefone =
-    document.getElementById('telefoneAluno')
-      .value.trim()
-
-  const email =
-    document.getElementById('emailAluno')
-      .value.trim()
-
-  const endereco =
-    document.getElementById('enderecoAluno')
-      .value.trim()
-
-  const serie =
-    document.getElementById('serieAluno')
-      .value.trim()
-
-  if(!nome){
-    alert('Digite o nome')
-    return
-  }
-
-  let error = null
-
-  const dadosAluno = {
-    nome,
-    telefone,
-    email,
-    endereco,
-    serie
-  }
-
-  if(alunoEditando){
-
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .update(dadosAluno)
-        .eq('id', alunoEditando)
-
-    error = resposta.error
-
-  }else{
-
-    const resposta =
-      await clienteSupabase
-        .from('alunos')
-        .insert([dadosAluno])
-
-    error = resposta.error
-  }
-
-  if(error){
-    console.log(error)
-    alert('Erro ao salvar aluno')
-    return
-  }
-
-  fecharModalAluno()
-
-  carregarListaAlunos()
-
-  carregarAlunos()
-}
-
-  </script>
-
+  <div class="login-container" id="loginBox">
+    <div class="login-box">
+      <h2>Chamada UPT</h2>
+
+      <input type="email" id="email" placeholder="Usuário" autocomplete="email" />
+      <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
+
+      <button class="btn-login" id="btnLogin" onclick="fazerLogin()">
+        Entrar
+      </button>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="overlay" id="overlay" onclick="fecharSidebarMobile()"></div>
+
+    <aside class="sidebar" id="sidebar">
+      <div class="brand">
+        <div class="brand-icon">UPT</div>
+        <span>Chamada UPT</span>
+      </div>
+
+      <nav class="menu">
+        <button id="menu-mural" onclick="mostrarTela('mural')">
+          <span>🏠</span>
+          <span>Mural</span>
+        </button>
+
+        <button id="menu-turmas" onclick="mostrarTela('turmas')">
+          <span>📚</span>
+          <span>Turmas</span>
+        </button>
+
+        <button id="menu-funcionarios" onclick="mostrarTela('funcionarios')">
+          <span>👥</span>
+          <span>Funcionários</span>
+        </button>
+
+        <button id="menu-matriculas" onclick="mostrarTela('matriculas')">
+          <span>📝</span>
+          <span>Matrículas</span>
+        </button>
+
+        <button id="menu-alunos" onclick="mostrarTela('alunos')">
+          <span>🎓</span>
+          <span>Alunos</span>
+        </button>
+      </nav>
+
+      <div class="logout-area">
+        <div class="menu">
+          <button onclick="logout()">
+            <span>🚪</span>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <main class="conteudo">
+      <div class="topbar-mobile">
+        <div class="brand">
+          <div class="brand-icon">UPT</div>
+          <span>Chamada UPT</span>
+        </div>
+
+        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()">☰</button>
+      </div>
+
+      <section id="home">
+        <h1>Início</h1>
+
+        <div class="home-grid">
+          <button class="home-card" onclick="mostrarTela('mural')">
+            <span class="icon">🏠</span>
+            <span class="label">Mural</span>
+          </button>
+
+          <button class="home-card" onclick="mostrarTela('turmas')">
+            <span class="icon">📚</span>
+            <span class="label">Turmas</span>
+          </button>
+
+          <button class="home-card" onclick="mostrarTela('funcionarios')">
+            <span class="icon">👥</span>
+            <span class="label">Funcionários</span>
+          </button>
+
+          <button class="home-card" onclick="mostrarTela('matriculas')">
+            <span class="icon">📝</span>
+            <span class="label">Matrículas</span>
+          </button>
+
+          <button class="home-card" onclick="mostrarTela('alunos')">
+            <span class="icon">🎓</span>
+            <span class="label">Alunos</span>
+          </button>
+        </div>
+      </section>
+
+      <section id="mural" style="display:none">
+        <h1>Mural</h1>
+        <div class="placeholder-page">Área do mural será desenvolvida depois.</div>
+      </section>
+
+      <section id="turmas" style="display:none">
+        <h1>Turmas</h1>
+        <div class="placeholder-page">Área de turmas será desenvolvida depois.</div>
+      </section>
+
+      <section id="funcionarios" style="display:none">
+        <h1>Funcionários</h1>
+        <div class="placeholder-page">Área de funcionários será desenvolvida depois.</div>
+      </section>
+
+      <section id="matriculas" style="display:none">
+        <h1>Matrículas</h1>
+        <div class="placeholder-page">Área de matrículas será desenvolvida depois.</div>
+      </section>
+
+      <section id="alunos" style="display:none">
+        <div class="page-header">
+          <h1>Alunos</h1>
+
+          <button class="btn-add" onclick="abrirModalAluno()" title="Adicionar aluno">
+            +
+          </button>
+        </div>
+
+        <div class="tools-row">
+          <input
+            type="search"
+            id="buscaAluno"
+            placeholder="Buscar aluno por nome, telefone, email, endereço ou série"
+            oninput="renderizarAlunos()"
+          />
+
+          <select id="filtroSerie" onchange="renderizarAlunos()">
+            <option value="">Todas as séries</option>
+          </select>
+
+          <button class="btn-clear" onclick="limparFiltros()">
+            Limpar filtros
+          </button>
+        </div>
+
+        <div class="lista-alunos" id="listaAlunos"></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="modal" id="modalAluno">
+    <div class="modal-box">
+      <div class="modal-topo">
+        <h2 id="tituloModal">Novo Aluno</h2>
+
+        <button class="fechar" onclick="fecharModalAluno()">
+          ×
+        </button>
+      </div>
+
+      <input type="text" id="nomeAluno" placeholder="Nome do aluno" />
+      <input type="text" id="telefoneAluno" placeholder="Telefone" />
+      <input type="email" id="emailAluno" placeholder="Email" />
+      <input type="text" id="enderecoAluno" placeholder="Endereço" />
+      <input type="text" id="serieAluno" placeholder="Série" />
+
+      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()">
+        Salvar
+      </button>
+    </div>
+  </div>
+
+  <script>
+    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
+    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+    const clienteSupabase = window.supabase.createClient(
+      supabaseUrl,
+      supabaseKey
+    )
+
+    let alunos = []
+    let alunoEditando = null
+
+    document.addEventListener('keydown', function(event) {
+      const loginVisivel =
+        document.getElementById('loginBox').style.display !== 'none'
+
+      if (event.key === 'Enter' && loginVisivel) {
+        fazerLogin()
+      }
+
+      if (event.key === 'Escape') {
+        fecharModalAluno()
+        fecharSidebarMobile()
+      }
+    })
+
+    verificarLogin()
+
+    async function fazerLogin() {
+      const email = document.getElementById('email').value.trim()
+      const senha = document.getElementById('senha').value
+      const btnLogin = document.getElementById('btnLogin')
+
+      if (!email || !senha) {
+        alert('Informe usuário e senha')
+        return
+      }
+
+      btnLogin.disabled = true
+      btnLogin.innerText = 'Entrando...'
+
+      const { error } = await clienteSupabase.auth.signInWithPassword({
+        email: email,
+        password: senha
+      })
+
+      if (error) {
+        alert('Login inválido')
+        btnLogin.disabled = false
+        btnLogin.innerText = 'Entrar'
+        return
+      }
+
+      iniciarSistema()
+    }
+
+    async function verificarLogin() {
+      const {
+        data: { session }
+      } = await clienteSupabase.auth.getSession()
+
+      if (session) {
+        iniciarSistema()
+      }
+    }
+
+    async function iniciarSistema() {
+      document.getElementById('loginBox').style.display = 'none'
+      document.getElementById('app').style.display = 'block'
+
+      await carregarAlunos()
+      mostrarTela('home')
+    }
+
+    async function logout() {
+      await clienteSupabase.auth.signOut()
+      location.reload()
+    }
+
+    function abrirSidebarMobile() {
+      document.getElementById('sidebar').classList.add('aberto')
+      document.getElementById('overlay').classList.add('ativo')
+    }
+
+    function fecharSidebarMobile() {
+      document.getElementById('sidebar').classList.remove('aberto')
+      document.getElementById('overlay').classList.remove('ativo')
+    }
+
+    function mostrarTela(tela) {
+      const telas = [
+        'home',
+        'mural',
+        'turmas',
+        'funcionarios',
+        'matriculas',
+        'alunos'
+      ]
+
+      telas.forEach(function(id) {
+        document.getElementById(id).style.display = 'none'
+      })
+
+      document.getElementById(tela).style.display = 'block'
+
+      document.querySelectorAll('.menu button').forEach(function(botao) {
+        botao.classList.remove('active')
+      })
+
+      const itemMenu = document.getElementById('menu-' + tela)
+
+      if (itemMenu) {
+        itemMenu.classList.add('active')
+      }
+
+      if (tela === 'alunos') {
+        carregarAlunos()
+      }
+
+      fecharSidebarMobile()
+    }
+
+    async function carregarAlunos() {
+      const { data, error } = await clienteSupabase
+        .from('alunos')
+        .select('*')
+        .order('nome', { ascending: true })
+
+      if (error) {
+        console.log(error)
+        alert('Erro ao carregar alunos')
+        return
+      }
+
+      alunos = data || []
+      atualizarFiltroSeries()
+      renderizarAlunos()
+    }
+
+    function atualizarFiltroSeries() {
+      const filtroSerie = document.getElementById('filtroSerie')
+      const valorAtual = filtroSerie.value
+
+      const series = [...new Set(
+        alunos
+          .map(function(aluno) {
+            return aluno.serie
+          })
+          .filter(Boolean)
+      )].sort()
+
+      filtroSerie.innerHTML = '<option value="">Todas as séries</option>'
+
+      series.forEach(function(serie) {
+        const option = document.createElement('option')
+        option.value = serie
+        option.textContent = serie
+        filtroSerie.appendChild(option)
+      })
+
+      filtroSerie.value = valorAtual
+    }
+
+    function renderizarAlunos() {
+      const lista = document.getElementById('listaAlunos')
+      const busca = document.getElementById('buscaAluno').value.trim().toLowerCase()
+      const serie = document.getElementById('filtroSerie').value
+
+      lista.innerHTML = ''
+
+      const alunosFiltrados = alunos.filter(function(aluno) {
+        const nome = (aluno.nome || '').toLowerCase()
+        const telefone = (aluno.telefone || '').toLowerCase()
+        const email = (aluno.email || '').toLowerCase()
+        const endereco = (aluno.endereco || '').toLowerCase()
+        const serieAluno = (aluno.serie || '').toLowerCase()
+
+        const passouBusca =
+          !busca ||
+          nome.startsWith(busca) ||
+          telefone.includes(busca) ||
+          email.includes(busca) ||
+          endereco.includes(busca) ||
+          serieAluno.includes(busca)
+
+        const passouSerie =
+          !serie || aluno.serie === serie
+
+        return passouBusca && passouSerie
+      })
+
+      if (alunosFiltrados.length === 0) {
+        lista.innerHTML = '<div class="empty-state">Nenhum aluno encontrado.</div>'
+        return
+      }
+
+      alunosFiltrados.forEach(function(aluno) {
+        const item = document.createElement('div')
+        item.className = 'item-aluno'
+
+        const info = document.createElement('div')
+
+        const nome = document.createElement('strong')
+        nome.textContent = aluno.nome || 'Sem nome'
+
+        const detalhes = document.createElement('div')
+        detalhes.className = 'aluno-info'
+        detalhes.innerHTML =
+          'Telefone: ' + textoOuVazio(aluno.telefone) + '<br>' +
+          'Email: ' + textoOuVazio(aluno.email) + '<br>' +
+          'Endereço: ' + textoOuVazio(aluno.endereco) + '<br>' +
+          'Série: ' + textoOuVazio(aluno.serie)
+
+        info.appendChild(nome)
+        info.appendChild(detalhes)
+
+        const btnEditar = document.createElement('button')
+        btnEditar.className = 'btn-editar'
+        btnEditar.title = 'Editar aluno'
+        btnEditar.textContent = '✎'
+        btnEditar.onclick = function() {
+          editarAluno(aluno)
+        }
+
+        item.appendChild(info)
+        item.appendChild(btnEditar)
+        lista.appendChild(item)
+      })
+    }
+
+    function textoOuVazio(valor) {
+      return valor && String(valor).trim() ? valor : '-'
+    }
+
+    function limparFiltros() {
+      document.getElementById('buscaAluno').value = ''
+      document.getElementById('filtroSerie').value = ''
+      renderizarAlunos()
+    }
+
+    function abrirModalAluno() {
+      alunoEditando = null
+
+      document.getElementById('tituloModal').innerText = 'Novo Aluno'
+      document.getElementById('nomeAluno').value = ''
+      document.getElementById('telefoneAluno').value = ''
+      document.getElementById('emailAluno').value = ''
+      document.getElementById('enderecoAluno').value = ''
+      document.getElementById('serieAluno').value = ''
+
+      document.getElementById('modalAluno').style.display = 'flex'
+      document.getElementById('nomeAluno').focus()
+    }
+
+    function fecharModalAluno() {
+      document.getElementById('modalAluno').style.display = 'none'
+    }
+
+    function editarAluno(aluno) {
+      alunoEditando = aluno.id
+
+      document.getElementById('tituloModal').innerText = 'Editar Aluno'
+      document.getElementById('nomeAluno').value = aluno.nome || ''
+      document.getElementById('telefoneAluno').value = aluno.telefone || ''
+      document.getElementById('emailAluno').value = aluno.email || ''
+      document.getElementById('enderecoAluno').value = aluno.endereco || ''
+      document.getElementById('serieAluno').value = aluno.serie || ''
+
+      document.getElementById('modalAluno').style.display = 'flex'
+      document.getElementById('nomeAluno').focus()
+    }
+
+    async function salvarAluno() {
+      const btnSalvar = document.getElementById('btnSalvarAluno')
+
+      const dadosAluno = {
+        nome: document.getElementById('nomeAluno').value.trim(),
+        telefone: document.getElementById('telefoneAluno').value.trim(),
+        email: document.getElementById('emailAluno').value.trim(),
+        endereco: document.getElementById('enderecoAluno').value.trim(),
+        serie: document.getElementById('serieAluno').value.trim()
+      }
+
+      if (!dadosAluno.nome) {
+        alert('Digite o nome do aluno')
+        return
+      }
+
+      btnSalvar.disabled = true
+      btnSalvar.innerText = 'Salvando...'
+
+      let resposta
+
+      if (alunoEditando) {
+        resposta = await clienteSupabase
+          .from('alunos')
+          .update(dadosAluno)
+          .eq('id', alunoEditando)
+      } else {
+        resposta = await clienteSupabase
+          .from('alunos')
+          .insert([dadosAluno])
+      }
+
+      btnSalvar.disabled = false
+      btnSalvar.innerText = 'Salvar'
+
+      if (resposta.error) {
+        console.log(resposta.error)
+        alert('Erro ao salvar aluno')
+        return
+      }
+
+      fecharModalAluno()
+      await carregarAlunos()
+    }
+  </script>
 </body>
 </html>
