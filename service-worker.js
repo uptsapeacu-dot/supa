@@ -1,22 +1,41 @@
-{
-  "name": "Sapeaçu Painel Escolar",
-  "short_name": "SPE",
-  "description": "Painel de gestão escolar",
-  "start_url": "./",
-  "display": "standalone",
-  "background_color": "#0f0f0f",
-  "theme_color": "#0f0f0f",
-  "orientation": "portrait-primary",
-  "icons": [
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
+const CACHE_NAME = 'spe-cache-v1'
+
+const FILES_TO_CACHE = [
+  './',
+  './index.html',
+  './manifest.json',
+  './style.css',
+  './app.js',
+  './icon-192.png',
+  './icon-512.png'
+]
+
+self.addEventListener('install', function(event) {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(function(cache) {
+      return cache.addAll(FILES_TO_CACHE)
+    })
+  )
+})
+
+self.addEventListener('activate', function(event) {
+  event.waitUntil(
+    caches.keys().then(function(cacheNames) {
+      return Promise.all(
+        cacheNames.map(function(cacheName) {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName)
+          }
+        })
+      )
+    })
+  )
+})
+
+self.addEventListener('fetch', function(event) {
+  event.respondWith(
+    caches.match(event.request).then(function(response) {
+      return response || fetch(event.request)
+    })
+  )
+})
