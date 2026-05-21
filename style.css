@@ -139,18 +139,7 @@
       white-space: nowrap;
     }
 
-    .brand-icon {
-      width: 34px;
-      height: 24px;
-      border-radius: 7px;
-      background: #ff0033;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 13px;
-      flex: 0 0 auto;
-    }
+   
 
     .sidebar.recolhido .brand {
       display: none;
@@ -499,4 +488,12 @@
         align-items: flex-start;
       }
     }
+
+.brand-logo {
+  width: 24px;
+  height: 26px;
+  object-fit: contain;
+  flex: 0 0 auto;
+}
+
   </style>
