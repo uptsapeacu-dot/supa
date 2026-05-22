@@ -78,14 +78,15 @@ function fecharSidebarMobile() {
 }
 
 function mostrarTela(tela) {
-  const telas = [
-    'home',
-    'mural',
-    'turmas',
-    'funcionarios',
-    'matriculas',
-    'alunos'
-  ]
+ const telas = [
+  'home',
+  'escola',
+  'mural',
+  'turmas',
+  'funcionarios',
+  'matriculas',
+  'alunos'
+]
 
   telas.forEach(function(id) {
     document.getElementById(id).style.display = 'none'
@@ -139,40 +140,67 @@ function renderizarEscolas() {
   lista.innerHTML = ''
 
   escolas.forEach(function(escola) {
-    const caixa = document.createElement('div')
-    caixa.className = 'escola-box'
+    const card = document.createElement('button')
+    card.className = 'home-card escola-card'
+    card.type = 'button'
+    card.onclick = function() {
+      abrirEscola(escola.id)
+    }
 
-    const topo = document.createElement('div')
-    topo.className = 'escola-topo'
+    card.innerHTML =
+      '<span class="icon">🏫</span>' +
+      '<span class="label">' + escola.nome + '</span>'
 
-    const titulo = document.createElement('h2')
-    titulo.textContent = escola.nome
-
-    topo.appendChild(titulo)
-
-    const grid = document.createElement('div')
-    grid.className = 'escola-grid'
-
-    modulosEscola.forEach(function(modulo) {
-      const card = document.createElement('button')
-      card.className = 'home-card'
-      card.type = 'button'
-      card.onclick = function() {
-        abrirModuloEscola(escola.id, modulo.id)
-      }
-
-      card.innerHTML =
-        '<span class="icon">' + modulo.icone + '</span>' +
-        '<span class="label">' + modulo.nome + '</span>'
-
-      grid.appendChild(card)
-    })
-
-    caixa.appendChild(topo)
-    caixa.appendChild(grid)
-    lista.appendChild(caixa)
+    lista.appendChild(card)
   })
 }
+
+
+function abrirEscola(escolaId) {
+  const escola = escolas.find(function(item) {
+    return item.id === escolaId
+  })
+
+  if (!escola) return
+
+  escolaAtual = escola.id
+
+  document.getElementById('tituloEscola').innerText = escola.nome
+  renderizarModulosDaEscola()
+  mostrarTela('escola')
+}
+
+function renderizarModulosDaEscola() {
+  const lista = document.getElementById('modulosDaEscola')
+
+  lista.innerHTML = ''
+
+  modulosEscola.forEach(function(modulo) {
+    const card = document.createElement('button')
+    card.className = 'home-card'
+    card.type = 'button'
+    card.onclick = function() {
+      abrirModuloEscola(escolaAtual, modulo.id)
+    }
+
+    card.innerHTML =
+      '<span class="icon">' + modulo.icone + '</span>' +
+      '<span class="label">' + modulo.nome + '</span>'
+
+    lista.appendChild(card)
+  })
+}
+
+function voltarParaEscolas() {
+  escolaAtual = null
+  mostrarTela('home')
+}
+
+
+
+
+
+
 
 function abrirModalEscola() {
   document.getElementById('nomeEscola').value = ''
