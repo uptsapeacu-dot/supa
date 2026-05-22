@@ -10,12 +10,11 @@
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="img/favSapeacu.png">
 
-  
   <link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f0f0f">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="SPE">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SPE">
 </head>
 
 <body>
@@ -23,7 +22,7 @@
     <div class="login-box">
       <h2>Sapeaçu Painel Escolar</h2>
 
-      <input type="email" id="email" placeholder="Usuário" autocomplete="email" />
+      <input type="email" id="email" placeholder="Email" autocomplete="email" />
       <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
 
       <button class="btn-login" id="btnLogin" onclick="fazerLogin()">
@@ -37,7 +36,7 @@
 
     <aside class="sidebar" id="sidebar">
       <div class="brand-row">
-        <button class="toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu">
+        <button class="toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu" aria-label="Recolher menu">
           ☰
         </button>
 
@@ -93,41 +92,22 @@
       <div class="topbar-mobile">
         <div class="brand">
           <div class="brand-icon">SPE</div>
-          <span>Sapeaçu painel Escolar</span>
+          <span>Sapeaçu Painel Escolar</span>
         </div>
 
-        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()">☰</button>
+        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()" aria-label="Abrir menu">☰</button>
       </div>
 
       <section id="home">
-        <h1>Início</h1>
+        <div class="page-header">
+          <h1>Escolas</h1>
 
-        <div class="home-grid">
-          <button class="home-card" onclick="mostrarTela('mural')">
-            <span class="icon">📌</span>
-            <span class="label">Mural</span>
-          </button>
-
-          <button class="home-card" onclick="mostrarTela('turmas')">
-            <span class="icon">📚</span>
-            <span class="label">Turmas</span>
-          </button>
-
-          <button class="home-card" onclick="mostrarTela('funcionarios')">
-            <span class="icon">👥</span>
-            <span class="label">Funcionários</span>
-          </button>
-
-          <button class="home-card" onclick="mostrarTela('matriculas')">
-            <span class="icon">📝</span>
-            <span class="label">Matrículas</span>
-          </button>
-
-          <button class="home-card" onclick="mostrarTela('alunos')">
-            <span class="icon">🎓</span>
-            <span class="label">Alunos</span>
+          <button class="btn-add" onclick="abrirModalEscola()" title="Adicionar escola" aria-label="Adicionar escola">
+            +
           </button>
         </div>
+
+        <div class="lista-escolas" id="listaEscolas"></div>
       </section>
 
       <section id="mural" style="display:none">
@@ -154,7 +134,7 @@
         <div class="page-header">
           <h1>Alunos</h1>
 
-          <button class="btn-add" onclick="abrirModalAluno()" title="Adicionar aluno">
+          <button class="btn-add" onclick="abrirModalAluno()" title="Adicionar aluno" aria-label="Adicionar aluno">
             +
           </button>
         </div>
@@ -181,12 +161,30 @@
     </main>
   </div>
 
+  <div class="modal" id="modalEscola">
+    <div class="modal-box">
+      <div class="modal-topo">
+        <h2>Nova Escola</h2>
+
+        <button class="fechar" onclick="fecharModalEscola()" aria-label="Fechar modal">
+          ×
+        </button>
+      </div>
+
+      <input type="text" id="nomeEscola" placeholder="Nome da escola" />
+
+      <button class="btn-login" onclick="salvarEscola()">
+        Salvar escola
+      </button>
+    </div>
+  </div>
+
   <div class="modal" id="modalAluno">
     <div class="modal-box">
       <div class="modal-topo">
         <h2 id="tituloModal">Novo Aluno</h2>
 
-        <button class="fechar" onclick="fecharModalAluno()">
+        <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">
           ×
         </button>
       </div>
@@ -225,22 +223,24 @@
 
       if (event.key === 'Escape') {
         fecharModalAluno()
+        fecharModalEscola()
         fecharSidebarMobile()
       }
     })
-
   </script>
+
   <script src="app.js"></script>
+
   <script>
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(function() {
-        console.log('Service Worker registrado')
-      })
-      .catch(function(error) {
-        console.log('Erro no Service Worker:', error)
-      })
-  }
-</script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js')
+        .then(function() {
+          console.log('Service Worker registrado')
+        })
+        .catch(function(error) {
+          console.log('Erro no Service Worker:', error)
+        })
+    }
+  </script>
 </body>
 </html>
