@@ -318,9 +318,30 @@ h1 {
 
 .lista-escolas {
   display: grid;
-  gap: 22px;
+  grid-template-columns: repeat(5, minmax(140px, 1fr));
+  gap: 18px;
 }
 
+
+
+@media (max-width: 1100px) {
+  .lista-escolas {
+    grid-template-columns: repeat(3, minmax(140px, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .lista-escolas {
+    grid-template-columns: repeat(2, minmax(130px, 1fr));
+    gap: 12px;
+  }
+}
+
+@media (max-width: 420px) {
+  .lista-escolas {
+    grid-template-columns: 1fr;
+  }
+}
 .escola-box {
   background: #181818;
   border: 1px solid #2a2a2a;
