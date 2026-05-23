@@ -560,3 +560,73 @@ h1 {
     align-items: flex-start;
   }
 }
+
+
+.permissions-layout {
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 18px;
+  align-items: start;
+}
+
+.permissions-box {
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 18px;
+}
+
+.permissions-box h2 {
+  margin: 0 0 14px;
+  font-size: 18px;
+}
+
+.permissions-box select {
+  margin-top: 10px;
+}
+
+.checks-permissoes {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.checks-permissoes label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #ddd;
+}
+
+.checks-permissoes input {
+  width: auto;
+}
+
+.permissao-item {
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px;
+}
+
+.permissao-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.btn-danger {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #ff5b5b;
+  color: #120000;
+  font-weight: bold;
+}
+
+@media (max-width: 760px) {
+  .permissions-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+
