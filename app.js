@@ -53,10 +53,9 @@ async function iniciarSistema() {
   document.getElementById('loginBox').style.display = 'none'
   document.getElementById('app').style.display = 'block'
 
-  await carregarEscolas()
   mostrarTela('home')
+  await carregarEscolas()
 }
-
 async function logout() {
   await clienteSupabase.auth.signOut()
   location.reload()
@@ -78,21 +77,29 @@ function fecharSidebarMobile() {
 }
 
 function mostrarTela(tela) {
- const telas = [
-  'home',
-  'escola',
-  'mural',
-  'turmas',
-  'funcionarios',
-  'matriculas',
-  'alunos'
-]
+  const telas = [
+    'home',
+    'escola',
+    'mural',
+    'turmas',
+    'funcionarios',
+    'matriculas',
+    'alunos'
+  ]
 
   telas.forEach(function(id) {
-    document.getElementById(id).style.display = 'none'
+    const elemento = document.getElementById(id)
+
+    if (elemento) {
+      elemento.style.display = 'none'
+    }
   })
 
-  document.getElementById(tela).style.display = 'block'
+  const telaAtual = document.getElementById(tela)
+
+  if (telaAtual) {
+    telaAtual.style.display = 'block'
+  }
 
   document.querySelectorAll('.menu button').forEach(function(botao) {
     botao.classList.remove('active')
@@ -112,6 +119,12 @@ function mostrarTela(tela) {
 }
 
 async function carregarEscolas() {
+  const lista = document.getElementById('listaEscolas')
+
+  if (lista) {
+    lista.innerHTML = '<div class="empty-state">Carregando escolas...</div>'
+  }
+
   const { data, error } = await clienteSupabase
     .from('escolas')
     .select('*')
@@ -119,14 +132,17 @@ async function carregarEscolas() {
 
   if (error) {
     console.log(error)
-    alert('Erro ao carregar escolas')
+
+    if (lista) {
+      lista.innerHTML = '<div class="empty-state">Erro ao carregar escolas. Verifique as permissões no Supabase.</div>'
+    }
+
     return
   }
 
   escolas = data || []
   renderizarEscolas()
 }
-
 function renderizarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
