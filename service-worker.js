@@ -1,4 +1,5 @@
-const CACHE_NAME = 'spe-cache-v5'
+const CACHE_VERSION = 'v2'
+const CACHE_NAME = 'spe-cache-' + CACHE_VERSION
 
 const FILES_TO_CACHE = [
   './',
@@ -11,6 +12,8 @@ const FILES_TO_CACHE = [
 ]
 
 self.addEventListener('install', function(event) {
+  self.skipWaiting()
+
   event.waitUntil(
     caches.open(CACHE_NAME).then(function(cache) {
       return cache.addAll(FILES_TO_CACHE)
@@ -26,16 +29,34 @@ self.addEventListener('activate', function(event) {
           if (cacheName !== CACHE_NAME) {
             return caches.delete(cacheName)
           }
+
+          return null
         })
       )
+    }).then(function() {
+      return self.clients.claim()
     })
   )
 })
 
 self.addEventListener('fetch', function(event) {
+  if (event.request.method !== 'GET') {
+    return
+  }
+
   event.respondWith(
-    caches.match(event.request).then(function(response) {
-      return response || fetch(event.request)
-    })
+    fetch(event.request)
+      .then(function(response) {
+        const respostaClone = response.clone()
+
+        caches.open(CACHE_NAME).then(function(cache) {
+          cache.put(event.request, respostaClone)
+        })
+
+        return response
+      })
+      .catch(function() {
+        return caches.match(event.request)
+      })
   )
 })
