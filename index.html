@@ -76,9 +76,62 @@
           <span class="menu-icon">🎓</span>
           <span class="menu-text">Alunos</span>
         </button>
-      </nav>
 
-      <div class="logout-area">
+<section id="funcionarios" style="display:none">
+  <h1>Funcionários</h1>
+  <div class="lista-alunos" id="listaFuncionarios"></div>
+</section>
+
+<section id="permissoes" style="display:none">
+  <div class="page-header">
+    <h1>Permissões</h1>
+  </div>
+
+  <div class="permissions-layout">
+    <div class="permissions-box">
+      <h2>Atribuir acesso</h2>
+
+      <select id="funcionarioPermissao"></select>
+      <select id="orgaoPermissao"></select>
+
+      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
+        <option value="2">Nível 2 - Diretor Escolar</option>
+        <option value="3">Nível 3 - Secretário Escolar</option>
+        <option value="4">Nível 4 - Perfil</option>
+      </select>
+
+      <div class="checks-permissoes" id="checksPermissoes">
+        <label><input type="checkbox" id="permMural"> Mural</label>
+        <label><input type="checkbox" id="permTurmas"> Turmas</label>
+        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
+        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
+        <label><input type="checkbox" id="permAlunos"> Alunos</label>
+      </div>
+
+      <button class="btn-login" onclick="salvarPermissao()">
+        Salvar permissão
+      </button>
+    </div>
+
+    <div class="permissions-box">
+      <h2>Acessos cadastrados</h2>
+      <div class="lista-alunos" id="listaPermissoes"></div>
+    </div>
+  </div>
+</section>
+
+
+        
+      </nav>
+<button id="menu-permissoes" onclick="mostrarTela('permissoes')" title="Permissões">
+  <span class="menu-icon">🔐</span>
+  <span class="menu-text">Permissões</span>
+</button>
+
+<button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
+  <span class="menu-icon">👤</span>
+  <span class="menu-text">Perfil</span>
+</button>      <div class="logout-area">
         <div class="menu">
           <button onclick="logout()" title="Sair">
             <span class="menu-icon">🚪</span>
@@ -155,6 +208,56 @@
           </button>
         </div>
 
+<section id="funcionarios" style="display:none">
+  <h1>Funcionários</h1>
+  <div class="lista-alunos" id="listaFuncionarios"></div>
+</section>
+
+<section id="permissoes" style="display:none">
+  <div class="page-header">
+    <h1>Permissões</h1>
+  </div>
+
+  <div class="permissions-layout">
+    <div class="permissions-box">
+      <h2>Atribuir acesso</h2>
+
+      <select id="funcionarioPermissao"></select>
+      <select id="orgaoPermissao"></select>
+
+      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
+        <option value="2">Nível 2 - Diretor Escolar</option>
+        <option value="3">Nível 3 - Secretário Escolar</option>
+        <option value="4">Nível 4 - Perfil</option>
+      </select>
+
+      <div class="checks-permissoes" id="checksPermissoes">
+        <label><input type="checkbox" id="permMural"> Mural</label>
+        <label><input type="checkbox" id="permTurmas"> Turmas</label>
+        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
+        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
+        <label><input type="checkbox" id="permAlunos"> Alunos</label>
+      </div>
+
+      <button class="btn-login" onclick="salvarPermissao()">
+        Salvar permissão
+      </button>
+    </div>
+
+    <div class="permissions-box">
+      <h2>Acessos cadastrados</h2>
+      <div class="lista-alunos" id="listaPermissoes"></div>
+    </div>
+  </div>
+</section>
+
+<section id="perfil" style="display:none">
+  <h1>Perfil</h1>
+  <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
+</section>
+
+
+        
         <div class="tools-row">
           <input
             type="search"
@@ -173,6 +276,7 @@
         </div>
 
         <div class="lista-alunos" id="listaAlunos"></div>
+        
       </section>
     </main>
   </div>
