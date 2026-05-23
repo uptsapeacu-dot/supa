@@ -1,4 +1,4 @@
-const CACHE_NAME = 'spe-cache-v1'
+const CACHE_NAME = 'spe-cache-v3'
 
 const FILES_TO_CACHE = [
   './',
