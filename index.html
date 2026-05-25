@@ -7,10 +7,12 @@
   <title>Sapeaçu Painel Escolar</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" href="img/favSapeacu.png">
 
   <link rel="manifest" href="manifest.json">
+
   <meta name="theme-color" content="#0f0f0f">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,247 +20,319 @@
 </head>
 
 <body>
+
+  <!-- LOGIN -->
+
   <div class="login-container" id="loginBox">
     <div class="login-box">
+
       <h2>Sapeaçu Painel Escolar</h2>
 
-      <input type="email" id="email" placeholder="Email" autocomplete="email" />
-      <input type="password" id="senha" placeholder="Senha" autocomplete="current-password" />
+      <input
+        type="email"
+        id="email"
+        placeholder="Email"
+        autocomplete="email"
+      />
 
-      <button class="btn-login" id="btnLogin" onclick="fazerLogin()">
+      <input
+        type="password"
+        id="senha"
+        placeholder="Senha"
+        autocomplete="current-password"
+      />
+
+      <button
+        class="btn-login"
+        id="btnLogin"
+        onclick="fazerLogin()"
+      >
         Entrar
       </button>
+
     </div>
   </div>
 
+  <!-- APP -->
+
   <div id="app">
-    <div class="overlay" id="overlay" onclick="fecharSidebarMobile()"></div>
+
+    <div
+      class="overlay"
+      id="overlay"
+      onclick="fecharSidebarMobile()"
+    ></div>
+
+    <!-- SIDEBAR -->
 
     <aside class="sidebar" id="sidebar">
+
       <div class="brand-row">
-        <button class="toggle-sidebar" onclick="toggleSidebar()" title="Recolher menu" aria-label="Recolher menu">
+
+        <button
+          class="toggle-sidebar"
+          onclick="toggleSidebar()"
+          title="Recolher menu"
+          aria-label="Recolher menu"
+        >
           ☰
         </button>
 
         <div class="brand">
-          <img class="brand-logo" src="img/brasaoSapeaçu.png" alt="Brasão">
+
+          <img
+            class="brand-logo"
+            src="img/brasaoSapeaçu.png"
+            alt="Brasão"
+          >
+
           <span>Painel Escolar</span>
+
         </div>
+
       </div>
 
+      <!-- MENU -->
+
       <nav class="menu">
-        <button id="menu-home" onclick="mostrarTela('home')" title="Início">
+
+        <button
+          id="menu-home"
+          onclick="mostrarTela('home')"
+          title="Início"
+        >
           <span class="menu-icon">🏠</span>
           <span class="menu-text">Início</span>
         </button>
 
-        <button id="menu-mural" onclick="mostrarTela('mural')" title="Mural">
+        <button
+          id="menu-mural"
+          onclick="mostrarTela('mural')"
+          title="Mural"
+        >
           <span class="menu-icon">📌</span>
           <span class="menu-text">Mural</span>
         </button>
 
-        <button id="menu-turmas" onclick="mostrarTela('turmas')" title="Turmas">
+        <button
+          id="menu-turmas"
+          onclick="mostrarTela('turmas')"
+          title="Turmas"
+        >
           <span class="menu-icon">📚</span>
           <span class="menu-text">Turmas</span>
         </button>
 
-        <button id="menu-funcionarios" onclick="mostrarTela('funcionarios')" title="Funcionários">
+        <button
+          id="menu-funcionarios"
+          onclick="mostrarTela('funcionarios')"
+          title="Funcionários"
+        >
           <span class="menu-icon">👥</span>
           <span class="menu-text">Funcionários</span>
         </button>
 
-        <button id="menu-matriculas" onclick="mostrarTela('matriculas')" title="Matrículas">
+        <button
+          id="menu-matriculas"
+          onclick="mostrarTela('matriculas')"
+          title="Matrículas"
+        >
           <span class="menu-icon">📝</span>
           <span class="menu-text">Matrículas</span>
         </button>
 
-        <button id="menu-alunos" onclick="mostrarTela('alunos')" title="Alunos">
+        <button
+          id="menu-alunos"
+          onclick="mostrarTela('alunos')"
+          title="Alunos"
+        >
           <span class="menu-icon">🎓</span>
           <span class="menu-text">Alunos</span>
         </button>
 
-<section id="funcionarios" style="display:none">
-  <h1>Funcionários</h1>
-  <div class="lista-alunos" id="listaFuncionarios"></div>
-</section>
+        <button
+          id="menu-permissoes"
+          onclick="mostrarTela('permissoes')"
+          title="Permissões"
+        >
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Permissões</span>
+        </button>
 
-<section id="permissoes" style="display:none">
-  <div class="page-header">
-    <h1>Permissões</h1>
-  </div>
+        <button
+          id="menu-perfil"
+          onclick="mostrarTela('perfil')"
+          title="Perfil"
+        >
+          <span class="menu-icon">👤</span>
+          <span class="menu-text">Perfil</span>
+        </button>
 
-  <div class="permissions-layout">
-    <div class="permissions-box">
-      <h2>Atribuir acesso</h2>
-
-      <select id="funcionarioPermissao"></select>
-      <select id="orgaoPermissao"></select>
-
-      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
-        <option value="2">Nível 2 - Diretor Escolar</option>
-        <option value="3">Nível 3 - Secretário Escolar</option>
-        <option value="4">Nível 4 - Perfil</option>
-      </select>
-
-      <div class="checks-permissoes" id="checksPermissoes">
-        <label><input type="checkbox" id="permMural"> Mural</label>
-        <label><input type="checkbox" id="permTurmas"> Turmas</label>
-        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-        <label><input type="checkbox" id="permAlunos"> Alunos</label>
-      </div>
-
-      <button class="btn-login" onclick="salvarPermissao()">
-        Salvar permissão
-      </button>
-    </div>
-
-    <div class="permissions-box">
-      <h2>Acessos cadastrados</h2>
-      <div class="lista-alunos" id="listaPermissoes"></div>
-    </div>
-  </div>
-</section>
-
-
-        
       </nav>
-<button id="menu-permissoes" onclick="mostrarTela('permissoes')" title="Permissões">
-  <span class="menu-icon">🔐</span>
-  <span class="menu-text">Permissões</span>
-</button>
 
-<button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
-  <span class="menu-icon">👤</span>
-  <span class="menu-text">Perfil</span>
-</button>      <div class="logout-area">
+      <!-- LOGOUT -->
+
+      <div class="logout-area">
+
         <div class="menu">
+
           <button onclick="logout()" title="Sair">
             <span class="menu-icon">🚪</span>
             <span class="menu-text">Sair</span>
           </button>
+
         </div>
+
       </div>
+
     </aside>
 
+    <!-- CONTEÚDO -->
+
     <main class="conteudo" id="conteudo">
+
+      <!-- MOBILE -->
+
       <div class="topbar-mobile">
+
         <div class="brand">
+
           <div class="brand-icon">SPE</div>
+
           <span>Sapeaçu Painel Escolar</span>
+
         </div>
 
-        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()" aria-label="Abrir menu">☰</button>
+        <button
+          class="mobile-menu-btn"
+          onclick="abrirSidebarMobile()"
+          aria-label="Abrir menu"
+        >
+          ☰
+        </button>
+
       </div>
+
+      <!-- HOME -->
 
       <section id="home">
+
         <div class="page-header">
+
           <h1>Escolas</h1>
 
-          <button class="btn-add" onclick="abrirModalEscola()" title="Adicionar escola" aria-label="Adicionar escola">
+          <button
+            class="btn-add"
+            onclick="abrirModalEscola()"
+            title="Adicionar escola"
+            aria-label="Adicionar escola"
+          >
             +
           </button>
+
         </div>
 
-        <div class="lista-escolas" id="listaEscolas"></div>
+        <div
+          class="lista-escolas"
+          id="listaEscolas"
+        ></div>
+
       </section>
 
+      <!-- ESCOLA -->
 
+      <section id="escola" style="display:none">
 
-<section id="escola" style="display:none">
-  <div class="page-header">
-    <h1 id="tituloEscola">Escola</h1>
+        <div class="page-header">
 
-    <button class="btn-clear" onclick="voltarParaEscolas()">
-      Voltar
-    </button>
-  </div>
+          <h1 id="tituloEscola">Escola</h1>
 
-  <div class="home-grid" id="modulosDaEscola"></div>
-</section>
+          <button
+            class="btn-clear"
+            onclick="voltarParaEscolas()"
+          >
+            Voltar
+          </button>
 
+        </div>
 
-      
+        <div
+          class="home-grid"
+          id="modulosDaEscola"
+        ></div>
+
+      </section>
+
+      <!-- MURAL -->
+
       <section id="mural" style="display:none">
+
         <h1>Mural</h1>
-        <div class="placeholder-page">Área do mural será desenvolvida depois.</div>
+
+        <div class="placeholder-page">
+          Área do mural será desenvolvida depois.
+        </div>
+
       </section>
+
+      <!-- TURMAS -->
 
       <section id="turmas" style="display:none">
+
         <h1>Turmas</h1>
-        <div class="placeholder-page">Área de turmas será desenvolvida depois.</div>
-      </section>
 
-      <section id="funcionarios" style="display:none">
-        <h1>Funcionários</h1>
-        <div class="placeholder-page">Área de funcionários será desenvolvida depois.</div>
-      </section>
-
-      <section id="matriculas" style="display:none">
-        <h1>Matrículas</h1>
-        <div class="placeholder-page">Área de matrículas será desenvolvida depois.</div>
-      </section>
-
-      <section id="alunos" style="display:none">
-        <div class="page-header">
-          <h1>Alunos</h1>
-
-          <button class="btn-add" onclick="abrirModalAluno()" title="Adicionar aluno" aria-label="Adicionar aluno">
-            +
-          </button>
+        <div class="placeholder-page">
+          Área de turmas será desenvolvida depois.
         </div>
 
-<section id="funcionarios" style="display:none">
-  <h1>Funcionários</h1>
-  <div class="lista-alunos" id="listaFuncionarios"></div>
-</section>
+      </section>
 
-<section id="permissoes" style="display:none">
-  <div class="page-header">
-    <h1>Permissões</h1>
-  </div>
+      <!-- FUNCIONÁRIOS -->
 
-  <div class="permissions-layout">
-    <div class="permissions-box">
-      <h2>Atribuir acesso</h2>
+      <section id="funcionarios" style="display:none">
 
-      <select id="funcionarioPermissao"></select>
-      <select id="orgaoPermissao"></select>
+        <h1>Funcionários</h1>
 
-      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
-        <option value="2">Nível 2 - Diretor Escolar</option>
-        <option value="3">Nível 3 - Secretário Escolar</option>
-        <option value="4">Nível 4 - Perfil</option>
-      </select>
+        <div
+          class="lista-alunos"
+          id="listaFuncionarios"
+        ></div>
 
-      <div class="checks-permissoes" id="checksPermissoes">
-        <label><input type="checkbox" id="permMural"> Mural</label>
-        <label><input type="checkbox" id="permTurmas"> Turmas</label>
-        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-        <label><input type="checkbox" id="permAlunos"> Alunos</label>
-      </div>
+      </section>
 
-      <button class="btn-login" onclick="salvarPermissao()">
-        Salvar permissão
-      </button>
-    </div>
+      <!-- MATRÍCULAS -->
 
-    <div class="permissions-box">
-      <h2>Acessos cadastrados</h2>
-      <div class="lista-alunos" id="listaPermissoes"></div>
-    </div>
-  </div>
-</section>
+      <section id="matriculas" style="display:none">
 
-<section id="perfil" style="display:none">
-  <h1>Perfil</h1>
-  <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
-</section>
+        <h1>Matrículas</h1>
 
+        <div class="placeholder-page">
+          Área de matrículas será desenvolvida depois.
+        </div>
 
-        
+      </section>
+
+      <!-- ALUNOS -->
+
+      <section id="alunos" style="display:none">
+
+        <div class="page-header">
+
+          <h1>Alunos</h1>
+
+          <button
+            class="btn-add"
+            onclick="abrirModalAluno()"
+            title="Adicionar aluno"
+            aria-label="Adicionar aluno"
+          >
+            +
+          </button>
+
+        </div>
+
         <div class="tools-row">
+
           <input
             type="search"
             id="buscaAluno"
@@ -266,104 +340,282 @@
             oninput="renderizarAlunos()"
           />
 
-          <select id="filtroSerie" onchange="renderizarAlunos()">
+          <select
+            id="filtroSerie"
+            onchange="renderizarAlunos()"
+          >
             <option value="">Todas as séries</option>
           </select>
 
-          <button class="btn-clear" onclick="limparFiltros()">
+          <button
+            class="btn-clear"
+            onclick="limparFiltros()"
+          >
             Limpar filtros
           </button>
+
         </div>
 
-        <div class="lista-alunos" id="listaAlunos"></div>
-        
+        <div
+          class="lista-alunos"
+          id="listaAlunos"
+        ></div>
+
       </section>
+
+      <!-- PERMISSÕES -->
+
+      <section id="permissoes" style="display:none">
+
+        <div class="page-header">
+          <h1>Permissões</h1>
+        </div>
+
+        <div class="permissions-layout">
+
+          <div class="permissions-box">
+
+            <h2>Atribuir acesso</h2>
+
+            <select id="funcionarioPermissao"></select>
+
+            <select id="orgaoPermissao"></select>
+
+            <select
+              id="nivelPermissao"
+              onchange="atualizarCamposPermissao()"
+            >
+              <option value="2">
+                Nível 2 - Diretor Escolar
+              </option>
+
+              <option value="3">
+                Nível 3 - Secretário Escolar
+              </option>
+
+              <option value="4">
+                Nível 4 - Perfil
+              </option>
+
+            </select>
+
+            <div
+              class="checks-permissoes"
+              id="checksPermissoes"
+            >
+
+              <label>
+                <input type="checkbox" id="permMural">
+                Mural
+              </label>
+
+              <label>
+                <input type="checkbox" id="permTurmas">
+                Turmas
+              </label>
+
+              <label>
+                <input type="checkbox" id="permFuncionarios">
+                Funcionários
+              </label>
+
+              <label>
+                <input type="checkbox" id="permMatriculas">
+                Matrículas
+              </label>
+
+              <label>
+                <input type="checkbox" id="permAlunos">
+                Alunos
+              </label>
+
+            </div>
+
+            <button
+              class="btn-login"
+              onclick="salvarPermissao()"
+            >
+              Salvar permissão
+            </button>
+
+          </div>
+
+          <div class="permissions-box">
+
+            <h2>Acessos cadastrados</h2>
+
+            <div
+              class="lista-alunos"
+              id="listaPermissoes"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- PERFIL -->
+
+      <section id="perfil" style="display:none">
+
+        <h1>Perfil</h1>
+
+        <div class="placeholder-page">
+          Ficha de funcionários a ser desenvolvida posteriormente.
+        </div>
+
+      </section>
+
     </main>
+
   </div>
+
+  <!-- MODAL ESCOLA -->
 
   <div class="modal" id="modalEscola">
+
     <div class="modal-box">
+
       <div class="modal-topo">
+
         <h2>Nova Escola</h2>
 
-        <button class="fechar" onclick="fecharModalEscola()" aria-label="Fechar modal">
+        <button
+          class="fechar"
+          onclick="fecharModalEscola()"
+          aria-label="Fechar modal"
+        >
           ×
         </button>
+
       </div>
 
-      <input type="text" id="nomeEscola" placeholder="Nome da escola" />
+      <input
+        type="text"
+        id="nomeEscola"
+        placeholder="Nome da escola"
+      />
 
-      <button class="btn-login" onclick="salvarEscola()">
+      <button
+        class="btn-login"
+        onclick="salvarEscola()"
+      >
         Salvar escola
       </button>
+
     </div>
+
   </div>
+
+  <!-- MODAL ALUNO -->
 
   <div class="modal" id="modalAluno">
+
     <div class="modal-box">
+
       <div class="modal-topo">
+
         <h2 id="tituloModal">Novo Aluno</h2>
 
-        <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">
+        <button
+          class="fechar"
+          onclick="fecharModalAluno()"
+          aria-label="Fechar modal"
+        >
           ×
         </button>
+
       </div>
 
-      <input type="text" id="nomeAluno" placeholder="Nome do aluno" />
-      <input type="text" id="telefoneAluno" placeholder="Telefone" />
-      <input type="email" id="emailAluno" placeholder="Email" />
-      <input type="text" id="enderecoAluno" placeholder="Endereço" />
-      <input type="text" id="serieAluno" placeholder="Série" />
+      <input
+        type="text"
+        id="nomeAluno"
+        placeholder="Nome do aluno"
+      />
 
-      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()">
+      <input
+        type="text"
+        id="telefoneAluno"
+        placeholder="Telefone"
+      />
+
+      <input
+        type="email"
+        id="emailAluno"
+        placeholder="Email"
+      />
+
+      <input
+        type="text"
+        id="enderecoAluno"
+        placeholder="Endereço"
+      />
+
+      <input
+        type="text"
+        id="serieAluno"
+        placeholder="Série"
+      />
+
+      <button
+        class="btn-login"
+        id="btnSalvarAluno"
+        onclick="salvarAluno()"
+      >
         Salvar
       </button>
+
     </div>
+
   </div>
 
-  <script>
-    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
-    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+  <!-- SCRIPTS -->
 
-    const clienteSupabase = window.supabase.createClient(
-      supabaseUrl,
-      supabaseKey
-    )
+  <script>
+
+    const supabaseUrl =
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
+
+    const supabaseKey =
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+    const clienteSupabase =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
 
     let alunos = []
     let alunoEditando = null
 
-    document.addEventListener('keydown', function(event) {
-      const loginVisivel =
-        document.getElementById('loginBox').style.display !== 'none'
+    document.addEventListener(
+      'keydown',
+      function(event) {
 
-      if (event.key === 'Enter' && loginVisivel) {
-        fazerLogin()
-      }
+        const loginVisivel =
+          document.getElementById('loginBox')
+          .style.display !== 'none'
 
-      if (event.key === 'Escape') {
-        fecharModalAluno()
-        fecharModalEscola()
-        fecharSidebarMobile()
+        if (
+          event.key === 'Enter'
+          && loginVisivel
+        ) {
+          fazerLogin()
+        }
+
+        if (event.key === 'Escape') {
+          fecharModalAluno()
+          fecharModalEscola()
+          fecharSidebarMobile()
+        }
+
       }
-    })
+    )
+
   </script>
 
   <script src="app.js"></script>
- <!--
-  <script>
-   
-   
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('service-worker.js')
-        .then(function() {
-          console.log('Service Worker registrado')
-        })
-        .catch(function(error) {
-          console.log('Erro no Service Worker:', error)
-        })
-    } 
- 
-  </script>   -->
+
 </body>
 </html>
