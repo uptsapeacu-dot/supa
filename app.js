@@ -248,7 +248,7 @@ function mostrarTela(tela) {
     'turmas',
     'funcionarios',
     'matriculas',
-    'alunos'
+    'alunos',
     'permissoes',
     'perfil'
   ]
