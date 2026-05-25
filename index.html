@@ -76,17 +76,19 @@
           <span class="menu-icon">🎓</span>
           <span class="menu-text">Alunos</span>
         </button>
-        
-      </nav>
-<button id="menu-permissoes" onclick="mostrarTela('permissoes')" title="Permissões">
-  <span class="menu-icon">🔐</span>
-  <span class="menu-text">Permissões</span>
-</button>
 
-<button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
-  <span class="menu-icon">👤</span>
-  <span class="menu-text">Perfil</span>
-</button>      <div class="logout-area">
+        <button id="menu-permissoes" onclick="mostrarTela('permissoes')" title="Permissões">
+          <span class="menu-icon">🔐</span>
+          <span class="menu-text">Permissões</span>
+        </button>
+
+        <button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
+          <span class="menu-icon">👤</span>
+          <span class="menu-text">Perfil</span>
+        </button>
+      </nav>
+
+      <div class="logout-area">
         <div class="menu">
           <button onclick="logout()" title="Sair">
             <span class="menu-icon">🚪</span>
@@ -103,7 +105,9 @@
           <span>Sapeaçu Painel Escolar</span>
         </div>
 
-        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()" aria-label="Abrir menu">☰</button>
+        <button class="mobile-menu-btn" onclick="abrirSidebarMobile()" aria-label="Abrir menu">
+          ☰
+        </button>
       </div>
 
       <section id="home">
@@ -118,22 +122,18 @@
         <div class="lista-escolas" id="listaEscolas"></div>
       </section>
 
+      <section id="escola" style="display:none">
+        <div class="page-header">
+          <h1 id="tituloEscola">Escola</h1>
 
+          <button class="btn-clear" onclick="voltarParaEscolas()">
+            Voltar
+          </button>
+        </div>
 
-<section id="escola" style="display:none">
-  <div class="page-header">
-    <h1 id="tituloEscola">Escola</h1>
+        <div class="home-grid" id="modulosDaEscola"></div>
+      </section>
 
-    <button class="btn-clear" onclick="voltarParaEscolas()">
-      Voltar
-    </button>
-  </div>
-
-  <div class="home-grid" id="modulosDaEscola"></div>
-</section>
-
-
-      
       <section id="mural" style="display:none">
         <h1>Mural</h1>
         <div class="placeholder-page">Área do mural será desenvolvida depois.</div>
@@ -146,7 +146,7 @@
 
       <section id="funcionarios" style="display:none">
         <h1>Funcionários</h1>
-        <div class="placeholder-page">Área de funcionários será desenvolvida depois.</div>
+        <div class="lista-alunos" id="listaFuncionarios"></div>
       </section>
 
       <section id="matriculas" style="display:none">
@@ -163,107 +163,6 @@
           </button>
         </div>
 
-
-
-
-        
-<section id="funcionarios" style="display:none">
-  <h1>Funcionários</h1>
-  <div class="lista-alunos" id="listaFuncionarios"></div>
-</section>
-
-<section id="permissoes" style="display:none">
-  <div class="page-header">
-    <h1>Permissões</h1>
-  </div>
-
-  <div class="permissions-layout">
-    <div class="permissions-box">
-      <h2>Atribuir acesso</h2>
-
-      <select id="funcionarioPermissao"></select>
-      <select id="orgaoPermissao"></select>
-
-      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
-        <option value="2">Nível 2 - Diretor Escolar</option>
-        <option value="3">Nível 3 - Secretário Escolar</option>
-        <option value="4">Nível 4 - Perfil</option>
-      </select>
-
-      <div class="checks-permissoes" id="checksPermissoes">
-        <label><input type="checkbox" id="permMural"> Mural</label>
-        <label><input type="checkbox" id="permTurmas"> Turmas</label>
-        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-        <label><input type="checkbox" id="permAlunos"> Alunos</label>
-      </div>
-
-      <button class="btn-login" onclick="salvarPermissao()">
-        Salvar permissão
-      </button>
-    </div>
-
-    <div class="permissions-box">
-      <h2>Acessos cadastrados</h2>
-      <div class="lista-alunos" id="listaPermissoes"></div>
-    </div>
-  </div>
-</section>
-
- <!-- funcionarios duplicados
-<section id="funcionarios" style="display:none">
-  <h1>Funcionários</h1>
-  <div class="lista-alunos" id="listaFuncionarios"></div>
-</section>
-
-<section id="permissoes" style="display:none">
-  <div class="page-header">
-    <h1>Permissões</h1>
-  </div>
--->
-
-
-        
-  <div class="permissions-layout">
-    <div class="permissions-box">
-      <h2>Atribuir acesso</h2>
-
-      <select id="funcionarioPermissao"></select>
-      <select id="orgaoPermissao"></select>
-
-      <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
-        <option value="2">Nível 2 - Diretor Escolar</option>
-        <option value="3">Nível 3 - Secretário Escolar</option>
-        <option value="4">Nível 4 - Perfil</option>
-      </select>
-
-      <div class="checks-permissoes" id="checksPermissoes">
-        <label><input type="checkbox" id="permMural"> Mural</label>
-        <label><input type="checkbox" id="permTurmas"> Turmas</label>
-        <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-        <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-        <label><input type="checkbox" id="permAlunos"> Alunos</label>
-      </div>
-
-      <button class="btn-login" onclick="salvarPermissao()">
-        Salvar permissão
-      </button>
-    </div>
-
-    <div class="permissions-box">
-      <h2>Acessos cadastrados</h2>
-      <div class="lista-alunos" id="listaPermissoes"></div>
-    </div>
-  </div>
-</section>
-
-<section id="perfil" style="display:none">
-  <h1>Perfil</h1>
-  <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
-</section>
-
-
-        
         <div class="tools-row">
           <input
             type="search"
@@ -282,7 +181,51 @@
         </div>
 
         <div class="lista-alunos" id="listaAlunos"></div>
-        
+      </section>
+
+      <section id="permissoes" style="display:none">
+        <div class="page-header">
+          <h1>Permissões</h1>
+        </div>
+
+        <div class="permissions-layout">
+          <div class="permissions-box">
+            <h2>Atribuir acesso</h2>
+
+            <select id="funcionarioPermissao"></select>
+            <select id="orgaoPermissao"></select>
+
+            <select id="nivelPermissao" onchange="atualizarCamposPermissao()">
+              <option value="2">Nível 2 - Diretor Escolar</option>
+              <option value="3">Nível 3 - Secretário Escolar</option>
+              <option value="4">Nível 4 - Perfil</option>
+            </select>
+
+            <div class="checks-permissoes" id="checksPermissoes">
+              <label><input type="checkbox" id="permMural"> Mural</label>
+              <label><input type="checkbox" id="permTurmas"> Turmas</label>
+              <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
+              <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
+              <label><input type="checkbox" id="permAlunos"> Alunos</label>
+            </div>
+
+            <button class="btn-login" onclick="salvarPermissao()">
+              Salvar permissão
+            </button>
+          </div>
+
+          <div class="permissions-box">
+            <h2>Acessos cadastrados</h2>
+            <div class="lista-alunos" id="listaPermissoes"></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="perfil" style="display:none">
+        <h1>Perfil</h1>
+        <div class="placeholder-page">
+          Ficha de funcionários a ser desenvolvida posteriormente.
+        </div>
       </section>
     </main>
   </div>
@@ -356,10 +299,9 @@
   </script>
 
   <script src="app.js"></script>
- <!--
+
+  <!--
   <script>
-   
-   
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('service-worker.js')
         .then(function() {
@@ -368,8 +310,8 @@
         .catch(function(error) {
           console.log('Erro no Service Worker:', error)
         })
-    } 
- 
-  </script>   -->
+    }
+  </script>
+  -->
 </body>
 </html>
