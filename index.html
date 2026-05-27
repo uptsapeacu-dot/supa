@@ -570,3 +570,318 @@
           <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
             <h2>Acessos cadastrados</h2>
+
+            <div
+              class="lista-alunos"
+              id="listaPermissoes"
+            ></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- PERFIL -->
+
+      <section id="perfil" style="display:none">
+
+        <h1>Perfil</h1>
+
+        <div class="placeholder-page">
+          Ficha de funcionários a ser desenvolvida posteriormente.
+        </div>
+
+      </section>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL ESCOLA -->
+
+  <div class="modal" id="modalEscola">
+
+    <div class="modal-box">
+
+      <div class="modal-topo">
+
+        <h2 id="tituloModalEscola">Nova Escola</h2>
+
+        <button
+          class="fechar"
+          onclick="fecharModalEscola()"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <input
+        type="text"
+        id="nomeEscola"
+        placeholder="Nome da escola"
+      />
+
+      <button
+        class="btn-login"
+        onclick="salvarEscola()"
+      >
+        Salvar escola
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL CONFIRMAÇÃO DE SENHA -->
+
+  <div class="modal" id="modalConfirmacaoSenha">
+
+    <div class="modal-box" style="max-width: 400px;">
+
+      <div class="modal-topo">
+
+        <h2>Ativar Modo Edição</h2>
+
+        <button
+          class="fechar"
+          onclick="cancelarModoEdicao()"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <p style="font-size: 14px; color: #aaa; margin: 0 0 16px; line-height: 1.4;">
+        Para alternar para o modo de edição, confirme sua senha de login.
+      </p>
+
+      <input
+        type="password"
+        id="senhaConfirmacao"
+        placeholder="Senha do usuário"
+      />
+
+      <button
+        class="btn-login"
+        id="btnConfirmarSenha"
+        onclick="confirmarSenhaModoEdicao()"
+      >
+        Confirmar
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL ANIVERSARIANTE DETALHES -->
+
+  <div class="modal" id="modalAniversariante">
+
+    <div class="modal-box" style="max-width: 400px; text-align: center;">
+
+      <div class="modal-topo">
+
+        <h2 style="margin: 0; font-size: 20px;">Aniversariante! 🎉</h2>
+
+        <button
+          class="fechar"
+          onclick="fecharModalAniversariante()"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <div class="foto-3x4-placeholder">
+        Foto 3x4
+      </div>
+
+      <h3 id="nomeAniversariante" style="margin: 10px 0 5px; color: #fff; font-size: 18px;">Nome do Funcionário</h3>
+      <p id="orgaoAniversariante" style="margin: 0 0 10px; color: #aaa; font-size: 14px;">Órgão: Escola Castelo Branco</p>
+      <p id="dataAniversariante" style="margin: 0 0 10px; color: #3ea6ff; font-weight: bold; font-size: 15px;">Dia 15</p>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL FUNCIONÁRIO -->
+
+  <div class="modal" id="modalFuncionario">
+
+    <div class="modal-box">
+
+      <div class="modal-topo">
+
+        <h2 id="tituloModalFuncionario">Novo Funcionário</h2>
+
+        <button
+          class="fechar"
+          onclick="fecharModalFuncionario()"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <input
+        type="text"
+        id="nomeFuncionario"
+        placeholder="Nome do funcionário"
+      />
+
+      <input
+        type="email"
+        id="emailFuncionario"
+        placeholder="Email"
+      />
+
+      <input
+        type="text"
+        id="telefoneFuncionario"
+        placeholder="Telefone"
+      />
+
+      <input
+        type="text"
+        id="cpfFuncionario"
+        placeholder="CPF"
+      />
+
+      <input
+        type="text"
+        id="cargoFuncionario"
+        placeholder="Cargo"
+      />
+
+      <button
+        class="btn-login"
+        id="btnSalvarFuncionario"
+        onclick="salvarFuncionario()"
+      >
+        Salvar
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL ALUNO -->
+
+  <div class="modal" id="modalAluno">
+
+    <div class="modal-box">
+
+      <div class="modal-topo">
+
+        <h2 id="tituloModal">Novo Aluno</h2>
+
+        <button
+          class="fechar"
+          onclick="fecharModalAluno()"
+          aria-label="Fechar modal"
+        >
+          ×
+        </button>
+
+      </div>
+
+      <input
+        type="text"
+        id="nomeAluno"
+        placeholder="Nome do aluno"
+      />
+
+      <input
+        type="text"
+        id="telefoneAluno"
+        placeholder="Telefone"
+      />
+
+      <input
+        type="email"
+        id="emailAluno"
+        placeholder="Email"
+      />
+
+      <input
+        type="text"
+        id="enderecoAluno"
+        placeholder="Endereço"
+      />
+
+      <input
+        type="text"
+        id="serieAluno"
+        placeholder="Série"
+      />
+
+      <button
+        class="btn-login"
+        id="btnSalvarAluno"
+        onclick="salvarAluno()"
+      >
+        Salvar
+      </button>
+
+    </div>
+
+  </div>
+
+  <!-- SCRIPTS -->
+
+  <script>
+
+    const supabaseUrl =
+      'https://mkgvobuacvuxcgedpfbf.supabase.co'
+
+    const supabaseKey =
+      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+
+    const clienteSupabase =
+      window.supabase.createClient(
+        supabaseUrl,
+        supabaseKey
+      )
+
+    let alunos = []
+    let alunoEditando = null
+
+    document.addEventListener(
+      'keydown',
+      function(event) {
+
+        const loginVisivel =
+          document.getElementById('loginBox')
+          .style.display !== 'none'
+
+        if (
+          event.key === 'Enter'
+          && loginVisivel
+        ) {
+          fazerLogin()
+        }
+
+        if (event.key === 'Escape') {
+          fecharModalAluno()
+          fecharModalEscola()
+          fecharModalFuncionario()
+          fecharModalAniversariante()
+          cancelarModoEdicao()
+          fecharSidebarMobile()
+        }
+
+      }
+    )
+
+  </script>
+
+  <script src="app.js"></script>
+
+</body>
+</html>
