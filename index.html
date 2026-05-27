@@ -191,6 +191,18 @@
 
     <main class="conteudo" id="conteudo">
 
+      <!-- GLOBAL HEADER WITH MODE TOGGLE -->
+      <div class="global-header">
+        <div class="global-header-title">Sapeaçu Painel Escolar</div>
+        <div class="mode-toggle-container">
+          <span id="mode-text" class="mode-text">Modo Visualização</span>
+          <label class="switch">
+            <input type="checkbox" id="btnModoEdicao" onchange="tentarAtivarModoEdicao(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+      </div>
+
       <!-- MOBILE -->
 
       <div class="topbar-mobile">
@@ -223,9 +235,11 @@
 
           <button
             class="btn-add"
+            id="btnAddEscola"
             onclick="abrirModalEscola()"
             title="Adicionar escola"
             aria-label="Adicionar escola"
+            style="display: none;"
           >
             +
           </button>
@@ -247,12 +261,30 @@
 
           <h1 id="tituloEscola">Escola</h1>
 
-          <button
-            class="btn-clear"
-            onclick="voltarParaEscolas()"
-          >
-            Voltar
-          </button>
+          <div style="display:flex; gap:8px;">
+            <button
+              class="btn-clear btn-modo-edicao-somente"
+              id="btnEditarEscola"
+              onclick="abrirModalEditarEscola()"
+              style="display: none; background: #3ea6ff; color: #050505; font-weight: bold;"
+            >
+              Editar Escola
+            </button>
+            <button
+              class="btn-clear btn-modo-edicao-somente btn-danger-action"
+              id="btnExcluirEscola"
+              onclick="excluirEscola()"
+              style="display: none; background: #ff5b5b; color: #120000; font-weight: bold;"
+            >
+              Excluir Escola
+            </button>
+            <button
+              class="btn-clear"
+              onclick="voltarParaEscolas()"
+            >
+              Voltar
+            </button>
+          </div>
 
         </div>
 
@@ -267,10 +299,59 @@
 
       <section id="mural" style="display:none">
 
-        <h1>Mural</h1>
+        <div class="page-header">
+          <h1 id="tituloMural">Mural</h1>
+          <button
+            class="btn-clear"
+            onclick="voltarParaEscola()"
+          >
+            Voltar à Escola
+          </button>
+        </div>
 
-        <div class="placeholder-page">
-          Área do mural será desenvolvida depois.
+        <div class="permissions-layout mural-layout">
+          <!-- Left: Notices -->
+          <div class="mural-left">
+            <div class="permissions-box" id="formNovoAviso" style="display: none; margin-bottom: 20px;">
+              <h2>Criar Novo Comunicado</h2>
+              <textarea id="textoNovoAviso" rows="4" placeholder="Escreva o comunicado aqui..." style="width:100%; padding:12px; border-radius:10px; background:#121212; border:1px solid #3f3f3f; color:#f1f1f1; resize:none; font-family:inherit; margin-bottom:12px; outline:none; font-size:14px;"></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label class="btn-clear" style="cursor:pointer; display:inline-block; padding:10px 14px; background:#222; border:1px solid #333;">
+                  📎 Anexar Arquivo
+                  <input type="file" id="anexoNovoAviso" style="display:none;" onchange="alert('Upload de arquivos será configurado no ambiente de produção!')" />
+                </label>
+                <button class="btn-login" onclick="publicarAviso()" style="margin-top:0; width:auto; padding:10px 20px;">Publicar</button>
+              </div>
+            </div>
+
+            <div class="lista-alunos" id="listaAvisos">
+              <!-- Notices will appear here -->
+            </div>
+          </div>
+
+          <!-- Right: Birthday Calendar -->
+          <div class="mural-right">
+            <div class="permissions-box">
+              <h2 style="margin-top:0;">Calendário de Aniversários</h2>
+              <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <button class="btn-clear" onclick="mudarMesCalendario(-1)" style="padding: 6px 12px;">◀</button>
+                <h3 id="calendarMonthYear" style="margin:0; color:#fff; font-size:16px;">Janeiro 2026</h3>
+                <button class="btn-clear" onclick="mudarMesCalendario(1)" style="padding: 6px 12px;">▶</button>
+              </div>
+              <div class="calendar-grid-weekdays" style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-weight:bold; font-size:12px; color:#aaa; margin-bottom:8px;">
+                <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
+              </div>
+              <div class="calendar-grid-days" id="calendarDays" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; text-align:center; font-size:14px;">
+                <!-- Days rendered by js -->
+              </div>
+              <div style="margin-top:20px; border-top:1px solid #2a2a2a; padding-top:15px;">
+                <h4 style="margin: 0 0 10px; color: #fff; font-size:14px;">Aniversariantes do Mês:</h4>
+                <div class="lista-alunos" id="listaAniversariantesMes" style="gap:6px; max-height: 180px; overflow-y: auto;">
+                  <!-- Monthly birthday list -->
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
       </section>
@@ -279,7 +360,15 @@
 
       <section id="turmas" style="display:none">
 
-        <h1>Turmas</h1>
+        <div class="page-header">
+          <h1>Turmas</h1>
+          <button
+            class="btn-clear"
+            onclick="voltarParaEscola()"
+          >
+            Voltar
+          </button>
+        </div>
 
         <div class="placeholder-page">
           Área de turmas será desenvolvida depois.
@@ -291,7 +380,27 @@
 
       <section id="funcionarios" style="display:none">
 
-        <h1>Funcionários</h1>
+        <div class="page-header">
+          <h1>Funcionários</h1>
+          <div style="display:flex; gap:8px;">
+            <button
+              class="btn-add"
+              id="btnAddFuncionario"
+              onclick="abrirModalFuncionario()"
+              title="Adicionar funcionário"
+              aria-label="Adicionar funcionário"
+              style="display: none;"
+            >
+              +
+            </button>
+            <button
+              class="btn-clear"
+              onclick="voltarParaEscola()"
+            >
+              Voltar
+            </button>
+          </div>
+        </div>
 
         <div
           class="lista-alunos"
@@ -304,7 +413,15 @@
 
       <section id="matriculas" style="display:none">
 
-        <h1>Matrículas</h1>
+        <div class="page-header">
+          <h1>Matrículas</h1>
+          <button
+            class="btn-clear"
+            onclick="voltarParaEscola()"
+          >
+            Voltar
+          </button>
+        </div>
 
         <div class="placeholder-page">
           Área de matrículas será desenvolvida depois.
@@ -320,14 +437,24 @@
 
           <h1>Alunos</h1>
 
-          <button
-            class="btn-add"
-            onclick="abrirModalAluno()"
-            title="Adicionar aluno"
-            aria-label="Adicionar aluno"
-          >
-            +
-          </button>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button
+              class="btn-add"
+              id="btnAddAluno"
+              onclick="abrirModalAluno()"
+              title="Adicionar aluno"
+              aria-label="Adicionar aluno"
+              style="display: none;"
+            >
+              +
+            </button>
+            <button
+              class="btn-clear"
+              onclick="voltarParaEscola()"
+            >
+              Voltar
+            </button>
+          </div>
 
         </div>
 
@@ -373,7 +500,7 @@
 
         <div class="permissions-layout">
 
-          <div class="permissions-box">
+          <div class="permissions-box" id="boxFormPermissao" style="display: none;">
 
             <h2>Atribuir acesso</h2>
 
@@ -440,182 +567,6 @@
 
           </div>
 
-          <div class="permissions-box">
+          <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
             <h2>Acessos cadastrados</h2>
-
-            <div
-              class="lista-alunos"
-              id="listaPermissoes"
-            ></div>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- PERFIL -->
-
-      <section id="perfil" style="display:none">
-
-        <h1>Perfil</h1>
-
-        <div class="placeholder-page">
-          Ficha de funcionários a ser desenvolvida posteriormente.
-        </div>
-
-      </section>
-
-    </main>
-
-  </div>
-
-  <!-- MODAL ESCOLA -->
-
-  <div class="modal" id="modalEscola">
-
-    <div class="modal-box">
-
-      <div class="modal-topo">
-
-        <h2>Nova Escola</h2>
-
-        <button
-          class="fechar"
-          onclick="fecharModalEscola()"
-          aria-label="Fechar modal"
-        >
-          ×
-        </button>
-
-      </div>
-
-      <input
-        type="text"
-        id="nomeEscola"
-        placeholder="Nome da escola"
-      />
-
-      <button
-        class="btn-login"
-        onclick="salvarEscola()"
-      >
-        Salvar escola
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- MODAL ALUNO -->
-
-  <div class="modal" id="modalAluno">
-
-    <div class="modal-box">
-
-      <div class="modal-topo">
-
-        <h2 id="tituloModal">Novo Aluno</h2>
-
-        <button
-          class="fechar"
-          onclick="fecharModalAluno()"
-          aria-label="Fechar modal"
-        >
-          ×
-        </button>
-
-      </div>
-
-      <input
-        type="text"
-        id="nomeAluno"
-        placeholder="Nome do aluno"
-      />
-
-      <input
-        type="text"
-        id="telefoneAluno"
-        placeholder="Telefone"
-      />
-
-      <input
-        type="email"
-        id="emailAluno"
-        placeholder="Email"
-      />
-
-      <input
-        type="text"
-        id="enderecoAluno"
-        placeholder="Endereço"
-      />
-
-      <input
-        type="text"
-        id="serieAluno"
-        placeholder="Série"
-      />
-
-      <button
-        class="btn-login"
-        id="btnSalvarAluno"
-        onclick="salvarAluno()"
-      >
-        Salvar
-      </button>
-
-    </div>
-
-  </div>
-
-  <!-- SCRIPTS -->
-
-  <script>
-
-    const supabaseUrl =
-      'https://mkgvobuacvuxcgedpfbf.supabase.co'
-
-    const supabaseKey =
-      'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
-
-    const clienteSupabase =
-      window.supabase.createClient(
-        supabaseUrl,
-        supabaseKey
-      )
-
-    let alunos = []
-    let alunoEditando = null
-
-    document.addEventListener(
-      'keydown',
-      function(event) {
-
-        const loginVisivel =
-          document.getElementById('loginBox')
-          .style.display !== 'none'
-
-        if (
-          event.key === 'Enter'
-          && loginVisivel
-        ) {
-          fazerLogin()
-        }
-
-        if (event.key === 'Escape') {
-          fecharModalAluno()
-          fecharModalEscola()
-          fecharSidebarMobile()
-        }
-
-      }
-    )
-
-  </script>
-
-  <script src="app.js"></script>
-
-</body>
-</html>
