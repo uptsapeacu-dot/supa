@@ -281,6 +281,8 @@ h1 {
   align-items: center;
   gap: 14px;
   transition: 0.2s;
+  position: relative;
+  overflow: hidden;
 }
 
 .home-card:hover {
@@ -322,8 +324,6 @@ h1 {
   gap: 18px;
 }
 
-
-
 @media (max-width: 1100px) {
   .lista-escolas {
     grid-template-columns: repeat(3, minmax(140px, 1fr));
@@ -342,6 +342,7 @@ h1 {
     grid-template-columns: 1fr;
   }
 }
+
 .escola-box {
   background: #181818;
   border: 1px solid #2a2a2a;
@@ -422,6 +423,11 @@ h1 {
   flex: 0 0 auto;
 }
 
+.btn-editar:hover {
+  background: #3ea6ff;
+  color: #050505;
+}
+
 .empty-state {
   padding: 22px;
   border-radius: 12px;
@@ -479,6 +485,10 @@ h1 {
   background: #272727;
   color: white;
   font-size: 18px;
+}
+
+.fechar:hover {
+  background: #444;
 }
 
 .modal-box input {
@@ -561,7 +571,6 @@ h1 {
   }
 }
 
-
 .permissions-layout {
   display: grid;
   grid-template-columns: 360px 1fr;
@@ -607,12 +616,14 @@ h1 {
   border: 1px solid #2a2a2a;
   border-radius: 12px;
   padding: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .permissao-actions {
   display: flex;
   gap: 8px;
-  margin-top: 10px;
 }
 
 .btn-danger {
@@ -623,10 +634,235 @@ h1 {
   font-weight: bold;
 }
 
+.btn-danger:hover {
+  background: #ff3333;
+}
+
 @media (max-width: 760px) {
   .permissions-layout {
     grid-template-columns: 1fr;
   }
 }
 
+/* ==========================================
+   NEW PREMIUM STYLES FOR TOGGLE AND MURAL
+   ========================================== */
 
+/* Global Content Header */
+.global-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  margin-bottom: 24px;
+}
+
+.global-header-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+}
+
+.mode-toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mode-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #888;
+  transition: color 0.3s;
+}
+
+.mode-text.active {
+  color: #3ea6ff;
+}
+
+/* Premium Switch Toggle */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 52px;
+  height: 28px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #272727;
+  transition: .4s;
+  border-radius: 34px;
+  border: 1px solid #3f3f3f;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 20px;
+  width: 20px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #aaa;
+  transition: .4s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: #3ea6ff;
+  border-color: #3ea6ff;
+}
+
+input:checked + .slider:before {
+  transform: translateX(24px);
+  background-color: #050505;
+}
+
+/* Mural Layout Split Panels */
+.mural-layout {
+  grid-template-columns: 1fr 340px;
+}
+
+.mural-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mural-right {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 24px;
+}
+
+/* Calendar Styling */
+.calendar-grid-days .calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.calendar-grid-days .calendar-day:hover {
+  background: #272727;
+}
+
+.calendar-grid-days .calendar-day.empty {
+  cursor: default;
+}
+
+.calendar-grid-days .calendar-day.empty:hover {
+  background: transparent;
+}
+
+.calendar-grid-days .calendar-day.birthday-dot {
+  background: #1e3a5f;
+  color: #3ea6ff;
+  font-weight: bold;
+  border: 2px solid #3ea6ff;
+  box-shadow: 0 0 10px rgba(62, 166, 255, 0.4);
+}
+
+.calendar-grid-days .calendar-day.birthday-dot:hover {
+  background: #3ea6ff;
+  color: #050505;
+}
+
+/* 3x4 Photo Placeholder */
+.foto-3x4-placeholder {
+  margin: 20px auto;
+  width: 120px;
+  height: 160px;
+  background: #121212;
+  border: 2px dashed #444;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Visual elements for card overlays */
+.home-card .card-actions {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.home-card:hover .card-actions {
+  opacity: 1;
+}
+
+.card-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(15, 15, 15, 0.85);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border: 1px solid #333;
+}
+
+.card-action-btn:hover {
+  background: #3ea6ff;
+  color: #050505;
+  border-color: #3ea6ff;
+}
+
+.card-action-btn.btn-delete-card:hover {
+  background: #ff5b5b;
+  color: #120000;
+  border-color: #ff5b5b;
+}
+
+.aviso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.aviso-meta {
+  color: #888;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .mural-layout {
+    grid-template-columns: 1fr;
+  }
+  .mural-right {
+    position: static;
+  }
+}
