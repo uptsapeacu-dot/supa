@@ -759,6 +759,13 @@
         placeholder="Cargo"
       />
 
+      <label for="nascimentoFuncionario" style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Data de Nascimento</label>
+      <input
+        type="date"
+        id="nascimentoFuncionario"
+        style="margin-top:0;"
+      />
+
       <button
         class="btn-login"
         id="btnSalvarFuncionario"
@@ -821,6 +828,13 @@
         placeholder="Série"
       />
 
+      <label for="nascimentoAluno" style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Data de Nascimento</label>
+      <input
+        type="date"
+        id="nascimentoAluno"
+        style="margin-top:0;"
+      />
+
       <button
         class="btn-login"
         id="btnSalvarAluno"
@@ -849,6 +863,31 @@
         supabaseKey
       )
 
+    let escolas = []
+    let escolaAtual = null
+    let funcionarioAtual = null
+    let acessosAtual = []
+    let funcionarios = []
+    let orgaos = []
+    let acessosSistema = []
+    let modoEdicaoAtivo = false
+    let escolaEditando = null
+    let vinculoEditando = null
+    let funcionarioEditandoId = null
+    let muralFuncionarios = []
+    let calendarMes = new Date().getMonth()
+    let calendarAno = new Date().getFullYear()
+    const nomesMeses = [
+      'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+      'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+    ]
+    const modulosEscola = [
+      { id: 'mural', nome: 'Mural', icone: '📌', permissao: 'pode_mural' },
+      { id: 'turmas', nome: 'Turmas', icone: '📚', permissao: 'pode_turmas' },
+      { id: 'funcionarios', nome: 'Funcionários', icone: '👥', permissao: 'pode_funcionarios' },
+      { id: 'matriculas', nome: 'Matrículas', icone: '📝', permissao: 'pode_matriculas' },
+      { id: 'alunos', nome: 'Alunos', icone: '🎓', permissao: 'pode_alunos' }
+    ]
     let alunos = []
     let alunoEditando = null
 
@@ -881,7 +920,14 @@
 
   </script>
 
-  <script src="app.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/escolas.js"></script>
+  <script src="js/alunos.js"></script>
+  <script src="js/funcionarios.js"></script>
+  <script src="js/permissoes.js"></script>
+  <script src="js/mural.js"></script>
 
 </body>
 </html>
