@@ -78,7 +78,7 @@ function renderizarEscolas() {
       editBtn.title = 'Editar escola'
       editBtn.onclick = function(e) {
         e.stopPropagation()
-        escolaEditando = school.id
+        escolaEditando = escola.id
         document.getElementById('tituloModalEscola').innerText = 'Editar Escola'
         document.getElementById('nomeEscola').value = escola.nome
         document.getElementById('modalEscola').style.display = 'flex'
