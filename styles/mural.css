@@ -1,0 +1,94 @@
+/* Mural Layout Split Panels */
+.mural-layout {
+  grid-template-columns: 1fr 340px;
+}
+
+.mural-left {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mural-right {
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 24px;
+}
+
+/* Calendar Styling */
+.calendar-grid-days .calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  position: relative;
+  color: #ccc;
+  font-weight: 500;
+}
+
+.calendar-grid-days .calendar-day:hover {
+  background: #272727;
+}
+
+.calendar-grid-days .calendar-day.empty {
+  cursor: default;
+}
+
+.calendar-grid-days .calendar-day.empty:hover {
+  background: transparent;
+}
+
+.calendar-grid-days .calendar-day.birthday-dot {
+  background: #1e3a5f;
+  color: #3ea6ff;
+  font-weight: bold;
+  border: 2px solid #3ea6ff;
+  box-shadow: 0 0 10px rgba(62, 166, 255, 0.4);
+}
+
+.calendar-grid-days .calendar-day.birthday-dot:hover {
+  background: #3ea6ff;
+  color: #050505;
+}
+
+/* 3x4 Photo Placeholder */
+.foto-3x4-placeholder {
+  margin: 20px auto;
+  width: 120px;
+  height: 160px;
+  background: #121212;
+  border: 2px dashed #444;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Mural notice boards styles */
+.aviso-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.aviso-meta {
+  color: #888;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 900px) {
+  .mural-layout {
+    grid-template-columns: 1fr;
+  }
+  .mural-right {
+    position: static;
+  }
+}
