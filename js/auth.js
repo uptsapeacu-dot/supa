@@ -292,3 +292,53 @@ function nivelMaisAlto() {
 function usuarioNivel1() {
   return acessosAtual.some(function(acesso) {
     return acesso.nivel === 1 && acesso.ativo
+  })
+}
+
+function usuarioNivel2() {
+  return acessosAtual.some(function(acesso) {
+    return acesso.nivel === 2 && acesso.ativo
+  })
+}
+
+function idsEscolasPermitidas() {
+  if (usuarioNivel1()) {
+    return escolas.map(function(escola) {
+      return escola.id
+    })
+  }
+
+  return acessosAtual
+    .filter(function(acesso) {
+      return acesso.orgaos && acesso.orgaos.escola_id
+    })
+    .map(function(acesso) {
+      return acesso.orgaos.escola_id
+    })
+}
+
+function podeAcessarModulo(moduloId, escolaId) {
+  if (usuarioNivel1()) return true
+
+  const modulo = modulosEscola.find(function(item) {
+    return item.id === moduloId
+  })
+
+  if (!modulo) return false
+
+  const acesso = acessosAtual.find(function(item) {
+    return item.orgaos &&
+      item.orgaos.escola_id === escolaId &&
+      item.ativo
+  })
+
+  if (!acesso) return false
+  if (acesso.nivel === 2) return true
+  if (acesso.nivel === 4) return false
+
+  return acesso[modulo.permissao] === true
+}
+
+function podeVerPermissoes() {
+  return usuarioNivel1() || usuarioNivel2()
+}
