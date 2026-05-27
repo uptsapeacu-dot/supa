@@ -144,7 +144,7 @@ function renderizarAlunos() {
       item.appendChild(actionsDiv)
     }
 
-    lista.appendChild(card || item)
+    lista.appendChild(item)
   })
 }
 
