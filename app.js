@@ -612,7 +612,7 @@ function abrirEscola(escolaId) {
 
   if (!escola) return
 
-  escolaAtual = schoolId = escola.id
+  escolaAtual = escola.id
 
   document.getElementById('tituloEscola').innerText = escola.nome
   
@@ -698,7 +698,6 @@ async function excluirEscola() {
   voltarParaEscolas()
 }
 
-fecharModalEscola()
 function fecharModalEscola() {
   document.getElementById('modalEscola').style.display = 'none'
 }
@@ -759,7 +758,7 @@ async function salvarEscola() {
 }
 
 function abrirModuloEscola(escolaId, modulo) {
-  escolaAtual = escolaId
+  escolaAtual = schoolId = escola.id
   mostrarTela(modulo)
 }
 
