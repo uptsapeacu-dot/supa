@@ -272,6 +272,12 @@ function aplicarVisibilidadeSidebar() {
     const menu = menus[modulo.id]
     if (!menu) return
 
+    // Quem for nível 1 não deve ver 'turmas' nem 'matriculas' no sidebar
+    if (usuarioNivel1() && (modulo.id === 'turmas' || modulo.id === 'matriculas')) {
+      menu.style.display = 'none'
+      return
+    }
+
     const podeVer = usuarioNivel1() || acessosAtual.some(function(acesso) {
       if (acesso.nivel === 2) return true
       if (acesso.nivel === 3) return acesso[modulo.permissao] === true
@@ -589,11 +595,7 @@ function renderizarEscolas() {
       deleteBtn.title = 'Excluir escola'
       deleteBtn.onclick = function(e) {
         e.stopPropagation()
-        if (!confirm('Deseja excluir a escola ' + escola.nome + '? Todos os vínculos e dados associados serão removidos.')) return
-        clienteSupabase.from('escolas').delete().eq('id', escola.id).then(function(res) {
-          if (res.error) alert('Erro ao excluir escola')
-          else carregarEscolas()
-        })
+        excluirEscolaConfirmado(escola.id, escola.nome)
       }
 
       actions.appendChild(editBtn)
@@ -606,15 +608,15 @@ function renderizarEscolas() {
 }
 
 function abrirEscola(escolaId) {
-  const escola = escolas.find(function(item) {
-    return item.id === escolaId
+  const school = escolas.find(function(item) {
+    return item.id === schoolId
   })
 
-  if (!escola) return
+  if (!school) return
 
-  escolaAtual = escola.id
+  escolaAtual = school.id
 
-  document.getElementById('tituloEscola').innerText = escola.nome
+  document.getElementById('tituloEscola').innerText = school.nome
   
   // Render and adjust screen specific settings
   atualizarInterfaceModo()
@@ -684,18 +686,78 @@ function abrirModalEditarEscola() {
 }
 
 async function excluirEscola() {
-  if (!confirm('Deseja excluir definitivamente esta escola?')) return
-  const { error } = await clienteSupabase
-    .from('escolas')
-    .delete()
-    .eq('id', escolaAtual)
+  const escola = escolas.find(function(e) { return e.id === escolaAtual })
+  if (!escola) return
+  excluirEscolaConfirmado(escola.id, escola.nome, true)
+}
 
-  if (error) {
-    alert('Erro ao excluir escola')
-    return
+async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar = false) {
+  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
+
+  try {
+    // 1. Obter os órgãos da escola
+    const { data: listOrgaos, error: errOrgaos } = await clienteSupabase
+      .from('orgaos')
+      .select('id')
+      .eq('escola_id', escolaId)
+
+    if (errOrgaos) throw errOrgaos
+
+    const orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
+
+    if (orgaoIds.length > 0) {
+      // 2. Excluir vínculos de funcionários
+      const { error: errVinc } = await clienteSupabase
+        .from('vinculos_funcionarios')
+        .delete()
+        .in('orgao_id', orgaoIds)
+
+      if (errVinc) throw errVinc
+
+      // 3. Excluir acessos de usuários
+      const { error: errAces } = await clienteSupabase
+        .from('acessos_usuarios')
+        .delete()
+        .in('orgao_id', orgaoIds)
+
+      if (errAces) throw errAces
+    }
+
+    // 4. Excluir alunos
+    const { error: errAlun } = await clienteSupabase
+      .from('alunos')
+      .delete()
+      .eq('escola_id', escolaId)
+
+    if (errAlun) throw errAlun
+
+    // 5. Excluir órgãos
+    const { error: errOrgDel } = await clienteSupabase
+      .from('orgaos')
+      .delete()
+      .eq('escola_id', escolaId)
+
+    if (errOrgDel) throw errOrgDel
+
+    // 6. Excluir a escola
+    const { error: errEscDel } = await clienteSupabase
+      .from('escolas')
+      .delete()
+      .eq('id', schoolId)
+
+    if (errEscDel) throw errEscDel
+
+    alert('Escola ' + nomeEscola + ' excluída com sucesso!')
+    
+    if (redirecionar) {
+      escolaAtual = null
+      mostrarTela('home')
+    }
+    await carregarEscolas()
+  } catch (err) {
+    console.error('Erro ao excluir escola e seus dados:', err)
+    alert('Erro ao excluir escola: ' + (err.message || err))
   }
-
-  voltarParaEscolas()
 }
 
 function fecharModalEscola() {
@@ -758,7 +820,7 @@ async function salvarEscola() {
 }
 
 function abrirModuloEscola(escolaId, modulo) {
-  escolaAtual = schoolId = escola.id
+  escolaAtual = escolaId
   mostrarTela(modulo)
 }
 
@@ -1282,7 +1344,7 @@ async function removerPermissao(acessoId) {
 }
 
 /* ==========================================
-   EFFECTIVE EMPLOYEES LOGIC & CRUD
+   EMPLOYEES SCREEN LOGIC
    ========================================== */
 
 async function carregarFuncionariosDaTela() {
@@ -1632,7 +1694,7 @@ function renderizarAlunos() {
   })
 
   if (alunosFiltrados.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Nenhum aluno encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state">Nenhuma aluno encontrado.</div>'
     return
   }
 
