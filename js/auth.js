@@ -229,3 +229,66 @@ function atualizarInterfaceModo() {
     }
   }
 }
+
+// Database self-healing check for schools that do not have an associated organ
+async function verificarECriarOrgaosFaltantes() {
+  if (!usuarioNivel1()) return
+
+  try {
+    const { data: todasEscolas } = await clienteSupabase
+      .from('escolas')
+      .select('id, nome')
+
+    const { data: todosOrgaosEscola } = await clienteSupabase
+      .from('orgaos')
+      .select('escola_id')
+      .eq('tipo', 'escola')
+
+    if (!todasEscolas) return
+
+    const idsEscolasComOrgao = new Set(
+      (todosOrgaosEscola || [])
+        .map(function(o) { return o.escola_id })
+        .filter(Boolean)
+    )
+
+    const escolasSemOrgao = todasEscolas.filter(function(e) {
+      return !idsEscolasComOrgao.has(e.id)
+    })
+
+    if (escolasSemOrgao.length > 0) {
+      const novosOrgaos = escolasSemOrgao.map(function(e) {
+        return {
+          nome: e.nome,
+          tipo: 'escola',
+          escola_id: e.id,
+          ativo: true
+        }
+      })
+
+      const { error } = await clienteSupabase
+        .from('orgaos')
+        .insert(novosOrgaos)
+
+      if (error) {
+        console.error('Erro ao auto-criar órgãos para escolas:', error)
+      } else {
+        console.log(`${novosOrgaos.length} órgãos escolares criados automaticamente.`)
+      }
+    }
+  } catch (err) {
+    console.error('Falha no auto-recovery de órgãos escolares:', err)
+  }
+}
+
+function nivelMaisAlto() {
+  if (!acessosAtual.length) return 4
+
+  return Math.min.apply(null, acessosAtual.map(function(acesso) {
+    return acesso.nivel
+  }))
+}
+
+function usuarioNivel1() {
+  return acessosAtual.some(function(acesso) {
+    return acesso.nivel === 1 && acesso.ativo
