@@ -494,6 +494,7 @@
       </section>
 
       <!-- PERMISSÕES -->
+      <!-- PERMISSÕES -->
 
       <section id="permissoes" style="display:none">
 
@@ -503,11 +504,11 @@
 
         <div class="permissions-layout">
 
-                   <div class="permissions-box">
+          <!-- Formulário (Esquerda) -->
+          <div class="permissions-box">
 
             <h2>Atribuir acesso</h2>
 
-            <!-- NOVO: Campo de busca para o select de funcionário -->
             <input 
               type="text" 
               id="buscaFuncionarioSelect" 
@@ -517,102 +518,37 @@
             />
 
             <select id="funcionarioPermissao" style="margin-bottom: 12px;">
-              <!-- Preenchido via JS -->
             </select>
 
             <select id="orgaoPermissao" style="margin-bottom: 12px;">
-              <!-- Preenchido via JS -->
             </select>
 
-            <select id="nivelPermissao" style="margin-bottom: 24px;">
-              <!-- Preenchido via JS -->
+            <select id="nivelPermissao" style="margin-bottom: 24px;" onchange="atualizarCamposPermissao()">
             </select>
+
+            <div class="checks-permissoes" id="checksPermissoes" style="display: none; margin-bottom: 16px;">
+              <label><input type="checkbox" id="permMural"> Mural</label>
+              <label><input type="checkbox" id="permTurmas"> Turmas</label>
+              <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
+              <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
+              <label><input type="checkbox" id="permAlunos"> Alunos</label>
+            </div>
 
             <button class="btn-login" type="button" onclick="salvarPermissao()" id="btnSalvarPermissao">Salvar permissão</button>
-            
-            <!-- Botão escondido que só aparece ao editar -->
             <button class="btn-clear" type="button" onclick="cancelarEdicaoPermissao()" id="btnCancelarPermissao" style="display: none; width: 100%; margin-top: 8px;">Cancelar edição</button>
 
           </div>
 
-            <h2>Atribuir acesso</h2>
-
-            <select id="funcionarioPermissao"></select>
-
-            <select id="orgaoPermissao"></select>
-
-            <select
-              id="nivelPermissao"
-              onchange="atualizarCamposPermissao()"
-            >
-              <option value="2">
-                Nível 2 - Diretor Escolar
-              </option>
-
-              <option value="3">
-                Nível 3 - Secretário Escolar
-              </option>
-
-              <option value="4">
-                Nível 4 - Perfil
-              </option>
-
-            </select>
-
-            <div
-              class="checks-permissoes"
-              id="checksPermissoes"
-            >
-
-              <label>
-                <input type="checkbox" id="permMural">
-                Mural
-              </label>
-
-              <label>
-                <input type="checkbox" id="permTurmas">
-                Turmas
-              </label>
-
-              <label>
-                <input type="checkbox" id="permFuncionarios">
-                Funcionários
-              </label>
-
-              <label>
-                <input type="checkbox" id="permMatriculas">
-                Matrículas
-              </label>
-
-              <label>
-                <input type="checkbox" id="permAlunos">
-                Alunos
-              </label>
-
-            </div>
-
-            <button
-              class="btn-login"
-              onclick="salvarPermissao()"
-            >
-              Salvar permissão
-            </button>
-
-          </div>
-
+          <!-- Lista Cadastrados (Direita) -->
           <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
             <h2>Acessos cadastrados</h2>
-                     <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
-            <h2>Acessos cadastrados</h2>
-
-            <!-- NOVO: Barra de Busca e Filtro de Permissões -->
             <div style="display: grid; grid-template-columns: 1fr 160px 220px auto; gap: 12px; margin-bottom: 18px; align-items: center;">
               <input 
                 type="search" 
                 id="buscaPermissao" 
-                placeholder="Buscar funcionário por nome ou email..." 
+                placeholder="Buscar funcionário..." 
                 oninput="renderizarPermissoes()" 
               />
               <select id="filtroNivelPermissao" onchange="renderizarPermissoes()">
@@ -628,12 +564,6 @@
             </div>
 
             <div class="lista-alunos" id="listaPermissoes"></div>
-
-          </div>
-            <div
-              class="lista-alunos"
-              id="listaPermissoes"
-            ></div>
 
           </div>
 
