@@ -67,7 +67,6 @@ function renderizarEscolas() {
       '<span class="icon">🏫</span>' +
       '<span class="label">' + escola.nome + '</span>'
 
-    // Admin Level 1 actions in card overlay in Edit Mode
     if (modoEdicaoAtivo && usuarioNivel1()) {
       const actions = document.createElement('div')
       actions.className = 'card-actions'
@@ -113,8 +112,14 @@ function abrirEscola(escolaId) {
   escolaAtual = school.id
 
   document.getElementById('tituloEscola').innerText = school.nome
-  
-  // Render and adjust screen specific settings
+
+  // NOVO: Mostrar nome da escola no header global
+  var headerEscola = document.getElementById('headerEscolaNome')
+  if (headerEscola) {
+    headerEscola.textContent = '🏫 ' + school.nome
+    headerEscola.classList.add('visible')
+  }
+
   atualizarInterfaceModo()
   renderizarModulosDaEscola()
   mostrarTela('escola')
@@ -152,6 +157,14 @@ function renderizarModulosDaEscola() {
 
 function voltarParaEscolas() {
   escolaAtual = null
+
+  // NOVO: Limpar nome da escola do header global
+  var headerEscola = document.getElementById('headerEscolaNome')
+  if (headerEscola) {
+    headerEscola.textContent = ''
+    headerEscola.classList.remove('visible')
+  }
+
   mostrarTela('home')
 }
 
@@ -184,26 +197,28 @@ function abrirModalEditarEscola() {
 async function excluirEscola() {
   const escola = escolas.find(function(e) { return e.id === escolaAtual })
   if (!escola) return
-  excluirEscolaConfirmado(escola.id, escola.nome, true)
+  await excluirEscolaConfirmado(escola.id, escola.nome, true)
 }
 
-async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar = false) {
+async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
+  if (redirecionar === undefined) redirecionar = false
+
   if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
 
   try {
     // 1. Obter os órgãos da escola
-    const { data: listOrgaos, error: errOrgaos } = await clienteSupabase
+    var { data: listOrgaos, error: errOrgaos } = await clienteSupabase
       .from('orgaos')
       .select('id')
       .eq('escola_id', escolaId)
 
     if (errOrgaos) throw errOrgaos
 
-    const orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
+    var orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
 
     if (orgaoIds.length > 0) {
       // 2. Excluir vínculos de funcionários
-      const { error: errVinc } = await clienteSupabase
+      var { error: errVinc } = await clienteSupabase
         .from('vinculos_funcionarios')
         .delete()
         .in('orgao_id', orgaoIds)
@@ -211,7 +226,7 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar = fals
       if (errVinc) throw errVinc
 
       // 3. Excluir acessos de usuários
-      const { error: errAces } = await clienteSupabase
+      var { error: errAces } = await clienteSupabase
         .from('acessos_usuarios')
         .delete()
         .in('orgao_id', orgaoIds)
@@ -219,8 +234,26 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar = fals
       if (errAces) throw errAces
     }
 
+    // FIX: 3.5 - Obter IDs dos alunos para limpar tabela frequencia
+    var { data: alunosEscola } = await clienteSupabase
+      .from('alunos')
+      .select('id')
+      .eq('escola_id', escolaId)
+
+    var alunoIds = (alunosEscola || []).map(function(a) { return a.id })
+
+    if (alunoIds.length > 0) {
+      // FIX: 3.6 - Excluir registros de frequencia (evita FK constraint)
+      var { error: errFreq } = await clienteSupabase
+        .from('frequencia')
+        .delete()
+        .in('aluno_id', alunoIds)
+
+      if (errFreq) throw errFreq
+    }
+
     // 4. Excluir alunos
-    const { error: errAlun } = await clienteSupabase
+    var { error: errAlun } = await clienteSupabase
       .from('alunos')
       .delete()
       .eq('escola_id', escolaId)
@@ -228,25 +261,39 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar = fals
     if (errAlun) throw errAlun
 
     // 5. Excluir órgãos
-    const { error: errOrgDel } = await clienteSupabase
+    var { error: errOrgDel } = await clienteSupabase
       .from('orgaos')
       .delete()
       .eq('escola_id', escolaId)
 
     if (errOrgDel) throw errOrgDel
 
-    // 6. Excluir a escola
-    const { error: errEscDel } = await clienteSupabase
+    // 6. Excluir a escola (com .select() para verificar se realmente excluiu)
+    var { data: deletedEscola, error: errEscDel } = await clienteSupabase
       .from('escolas')
       .delete()
       .eq('id', escolaId)
+      .select()
 
     if (errEscDel) throw errEscDel
 
+    // FIX: Verificar se a exclusão realmente aconteceu (RLS pode bloquear)
+    if (!deletedEscola || deletedEscola.length === 0) {
+      throw new Error(
+        'A exclusão foi bloqueada pelas políticas de segurança (RLS) do banco de dados. ' +
+        'Acesse o painel do Supabase e adicione políticas de DELETE nas tabelas.'
+      )
+    }
+
     alert('Escola ' + nomeEscola + ' excluída com sucesso!')
-    
+
     if (redirecionar) {
       escolaAtual = null
+      var headerEscola = document.getElementById('headerEscolaNome')
+      if (headerEscola) {
+        headerEscola.textContent = ''
+        headerEscola.classList.remove('visible')
+      }
       mostrarTela('home')
     }
     await carregarEscolas()
@@ -283,8 +330,15 @@ async function salvarEscola() {
       .from('orgaos')
       .update({ nome: nome })
       .eq('escola_id', escolaEditando)
+
+    // NOVO: Atualizar nome no header global se escola editada é a atual
+    if (escolaEditando === escolaAtual) {
+      var headerEscola = document.getElementById('headerEscolaNome')
+      if (headerEscola && headerEscola.classList.contains('visible')) {
+        headerEscola.textContent = '🏫 ' + nome
+      }
+    }
   } else {
-    // Insert new school
     const { data: novaEscola, error: errEsc } = await clienteSupabase
       .from('escolas')
       .insert([{ nome: nome }])
@@ -296,7 +350,6 @@ async function salvarEscola() {
       return
     }
 
-    // Automatically create corresponding organ for permissions linking
     const { error: errOrg } = await clienteSupabase
       .from('orgaos')
       .insert([{
