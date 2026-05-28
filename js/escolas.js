@@ -372,3 +372,26 @@ function abrirModuloEscola(escolaId, modulo) {
   escolaAtual = escolaId
   mostrarTela(modulo)
 }
+function limparEscolaAtual() {
+  escolaAtual = null
+
+  // Limpar nome e remover botão X do header
+  var headerEscola = document.getElementById('headerEscolaNome')
+  if (headerEscola) {
+    headerEscola.innerHTML = ''
+    headerEscola.classList.remove('visible')
+  }
+
+  // Recarregar a tela atual para o modo global
+  const telaAtual = document.querySelector('.menu button.active')
+  if (telaAtual) {
+    const telaId = telaAtual.id.replace('menu-', '')
+    if (telaId === 'home' || telaId === 'escola') {
+      mostrarTela('home')
+    } else {
+      mostrarTela(telaId) // Recarrega Alunos, Funcionarios ou Mural globalmente
+    }
+  } else {
+    mostrarTela('home')
+  }
+}
