@@ -155,16 +155,7 @@ function renderizarModulosDaEscola() {
 }
 
 function voltarParaEscolas() {
-  escolaAtual = null
-
-  // NOVO: Limpar nome da escola do header global
-  var headerEscola = document.getElementById('headerEscolaNome')
-  if (headerEscola) {
-    headerEscola.textContent = ''
-    headerEscola.classList.remove('visible')
-  }
-
-  mostrarTela('home')
+  limparEscolaAtual()
 }
 
 function voltarParaEscola() {
