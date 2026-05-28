@@ -349,3 +349,12 @@ input:checked + .slider:before {
     display: flex;
   }
 }
+
+
+/* Lucide Icons - Sidebar */
+.menu-icon svg {
+  width: 20px;
+  height: 20px;
+  stroke: currentColor;
+  stroke-width: 1.75;
+}
