@@ -503,7 +503,37 @@
 
         <div class="permissions-layout">
 
-          <div class="permissions-box" id="boxFormPermissao" style="display: none;">
+                   <div class="permissions-box">
+
+            <h2>Atribuir acesso</h2>
+
+            <!-- NOVO: Campo de busca para o select de funcionário -->
+            <input 
+              type="text" 
+              id="buscaFuncionarioSelect" 
+              placeholder="Pesquisar funcionário..." 
+              oninput="filtrarSelectFuncionario()" 
+              style="margin-bottom: 8px;"
+            />
+
+            <select id="funcionarioPermissao" style="margin-bottom: 12px;">
+              <!-- Preenchido via JS -->
+            </select>
+
+            <select id="orgaoPermissao" style="margin-bottom: 12px;">
+              <!-- Preenchido via JS -->
+            </select>
+
+            <select id="nivelPermissao" style="margin-bottom: 24px;">
+              <!-- Preenchido via JS -->
+            </select>
+
+            <button class="btn-login" type="button" onclick="salvarPermissao()" id="btnSalvarPermissao">Salvar permissão</button>
+            
+            <!-- Botão escondido que só aparece ao editar -->
+            <button class="btn-clear" type="button" onclick="cancelarEdicaoPermissao()" id="btnCancelarPermissao" style="display: none; width: 100%; margin-top: 8px;">Cancelar edição</button>
+
+          </div>
 
             <h2>Atribuir acesso</h2>
 
