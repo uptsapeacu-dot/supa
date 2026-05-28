@@ -5,20 +5,16 @@ async function carregarEscolas() {
     lista.innerHTML = '<div class="empty-state">Carregando escolas...</div>'
   }
 
-  let query = clienteSupabase
+  const { data, error } = await clienteSupabase
     .from('escolas')
     .select('*')
     .order('nome', { ascending: true })
 
-  const { data, error } = await query
-
   if (error) {
     console.log(error)
-
     if (lista) {
       lista.innerHTML = '<div class="empty-state">Erro ao carregar escolas.</div>'
     }
-
     return
   }
 
@@ -63,8 +59,13 @@ function renderizarEscolas() {
       abrirEscola(escola.id)
     }
 
+    // Mostra logo se existir, senão mostra o emoji
+    const iconeHtml = escola.logo_url
+      ? '<img src="' + escola.logo_url + '" alt="Logo ' + escola.nome + '" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #3ea6ff;">'
+      : '<span class="icon">🏫</span>'
+
     card.innerHTML =
-      '<span class="icon">🏫</span>' +
+      iconeHtml +
       '<span class="label">' + escola.nome + '</span>'
 
     if (modoEdicaoAtivo && usuarioNivel1()) {
@@ -80,6 +81,19 @@ function renderizarEscolas() {
         escolaEditando = escola.id
         document.getElementById('tituloModalEscola').innerText = 'Editar Escola'
         document.getElementById('nomeEscola').value = escola.nome
+
+        // Mostrar logo atual no preview se existir
+        if (escola.logo_url) {
+          document.getElementById('imgPreviewLogo').src = escola.logo_url
+          document.getElementById('previewLogoEscola').style.display = 'block'
+          document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo (opcional)'
+        } else {
+          document.getElementById('previewLogoEscola').style.display = 'none'
+          document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+        }
+
+        document.getElementById('logoEscola').value = ''
+        document.getElementById('msgLogoObrigatoria').style.display = 'none'
         document.getElementById('modalEscola').style.display = 'flex'
         document.getElementById('nomeEscola').focus()
       }
@@ -102,6 +116,44 @@ function renderizarEscolas() {
   })
 }
 
+// Preview da imagem antes de fazer upload
+function previewLogo(input) {
+  const file = input.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = function(e) {
+    document.getElementById('imgPreviewLogo').src = e.target.result
+    document.getElementById('previewLogoEscola').style.display = 'block'
+    document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo'
+    document.getElementById('msgLogoObrigatoria').style.display = 'none'
+  }
+  reader.readAsDataURL(file)
+}
+
+async function uploadLogo(file, escolaId) {
+  const extensao = file.name.split('.').pop()
+  const caminho = 'escola-' + escolaId + '.' + extensao
+
+  // Remove logo antiga se existir
+  await clienteSupabase.storage
+    .from('logos-escolas')
+    .remove([caminho])
+
+  const { error: errUpload } = await clienteSupabase.storage
+    .from('logos-escolas')
+    .upload(caminho, file, { upsert: true })
+
+  if (errUpload) throw errUpload
+
+  const { data } = clienteSupabase.storage
+    .from('logos-escolas')
+    .getPublicUrl(caminho)
+
+  // Adiciona timestamp para forçar atualização do cache
+  return data.publicUrl + '?t=' + Date.now()
+}
+
 function abrirEscola(escolaId) {
   const school = escolas.find(function(item) {
     return item.id === escolaId
@@ -110,12 +162,18 @@ function abrirEscola(escolaId) {
   if (!school) return
 
   escolaAtual = school.id
-
   document.getElementById('tituloEscola').innerText = school.nome
 
   var headerEscola = document.getElementById('headerEscolaNome')
   if (headerEscola) {
-    headerEscola.innerHTML = '<span class="nome-texto">🏫 ' + school.nome + '</span><button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
+    // Mostra logo pequena no header também se existir
+    const logoHeader = school.logo_url
+      ? '<img src="' + school.logo_url + '" style="width:22px; height:22px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;">'
+      : '🏫 '
+
+    headerEscola.innerHTML =
+      '<span class="nome-texto">' + logoHeader + school.nome + '</span>' +
+      '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
     headerEscola.classList.add('visible')
   }
 
@@ -126,7 +184,6 @@ function abrirEscola(escolaId) {
 
 function renderizarModulosDaEscola() {
   const lista = document.getElementById('modulosDaEscola')
-
   lista.innerHTML = ''
 
   const modulosPermitidos = modulosEscola.filter(function(modulo) {
@@ -170,6 +227,10 @@ function abrirModalEscola() {
   escolaEditando = null
   document.getElementById('tituloModalEscola').innerText = 'Nova Escola'
   document.getElementById('nomeEscola').value = ''
+  document.getElementById('logoEscola').value = ''
+  document.getElementById('previewLogoEscola').style.display = 'none'
+  document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+  document.getElementById('msgLogoObrigatoria').style.display = 'none'
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
 }
@@ -177,9 +238,22 @@ function abrirModalEscola() {
 function abrirModalEditarEscola() {
   const escola = escolas.find(function(e) { return e.id === escolaAtual })
   if (!escola) return
+
   escolaEditando = escola.id
   document.getElementById('tituloModalEscola').innerText = 'Editar Escola'
   document.getElementById('nomeEscola').value = escola.nome
+  document.getElementById('logoEscola').value = ''
+  document.getElementById('msgLogoObrigatoria').style.display = 'none'
+
+  if (escola.logo_url) {
+    document.getElementById('imgPreviewLogo').src = escola.logo_url
+    document.getElementById('previewLogoEscola').style.display = 'block'
+    document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo (opcional)'
+  } else {
+    document.getElementById('previewLogoEscola').style.display = 'none'
+    document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+  }
+
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
 }
@@ -196,7 +270,6 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
   if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
 
   try {
-    // 1. Obter os órgãos da escola
     var { data: listOrgaos, error: errOrgaos } = await clienteSupabase
       .from('orgaos')
       .select('id')
@@ -207,7 +280,6 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
     var orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
 
     if (orgaoIds.length > 0) {
-      // 2. Excluir vínculos de funcionários
       var { error: errVinc } = await clienteSupabase
         .from('vinculos_funcionarios')
         .delete()
@@ -215,7 +287,6 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
 
       if (errVinc) throw errVinc
 
-      // 3. Excluir acessos de usuários
       var { error: errAces } = await clienteSupabase
         .from('acessos_usuarios')
         .delete()
@@ -224,7 +295,6 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
       if (errAces) throw errAces
     }
 
-    // FIX: 3.5 - Obter IDs dos alunos para limpar tabela frequencia
     var { data: alunosEscola } = await clienteSupabase
       .from('alunos')
       .select('id')
@@ -233,32 +303,23 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
     var alunoIds = (alunosEscola || []).map(function(a) { return a.id })
 
     if (alunoIds.length > 0) {
-      // FIX: 3.6 - Excluir registros de frequencia (evita FK constraint)
-      var { error: errFreq } = await clienteSupabase
+      await clienteSupabase
         .from('frequencia')
         .delete()
         .in('aluno_id', alunoIds)
-
-      if (errFreq) throw errFreq
     }
 
-    // 4. Excluir alunos
-    var { error: errAlun } = await clienteSupabase
-      .from('alunos')
-      .delete()
-      .eq('escola_id', escolaId)
+    await clienteSupabase.from('alunos').delete().eq('escola_id', escolaId)
+    await clienteSupabase.from('orgaos').delete().eq('escola_id', escolaId)
 
-    if (errAlun) throw errAlun
+    // Remove logo do Storage também
+    const extensoes = ['png', 'jpg', 'jpeg', 'webp', 'gif']
+    for (var i = 0; i < extensoes.length; i++) {
+      await clienteSupabase.storage
+        .from('logos-escolas')
+        .remove(['escola-' + escolaId + '.' + extensoes[i]])
+    }
 
-    // 5. Excluir órgãos
-    var { error: errOrgDel } = await clienteSupabase
-      .from('orgaos')
-      .delete()
-      .eq('escola_id', escolaId)
-
-    if (errOrgDel) throw errOrgDel
-
-    // 6. Excluir a escola (com .select() para verificar se realmente excluiu)
     var { data: deletedEscola, error: errEscDel } = await clienteSupabase
       .from('escolas')
       .delete()
@@ -267,28 +328,19 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
 
     if (errEscDel) throw errEscDel
 
-    // FIX: Verificar se a exclusão realmente aconteceu (RLS pode bloquear)
     if (!deletedEscola || deletedEscola.length === 0) {
-      throw new Error(
-        'A exclusão foi bloqueada pelas políticas de segurança (RLS) do banco de dados. ' +
-        'Acesse o painel do Supabase e adicione políticas de DELETE nas tabelas.'
-      )
+      throw new Error('A exclusão foi bloqueada pelas políticas de segurança (RLS).')
     }
 
     alert('Escola ' + nomeEscola + ' excluída com sucesso!')
 
     if (redirecionar) {
-      escolaAtual = null
-      var headerEscola = document.getElementById('headerEscolaNome')
-      if (headerEscola) {
-        headerEscola.textContent = ''
-        headerEscola.classList.remove('visible')
-      }
-      mostrarTela('home')
+      limparEscolaAtual()
     }
+
     await carregarEscolas()
   } catch (err) {
-    console.error('Erro ao excluir escola e seus dados:', err)
+    console.error('Erro ao excluir escola:', err)
     alert('Erro ao excluir escola: ' + (err.message || err))
   }
 }
@@ -299,87 +351,119 @@ function fecharModalEscola() {
 
 async function salvarEscola() {
   const nome = document.getElementById('nomeEscola').value.trim()
+  const fileInput = document.getElementById('logoEscola')
+  const file = fileInput.files[0]
+  const btn = document.getElementById('btnSalvarEscola')
 
   if (!nome) {
     alert('Informe o nome da escola')
     return
   }
 
-  if (escolaEditando) {
-    const { error: errEsc } = await clienteSupabase
-      .from('escolas')
-      .update({ nome: nome })
-      .eq('id', escolaEditando)
-
-    if (errEsc) {
-      alert('Erro ao salvar escola')
-      return
-    }
-
-    await clienteSupabase
-      .from('orgaos')
-      .update({ nome: nome })
-      .eq('escola_id', escolaEditando)
-
-    // NOVO: Atualizar nome no header global se escola editada é a atual
-    if (escolaEditando === escolaAtual) {
-      var headerEscola = document.getElementById('headerEscolaNome')
-      if (headerEscola && headerEscola.classList.contains('visible')) {
-        headerEscola.innerHTML = '<span class="nome-texto">🏫 ' + nome + '</span><button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
-      }
-    }
-  } else {
-    const { data: novaEscola, error: errEsc } = await clienteSupabase
-      .from('escolas')
-      .insert([{ nome: nome }])
-      .select()
-      .single()
-
-    if (errEsc) {
-      alert('Erro ao salvar escola')
-      return
-    }
-
-    const { error: errOrg } = await clienteSupabase
-      .from('orgaos')
-      .insert([{
-        nome: nome,
-        tipo: 'escola',
-        escola_id: novaEscola.id,
-        ativo: true
-      }])
-
-    if (errOrg) {
-      console.error('Erro ao auto-criar órgão para escola:', errOrg)
-    }
+  // Logo obrigatória apenas para escolas NOVAS
+  if (!escolaEditando && !file) {
+    document.getElementById('msgLogoObrigatoria').style.display = 'block'
+    return
   }
 
-  fecharModalEscola()
-  await carregarEscolas()
+  btn.disabled = true
+  btn.innerText = 'Salvando...'
+
+  try {
+    if (escolaEditando) {
+      const { error: errEsc } = await clienteSupabase
+        .from('escolas')
+        .update({ nome: nome })
+        .eq('id', escolaEditando)
+
+      if (errEsc) throw errEsc
+
+      await clienteSupabase
+        .from('orgaos')
+        .update({ nome: nome })
+        .eq('escola_id', escolaEditando)
+
+      // Faz upload da nova logo se uma nova foi selecionada
+      if (file) {
+        const novaUrl = await uploadLogo(file, escolaEditando)
+        await clienteSupabase
+          .from('escolas')
+          .update({ logo_url: novaUrl })
+          .eq('id', escolaEditando)
+      }
+
+      if (escolaEditando === escolaAtual) {
+        const escolaAtualizada = escolas.find(function(e) { return e.id === escolaEditando })
+        if (escolaAtualizada) {
+          escolaAtualizada.nome = nome
+        }
+        var headerEscola = document.getElementById('headerEscolaNome')
+        if (headerEscola && headerEscola.classList.contains('visible')) {
+          headerEscola.innerHTML =
+            '<span class="nome-texto">🏫 ' + nome + '</span>' +
+            '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
+        }
+      }
+    } else {
+      // Nova escola
+      const { data: novaEscola, error: errEsc } = await clienteSupabase
+        .from('escolas')
+        .insert([{ nome: nome }])
+        .select()
+        .single()
+
+      if (errEsc) throw errEsc
+
+      // Upload da logo obrigatória
+      const logoUrl = await uploadLogo(file, novaEscola.id)
+
+      await clienteSupabase
+        .from('escolas')
+        .update({ logo_url: logoUrl })
+        .eq('id', novaEscola.id)
+
+      await clienteSupabase
+        .from('orgaos')
+        .insert([{
+          nome: nome,
+          tipo: 'escola',
+          escola_id: novaEscola.id,
+          ativo: true
+        }])
+    }
+
+    fecharModalEscola()
+    await carregarEscolas()
+  } catch (err) {
+    console.error('Erro ao salvar escola:', err)
+    alert('Erro ao salvar escola: ' + (err.message || err))
+  } finally {
+    btn.disabled = false
+    btn.innerText = 'Salvar escola'
+  }
 }
 
 function abrirModuloEscola(escolaId, modulo) {
   escolaAtual = escolaId
   mostrarTela(modulo)
 }
+
 function limparEscolaAtual() {
   escolaAtual = null
 
-  // Limpar nome e remover botão X do header
   var headerEscola = document.getElementById('headerEscolaNome')
   if (headerEscola) {
     headerEscola.innerHTML = ''
     headerEscola.classList.remove('visible')
   }
 
-  // Recarregar a tela atual para o modo global
   const telaAtual = document.querySelector('.menu button.active')
   if (telaAtual) {
     const telaId = telaAtual.id.replace('menu-', '')
     if (telaId === 'home' || telaId === 'escola') {
       mostrarTela('home')
     } else {
-      mostrarTela(telaId) // Recarrega Alunos, Funcionarios ou Mural globalmente
+      mostrarTela(telaId)
     }
   } else {
     mostrarTela('home')
