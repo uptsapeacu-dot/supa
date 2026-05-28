@@ -178,24 +178,26 @@ function atualizarInterfaceModo() {
     btnExcluirEscola.style.display = editavel ? 'inline-block' : 'none'
   }
 
+   // Na função atualizarInterfaceModo(), procure e substitua estes 3 blocos:
+
   // Update Students add button
   const btnAddAluno = document.getElementById('btnAddAluno')
   if (btnAddAluno) {
-    const podeCriarAlunos = usuarioNivel1() || (escolaAtual && podeAcessarModulo('alunos', escolaAtual))
+    const podeCriarAlunos = escolaAtual && (usuarioNivel1() || podeAcessarModulo('alunos', escolaAtual))
     btnAddAluno.style.display = (modoEdicaoAtivo && podeCriarAlunos) ? 'flex' : 'none'
   }
 
   // Update Employees add button
   const btnAddFuncionario = document.getElementById('btnAddFuncionario')
   if (btnAddFuncionario) {
-    const podeCriarFuncionarios = usuarioNivel1() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
+    const podeCriarFuncionarios = escolaAtual && (usuarioNivel1() || podeAcessarModulo('funcionarios', escolaAtual))
     btnAddFuncionario.style.display = (modoEdicaoAtivo && podeCriarFuncionarios) ? 'flex' : 'none'
   }
 
   // Update Mural notice creator form
   const formNovoAviso = document.getElementById('formNovoAviso')
   if (formNovoAviso) {
-    const podePostarMural = usuarioNivel1() || (escolaAtual && podeAcessarModulo('mural', escolaAtual))
+    const podePostarMural = escolaAtual && (usuarioNivel1() || podeAcessarModulo('mural', escolaAtual))
     formNovoAviso.style.display = (modoEdicaoAtivo && podePostarMural) ? 'block' : 'none'
   }
 
