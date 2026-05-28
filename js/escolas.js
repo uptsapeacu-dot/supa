@@ -203,12 +203,17 @@ function renderizarModulosDaEscola() {
       abrirModuloEscola(escolaAtual, modulo.id)
     }
 
-    card.innerHTML =
-      '<span class="icon">' + modulo.icone + '</span>' +
-      '<span class="label">' + modulo.nome + '</span>'
+  card.innerHTML =
+  '<span class="icon"><i data-lucide="' + modulo.icone + '"></i></span>' +
+  '<span class="label">' + modulo.nome + '</span>'
 
     lista.appendChild(card)
   })
+
+  if (typeof lucide !== 'undefined') {
+    lucide.createIcons()
+  }
+  
 }
 
 function voltarParaEscolas() {
