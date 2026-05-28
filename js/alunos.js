@@ -113,7 +113,6 @@ function renderizarAlunos() {
     info.appendChild(detalhes)
     item.appendChild(info)
 
-    // Render edit/delete controls in Edit Mode
     if (modoEdicaoAtivo && temPermissaoEdicao) {
       const actionsDiv = document.createElement('div')
       actionsDiv.style.display = 'flex'
@@ -150,7 +149,18 @@ function renderizarAlunos() {
 
 async function excluirAluno(alunoId) {
   if (!confirm('Deseja excluir este aluno?')) return
-  const { error } = await clienteSupabase
+
+  // FIX: Excluir registros de frequência antes do aluno (FK constraint)
+  var { error: errFreq } = await clienteSupabase
+    .from('frequencia')
+    .delete()
+    .eq('aluno_id', alunoId)
+
+  if (errFreq) {
+    console.error('Erro ao excluir frequência do aluno:', errFreq)
+  }
+
+  var { error } = await clienteSupabase
     .from('alunos')
     .delete()
     .eq('id', alunoId)
