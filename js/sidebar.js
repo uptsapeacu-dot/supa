@@ -24,7 +24,7 @@ function aplicarVisibilidadeSidebar() {
   }
 
   if (menus.home) menus.home.style.display = 'flex'
-  if (menus.perfil) menus.perfil.style.display = 'flex'
+  // O botão perfil foi removido daqui para não aparecer para Níveis 1, 2 e 3
 
   modulosEscola.forEach(function(modulo) {
     const menu = menus[modulo.id]
