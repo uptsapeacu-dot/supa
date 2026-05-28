@@ -1,43 +1,33 @@
 async function carregarDadosMural() {
   carregarAvisos()
-
   muralFuncionarios = []
   let orgaosPermitidos = []
-
-  // Resolve organ associated with current school
+  // Resolve os órgãos da escola selecionada OU carrega todos permitidos globalmente
   if (escolaAtual) {
-    const orgaoEscola = orgaos.find(function(orgao) {
-      return orgao.escola_id === escolaAtual
-    })
+    const orgaoEscola = orgaos.find(function(orgao) { return orgao.escola_id === escolaAtual })
     if (orgaoEscola) {
       orgaosPermitidos = [orgaoEscola.id]
     } else {
-      // Fetch school organ dynamically if not preloaded in orgaos global variable
-      const { data } = await clienteSupabase
-        .from('orgaos')
-        .select('id')
-        .eq('escola_id', escolaAtual)
-        .eq('ativo', true)
-      
+      const { data } = await clienteSupabase.from('orgaos').select('id').eq('escola_id', escolaAtual).eq('ativo', true)
       orgaosPermitidos = (data || []).map(function(o) { return o.id })
     }
+  } else {
+    if (usuarioNivel1()) {
+      const { data } = await clienteSupabase.from('orgaos').select('id').eq('ativo', true)
+      orgaosPermitidos = (data || []).map(function(o) { return o.id })
+    } else {
+      orgaosPermitidos = acessosAtual.filter(function(a) { return a.orgao_id }).map(function(a) { return a.orgao_id })
+    }
   }
-
   if (orgaosPermitidos.length > 0) {
-    const { data } = await clienteSupabase
-      .from('vinculos_funcionarios')
-      .select('*, funcionarios(*), orgaos(*)')
-      .in('orgao_id', orgaosPermitidos)
-      .eq('ativo', true)
-
+    const { data } = await clienteSupabase.from('vinculos_funcionarios').select('*, funcionarios(*), orgaos(*)').in('orgao_id', orgaosPermitidos).eq('ativo', true)
     if (data) {
       data.forEach(function(v) {
         if (v.funcionarios && v.funcionarios.data_nascimento) {
           const partes = v.funcionarios.data_nascimento.split('-')
           if (partes.length === 3) {
             const dia = parseInt(partes[2], 10)
-            const mes = parseInt(partes[1], 10) - 1 // 0-indexed month
-
+            const mes = parseInt(partes[1], 10) - 1
             muralFuncionarios.push({
               id: v.funcionarios.id,
               nome: v.funcionarios.nome || v.funcionarios.email,
@@ -50,7 +40,6 @@ async function carregarDadosMural() {
       })
     }
   }
-
   renderizarCalendario()
 }
 
@@ -155,32 +144,39 @@ function fecharModalAniversariante() {
 function carregarAvisos() {
   const lista = document.getElementById('listaAvisos')
   if (!lista) return
-
-  if (!escolaAtual) {
-    lista.innerHTML = '<div class="empty-state">Nenhuma escola selecionada.</div>'
+  let avisosGlobais = []
+  
+  if (escolaAtual) {
+    const key = 'mural_avisos_' + escolaAtual
+    avisosGlobais = JSON.parse(localStorage.getItem(key) || '[]')
+  } else {
+    // Modo Global: puxa os avisos de todas as escolas permitidas
+    const idsPermitidos = idsEscolasPermitidas()
+    idsPermitidos.forEach(function(id) {
+      const avs = JSON.parse(localStorage.getItem('mural_avisos_' + id) || '[]')
+      avisosGlobais = avisosGlobais.concat(avs)
+    })
+    
+    // Ordena do mais recente para o mais antigo
+    avisosGlobais.sort(function(a, b) {
+      const tA = parseInt(a.id.split('_')[1] || 0)
+      const tB = parseInt(b.id.split('_')[1] || 0)
+      return tB - tA
+    })
+  }
+  if (avisosGlobais.length === 0) {
+    lista.innerHTML = '<div class="empty-state">Nenhum comunicado cadastrado.</div>'
     return
   }
-
-  const key = 'mural_avisos_' + escolaAtual
-  const avisos = JSON.parse(localStorage.getItem(key) || '[]')
-
-  if (avisos.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Nenhum comunicado cadastrado neste mural.</div>'
-    return
-  }
-
   lista.innerHTML = ''
-  const temPermissaoEdicao = usuarioNivel1() || podeAcessarModulo('mural', escolaAtual)
-
-  avisos.forEach(function(aviso) {
+  const temPermissaoEdicao = modoEdicaoAtivo && (usuarioNivel1() || (escolaAtual && podeAcessarModulo('mural', escolaAtual)))
+  avisosGlobais.forEach(function(aviso) {
     const card = document.createElement('div')
     card.className = 'item-aluno'
     card.style.flexDirection = 'column'
     card.style.alignItems = 'flex-start'
-
     const header = document.createElement('div')
     header.className = 'aviso-header'
-
     const left = document.createElement('div')
     const autor = document.createElement('strong')
     autor.textContent = aviso.autor || 'Sistema'
@@ -189,29 +185,23 @@ function carregarAvisos() {
     meta.textContent = aviso.data
     left.appendChild(autor)
     left.appendChild(meta)
-
     header.appendChild(left)
-
-    if (modoEdicaoAtivo && temPermissaoEdicao) {
+    // O botão excluir avisa só aparece se houver uma escola selecionada e tiver edição ativa
+    if (temPermissaoEdicao && escolaAtual) {
       const btnDel = document.createElement('button')
       btnDel.className = 'btn-editar'
       btnDel.style.background = '#ff5b5b'
       btnDel.style.color = '#120000'
       btnDel.textContent = '🗑️'
       btnDel.title = 'Excluir aviso'
-      btnDel.onclick = function() {
-        excluirAviso(aviso.id)
-      }
+      btnDel.onclick = function() { excluirAviso(aviso.id) }
       header.appendChild(btnDel)
     }
-
     const content = document.createElement('div')
     content.style.marginTop = '10px'
     content.style.color = '#eee'
     content.style.whiteSpace = 'pre-wrap'
-    content.style.lineHeight = '1.5'
     content.textContent = aviso.texto
-
     card.appendChild(header)
     card.appendChild(content)
     lista.appendChild(card)
