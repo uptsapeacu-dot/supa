@@ -13,7 +13,6 @@ async function carregarFuncionariosDaTela() {
     if (orgaoEscola) {
       orgaosPermitidos = [orgaoEscola.id]
     } else {
-      // Dynamic fetch fallback if organs not loaded yet
       const { data } = await clienteSupabase
         .from('orgaos')
         .select('id')
@@ -80,7 +79,6 @@ async function carregarFuncionariosDaTela() {
     
     item.appendChild(info)
 
-    // Render actions in edit mode
     if (modoEdicaoAtivo && temPermissaoEdicao) {
       const actionsDiv = document.createElement('div')
       actionsDiv.style.display = 'flex'
@@ -154,22 +152,42 @@ function editarFuncionario(vinculo) {
 }
 
 async function salvarFuncionario() {
-  const btn = document.getElementById('btnSalvarFuncionario')
-  const nome = document.getElementById('nomeFuncionario').value.trim()
-  const email = document.getElementById('emailFuncionario').value.trim()
-  const telefone = document.getElementById('telefoneFuncionario').value.trim()
-  const cpf = document.getElementById('cpfFuncionario').value.trim()
-  const cargo = document.getElementById('cargoFuncionario').value.trim()
-  const dataNascimento = document.getElementById('nascimentoFuncionario').value || null
+  var btn = document.getElementById('btnSalvarFuncionario')
+  var nome = document.getElementById('nomeFuncionario').value.trim()
+  var email = document.getElementById('emailFuncionario').value.trim()
+  var telefone = document.getElementById('telefoneFuncionario').value.trim()
+  var cpf = document.getElementById('cpfFuncionario').value.trim()
+  var cargo = document.getElementById('cargoFuncionario').value.trim()
+  var dataNascimento = document.getElementById('nascimentoFuncionario').value || null
 
   if (!nome || !email) {
     alert('Nome e Email são obrigatórios')
     return
   }
 
-  let orgaoId = null
+  var orgaoId = null
+
   if (escolaAtual) {
-    const orgaoEscola = orgaos.find(function(o) { return o.escola_id === escolaAtual })
+    // FIX: Tentar encontrar no cache global primeiro
+    var orgaoEscola = orgaos.find(function(o) { return o.escola_id === escolaAtual })
+
+    // FIX: Fallback dinâmico - buscar do Supabase se não estiver no cache
+    if (!orgaoEscola) {
+      var { data: orgaoBuscado } = await clienteSupabase
+        .from('orgaos')
+        .select('*')
+        .eq('escola_id', escolaAtual)
+        .eq('tipo', 'escola')
+        .eq('ativo', true)
+        .limit(1)
+        .maybeSingle()
+
+      if (orgaoBuscado) {
+        orgaoEscola = orgaoBuscado
+        orgaos.push(orgaoEscola)
+      }
+    }
+
     if (orgaoEscola) {
       orgaoId = orgaoEscola.id
     }
@@ -180,11 +198,22 @@ async function salvarFuncionario() {
     return
   }
 
+  // FIX: Para nível 1 sem escola selecionada, buscar órgãos dinamicamente
   if (!orgaoId && usuarioNivel1()) {
+    if (orgaos.length === 0) {
+      var { data: orgaosBuscados } = await clienteSupabase
+        .from('orgaos')
+        .select('*')
+        .eq('ativo', true)
+        .order('nome', { ascending: true })
+
+      orgaos = orgaosBuscados || []
+    }
+
     if (orgaos.length > 0) {
       orgaoId = orgaos[0].id
     } else {
-      alert('Nenhum órgão disponível.')
+      alert('Nenhum órgão disponível. Cadastre uma escola primeiro.')
       return
     }
   }
@@ -193,27 +222,24 @@ async function salvarFuncionario() {
   btn.innerText = 'Salvando...'
 
   try {
-    let funcionarioId = funcionarioEditandoId
+    var funcionarioId = funcionarioEditandoId
 
     if (funcionarioEditandoId) {
-      // Update employee general data
-      const { error: errFunc } = await clienteSupabase
+      var { error: errFunc } = await clienteSupabase
         .from('funcionarios')
-        .update({ nome, telefone, cpf, data_nascimento: dataNascimento })
+        .update({ nome: nome, telefone: telefone, cpf: cpf, data_nascimento: dataNascimento })
         .eq('id', funcionarioEditandoId)
 
       if (errFunc) throw errFunc
 
-      // Update bond cargo
-      const { error: errVinc } = await clienteSupabase
+      var { error: errVinc } = await clienteSupabase
         .from('vinculos_funcionarios')
-        .update({ cargo })
+        .update({ cargo: cargo })
         .eq('id', vinculoEditando)
 
       if (errVinc) throw errVinc
     } else {
-      // Create new employee general record, check duplicate first
-      let { data: funcExistente } = await clienteSupabase
+      var { data: funcExistente } = await clienteSupabase
         .from('funcionarios')
         .select('id')
         .eq('email', email)
@@ -223,21 +249,20 @@ async function salvarFuncionario() {
         funcionarioId = funcExistente.id
         await clienteSupabase
           .from('funcionarios')
-          .update({ nome, telefone, cpf, data_nascimento: dataNascimento, ativo: true })
+          .update({ nome: nome, telefone: telefone, cpf: cpf, data_nascimento: dataNascimento, ativo: true })
           .eq('id', funcionarioId)
       } else {
-        const { data: novoFunc, error: errFunc } = await clienteSupabase
+        var { data: novoFunc, error: errFunc2 } = await clienteSupabase
           .from('funcionarios')
-          .insert([{ nome, email, telefone, cpf, data_nascimento: dataNascimento, ativo: true }])
+          .insert([{ nome: nome, email: email, telefone: telefone, cpf: cpf, data_nascimento: dataNascimento, ativo: true }])
           .select()
           .single()
 
-        if (errFunc) throw errFunc
+        if (errFunc2) throw errFunc2
         funcionarioId = novoFunc.id
       }
 
-      // Check if bond exists
-      const { data: vincExistente } = await clienteSupabase
+      var { data: vincExistente } = await clienteSupabase
         .from('vinculos_funcionarios')
         .select('id')
         .eq('funcionario_id', funcionarioId)
@@ -246,7 +271,7 @@ async function salvarFuncionario() {
         .maybeSingle()
 
       if (!vincExistente) {
-        const { error: errVinc } = await clienteSupabase
+        var { error: errVinc2 } = await clienteSupabase
           .from('vinculos_funcionarios')
           .insert([{
             funcionario_id: funcionarioId,
@@ -255,11 +280,11 @@ async function salvarFuncionario() {
             ativo: true
           }])
 
-        if (errVinc) throw errVinc
+        if (errVinc2) throw errVinc2
       } else {
         await clienteSupabase
           .from('vinculos_funcionarios')
-          .update({ cargo, ativo: true })
+          .update({ cargo: cargo, ativo: true })
           .eq('id', vincExistente.id)
       }
     }
