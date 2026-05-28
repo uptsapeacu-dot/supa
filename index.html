@@ -97,77 +97,45 @@
 
       <!-- MENU -->
 
-      
+            <nav class="menu">
 
-        <button
-          id="menu-home"
-          onclick="mostrarTela('home')"
-          title="Início"
-        >
-          <span class="menu-icon">🏠</span>
+        <button id="menu-home" onclick="mostrarTela('home')" title="Início">
+          <span class="menu-icon"><i data-lucide="house"></i></span>
           <span class="menu-text">Início</span>
         </button>
 
-        <button
-          id="menu-mural"
-          onclick="mostrarTela('mural')"
-          title="Mural"
-        >
-          <span class="menu-icon">📌</span>
+        <button id="menu-mural" onclick="mostrarTela('mural')" title="Mural">
+          <span class="menu-icon"><i data-lucide="pin"></i></span>
           <span class="menu-text">Mural</span>
         </button>
 
-        <button
-          id="menu-turmas"
-          onclick="mostrarTela('turmas')"
-          title="Turmas"
-        >
-          <span class="menu-icon">📚</span>
+        <button id="menu-turmas" onclick="mostrarTela('turmas')" title="Turmas">
+          <span class="menu-icon"><i data-lucide="book-open"></i></span>
           <span class="menu-text">Turmas</span>
         </button>
 
-        <button
-          id="menu-funcionarios"
-          onclick="mostrarTela('funcionarios')"
-          title="Funcionários"
-        >
-          <span class="menu-icon">👥</span>
+        <button id="menu-funcionarios" onclick="mostrarTela('funcionarios')" title="Funcionários">
+          <span class="menu-icon"><i data-lucide="users"></i></span>
           <span class="menu-text">Funcionários</span>
         </button>
 
-        <button
-          id="menu-matriculas"
-          onclick="mostrarTela('matriculas')"
-          title="Matrículas"
-        >
-          <span class="menu-icon">📝</span>
+        <button id="menu-matriculas" onclick="mostrarTela('matriculas')" title="Matrículas">
+          <span class="menu-icon"><i data-lucide="file-text"></i></span>
           <span class="menu-text">Matrículas</span>
         </button>
 
-        <button
-          id="menu-alunos"
-          onclick="mostrarTela('alunos')"
-          title="Alunos"
-        >
-          <span class="menu-icon">🎓</span>
+        <button id="menu-alunos" onclick="mostrarTela('alunos')" title="Alunos">
+          <span class="menu-icon"><i data-lucide="graduation-cap"></i></span>
           <span class="menu-text">Alunos</span>
         </button>
 
-        <button
-          id="menu-permissoes"
-          onclick="mostrarTela('permissoes')"
-          title="Permissões"
-        >
-          <span class="menu-icon">🔐</span>
+        <button id="menu-permissoes" onclick="mostrarTela('permissoes')" title="Permissões">
+          <span class="menu-icon"><i data-lucide="shield-check"></i></span>
           <span class="menu-text">Permissões</span>
         </button>
 
-        <button
-          id="menu-perfil"
-          onclick="mostrarTela('perfil')"
-          title="Perfil"
-        >
-          <span class="menu-icon">👤</span>
+        <button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
+          <span class="menu-icon"><i data-lucide="circle-user"></i></span>
           <span class="menu-text">Perfil</span>
         </button>
 
@@ -962,5 +930,11 @@
   <script src="js/permissoes.js"></script>
   <script src="js/mural.js"></script>
 
+
+  <script>
+    lucide.createIcons()
+  </script>
+
+  
 </body>
 </html>
