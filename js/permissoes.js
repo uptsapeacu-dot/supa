@@ -1,3 +1,5 @@
+let permissaoEditando = null;
+
 async function carregarTelaPermissoes() {
   if (!podeVerPermissoes()) {
     document.getElementById('listaPermissoes').innerHTML =
@@ -71,29 +73,52 @@ async function carregarAcessosSistema() {
   acessosSistema = acessos
 }
 
-function preencherSelectsPermissoes() {
+// NOVA FUNÇÃO: Filtrar o select de atribuição
+function filtrarSelectFuncionario() {
+  const buscaInput = document.getElementById('buscaFuncionarioSelect')
+  const busca = buscaInput ? buscaInput.value.toLowerCase().trim() : ''
   const selectFuncionario = document.getElementById('funcionarioPermissao')
+  
+  if (!selectFuncionario) return
+
+  selectFuncionario.innerHTML = '<option value="">Selecione o Funcionário</option>'
+
+  funcionarios.forEach(function(funcionario) {
+    const nome = (funcionario.nome || '').toLowerCase()
+    const email = (funcionario.email || '').toLowerCase()
+    
+    if (nome.includes(busca) || email.includes(busca)) {
+      const option = document.createElement('option')
+      option.value = funcionario.id
+      option.textContent = funcionario.nome || funcionario.email
+      selectFuncionario.appendChild(option)
+    }
+  })
+}
+
+function preencherSelectsPermissoes() {
   const selectOrgao = document.getElementById('orgaoPermissao')
   const selectNivel = document.getElementById('nivelPermissao')
-  selectFuncionario.innerHTML = ''
-  selectOrgao.innerHTML = ''
-  funcionarios.forEach(function(funcionario) {
-    const option = document.createElement('option')
-    option.value = funcionario.id
-    option.textContent = funcionario.nome || funcionario.email
-    selectFuncionario.appendChild(option)
-  })
-  orgaos.forEach(function(orgao) {
-    const option = document.createElement('option')
-    option.value = orgao.id
-    option.textContent = orgao.nome
-    selectOrgao.appendChild(option)
-  })
-  selectNivel.innerHTML = ''
-  if (usuarioNivel1()) selectNivel.innerHTML += '<option value="2">Nível 2 - Diretor Escolar</option>'
-  selectNivel.innerHTML += '<option value="3">Nível 3 - Secretário Escolar</option>'
-  selectNivel.innerHTML += '<option value="4">Nível 4 - Perfil</option>'
-  // NOVO: Preencher o filtro de órgãos na busca
+  
+  filtrarSelectFuncionario() // Preenche com busca
+  
+  if (selectOrgao) {
+    selectOrgao.innerHTML = '<option value="">Selecione o Órgão</option>'
+    orgaos.forEach(function(orgao) {
+      const option = document.createElement('option')
+      option.value = orgao.id
+      option.textContent = orgao.nome
+      selectOrgao.appendChild(option)
+    })
+  }
+
+  if (selectNivel) {
+    selectNivel.innerHTML = ''
+    if (usuarioNivel1()) selectNivel.innerHTML += '<option value="2">Nível 2 - Diretor Escolar</option>'
+    selectNivel.innerHTML += '<option value="3">Nível 3 - Secretário Escolar</option>'
+    selectNivel.innerHTML += '<option value="4">Nível 4 - Perfil</option>'
+  }
+
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')
   if (selectFiltroOrgao) {
     selectFiltroOrgao.innerHTML = '<option value="">Todos os Órgãos</option>'
@@ -105,11 +130,74 @@ function preencherSelectsPermissoes() {
     })
   }
 }
+
 function atualizarCamposPermissao() {
   const nivel = Number(document.getElementById('nivelPermissao').value)
   const checks = document.getElementById('checksPermissoes')
 
-  checks.style.display = nivel === 3 ? 'grid' : 'none'
+  if (checks) {
+    checks.style.display = nivel === 3 ? 'grid' : 'none'
+  }
+}
+
+// NOVA FUNÇÃO: Carregar dados para edição
+function editarPermissao(id) {
+  const acesso = acessosSistema.find(function(a) { return a.id === id })
+  if (!acesso) return
+
+  permissaoEditando = acesso.id
+
+  const buscaInput = document.getElementById('buscaFuncionarioSelect')
+  if (buscaInput) buscaInput.value = ''
+  filtrarSelectFuncionario()
+
+  document.getElementById('funcionarioPermissao').value = acesso.funcionario_id
+  document.getElementById('orgaoPermissao').value = acesso.orgao_id || ''
+  document.getElementById('nivelPermissao').value = acesso.nivel
+  
+  atualizarCamposPermissao()
+
+  if (acesso.nivel === 3) {
+    const checks = document.getElementById('checksPermissoes')
+    if (checks) {
+      const permMural = document.getElementById('permMural')
+      const permTurmas = document.getElementById('permTurmas')
+      const permFuncionarios = document.getElementById('permFuncionarios')
+      const permMatriculas = document.getElementById('permMatriculas')
+      const permAlunos = document.getElementById('permAlunos')
+
+      if (permMural) permMural.checked = acesso.pode_mural
+      if (permTurmas) permTurmas.checked = acesso.pode_turmas
+      if (permFuncionarios) permFuncionarios.checked = acesso.pode_funcionarios
+      if (permMatriculas) permMatriculas.checked = acesso.pode_matriculas
+      if (permAlunos) permAlunos.checked = acesso.pode_alunos
+    }
+  }
+
+  document.getElementById('btnSalvarPermissao').textContent = 'Atualizar permissão'
+  
+  const btnCancelar = document.getElementById('btnCancelarPermissao')
+  if (btnCancelar) btnCancelar.style.display = 'block'
+}
+
+// NOVA FUNÇÃO: Cancelar edição
+function cancelarEdicaoPermissao() {
+  permissaoEditando = null
+  
+  const buscaInput = document.getElementById('buscaFuncionarioSelect')
+  if (buscaInput) buscaInput.value = ''
+  filtrarSelectFuncionario()
+
+  document.getElementById('funcionarioPermissao').value = ''
+  document.getElementById('orgaoPermissao').value = ''
+  document.getElementById('nivelPermissao').value = ''
+  
+  atualizarCamposPermissao()
+  
+  document.getElementById('btnSalvarPermissao').textContent = 'Salvar permissão'
+  
+  const btnCancelar = document.getElementById('btnCancelarPermissao')
+  if (btnCancelar) btnCancelar.style.display = 'none'
 }
 
 async function salvarPermissao() {
@@ -117,7 +205,7 @@ async function salvarPermissao() {
   const orgaoId = document.getElementById('orgaoPermissao').value
   const nivel = Number(document.getElementById('nivelPermissao').value)
 
-  if (!funcionarioId || !orgaoId) {
+  if (!funcionarioId || (!orgaoId && nivel !== 4)) {
     alert('Selecione funcionário e órgão')
     return
   }
@@ -127,52 +215,103 @@ async function salvarPermissao() {
     return
   }
 
+  // Prevenção manual contra duplicação no momento de INSERIR
+  if (!permissaoEditando) {
+    const duplicado = acessosSistema.find(function(a) {
+      return a.funcionario_id === funcionarioId && a.orgao_id === orgaoId
+    })
+    if (duplicado) {
+      alert('Este funcionário já possui acesso neste órgão. Clique em "Editar" na lista ao invés de salvar um novo.')
+      return
+    }
+  }
+
+  let podeMural = false;
+  let podeTurmas = false;
+  let podeFuncionarios = false;
+  let podeMatriculas = false;
+  let podeAlunos = false;
+
+  if (nivel === 2) {
+    podeMural = true;
+    podeTurmas = true;
+    podeFuncionarios = true;
+    podeMatriculas = true;
+    podeAlunos = true;
+  } else if (nivel === 3) {
+    const cMural = document.getElementById('permMural')
+    const cTurmas = document.getElementById('permTurmas')
+    const cFuncs = document.getElementById('permFuncionarios')
+    const cMats = document.getElementById('permMatriculas')
+    const cAlunos = document.getElementById('permAlunos')
+    
+    podeMural = cMural ? cMural.checked : false
+    podeTurmas = cTurmas ? cTurmas.checked : false
+    podeFuncionarios = cFuncs ? cFuncs.checked : false
+    podeMatriculas = cMats ? cMats.checked : false
+    podeAlunos = cAlunos ? cAlunos.checked : false
+  }
+
   const dados = {
     funcionario_id: funcionarioId,
-    orgao_id: orgaoId,
+    orgao_id: orgaoId || null,
     nivel: nivel,
-    pode_mural: nivel === 2 || document.getElementById('permMural').checked,
-    pode_turmas: nivel === 2 || document.getElementById('permTurmas').checked,
-    pode_funcionarios: nivel === 2 || document.getElementById('permFuncionarios').checked,
-    pode_matriculas: nivel === 2 || document.getElementById('permMatriculas').checked,
-    pode_alunos: nivel === 2 || document.getElementById('permAlunos').checked,
+    pode_mural: podeMural,
+    pode_turmas: podeTurmas,
+    pode_funcionarios: podeFuncionarios,
+    pode_matriculas: podeMatriculas,
+    pode_alunos: podeAlunos,
     pode_permissoes: nivel === 2,
     ativo: true
   }
 
-  if (nivel === 4) {
-    dados.pode_mural = false
-    dados.pode_turmas = false
-    dados.pode_funcionarios = false
-    dados.pode_matriculas = false
-    dados.pode_alunos = false
-    dados.pode_permissoes = false
+  document.getElementById('btnSalvarPermissao').disabled = true
+  document.getElementById('btnSalvarPermissao').textContent = 'Salvando...'
+
+  if (permissaoEditando) {
+    // Faz UPDATE em vez de UPSERT para garantir que a linha existente seja atualizada
+    const { error } = await clienteSupabase
+      .from('acessos_usuarios')
+      .update(dados)
+      .eq('id', permissaoEditando)
+
+    if (error) {
+      console.log(error)
+      alert('Erro ao atualizar permissão')
+    } else {
+      alert('Permissão atualizada com sucesso!')
+    }
+  } else {
+    // Faz o INSERT se for um acesso completamente novo
+    const { error } = await clienteSupabase
+      .from('acessos_usuarios')
+      .insert([dados])
+
+    if (error) {
+      console.log(error)
+      alert('Erro ao salvar nova permissão')
+    } else {
+      alert('Permissão concedida com sucesso!')
+    }
   }
 
-  const { error } = await clienteSupabase
-    .from('acessos_usuarios')
-    .upsert([dados], {
-      onConflict: 'funcionario_id,orgao_id'
-    })
-
-  if (error) {
-    console.log(error)
-    alert('Erro ao salvar permissão')
-    return
-  }
+  document.getElementById('btnSalvarPermissao').disabled = false
+  cancelarEdicaoPermissao()
 
   await carregarTelaPermissoes()
-  alert('Permissão salva')
 }
+
 function renderizarPermissoes() {
   const lista = document.getElementById('listaPermissoes')
   
   const inputBusca = document.getElementById('buscaPermissao')
   const selectFiltroNivel = document.getElementById('filtroNivelPermissao')
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')
+  
   const busca = inputBusca ? inputBusca.value.toLowerCase().trim() : ''
   const filtroNivel = selectFiltroNivel ? selectFiltroNivel.value : ''
   const filtroOrgao = selectFiltroOrgao ? selectFiltroOrgao.value : ''
+  
   const filtrados = acessosSistema.filter(function(acesso) {
     let passouBusca = true
     if (busca) {
@@ -189,11 +328,14 @@ function renderizarPermissoes() {
     
     return passouBusca && passouNivel && passouOrgao
   })
+  
   if (!filtrados.length) {
     lista.innerHTML = '<div class="empty-state">Nenhum acesso encontrado com os filtros atuais.</div>'
     return
   }
+  
   lista.innerHTML = ''
+  
   filtrados.forEach(function(acesso) {
     const item = document.createElement('div')
     item.className = 'permissao-item'
@@ -203,16 +345,36 @@ function renderizarPermissoes() {
       'Órgão: ' + textoOuVazio(acesso.orgaos && acesso.orgaos.nome) + '<br>' +
       'Nível: ' + acesso.nivel +
       '</div>'
+      
     if (modoEdicaoAtivo && podeVerPermissoes()) {
       const actions = document.createElement('div')
       actions.className = 'permissao-actions'
-      actions.innerHTML = '<button class="btn-danger" type="button" onclick="removerPermissao(\'' + acesso.id + '\')">Remover</button>'
+      actions.style.display = 'flex'
+      actions.style.gap = '8px'
+      
+      const btnEdit = document.createElement('button')
+      btnEdit.className = 'btn-editar'
+      btnEdit.style.fontSize = '14px'
+      btnEdit.style.padding = '6px 12px'
+      btnEdit.style.height = 'auto'
+      btnEdit.style.borderRadius = '6px'
+      btnEdit.textContent = 'Editar'
+      btnEdit.onclick = function() { editarPermissao(acesso.id) }
+
+      const btnDel = document.createElement('button')
+      btnDel.className = 'btn-danger'
+      btnDel.textContent = 'Remover'
+      btnDel.onclick = function() { removerPermissao(acesso.id) }
+
+      actions.appendChild(btnEdit)
+      actions.appendChild(btnDel)
+      
       item.appendChild(actions)
     }
+    
     lista.appendChild(item)
   })
 }
-
 
 async function removerPermissao(acessoId) {
   if (!confirm('Remover este acesso?')) return
@@ -242,4 +404,3 @@ function limparFiltrosPermissao() {
   
   renderizarPermissoes()
 }
-
