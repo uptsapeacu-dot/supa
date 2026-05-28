@@ -113,10 +113,9 @@ function abrirEscola(escolaId) {
 
   document.getElementById('tituloEscola').innerText = school.nome
 
-  // NOVO: Mostrar nome da escola no header global
   var headerEscola = document.getElementById('headerEscolaNome')
   if (headerEscola) {
-    headerEscola.textContent = '🏫 ' + school.nome
+    headerEscola.innerHTML = '<span class="nome-texto">🏫 ' + school.nome + '</span><button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
     headerEscola.classList.add('visible')
   }
 
@@ -335,7 +334,7 @@ async function salvarEscola() {
     if (escolaEditando === escolaAtual) {
       var headerEscola = document.getElementById('headerEscolaNome')
       if (headerEscola && headerEscola.classList.contains('visible')) {
-        headerEscola.textContent = '🏫 ' + nome
+        headerEscola.innerHTML = '<span class="nome-texto">🏫 ' + nome + '</span><button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
       }
     }
   } else {
