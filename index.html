@@ -573,7 +573,33 @@
           <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
             <h2>Acessos cadastrados</h2>
+                     <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
 
+            <h2>Acessos cadastrados</h2>
+
+            <!-- NOVO: Barra de Busca e Filtro de Permissões -->
+            <div style="display: grid; grid-template-columns: 1fr 160px 220px auto; gap: 12px; margin-bottom: 18px; align-items: center;">
+              <input 
+                type="search" 
+                id="buscaPermissao" 
+                placeholder="Buscar funcionário por nome ou email..." 
+                oninput="renderizarPermissoes()" 
+              />
+              <select id="filtroNivelPermissao" onchange="renderizarPermissoes()">
+                <option value="">Todos os Níveis</option>
+                <option value="2">Nível 2</option>
+                <option value="3">Nível 3</option>
+                <option value="4">Nível 4</option>
+              </select>
+              <select id="filtroOrgaoPermissao" onchange="renderizarPermissoes()">
+                <option value="">Todos os Órgãos</option>
+              </select>
+              <button class="btn-clear" onclick="limparFiltrosPermissao()">Limpar</button>
+            </div>
+
+            <div class="lista-alunos" id="listaPermissoes"></div>
+
+          </div>
             <div
               class="lista-alunos"
               id="listaPermissoes"
