@@ -171,10 +171,13 @@ function abrirEscola(escolaId) {
       ? '<img src="' + school.logo_url + '" style="width:22px; height:22px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;">'
       : '🏫 '
 
+    // MODIFICADO AQUI: Usando o ícone X do Lucide
     headerEscola.innerHTML =
       '<span class="nome-texto">' + logoHeader + school.nome + '</span>' +
-      '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
+      '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
+    
     headerEscola.classList.add('visible')
+    if (typeof lucide !== 'undefined') lucide.createIcons() // Ativa o ícone X
   }
 
   atualizarInterfaceModo()
@@ -213,7 +216,6 @@ function renderizarModulosDaEscola() {
   if (typeof lucide !== 'undefined') {
     lucide.createIcons()
   }
-  
 }
 
 function voltarParaEscolas() {
@@ -404,9 +406,11 @@ async function salvarEscola() {
         }
         var headerEscola = document.getElementById('headerEscolaNome')
         if (headerEscola && headerEscola.classList.contains('visible')) {
+          // MODIFICADO AQUI TAMBÉM: Usando o ícone X do Lucide
           headerEscola.innerHTML =
             '<span class="nome-texto">🏫 ' + nome + '</span>' +
-            '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola">×</button>'
+            '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
+          if (typeof lucide !== 'undefined') lucide.createIcons() // Ativa o ícone X
         }
       }
     } else {
