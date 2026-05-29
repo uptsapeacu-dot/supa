@@ -168,42 +168,46 @@
     <!-- CONTEÚDO -->
 
     <main class="conteudo" id="conteudo">
-
       <!-- GLOBAL HEADER WITH MODE TOGGLE -->
       <div class="global-header">
         <div class="global-header-left">
           <div class="global-header-title">Sapeaçu Painel Escolar</div>
-          <span class="global-header-school" id="headerEscolaNome"></span>
+          <span class="global-header-school header-escola-nome"></span>
         </div>
         <div class="mode-toggle-container">
-          <span id="mode-text" class="mode-text">Modo Visualização</span>
+          <span class="mode-text">Modo Visualização</span>
           <label class="switch">
-            <input type="checkbox" id="btnModoEdicao" onchange="tentarAtivarModoEdicao(this.checked)">
+            <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
             <span class="slider"></span>
           </label>
         </div>
       </div>
 
       <!-- MOBILE -->
-
       <div class="topbar-mobile">
-
-        <div class="brand">
-
-          <div class="brand-icon">SPE</div>
-
-          <span>Sapeaçu Painel Escolar</span>
-
+        <div class="topbar-mobile-row1">
+          <div class="brand">
+            <div class="brand-icon">SPE</div>
+            <span>Sapeaçu Painel Escolar</span>
+          </div>
+          <button
+            class="mobile-menu-btn"
+            onclick="abrirSidebarMobile()"
+            aria-label="Abrir menu"
+          >
+            <i data-lucide="menu"></i>
+          </button>
         </div>
-
-        <button
-          class="mobile-menu-btn"
-          onclick="abrirSidebarMobile()"
-          aria-label="Abrir menu"
-        >
-          ☰
-        </button>
-
+        <div class="topbar-mobile-row2">
+          <span class="global-header-school header-escola-nome"></span>
+          <div class="mode-toggle-container">
+            <span class="mode-text">Visualização</span>
+            <label class="switch">
+              <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
       </div>
 
       <!-- HOME -->
