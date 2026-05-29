@@ -59,7 +59,6 @@ function renderizarEscolas() {
       abrirEscola(escola.id)
     }
 
-    // Mostra logo se existir, senão mostra o emoji
     const iconeHtml = escola.logo_url
       ? '<img src="' + escola.logo_url + '" alt="Logo ' + escola.nome + '" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #3ea6ff;">'
       : '<span class="icon">🏫</span>'
@@ -82,7 +81,6 @@ function renderizarEscolas() {
         document.getElementById('tituloModalEscola').innerText = 'Editar Escola'
         document.getElementById('nomeEscola').value = escola.nome
 
-        // Mostrar logo atual no preview se existir
         if (escola.logo_url) {
           document.getElementById('imgPreviewLogo').src = escola.logo_url
           document.getElementById('previewLogoEscola').style.display = 'block'
@@ -116,7 +114,6 @@ function renderizarEscolas() {
   })
 }
 
-// Preview da imagem antes de fazer upload
 function previewLogo(input) {
   const file = input.files[0]
   if (!file) return
@@ -135,50 +132,34 @@ async function uploadLogo(file, escolaId) {
   const extensao = file.name.split('.').pop()
   const caminho = 'escola-' + escolaId + '.' + extensao
 
-  // Remove logo antiga se existir
-  await clienteSupabase.storage
-    .from('logos-escolas')
-    .remove([caminho])
-
-  const { error: errUpload } = await clienteSupabase.storage
-    .from('logos-escolas')
-    .upload(caminho, file, { upsert: true })
+  await clienteSupabase.storage.from('logos-escolas').remove([caminho])
+  const { error: errUpload } = await clienteSupabase.storage.from('logos-escolas').upload(caminho, file, { upsert: true })
 
   if (errUpload) throw errUpload
 
-  const { data } = clienteSupabase.storage
-    .from('logos-escolas')
-    .getPublicUrl(caminho)
-
-  // Adiciona timestamp para forçar atualização do cache
+  const { data } = clienteSupabase.storage.from('logos-escolas').getPublicUrl(caminho)
   return data.publicUrl + '?t=' + Date.now()
 }
 
 function abrirEscola(escolaId) {
-  const school = escolas.find(function(item) {
-    return item.id === escolaId
-  })
-
+  const school = escolas.find(function(item) { return item.id === escolaId })
   if (!school) return
 
   escolaAtual = school.id
   document.getElementById('tituloEscola').innerText = school.nome
 
-  var headerEscola = document.getElementById('headerEscolaNome')
-  if (headerEscola) {
-    // Mostra logo pequena no header também se existir
+  document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
     const logoHeader = school.logo_url
       ? '<img src="' + school.logo_url + '" style="width:22px; height:22px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;">'
       : '🏫 '
 
-    // MODIFICADO AQUI: Usando o ícone X do Lucide
     headerEscola.innerHTML =
       '<span class="nome-texto">' + logoHeader + school.nome + '</span>' +
       '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
     
     headerEscola.classList.add('visible')
-    if (typeof lucide !== 'undefined') lucide.createIcons() // Ativa o ícone X
-  }
+  })
+  if (typeof lucide !== 'undefined') lucide.createIcons()
 
   atualizarInterfaceModo()
   renderizarModulosDaEscola()
@@ -202,20 +183,16 @@ function renderizarModulosDaEscola() {
     const card = document.createElement('button')
     card.className = 'home-card'
     card.type = 'button'
-    card.onclick = function() {
-      abrirModuloEscola(escolaAtual, modulo.id)
-    }
+    card.onclick = function() { abrirModuloEscola(escolaAtual, modulo.id) }
 
-  card.innerHTML =
-  '<span class="icon"><i data-lucide="' + modulo.icone + '"></i></span>' +
-  '<span class="label">' + modulo.nome + '</span>'
+    card.innerHTML =
+      '<span class="icon"><i data-lucide="' + modulo.icone + '"></i></span>' +
+      '<span class="label">' + modulo.nome + '</span>'
 
     lista.appendChild(card)
   })
 
-  if (typeof lucide !== 'undefined') {
-    lucide.createIcons()
-  }
+  if (typeof lucide !== 'undefined') lucide.createIcons()
 }
 
 function voltarParaEscolas() {
@@ -223,11 +200,8 @@ function voltarParaEscolas() {
 }
 
 function voltarParaEscola() {
-  if (escolaAtual) {
-    abrirEscola(escolaAtual)
-  } else {
-    mostrarTela('home')
-  }
+  if (escolaAtual) abrirEscola(escolaAtual)
+  else mostrarTela('home')
 }
 
 function abrirModalEscola() {
@@ -277,62 +251,35 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
   if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
 
   try {
-    var { data: listOrgaos, error: errOrgaos } = await clienteSupabase
-      .from('orgaos')
-      .select('id')
-      .eq('escola_id', escolaId)
-
+    var { data: listOrgaos, error: errOrgaos } = await clienteSupabase.from('orgaos').select('id').eq('escola_id', escolaId)
     if (errOrgaos) throw errOrgaos
 
     var orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
 
     if (orgaoIds.length > 0) {
-      var { error: errVinc } = await clienteSupabase
-        .from('vinculos_funcionarios')
-        .delete()
-        .in('orgao_id', orgaoIds)
-
+      var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').delete().in('orgao_id', orgaoIds)
       if (errVinc) throw errVinc
 
-      var { error: errAces } = await clienteSupabase
-        .from('acessos_usuarios')
-        .delete()
-        .in('orgao_id', orgaoIds)
-
+      var { error: errAces } = await clienteSupabase.from('acessos_usuarios').delete().in('orgao_id', orgaoIds)
       if (errAces) throw errAces
     }
 
-    var { data: alunosEscola } = await clienteSupabase
-      .from('alunos')
-      .select('id')
-      .eq('escola_id', escolaId)
-
+    var { data: alunosEscola } = await clienteSupabase.from('alunos').select('id').eq('escola_id', escolaId)
     var alunoIds = (alunosEscola || []).map(function(a) { return a.id })
 
     if (alunoIds.length > 0) {
-      await clienteSupabase
-        .from('frequencia')
-        .delete()
-        .in('aluno_id', alunoIds)
+      await clienteSupabase.from('frequencia').delete().in('aluno_id', alunoIds)
     }
 
     await clienteSupabase.from('alunos').delete().eq('escola_id', escolaId)
     await clienteSupabase.from('orgaos').delete().eq('escola_id', escolaId)
 
-    // Remove logo do Storage também
     const extensoes = ['png', 'jpg', 'jpeg', 'webp', 'gif']
     for (var i = 0; i < extensoes.length; i++) {
-      await clienteSupabase.storage
-        .from('logos-escolas')
-        .remove(['escola-' + escolaId + '.' + extensoes[i]])
+      await clienteSupabase.storage.from('logos-escolas').remove(['escola-' + escolaId + '.' + extensoes[i]])
     }
 
-    var { data: deletedEscola, error: errEscDel } = await clienteSupabase
-      .from('escolas')
-      .delete()
-      .eq('id', escolaId)
-      .select()
-
+    var { data: deletedEscola, error: errEscDel } = await clienteSupabase.from('escolas').delete().eq('id', escolaId).select()
     if (errEscDel) throw errEscDel
 
     if (!deletedEscola || deletedEscola.length === 0) {
@@ -340,10 +287,7 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
     }
 
     alert('Escola ' + nomeEscola + ' excluída com sucesso!')
-
-    if (redirecionar) {
-      limparEscolaAtual()
-    }
+    if (redirecionar) limparEscolaAtual()
 
     await carregarEscolas()
   } catch (err) {
@@ -367,7 +311,6 @@ async function salvarEscola() {
     return
   }
 
-  // Logo obrigatória apenas para escolas NOVAS
   if (!escolaEditando && !file) {
     document.getElementById('msgLogoObrigatoria').style.display = 'block'
     return
@@ -378,67 +321,37 @@ async function salvarEscola() {
 
   try {
     if (escolaEditando) {
-      const { error: errEsc } = await clienteSupabase
-        .from('escolas')
-        .update({ nome: nome })
-        .eq('id', escolaEditando)
-
+      const { error: errEsc } = await clienteSupabase.from('escolas').update({ nome: nome }).eq('id', escolaEditando)
       if (errEsc) throw errEsc
 
-      await clienteSupabase
-        .from('orgaos')
-        .update({ nome: nome })
-        .eq('escola_id', escolaEditando)
+      await clienteSupabase.from('orgaos').update({ nome: nome }).eq('escola_id', escolaEditando)
 
-      // Faz upload da nova logo se uma nova foi selecionada
       if (file) {
         const novaUrl = await uploadLogo(file, escolaEditando)
-        await clienteSupabase
-          .from('escolas')
-          .update({ logo_url: novaUrl })
-          .eq('id', escolaEditando)
+        await clienteSupabase.from('escolas').update({ logo_url: novaUrl }).eq('id', escolaEditando)
       }
 
       if (escolaEditando === escolaAtual) {
         const escolaAtualizada = escolas.find(function(e) { return e.id === escolaEditando })
-        if (escolaAtualizada) {
-          escolaAtualizada.nome = nome
-        }
-        var headerEscola = document.getElementById('headerEscolaNome')
-        if (headerEscola && headerEscola.classList.contains('visible')) {
-          // MODIFICADO AQUI TAMBÉM: Usando o ícone X do Lucide
-          headerEscola.innerHTML =
-            '<span class="nome-texto">🏫 ' + nome + '</span>' +
-            '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
-          if (typeof lucide !== 'undefined') lucide.createIcons() // Ativa o ícone X
-        }
+        if (escolaAtualizada) escolaAtualizada.nome = nome
+        
+        document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
+          if (headerEscola.classList.contains('visible')) {
+            headerEscola.innerHTML =
+              '<span class="nome-texto">🏫 ' + nome + '</span>' +
+              '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
+          }
+        })
+        if (typeof lucide !== 'undefined') lucide.createIcons()
       }
     } else {
-      // Nova escola
-      const { data: novaEscola, error: errEsc } = await clienteSupabase
-        .from('escolas')
-        .insert([{ nome: nome }])
-        .select()
-        .single()
-
+      const { data: novaEscola, error: errEsc } = await clienteSupabase.from('escolas').insert([{ nome: nome }]).select().single()
       if (errEsc) throw errEsc
 
-      // Upload da logo obrigatória
       const logoUrl = await uploadLogo(file, novaEscola.id)
+      await clienteSupabase.from('escolas').update({ logo_url: logoUrl }).eq('id', novaEscola.id)
 
-      await clienteSupabase
-        .from('escolas')
-        .update({ logo_url: logoUrl })
-        .eq('id', novaEscola.id)
-
-      await clienteSupabase
-        .from('orgaos')
-        .insert([{
-          nome: nome,
-          tipo: 'escola',
-          escola_id: novaEscola.id,
-          ativo: true
-        }])
+      await clienteSupabase.from('orgaos').insert([{ nome: nome, tipo: 'escola', escola_id: novaEscola.id, ativo: true }])
     }
 
     fecharModalEscola()
@@ -460,20 +373,16 @@ function abrirModuloEscola(escolaId, modulo) {
 function limparEscolaAtual() {
   escolaAtual = null
 
-  var headerEscola = document.getElementById('headerEscolaNome')
-  if (headerEscola) {
+  document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
     headerEscola.innerHTML = ''
     headerEscola.classList.remove('visible')
-  }
+  })
 
   const telaAtual = document.querySelector('.menu button.active')
   if (telaAtual) {
     const telaId = telaAtual.id.replace('menu-', '')
-    if (telaId === 'home' || telaId === 'escola') {
-      mostrarTela('home')
-    } else {
-      mostrarTela(telaId)
-    }
+    if (telaId === 'home' || telaId === 'escola') mostrarTela('home')
+    else mostrarTela(telaId)
   } else {
     mostrarTela('home')
   }
