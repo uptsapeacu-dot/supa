@@ -216,41 +216,28 @@
 }
 .fechar-escola {
   background: transparent;
-  border: none;
   color: #3ea6ff;
+  font-size: 16px;
+  line-height: 1;
+  padding: 0;
+  width: 20px;
+  height: 20px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
   border-radius: 50%;
+  transition: all 0.2s;
   cursor: pointer;
-  padding: 3px;
-  flex: 0 0 auto;
-  transition: background 0.2s, color 0.2s, transform 0.15s;
-}
-.fechar-escola svg {
-  width: 14px;
-  height: 14px;
-  stroke: currentColor;
-  stroke-width: 2.5;
 }
 .fechar-escola:hover {
   background: rgba(62, 166, 255, 0.2);
   color: #fff;
-  transform: scale(1.15);
-}
-.fechar-escola:active {
-  transform: scale(0.9);
 }
 /* No mobile, adaptar os filtros de permissão e botão do header */
 @media (max-width: 760px) {
   #boxListaPermissoes > div[style] {
     grid-template-columns: 1fr !important;
   }
-
- 
-  
 }
 @keyframes fadeInSchool {
   from { opacity: 0; transform: translateX(-8px); }
