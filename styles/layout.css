@@ -148,10 +148,6 @@
 
 .topbar-mobile {
   display: none;
-  height: 56px;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
 }
 
 .mobile-menu-btn {
@@ -161,6 +157,11 @@
   background: #272727;
   color: #fff;
   font-size: 22px;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
 }
 
 .overlay {
@@ -188,7 +189,7 @@
   font-weight: bold;
   color: #fff;
 }
-/* Nome da escola selecionada no header */
+
 .global-header-left {
   display: flex;
   align-items: center;
@@ -215,7 +216,7 @@
   display: inline-flex;
 }
 
-/* NOVO ESTILO: Botão X com animação e suporte a Lucide SVG */
+/* Botão X com animação e suporte a Lucide SVG */
 .fechar-escola {
   background: transparent;
   border: none;
@@ -244,13 +245,6 @@
 }
 .fechar-escola:active {
   transform: scale(0.9);
-}
-
-/* No mobile, adaptar os filtros de permissão */
-@media (max-width: 760px) {
-  #boxListaPermissoes > div[style] {
-    grid-template-columns: 1fr !important;
-  }
 }
 
 @keyframes fadeInSchool {
@@ -326,6 +320,10 @@ input:checked + .slider:before {
 
 /* Sidebar and Mobile layout queries */
 @media (max-width: 760px) {
+  #boxListaPermissoes > div[style] {
+    grid-template-columns: 1fr !important;
+  }
+
   .sidebar,
   .sidebar.recolhido {
     width: 240px;
@@ -360,8 +358,43 @@ input:checked + .slider:before {
     padding: 16px;
   }
 
+  /* NOVO LAYOUT DO CABEÇALHO MOBILE */
+  .global-header {
+    display: none;
+  }
+
   .topbar-mobile {
     display: flex;
+    flex-direction: column;
+    height: auto;
+    gap: 12px;
+    padding: 12px 0;
+    margin-bottom: 20px;
+  }
+
+  .topbar-mobile-row1 {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .topbar-mobile-row2 {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid #272727;
+  }
+
+  .topbar-mobile-row2 .mode-text {
+    font-size: 13px;
+  }
+
+  .global-header-school {
+    font-size: 13px;
+    padding: 4px 10px;
   }
 }
 
