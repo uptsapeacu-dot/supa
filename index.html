@@ -101,7 +101,15 @@
       </nav>
 
       <!-- LOGOUT -->
+          <!-- LOGOUT E MODO EDIÇÃO (MOBILE) -->
       <div class="logout-area">
+        <div class="mobile-mode-toggle mode-toggle-container">
+          <span class="mode-text">Visualização</span>
+          <label class="switch">
+            <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
         <div class="menu">
           <button onclick="logout()" title="Sair">
             <span class="menu-icon"><i data-lucide="log-out"></i></span>
@@ -144,11 +152,7 @@
         </div>
         <div class="topbar-mobile-row2">
           <span class="global-header-school header-escola-nome"></span>
-          <div class="mode-toggle-container">
-            <span class="mode-text">Visualização</span>
-            <label class="switch">
-              <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
-              <span class="slider"></span>
+          
             </label>
           </div>
         </div>
