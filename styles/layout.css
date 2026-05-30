@@ -343,6 +343,11 @@ input:checked + .slider:before {
   background-color: #050505;
 }
 
+/* Esconde o toggle da sidebar no computador (ele já aparece no cabeçalho global) */
+.mobile-mode-toggle {
+  display: none;
+}
+
 /* Sidebar and Mobile layout queries */
 @media (max-width: 760px) {
   #boxListaPermissoes > div[style] {
@@ -404,13 +409,17 @@ input:checked + .slider:before {
     align-items: center;
   }
 
+/* Deixa a badge da escola centralizada e esconde a linha se não tiver escola */
   .topbar-mobile-row2 {
-    display: flex;
+    display: none;
     width: 100%;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
     padding-top: 12px;
     border-top: 1px solid #272727;
+  }
+  .topbar-mobile-row2:has(.global-header-school.visible) {
+    display: flex;
   }
 
   .topbar-mobile-row2 .mode-text {
