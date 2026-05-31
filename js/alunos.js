@@ -275,7 +275,7 @@ function limparCamposModalAluno() {
     'censoAluno','cpfAluno','rgAluno','nisAluno','susAluno','certidaoAluno',
     'cidadeNascAluno','ufNascAluno','maeAluno','telMaeAluno','paiAluno',
     'telPaiAluno','turmaAluno','rotaTransporteAluno','restricoesSaudeAluno',
-    'necessidadesAluno'
+    'necessidadesAluno',   'tipoMatriculaAluno', 'dataMatriculaAluno'
   ]
   campos.forEach(function(id) {
     const el = document.getElementById(id)
@@ -329,7 +329,11 @@ async function salvarAluno() {
     transporte: document.getElementById('transporteAluno').checked,
     rota: document.getElementById('rotaTransporteAluno').value.trim(),
     restricoes: document.getElementById('restricoesSaudeAluno').value.trim(),
-    necessidades: document.getElementById('necessidadesAluno').value.trim()
+    necessidades: document.getElementById('necessidadesAluno').value.trim(),
+    
+    tipo_matricula: document.getElementById('tipoMatriculaAluno').value,
+    data_matricula: document.getElementById('dataMatriculaAluno').value,
+    localizacao: document.getElementById('localizacaoAluno').value
   }
 
   const dadosAluno = {
@@ -369,23 +373,80 @@ async function salvarAluno() {
 // FUNÇÃO MÁGICA: IMPRIMIR FICHA
 // ==========================================
 function imprimirFicha(aluno) {
-  document.getElementById('printNome').innerText = textoOuVazio(aluno.nome)
-  document.getElementById('printNasc').innerText = formatarDataBR(aluno.data_nascimento)
-  document.getElementById('printEndereco').innerText = textoOuVazio(aluno.endereco)
-  document.getElementById('printSerie').innerText = textoOuVazio(aluno.serie)
-
-  const nomeDaEscola = document.querySelector('.header-escola-nome')
-    ? document.querySelector('.header-escola-nome').innerText
-    : 'ESCOLA MUNICIPAL DE SAPEAÇU'
-  document.getElementById('printEscola').innerText = nomeDaEscola
-
   const dados = aluno.dados_matricula || {}
 
+  // Função auxiliar: marca o checkbox certo com ■ e deixa os outros □
+  function marcarCheck(mapa, valorAtual) {
+    Object.keys(mapa).forEach(function(id) {
+      const el = document.getElementById(id)
+      if (!el) return
+      el.textContent = mapa[id].toLowerCase() === (valorAtual || '').toLowerCase() ? '■' : ''
+    })
+  }
+
+  // --- CABEÇALHO ---
+  document.getElementById('printAnoLetivo').innerText = 'Ano Letivo ' + new Date().getFullYear()
+  document.getElementById('printDataMatricula').innerText = dados.data_matricula
+    ? formatarDataBR(dados.data_matricula)
+    : '___/___/______'
+  document.getElementById('printLocalizacao').innerText = dados.localizacao || 'Zona Urbana'
+
+  // Tipo de matrícula
+  document.getElementById('chkRenovacao').textContent = dados.tipo_matricula === 'Renovação' ? '■' : ''
+  document.getElementById('chkNovaMatricula').textContent = dados.tipo_matricula === 'Nova Matrícula' ? '■' : ''
+
+  // --- ESCOLA ---
+  // Tenta pegar o nome da escola pelo escola_id do aluno
+  let nomeEscola = ''
+  if (typeof escolas !== 'undefined' && aluno.escola_id) {
+    const escolaObj = escolas.find(function(e) { return e.id === aluno.escola_id })
+    if (escolaObj) nomeEscola = escolaObj.nome
+  }
+  if (!nomeEscola) {
+    const badge = document.querySelector('.header-escola-nome')
+    nomeEscola = badge ? badge.innerText : 'ESCOLA MUNICIPAL DE SAPEAÇU'
+  }
+  document.getElementById('printEscola').innerText = nomeEscola
+  if (document.getElementById('printEscolaNome2')) {
+    document.getElementById('printEscolaNome2').innerText = nomeEscola
+  }
+
+  // --- IDENTIFICAÇÃO ---
+  document.getElementById('printNome').innerText = textoOuVazio(aluno.nome)
+  document.getElementById('printNasc').innerText = formatarDataBR(aluno.data_nascimento)
   document.getElementById('printInep').innerText = textoOuVazio(dados.censo)
   document.getElementById('printCpf').innerText = textoOuVazio(dados.cpf)
-  document.getElementById('printEstadoCivil').innerText = textoOuVazio(dados.estado_civil)
-  document.getElementById('printRaca').innerText = textoOuVazio(dados.cor_raca)
-  document.getElementById('printSexo').innerText = textoOuVazio(dados.sexo)
+  document.getElementById('printTelAluno').innerText = textoOuVazio(aluno.telefone)
+
+  // Estado Civil
+  marcarCheck({
+    chkSolteiro: 'Solteiro',
+    chkCasado: 'Casado',
+    chkSeparado: 'Separado',
+    chkDivorciado: 'Divorciado',
+    chkViuvo: 'Viúvo',
+    chkEstadoCivilND: 'Não declarado'
+  }, dados.estado_civil)
+
+  // Cor/Raça
+  marcarCheck({
+    chkAmarela: 'Amarela',
+    chkIndigena: 'Indígena',
+    chkPreta: 'Preta',
+    chkBranca: 'Branca',
+    chkParda: 'Parda',
+    chkRacaND: 'Não declarado'
+  }, dados.cor_raca)
+
+  // Sexo
+  marcarCheck({
+    chkMasculino: 'Masculino',
+    chkFeminino: 'Feminino',
+    chkOutroSexo: 'Outro',
+    chkSexoND: 'Não Declarado'
+  }, dados.sexo)
+
+  // --- DOCUMENTOS ---
   document.getElementById('printRg').innerText = textoOuVazio(dados.rg)
   document.getElementById('printNis').innerText = textoOuVazio(dados.nis)
   document.getElementById('printSus').innerText = textoOuVazio(dados.sus)
@@ -393,21 +454,37 @@ function imprimirFicha(aluno) {
   document.getElementById('printNacionalidade').innerText = textoOuVazio(dados.nacionalidade)
   document.getElementById('printCidadeNasc').innerText = textoOuVazio(dados.cidade_nasc)
   document.getElementById('printUfNasc').innerText = textoOuVazio(dados.uf_nasc)
+
+  // --- FILIAÇÃO ---
   document.getElementById('printMae').innerText = textoOuVazio(dados.mae)
   document.getElementById('printTelMae').innerText = textoOuVazio(dados.tel_mae)
   document.getElementById('printPai').innerText = textoOuVazio(dados.pai)
   document.getElementById('printTelPai').innerText = textoOuVazio(dados.tel_pai)
+  document.getElementById('printEndereco').innerText = textoOuVazio(aluno.endereco)
 
-  const turno = textoOuVazio(dados.turno)
-  const turma = textoOuVazio(dados.turma)
-  document.getElementById('printTurnoTurma').innerText = turno + ' / ' + turma
+  // --- ESCOLARIZAÇÃO ---
+  document.getElementById('printSerie').innerText = textoOuVazio(aluno.serie)
+  document.getElementById('printTurno').innerText = textoOuVazio(dados.turno)
+  document.getElementById('printTurma').innerText = textoOuVazio(dados.turma)
 
-  document.getElementById('printSaude').innerText = textoOuVazio(dados.restricoes)
-  document.getElementById('printNec').innerText = textoOuVazio(dados.necessidades)
+  // --- TRANSPORTE ---
+  document.getElementById('chkTranspNao').textContent = dados.transporte ? '' : '■'
+  document.getElementById('chkTranspSim').textContent = dados.transporte ? '■' : ''
+  document.getElementById('printRota').innerText = dados.rota ? dados.rota : '-'
 
-  const transp = dados.transporte ? 'SIM' : 'NÃO'
-  const rota = dados.rota ? ' (Rota: ' + dados.rota + ')' : ''
-  document.getElementById('printTransporte').innerText = transp + rota
+  // --- PÁGINA 2: SAÚDE E NECESSIDADES ---
+  if (document.getElementById('printSaude2')) {
+    document.getElementById('printSaude2').innerText = textoOuVazio(dados.restricoes)
+  }
+  if (document.getElementById('printNec2')) {
+    document.getElementById('printNec2').innerText = textoOuVazio(dados.necessidades)
+  }
+  const temNec = dados.necessidades && dados.necessidades.trim().length > 0
+  if (document.getElementById('chkNecNao')) {
+    document.getElementById('chkNecNao').textContent = temNec ? '' : '■'
+    document.getElementById('chkNecSim').textContent = temNec ? '■' : ''
+  }
 
+  // Dispara a impressão!
   window.print()
 }
