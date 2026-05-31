@@ -37,11 +37,7 @@ function atualizarFiltroSeries() {
   const valorAtual = filtroSerie.value
 
   const series = [...new Set(
-    alunos
-      .map(function(aluno) {
-        return aluno.serie
-      })
-      .filter(Boolean)
+    alunos.map(function(aluno) { return aluno.serie }).filter(Boolean)
   )].sort()
 
   filtroSerie.innerHTML = '<option value="">Todas as séries</option>'
@@ -78,8 +74,7 @@ function renderizarAlunos() {
       endereco.includes(busca) ||
       serieAluno.includes(busca)
 
-    const passouSerie =
-      !busca && (!serie || aluno.serie === serie)
+    const passouSerie = !busca && (!serie || aluno.serie === serie)
 
     return passouBusca && passouSerie
   })
@@ -113,37 +108,32 @@ function renderizarAlunos() {
     info.appendChild(detalhes)
     item.appendChild(info)
 
-    // A DIV DE AÇÕES AGORA É CRIADA SEMPRE (Para abrigar o botão de imprimir)
     const actionsDiv = document.createElement('div')
     actionsDiv.style.display = 'flex'
     actionsDiv.style.gap = '8px'
     actionsDiv.style.alignItems = 'center'
 
-    // BOTÃO IMPRIMIR: Fica visível tanto no modo de visualização quanto na edição
+    // Botão imprimir: aparece sempre (no modo visualização e edição)
     if (temPermissaoEdicao || usuarioNivel1()) {
       const btnImprimir = document.createElement('button')
-      btnImprimir.className = 'btn-editar' 
+      btnImprimir.className = 'btn-editar'
       btnImprimir.style.background = 'transparent'
       btnImprimir.style.color = '#3ea6ff'
       btnImprimir.title = 'Imprimir Ficha Oficial'
       btnImprimir.type = 'button'
-      btnImprimir.innerHTML = '<i data-lucide="printer"></i>'
-      btnImprimir.onclick = function() {
-        imprimirFicha(aluno)
-      }
+      btnImprimir.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>'
+      btnImprimir.onclick = function() { imprimirFicha(aluno) }
       actionsDiv.appendChild(btnImprimir)
     }
 
-    // BOTÕES DE EDIÇÃO: Só aparecem quando a chave no topo da tela estiver ligada
+    // Botões de edição: só no modo edição
     if (modoEdicaoAtivo && temPermissaoEdicao) {
       const btnEditar = document.createElement('button')
       btnEditar.className = 'btn-editar'
       btnEditar.title = 'Editar aluno'
       btnEditar.type = 'button'
       btnEditar.textContent = '✎'
-      btnEditar.onclick = function() {
-        editarAluno(aluno)
-      }
+      btnEditar.onclick = function() { editarAluno(aluno) }
       actionsDiv.appendChild(btnEditar)
 
       const btnExcluir = document.createElement('button')
@@ -153,9 +143,7 @@ function renderizarAlunos() {
       btnExcluir.title = 'Excluir aluno'
       btnExcluir.type = 'button'
       btnExcluir.textContent = '🗑'
-      btnExcluir.onclick = function() {
-        excluirAluno(aluno.id)
-      }
+      btnExcluir.onclick = function() { excluirAluno(aluno.id) }
       actionsDiv.appendChild(btnExcluir)
     }
 
@@ -163,31 +151,21 @@ function renderizarAlunos() {
     lista.appendChild(item)
   })
 
-  // Renderiza os ícones Lucide (como a impressora que acabamos de adicionar)
-  if (window.lucide) {
-    lucide.createIcons()
-  }
+  if (window.lucide) lucide.createIcons()
 }
 
 async function excluirAluno(alunoId) {
   if (!confirm('Deseja excluir este aluno?')) return
 
   var { error: errFreq } = await clienteSupabase
-    .from('frequencia')
-    .delete()
-    .eq('aluno_id', alunoId)
+    .from('frequencia').delete().eq('aluno_id', alunoId)
 
-  if (errFreq) console.error('Erro ao excluir frequência do aluno:', errFreq)
+  if (errFreq) console.error('Erro ao excluir frequência:', errFreq)
 
   var { error } = await clienteSupabase
-    .from('alunos')
-    .delete()
-    .eq('id', alunoId)
+    .from('alunos').delete().eq('id', alunoId)
 
-  if (error) {
-    alert('Erro ao excluir aluno')
-    return
-  }
+  if (error) { alert('Erro ao excluir aluno'); return }
 
   await carregarAlunos()
 }
@@ -198,8 +176,37 @@ function limparFiltros() {
   renderizarAlunos()
 }
 
+// -------------------------------------------------------
+// Preenche o select de escolas dentro do modal (nível 1)
+// -------------------------------------------------------
+function preencherSeletorEscolaAluno(escolaPreSelecionada) {
+  const seletor = document.getElementById('seletorEscolaAluno')
+  const select = document.getElementById('escolaDoAluno')
+
+  // Só mostra o seletor se for nível 1 E não tiver escola selecionada no topo
+  if (usuarioNivel1() && !escolaAtual) {
+    seletor.style.display = 'block'
+    select.innerHTML = '<option value="">-- Selecione a Escola --</option>'
+
+    orgaos // reutilizamos a lista de escolas já carregada em memória
+    // Buscamos as escolas diretamente da variável global 'escolas' se existir
+    const listaEscolas = (typeof escolas !== 'undefined' ? escolas : [])
+    listaEscolas.forEach(function(escola) {
+      const opt = document.createElement('option')
+      opt.value = escola.id
+      opt.textContent = escola.nome
+      if (escola.id === escolaPreSelecionada) opt.selected = true
+      select.appendChild(opt)
+    })
+  } else {
+    // Tem escola selecionada no topo: esconde o seletor, não é necessário
+    seletor.style.display = 'none'
+  }
+}
+
 function abrirModalAluno() {
-  if (!escolaAtual) {
+  // Nível 1 sem escola selecionada: permite abrir (vai escolher no formulário)
+  if (!usuarioNivel1() && !escolaAtual) {
     alert('Selecione uma escola antes de cadastrar alunos')
     return
   }
@@ -207,36 +214,9 @@ function abrirModalAluno() {
   alunoEditando = null
   document.getElementById('tituloModal').innerText = 'Cadastro de Aluno'
 
-  // Limpar campos originais
-  document.getElementById('nomeAluno').value = ''
-  document.getElementById('telefoneAluno').value = ''
-  document.getElementById('nascimentoAluno').value = ''
-  document.getElementById('serieAluno').value = ''
-  document.getElementById('enderecoAluno').value = ''
-  
-  // Limpar campos avançados (JSON)
-  document.getElementById('censoAluno').value = ''
-  document.getElementById('cpfAluno').value = ''
-  document.getElementById('estadoCivilAluno').value = ''
-  document.getElementById('corRacaAluno').value = ''
-  document.getElementById('sexoAluno').value = ''
-  document.getElementById('rgAluno').value = ''
-  document.getElementById('nisAluno').value = ''
-  document.getElementById('susAluno').value = ''
-  document.getElementById('certidaoAluno').value = ''
-  document.getElementById('nacionalidadeAluno').value = 'BRASILEIRA'
-  document.getElementById('cidadeNascAluno').value = ''
-  document.getElementById('ufNascAluno').value = ''
-  document.getElementById('maeAluno').value = ''
-  document.getElementById('telMaeAluno').value = ''
-  document.getElementById('paiAluno').value = ''
-  document.getElementById('telPaiAluno').value = ''
-  document.getElementById('turnoAluno').value = ''
-  document.getElementById('turmaAluno').value = ''
-  document.getElementById('transporteAluno').checked = false
-  document.getElementById('rotaTransporteAluno').value = ''
-  document.getElementById('restricoesSaudeAluno').value = ''
-  document.getElementById('necessidadesAluno').value = ''
+  // Limpar todos os campos
+  limparCamposModalAluno()
+  preencherSeletorEscolaAluno(null)
 
   document.getElementById('modalAluno').style.display = 'flex'
   document.getElementById('nomeAluno').focus()
@@ -250,16 +230,15 @@ function editarAluno(aluno) {
   alunoEditando = aluno.id
   document.getElementById('tituloModal').innerText = 'Editar Aluno'
 
-  // Preencher campos originais
+  // Campos originais
   document.getElementById('nomeAluno').value = aluno.nome || ''
   document.getElementById('telefoneAluno').value = aluno.telefone || ''
   document.getElementById('nascimentoAluno').value = aluno.data_nascimento || ''
   document.getElementById('serieAluno').value = aluno.serie || ''
   document.getElementById('enderecoAluno').value = aluno.endereco || ''
 
-  // Preencher campos avançados (Lendo do JSON)
+  // Campos avançados do JSON
   const dados = aluno.dados_matricula || {}
-  
   document.getElementById('censoAluno').value = dados.censo || ''
   document.getElementById('cpfAluno').value = dados.cpf || ''
   document.getElementById('estadoCivilAluno').value = dados.estado_civil || ''
@@ -283,15 +262,42 @@ function editarAluno(aluno) {
   document.getElementById('restricoesSaudeAluno').value = dados.restricoes || ''
   document.getElementById('necessidadesAluno').value = dados.necessidades || ''
 
+  // Mostra seletor de escola se for nível 1 sem escola no topo
+  preencherSeletorEscolaAluno(aluno.escola_id)
+
   document.getElementById('modalAluno').style.display = 'flex'
   document.getElementById('nomeAluno').focus()
+}
+
+function limparCamposModalAluno() {
+  const campos = [
+    'nomeAluno','telefoneAluno','nascimentoAluno','serieAluno','enderecoAluno',
+    'censoAluno','cpfAluno','rgAluno','nisAluno','susAluno','certidaoAluno',
+    'cidadeNascAluno','ufNascAluno','maeAluno','telMaeAluno','paiAluno',
+    'telPaiAluno','turmaAluno','rotaTransporteAluno','restricoesSaudeAluno',
+    'necessidadesAluno'
+  ]
+  campos.forEach(function(id) {
+    const el = document.getElementById(id)
+    if (el) el.value = ''
+  })
+  document.getElementById('nacionalidadeAluno').value = 'BRASILEIRA'
+  document.getElementById('estadoCivilAluno').value = ''
+  document.getElementById('corRacaAluno').value = ''
+  document.getElementById('sexoAluno').value = ''
+  document.getElementById('turnoAluno').value = ''
+  document.getElementById('transporteAluno').checked = false
 }
 
 async function salvarAluno() {
   const btnSalvar = document.getElementById('btnSalvarAluno')
 
-  if (!escolaAtual) {
-    alert('Selecione uma escola antes de cadastrar alunos')
+  // Descobre qual escola usar: prioriza o topo, senão lê do seletor interno
+  const escolaId = escolaAtual || document.getElementById('escolaDoAluno').value
+
+  if (!escolaId) {
+    alert('Selecione a escola do aluno antes de salvar')
+    document.getElementById('escolaDoAluno').focus()
     return
   }
 
@@ -301,7 +307,6 @@ async function salvarAluno() {
     return
   }
 
-  // Pacote Especial: Agrupa todas as 40 informações numa caixinha só (JSONB)
   const pacoteDeDados = {
     censo: document.getElementById('censoAluno').value.trim(),
     cpf: document.getElementById('cpfAluno').value.trim(),
@@ -333,8 +338,8 @@ async function salvarAluno() {
     endereco: document.getElementById('enderecoAluno').value.trim(),
     serie: document.getElementById('serieAluno').value.trim(),
     data_nascimento: document.getElementById('nascimentoAluno').value || null,
-    escola_id: escolaAtual,
-    dados_matricula: pacoteDeDados // Mandando o pacote gigante pro banco!
+    escola_id: escolaId,
+    dados_matricula: pacoteDeDados
   }
 
   btnSalvar.disabled = true
@@ -364,21 +369,18 @@ async function salvarAluno() {
 // FUNÇÃO MÁGICA: IMPRIMIR FICHA
 // ==========================================
 function imprimirFicha(aluno) {
-  // 1. Pega os dados básicos
   document.getElementById('printNome').innerText = textoOuVazio(aluno.nome)
   document.getElementById('printNasc').innerText = formatarDataBR(aluno.data_nascimento)
   document.getElementById('printEndereco').innerText = textoOuVazio(aluno.endereco)
   document.getElementById('printSerie').innerText = textoOuVazio(aluno.serie)
-  
-  // 2. Pega o nome da escola atual visível no topo da tela
-  const nomeDaEscola = document.querySelector('.header-escola-nome') 
-    ? document.querySelector('.header-escola-nome').innerText 
+
+  const nomeDaEscola = document.querySelector('.header-escola-nome')
+    ? document.querySelector('.header-escola-nome').innerText
     : 'ESCOLA MUNICIPAL DE SAPEAÇU'
   document.getElementById('printEscola').innerText = nomeDaEscola
 
-  // 3. Pega os dados extras de dentro do pacote JSON (se existirem)
   const dados = aluno.dados_matricula || {}
-  
+
   document.getElementById('printInep').innerText = textoOuVazio(dados.censo)
   document.getElementById('printCpf').innerText = textoOuVazio(dados.cpf)
   document.getElementById('printEstadoCivil').innerText = textoOuVazio(dados.estado_civil)
@@ -395,18 +397,17 @@ function imprimirFicha(aluno) {
   document.getElementById('printTelMae').innerText = textoOuVazio(dados.tel_mae)
   document.getElementById('printPai').innerText = textoOuVazio(dados.pai)
   document.getElementById('printTelPai').innerText = textoOuVazio(dados.tel_pai)
-  
+
   const turno = textoOuVazio(dados.turno)
   const turma = textoOuVazio(dados.turma)
   document.getElementById('printTurnoTurma').innerText = turno + ' / ' + turma
 
   document.getElementById('printSaude').innerText = textoOuVazio(dados.restricoes)
   document.getElementById('printNec').innerText = textoOuVazio(dados.necessidades)
-  
+
   const transp = dados.transporte ? 'SIM' : 'NÃO'
   const rota = dados.rota ? ' (Rota: ' + dados.rota + ')' : ''
   document.getElementById('printTransporte').innerText = transp + rota
 
-  // 4. Chama a impressora nativa do computador! 🖨️
   window.print()
 }
