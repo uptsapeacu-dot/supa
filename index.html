@@ -27,86 +27,143 @@
 
 
 
+<style>
+  /* Ficha invisível na tela normal */
+  #fichaImpressao { display: none; }
 
-    <style>
-    /* Ficha invisível na tela normal */
-    #fichaImpressao { display: none; }
+  @media print {
+    /* Esconde TODO o sistema */
+    body > *:not(#fichaImpressao) { display: none !important; }
 
-    @media print {
-      /* Esconde TUDO do sistema */
-      body > *:not(#fichaImpressao) { display: none !important; }
-      #fichaImpressao {
-        display: block !important;
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%;
-        background: white;
-        color: black;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 11px;
-        padding: 1cm;
-        box-sizing: border-box;
-      }
-      @page { size: A4 portrait; margin: 0; }
-
-      .print-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        border-bottom: 2px solid #000;
-        padding-bottom: 8px;
-      }
-      .print-header img { height: 55px; }
-      .print-title { text-align: center; flex: 1; }
-      .print-title h1 { font-size: 15px; margin: 0; text-transform: uppercase; }
-      .print-title h2 { font-size: 11px; margin: 3px 0 0; font-weight: normal; }
-
-      .print-unidade {
-        text-align: center;
-        font-size: 12px;
-        margin-bottom: 10px;
-        font-weight: bold;
-      }
-
-      .print-section { border: 1px solid #000; margin-bottom: 4px; }
-      .print-section-title {
-        background: #000 !important;
-        color: #fff !important;
-        font-weight: bold;
-        font-size: 10px;
-        padding: 2px 5px;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-      .print-row { display: flex; border-top: 1px solid #000; }
-      .print-row:first-of-type { border-top: none; }
-      .print-col {
-        border-right: 1px solid #000;
-        padding: 2px 5px;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        min-height: 28px;
-      }
-      .print-col:last-child { border-right: none; }
-      .print-label { font-size: 8px; font-weight: bold; color: #333; margin-bottom: 1px; }
-      .print-value { font-size: 11px; min-height: 14px; }
-
-      .print-signatures {
-        display: flex;
-        justify-content: space-around;
-        margin-top: 50px;
-      }
-      .signature-line {
-        border-top: 1px solid #000;
-        width: 38%;
-        text-align: center;
-        font-size: 9px;
-        padding-top: 4px;
-      }
+    #fichaImpressao {
+      display: block !important;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%;
+      background: white;
+      color: black;
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 9px;
+      padding: 0.8cm 1cm;
+      box-sizing: border-box;
     }
-  </style>
+
+    @page { size: A4 portrait; margin: 0; }
+
+    /* CABEÇALHO */
+    .print-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      border-bottom: 2px solid #000;
+      padding-bottom: 6px;
+    }
+    .print-header img { height: 60px; object-fit: contain; }
+    .print-title { text-align: center; flex: 1; padding: 0 10px; }
+    .print-title h1 { font-size: 14px; margin: 0 0 2px; text-transform: uppercase; font-weight: bold; }
+    .print-title h2 { font-size: 10px; margin: 0; font-weight: normal; }
+
+    /* LINHA DE DADOS DA ESCOLA */
+    .print-escola-linha {
+      display: flex;
+      border: 1px solid #000;
+      border-bottom: none;
+    }
+    .print-escola-col {
+      padding: 2px 5px;
+      border-right: 1px solid #000;
+      flex: 1;
+      font-size: 8px;
+    }
+    .print-escola-col:last-child { border-right: none; }
+    .print-escola-col strong { font-size: 9px; display: block; }
+
+    /* SEÇÕES */
+    .print-section { border: 1px solid #000; margin-bottom: 3px; }
+    .print-section-title {
+      background: #000 !important;
+      color: #fff !important;
+      font-weight: bold;
+      font-size: 9px;
+      padding: 2px 5px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+
+    /* LINHAS E COLUNAS */
+    .print-row { display: flex; border-top: 1px solid #000; }
+    .print-row:first-of-type { border-top: none; }
+    .print-col {
+      border-right: 1px solid #000;
+      padding: 2px 4px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 24px;
+    }
+    .print-col:last-child { border-right: none; }
+    .print-label { font-size: 7px; font-weight: bold; color: #333; margin-bottom: 1px; }
+    .print-value { font-size: 9px; min-height: 13px; }
+
+    /* CHECKBOXES VISUAIS */
+    .print-checkgroup {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 2px;
+    }
+    .print-check {
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 8px;
+      white-space: nowrap;
+    }
+    .print-check-box {
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      border: 1px solid #000;
+      text-align: center;
+      line-height: 9px;
+      font-size: 7px;
+    }
+
+    /* ASSINATURAS */
+    .print-signatures {
+      display: flex;
+      justify-content: space-around;
+      margin-top: 30px;
+      margin-bottom: 10px;
+    }
+    .signature-line {
+      border-top: 1px solid #000;
+      width: 38%;
+      text-align: center;
+      font-size: 8px;
+      padding-top: 3px;
+    }
+
+    /* QUEBRA DE PÁGINA */
+    .print-page-break { page-break-before: always; padding-top: 0.5cm; }
+
+    /* CABEÇALHO REDUZIDO DA PÁG 2 */
+    .print-header-p2 {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      border: 1px solid #000;
+      margin-bottom: 3px;
+    }
+    .print-header-p2-col {
+      padding: 3px 5px;
+      border-right: 1px solid #000;
+      flex: 1;
+    }
+    .print-header-p2-col:last-child { border-right: none; }
+  }
+</style>
 </head>
 
 <body>
