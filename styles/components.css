@@ -144,6 +144,9 @@ h1 {
   color: #fff;
   font-size: 18px;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-editar:hover {
@@ -169,6 +172,9 @@ h1 {
   color: #aaa;
 }
 
+/* =====================
+   MODAIS
+   ===================== */
 .modal {
   position: fixed;
   inset: 0;
@@ -208,16 +214,104 @@ h1 {
   background: #272727;
   color: white;
   font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  flex-shrink: 0;
 }
 
 .fechar:hover {
-  background: #444;
+  background: #ff5b5b;
 }
 
 .modal-box input {
   margin-top: 10px;
 }
 
+/* =====================
+   MODAL GRANDE - ALUNOS
+   ===================== */
+#modalAluno .modal-box {
+  max-width: 860px;
+  width: 90vw;
+  max-height: 88vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar discreta dentro do modal */
+#modalAluno .modal-box::-webkit-scrollbar {
+  width: 5px;
+}
+#modalAluno .modal-box::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 4px;
+}
+
+/* Cabeçalho do modal gruda no topo ao rolar */
+#modalAluno .modal-topo {
+  position: sticky;
+  top: 0;
+  background: #181818;
+  z-index: 10;
+  padding-bottom: 12px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+/* Títulos de seção dentro do formulário */
+.form-section-title {
+  color: #3ea6ff;
+  border-bottom: 1px solid #2a2a2a;
+  padding-bottom: 6px;
+  margin-top: 22px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Grids de formulário lado a lado */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+/* Checkbox inline nos formulários */
+.checkbox-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #ccc;
+  cursor: pointer;
+  padding: 10px 14px;
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+}
+.checkbox-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: #3ea6ff;
+}
+
+/* =====================
+   PERMISSÕES
+   ===================== */
 .permissions-layout {
   display: grid;
   grid-template-columns: 360px 1fr;
@@ -285,7 +379,9 @@ h1 {
   background: #ff3333;
 }
 
-/* Card actions overlay inside Edit Mode */
+/* =====================
+   CARDS DE ESCOLA (MODO EDIÇÃO)
+   ===================== */
 .home-card .card-actions {
   position: absolute;
   top: 8px;
@@ -326,7 +422,9 @@ h1 {
   border-color: #ff5b5b;
 }
 
-/* Media Queries for lists & components */
+/* =====================
+   RESPONSIVIDADE
+   ===================== */
 @media (max-width: 1100px) {
   .lista-escolas {
     grid-template-columns: repeat(3, minmax(140px, 1fr));
@@ -355,6 +453,17 @@ h1 {
   }
   h1 {
     font-size: 24px;
+  }
+  /* Modal de alunos ocupa tela inteira no celular */
+  #modalAluno .modal-box {
+    width: 100%;
+    max-width: 100%;
+    max-height: 95vh;
+    border-radius: 14px 14px 0 0;
+  }
+  .form-grid-2,
+  .form-grid-3 {
+    grid-template-columns: 1fr;
   }
 }
 
