@@ -388,21 +388,188 @@
     </div>
   </div>
 
-  <!-- MODAL ALUNO -->
+    <!-- MODAL ALUNO COMPLETO -->
   <div class="modal" id="modalAluno">
-    <div class="modal-box">
+    <div class="modal-box modal-box-large">
       <div class="modal-topo">
-        <h2 id="tituloModal">Novo Aluno</h2>
+        <h2 id="tituloModal">Cadastro de Aluno</h2>
         <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">×</button>
       </div>
-      <input type="text" id="nomeAluno" placeholder="Nome do aluno" />
-      <input type="text" id="telefoneAluno" placeholder="Telefone" />
-      <input type="email" id="emailAluno" placeholder="Email" />
-      <input type="text" id="enderecoAluno" placeholder="Endereço" />
-      <input type="text" id="serieAluno" placeholder="Série" />
-      <label for="nascimentoAluno" style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Data de Nascimento</label>
-      <input type="date" id="nascimentoAluno" style="margin-top:0;" />
-      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()">Salvar</button>
+      
+      <!-- IDENTIFICAÇÃO -->
+      <h3 class="form-section-title" style="margin-top:0;">Identificação Básica</h3>
+      <div class="form-grid-2">
+        <input type="text" id="nomeAluno" placeholder="Nome Completo do Aluno *" />
+        <div>
+          <label style="font-size:12px; color:#aaa; padding-left:4px;">Nascimento</label>
+          <input type="date" id="nascimentoAluno" style="margin-top: 2px;" />
+        </div>
+      </div>
+      <div class="form-grid-3">
+        <input type="text" id="censoAluno" placeholder="Código INEP (Censo)" />
+        <input type="text" id="cpfAluno" placeholder="CPF do Aluno" />
+        <input type="text" id="telefoneAluno" placeholder="Telefone de Contato" />
+      </div>
+      <div class="form-grid-3">
+        <select id="estadoCivilAluno">
+          <option value="">Estado Civil</option>
+          <option value="Solteiro">Solteiro</option>
+          <option value="Casado">Casado</option>
+          <option value="Não declarado">Não declarado</option>
+        </select>
+        <select id="corRacaAluno">
+          <option value="">Cor / Raça</option>
+          <option value="Branca">Branca</option>
+          <option value="Preta">Preta</option>
+          <option value="Parda">Parda</option>
+          <option value="Indígena">Indígena</option>
+          <option value="Amarela">Amarela</option>
+          <option value="Não declarado">Não declarado</option>
+        </select>
+        <select id="sexoAluno">
+          <option value="">Sexo</option>
+          <option value="Masculino">Masculino</option>
+          <option value="Feminino">Feminino</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+
+      <!-- DOCUMENTOS -->
+      <h3 class="form-section-title">Documentos</h3>
+      <div class="form-grid-3">
+        <input type="text" id="rgAluno" placeholder="Nº Identidade (RG)" />
+        <input type="text" id="nisAluno" placeholder="Nº do NIS" />
+        <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
+      </div>
+      <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
+      <div class="form-grid-3" style="margin-top: 12px;">
+        <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
+        <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
+        <input type="text" id="ufNascAluno" placeholder="UF Nascimento" maxlength="2" />
+      </div>
+
+      <!-- FILIAÇÃO E ENDEREÇO -->
+      <h3 class="form-section-title">Filiação e Contato</h3>
+      <div class="form-grid-2">
+        <input type="text" id="maeAluno" placeholder="Nome da Mãe *" />
+        <input type="text" id="telMaeAluno" placeholder="Telefone da Mãe" />
+        <input type="text" id="paiAluno" placeholder="Nome do Pai" />
+        <input type="text" id="telPaiAluno" placeholder="Telefone do Pai" />
+      </div>
+      <input type="text" id="enderecoAluno" placeholder="Endereço Completo (Rua, Nº, Bairro)" style="margin-top: 12px;" />
+
+      <!-- MATRÍCULA -->
+      <h3 class="form-section-title">Matrícula (Etapa de Escolarização)</h3>
+      <div class="form-grid-3">
+        <input type="text" id="serieAluno" placeholder="Ano/Série (Ex: 3º ANO)" />
+        <select id="turnoAluno">
+          <option value="">Turno</option>
+          <option value="Matutino">Matutino</option>
+          <option value="Vespertino">Vespertino</option>
+          <option value="Noturno">Noturno</option>
+          <option value="Integral">Integral</option>
+        </select>
+        <input type="text" id="turmaAluno" placeholder="Turma (Ex: B)" />
+      </div>
+      
+      <!-- SAÚDE E NECESSIDADES -->
+      <h3 class="form-section-title">Saúde e Transporte</h3>
+      <div class="form-grid-2">
+        <label class="checkbox-item"><input type="checkbox" id="transporteAluno"> Utiliza Transporte Público?</label>
+        <input type="text" id="rotaTransporteAluno" placeholder="Se Sim, qual a rota?" />
+      </div>
+      <input type="text" id="restricoesSaudeAluno" placeholder="Alergias, Doenças ou Medicações? (Ex: Asma, Ibuprofeno)" style="margin-top: 12px;" />
+      <input type="text" id="necessidadesAluno" placeholder="Possui Necessidade Educativa Especial? Qual?" style="margin-top: 12px;" />
+
+      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()" style="margin-top: 24px;">Gravar Aluno</button>
+    </div>
+  </div>
+
+  <!-- FICHA DE IMPRESSÃO (INVISÍVEL NA TELA, SÓ VAI PRO PAPEL) -->
+  <div id="fichaImpressao">
+    <div class="print-header">
+      <img src="img/brasaoSapeaçu.png" alt="Prefeitura Sapeaçu">
+      <div class="print-title">
+        <h1>Ficha de Matrícula</h1>
+        <h2 id="printAnoLetivo">Ano Letivo 2026</h2>
+      </div>
+      <img src="img/brasaoSapeaçu.png" alt="Secretaria de Educação">
+    </div>
+    
+    <div class="print-section">
+      <div class="print-section-title">IDENTIFICAÇÃO DO ALUNO</div>
+      <div class="print-row">
+        <div class="print-col" style="flex: 2;"><span class="print-label">1 - Nome Completo</span><span class="print-value" id="printNome"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">2 - Nascimento</span><span class="print-value" id="printNasc"></span></div>
+        <div class="print-col"><span class="print-label">3 - Código INEP</span><span class="print-value" id="printInep"></span></div>
+        <div class="print-col"><span class="print-label">4 - CPF</span><span class="print-value" id="printCpf"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">5 - Estado Civil</span><span class="print-value" id="printEstadoCivil"></span></div>
+        <div class="print-col"><span class="print-label">6 - Cor/Raça</span><span class="print-value" id="printRaca"></span></div>
+        <div class="print-col"><span class="print-label">7 - Sexo</span><span class="print-value" id="printSexo"></span></div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">DOCUMENTOS</div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">8 - Número da Identidade (RG)</span><span class="print-value" id="printRg"></span></div>
+        <div class="print-col"><span class="print-label">9 - Número do NIS</span><span class="print-value" id="printNis"></span></div>
+        <div class="print-col"><span class="print-label">10 - Cartão do SUS</span><span class="print-value" id="printSus"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">11 - Certidão de Nascimento</span><span class="print-value" id="printCertidao"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">12 - Nacionalidade</span><span class="print-value" id="printNacionalidade"></span></div>
+        <div class="print-col"><span class="print-label">13 - Cidade de Nasc.</span><span class="print-value" id="printCidadeNasc"></span></div>
+        <div class="print-col"><span class="print-label">14 - UF</span><span class="print-value" id="printUfNasc"></span></div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">FILIAÇÃO E CONTATO</div>
+      <div class="print-row">
+        <div class="print-col" style="flex: 2;"><span class="print-label">15 - Nome da Mãe</span><span class="print-value" id="printMae"></span></div>
+        <div class="print-col"><span class="print-label">16 - Telefone da Mãe</span><span class="print-value" id="printTelMae"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col" style="flex: 2;"><span class="print-label">17 - Nome do Pai</span><span class="print-value" id="printPai"></span></div>
+        <div class="print-col"><span class="print-label">18 - Telefone do Pai</span><span class="print-value" id="printTelPai"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">19 - Endereço Residencial</span><span class="print-value" id="printEndereco"></span></div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">MATRÍCULA E ESCOLARIZAÇÃO</div>
+      <div class="print-row">
+        <div class="print-col" style="flex: 2;"><span class="print-label">20 - Unidade Escolar</span><span class="print-value" id="printEscola"></span></div>
+        <div class="print-col"><span class="print-label">21 - Ano/Série</span><span class="print-value" id="printSerie"></span></div>
+        <div class="print-col"><span class="print-label">22 - Turno / Turma</span><span class="print-value" id="printTurnoTurma"></span></div>
+      </div>
+    </div>
+
+    <div class="print-section">
+      <div class="print-section-title">SAÚDE, NECESSIDADES E TRANSPORTE</div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">23 - Alergias, Doenças ou Medicações</span><span class="print-value" id="printSaude"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">24 - Necessidades Educativas Especiais</span><span class="print-value" id="printNec"></span></div>
+      </div>
+      <div class="print-row">
+        <div class="print-col"><span class="print-label">25 - Utiliza Transporte Público Escolar?</span><span class="print-value" id="printTransporte"></span></div>
+      </div>
+    </div>
+
+    <div class="print-signatures">
+      <div class="signature-line">Funcionário Responsável pela Matrícula</div>
+      <div class="signature-line">Assinatura do Pai/Mãe/Responsável</div>
     </div>
   </div>
 
