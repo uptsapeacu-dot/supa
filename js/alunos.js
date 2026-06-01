@@ -567,16 +567,26 @@ function imprimirFicha(aluno) {
   set('printNee', formatarResposta(dados.nee, null, dados.nee_tipos))
   set('printDeficiencia', formatarResposta(dados.deficiencia, null, dados.deficiencia_tipos))
 
-  // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
+   // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
   const ficha = document.getElementById('fichaImpressao');
   document.body.appendChild(ficha);
   ficha.style.display = 'block';
 
+  // TRUQUE DO NOME DO ARQUIVO: Salva o nome original do site
+  const tituloOriginal = document.title;
+  
+  // Cria o nome do PDF trocando os espaços do nome do aluno por underline
+  const nomeLimpo = (aluno.nome || 'aluno').replace(/\s+/g, '_');
+  document.title = "ficha_de_inscricao_" + nomeLimpo;
+
+  // O que acontece quando a janela de impressão FECHAR:
   window.onafterprint = function() {
     ficha.style.display = 'none';
+    document.title = tituloOriginal; // Devolve o nome original para a aba do navegador
     window.onafterprint = null;
   };
 
+  // Dá 300 milissegundos para o navegador aplicar a mudança de nome antes de abrir o PDF
   setTimeout(function() {
     window.print();
   }, 300); 
