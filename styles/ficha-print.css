@@ -11,18 +11,20 @@
   #app, .login-container, .modal, .overlay { display: none !important; }
 
   /* A Ficha Principal */
+
   #fichaImpressao {
-    display: block !important;
+    display: flex !important; /* Transforma a ficha numa caixa flexível */
+    flex-direction: column;   /* Empilha tudo de cima para baixo */
+    min-height: 100vh;        /* Garante que a caixa tenha 100% da altura da folha A4 */
     position: relative; 
     width: 100%;
-    padding: 8mm; /* Recuo interno para a impressora não cortar o texto das bordas */
+    padding: 8mm; 
     box-sizing: border-box;
     background: white;
     color: black;
     font-family: Arial, Helvetica, sans-serif;
     font-size: 9px;
   }
-
   /* Cabeçalho com Logos */
   .print-header {
     display: flex;
@@ -98,11 +100,11 @@
   }
 
   /* ASSINATURAS FINAIS */
-  .print-signatures {
+ .print-signatures {
     display: flex;
     justify-content: space-between;
-    margin-top: 15px;
-    padding: 0 30px;
+    margin-top: auto; /* O SEGREDO MÁGICO: Empurra a assinatura pro limite de baixo! */
+    padding: 0 30px 10mm 30px; /* Dá 1 centímetro de margem embaixo para não colar no corte da folha */
     page-break-inside: avoid;
   }
   .signature-line {
