@@ -1,362 +1,166 @@
- <div id="fichaImpressao" style="display:none;">
-
-    <!-- ===== PÁGINA 1 ===== -->
-    <div class="print-header">
-      <img src="img/logo-prefeitura.png" alt="Prefeitura de Sapeaçu">
-      <div class="print-title">
-        <h1>Ficha de Matrícula</h1>
-        <h2 id="printAnoLetivo">Ano Letivo 2026</h2>
-      </div>
-      <img src="img/logo-secretaria.png" alt="Secretaria Municipal de Educação">
+<div id="fichaImpressao" style="display:none;">
+  <!-- ===== PÁGINA ÚNICA ===== -->
+  <div class="print-header">
+    <img src="img/logo-prefeitura.png" alt="Prefeitura de Sapeaçu">
+    <div class="print-title">
+      <h1>Ficha de Matrícula</h1>
+      <h2 id="printAnoLetivo">Ano Letivo 2026</h2>
     </div>
+    <img src="img/logo-secretaria.png" alt="Secretaria Municipal de Educação">
+  </div>
 
-    <div style="border:1px solid #000; border-bottom:none; display:flex;">
-      <div class="print-escola-col" style="flex:3; padding:2px 5px;">
-        <span class="print-label">Unidade Escolar</span>
-        <strong id="printEscola" style="font-size:11px; display:block;"></strong>
-      </div>
-      <div class="print-escola-col" style="border-left:1px solid #000; padding:2px 5px;">
-        <span class="print-label">Localização da UE</span>
-        <span id="printLocalizacao" style="font-size:10px;"></span>
-      </div>
+  <div style="border:1px solid #000; border-bottom:none; display:flex;">
+    <div class="print-escola-col" style="flex:3; padding:2px 5px;">
+      <span class="print-label">Unidade Escolar</span>
+      <strong id="printEscola" style="font-size:11px; display:block;"></strong>
     </div>
-    <div style="border:1px solid #000; display:flex; margin-bottom:4px;">
-      <div class="print-escola-col" style="flex:2; padding:2px 5px;">
-        <span class="print-label">Tipo de matrícula</span>
-        <div class="print-checkgroup">
-          <span class="print-check"><span class="print-check-box" id="chkRenovacao"></span> Renovação</span>
-          <span class="print-check"><span class="print-check-box" id="chkNovaMatricula"></span> Nova Matrícula</span>
-        </div>
-      </div>
-      <div class="print-escola-col" style="border-left:1px solid #000; padding:2px 5px;">
-        <span class="print-label">Data</span>
-        <span id="printDataMatricula"></span>
-      </div>
+    <div class="print-escola-col" style="border-left:1px solid #000; padding:2px 5px;">
+      <span class="print-label">Localização da UE</span>
+      <span id="printLocalizacao" style="font-size:10px;"></span>
     </div>
-
-    <!-- IDENTIFICAÇÃO (1-8) -->
-    <div class="print-section">
-      <div class="print-section-title">IDENTIFICAÇÃO DO ALUNO</div>
-      <div class="print-row">
-        <div class="print-col"><span class="print-label">1 - Nome Completo do ALUNO</span><span class="print-value" id="printNome"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col"><span class="print-label">2 - Nascimento</span><span class="print-value" id="printNasc"></span></div>
-        <div class="print-col" style="flex:2;"><span class="print-label">3 - Identificação único CENSO (código INEP)</span><span class="print-value" id="printInep"></span></div>
-        <div class="print-col" style="flex:1.5;"><span class="print-label">4 - CPF do ALUNO</span><span class="print-value" id="printCpf"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col" style="flex:2;">
-          <span class="print-label">5 - Estado Civil</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box" id="chkSolteiro"></span> Solteiro</span>
-            <span class="print-check"><span class="print-check-box" id="chkCasado"></span> Casado</span>
-            <span class="print-check"><span class="print-check-box" id="chkSeparado"></span> Separado</span>
-            <span class="print-check"><span class="print-check-box" id="chkDivorciado"></span> Divorciado</span>
-            <span class="print-check"><span class="print-check-box" id="chkViuvo"></span> Viúvo</span>
-            <span class="print-check"><span class="print-check-box" id="chkEstadoCivilND"></span> Não declarado</span>
-          </div>
-        </div>
-        <div class="print-col"><span class="print-label">6 - Telefone do Aluno</span><span class="print-value" id="printTelAluno"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col" style="flex:2;">
-          <span class="print-label">7 - Cor/Raça</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box" id="chkAmarela"></span> Amarela</span>
-            <span class="print-check"><span class="print-check-box" id="chkIndigena"></span> Indígena</span>
-            <span class="print-check"><span class="print-check-box" id="chkPreta"></span> Preta</span>
-            <span class="print-check"><span class="print-check-box" id="chkBranca"></span> Branca</span>
-            <span class="print-check"><span class="print-check-box" id="chkParda"></span> Parda</span>
-            <span class="print-check"><span class="print-check-box" id="chkRacaND"></span> Não declarado</span>
-          </div>
-        </div>
-        <div class="print-col">
-          <span class="print-label">8 - Sexo</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box" id="chkMasculino"></span> Masculino</span>
-            <span class="print-check"><span class="print-check-box" id="chkFeminino"></span> Feminino</span>
-            <span class="print-check"><span class="print-check-box" id="chkOutroSexo"></span> Outro</span>
-            <span class="print-check"><span class="print-check-box" id="chkSexoND"></span> Não Declarado</span>
-          </div>
-        </div>
-      </div>
+  </div>
+  <div style="border:1px solid #000; display:flex; margin-bottom:4px;">
+    <div class="print-escola-col" style="flex:3; padding:2px 5px;">
+      <span class="print-label">Tipo de matrícula</span>
+      <span id="printTipoMatricula" style="font-size:10px;"></span>
     </div>
-
-    <!-- DOCUMENTOS (9-15) -->
-    <div class="print-section">
-      <div class="print-section-title">DOCUMENTOS</div>
-      <div class="print-row">
-        <div class="print-col"><span class="print-label">9 - Número da Identidade</span><span class="print-value" id="printRg"></span></div>
-        <div class="print-col"><span class="print-label">10 - Número do NIS</span><span class="print-value" id="printNis"></span></div>
-        <div class="print-col"><span class="print-label">11 - Número do Cartão do SUS</span><span class="print-value" id="printSus"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col"><span class="print-label">12 - Certidão de Nascimento (Modelo antigo Fo.fla, Livro e Ordem)</span><span class="print-value" id="printCertidao"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col" style="flex:2;"><span class="print-label">13 - Nacionalidade</span><span class="print-value" id="printNacionalidade"></span></div>
-        <div class="print-col" style="flex:2;"><span class="print-label">14 - Cidade de Nasc.</span><span class="print-value" id="printCidadeNasc"></span></div>
-        <div class="print-col"><span class="print-label">15 - UF Nascimento</span><span class="print-value" id="printUfNasc"></span></div>
-      </div>
+    <div class="print-escola-col" style="border-left:1px solid #000; padding:2px 5px; flex:1;">
+      <span class="print-label">Data</span>
+      <span id="printDataMatricula" style="font-size:10px;"></span>
     </div>
+  </div>
 
-    <!-- FILIAÇÃO (16-19) -->
-    <div class="print-section">
-      <div class="print-section-title">FILIAÇÃO</div>
-      <div class="print-row">
-        <div class="print-col" style="flex:3;"><span class="print-label">16 - Mãe</span><span class="print-value" id="printMae"></span></div>
-        <div class="print-col"><span class="print-label">17 - Tel da Mãe</span><span class="print-value" id="printTelMae"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col" style="flex:3;"><span class="print-label">18 - Pai</span><span class="print-value" id="printPai"></span></div>
-        <div class="print-col"><span class="print-label">19 - Tel do Pai</span><span class="print-value" id="printTelPai"></span></div>
-      </div>
+  <!-- IDENTIFICAÇÃO -->
+  <div class="print-section">
+    <div class="print-section-title">IDENTIFICAÇÃO DO ALUNO</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">1 - Nome Completo do ALUNO</span><span class="print-value" id="printNome"></span></div>
     </div>
-
-    <!-- ANO/ETAPA DE ESCOLARIZAÇÃO (20-23) -->
-    <div class="print-section">
-      <div class="print-section-title">ANO/ETAPA DE ESCOLARIZAÇÃO</div>
-      <div class="print-row">
-        <div class="print-col" style="flex:2;"><span class="print-label">20 - Ensino Fundamental — Ano</span><span class="print-value" id="printSerie"></span></div>
-        <div class="print-col"><span class="print-label">Turno</span><span class="print-value" id="printTurno"></span></div>
-        <div class="print-col"><span class="print-label">Turma</span><span class="print-value" id="printTurma"></span></div>
-      </div>
-      <div class="print-row">
-        <div class="print-col">
-          <span class="print-label">21 - Creche</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box"></span> G1 (1 ano)</span>
-            <span class="print-check"><span class="print-check-box"></span> G2 (2 anos)</span>
-            <span class="print-check"><span class="print-check-box"></span> G3 (3 anos)</span>
-          </div>
-        </div>
-        <div class="print-col">
-          <span class="print-label">22 - Pré Escolar</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box"></span> G4 (4 anos)</span>
-            <span class="print-check"><span class="print-check-box"></span> G5 (5 anos)</span>
-          </div>
-        </div>
-        <div class="print-col">
-          <span class="print-label">23 - EJA</span>
-          <div class="print-checkgroup" style="flex-direction:column;gap:1px;">
-            <span class="print-check"><span class="print-check-box"></span> Eixo I (1° ao 3° ano)</span>
-            <span class="print-check"><span class="print-check-box"></span> Eixo II (4° e 5° ano)</span>
-            <span class="print-check"><span class="print-check-box"></span> Eixo III (6° e 7° ano)</span>
-            <span class="print-check"><span class="print-check-box"></span> Eixo IV (8° e 9° ano)</span>
-          </div>
-        </div>
-      </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">2 - Nascimento</span><span class="print-value" id="printNasc"></span></div>
+      <div class="print-col" style="flex:2;"><span class="print-label">3 - Identificação única CENSO (código INEP)</span><span class="print-value" id="printInep"></span></div>
+      <div class="print-col" style="flex:1.5;"><span class="print-label">4 - CPF do ALUNO</span><span class="print-value" id="printCpf"></span></div>
     </div>
-
-    <!-- TRANSPORTE (24-25) -->
-    <div class="print-section">
-      <div class="print-section-title">TRANSPORTE ESCOLAR</div>
-      <div class="print-row">
-        <div class="print-col">
-          <span class="print-label">24 - Utiliza Transporte Público Escolar?</span>
-          <div class="print-checkgroup">
-            <span class="print-check"><span class="print-check-box" id="chkTranspNao"></span> Não</span>
-            <span class="print-check"><span class="print-check-box" id="chkTranspSim"></span> Sim</span>
-          </div>
-        </div>
-        <div class="print-col" style="flex:2;"><span class="print-label">25 - Se Sim, qual a rota?</span><span class="print-value" id="printRota"></span></div>
-      </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">5 - Estado Civil</span><span class="print-value" id="printEstadoCivil"></span></div>
+      <div class="print-col"><span class="print-label">6 - Telefone do Aluno</span><span class="print-value" id="printTelAluno"></span></div>
+      <div class="print-col"><span class="print-label">7 - Cor/Raça</span><span class="print-value" id="printCorRaca"></span></div>
+      <div class="print-col"><span class="print-label">8 - Sexo</span><span class="print-value" id="printSexo"></span></div>
     </div>
+  </div>
 
-    <!-- ===== PÁGINA 2 ===== -->
-    <div class="print-page-break">
+  <!-- DOCUMENTOS -->
+  <div class="print-section">
+    <div class="print-section-title">DOCUMENTOS</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">9 - Número da Identidade (RG)</span><span class="print-value" id="printRg"></span></div>
+      <div class="print-col"><span class="print-label">10 - Número do NIS</span><span class="print-value" id="printNis"></span></div>
+      <div class="print-col"><span class="print-label">11 - Número do Cartão do SUS</span><span class="print-value" id="printSus"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">12 - Certidão de Nascimento</span><span class="print-value" id="printCertidao"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">13 - Nacionalidade</span><span class="print-value" id="printNacionalidade"></span></div>
+      <div class="print-col"><span class="print-label">14 - Cidade de Nasc.</span><span class="print-value" id="printCidadeNasc"></span></div>
+      <div class="print-col"><span class="print-label">15 - UF Nasc.</span><span class="print-value" id="printUfNasc"></span></div>
+    </div>
+  </div>
 
-      <!-- ENDEREÇO (26-33) -->
-      <div class="print-section">
-        <div class="print-section-title">ENDEREÇO</div>
-        <div class="print-row">
-          <div class="print-col" style="flex:3;"><span class="print-label">26 - Rua / Logradouro</span><span class="print-value" id="printRua"></span></div>
-          <div class="print-col"><span class="print-label">27 - Nº</span><span class="print-value" id="printNumero"></span></div>
-          <div class="print-col"><span class="print-label">28 - CEP</span><span class="print-value" id="printCep"></span></div>
-        </div>
-        <div class="print-row">
-          <div class="print-col" style="flex:2;"><span class="print-label">29 - Bairro / Localidade</span><span class="print-value" id="printBairro"></span></div>
-          <div class="print-col" style="flex:2;"><span class="print-label">30 - Cidade</span><span class="print-value" id="printCidadeEnd"></span></div>
-          <div class="print-col"><span class="print-label">31 - UF</span><span class="print-value" id="printUfEnd"></span></div>
-        </div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label">32 - Área de localização da residência</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkAreaUrbana"></span> Urbana</span>
-              <span class="print-check"><span class="print-check-box" id="chkAreaRural"></span> Rural</span>
-            </div>
-          </div>
-          <div class="print-col" style="flex:3;">
-            <span class="print-label">33 - A residência está em área de localização diferenciada?</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkAreaNaoDif"></span> Não está em área de localização diferenciada</span>
-              <span class="print-check"><span class="print-check-box" id="chkAreaQuilombola"></span> Área onde se localiza comunidade remanescente de quilombos</span>
-              <span class="print-check"><span class="print-check-box" id="chkAreaIndigena"></span> Terra indígena</span>
-              <span class="print-check"><span class="print-check-box" id="chkAreaAssentamento"></span> Área de assentamento cigano</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- FILIAÇÃO -->
+  <div class="print-section">
+    <div class="print-section-title">FILIAÇÃO</div>
+    <div class="print-row">
+      <div class="print-col" style="flex:2;"><span class="print-label">16 - Mãe</span><span class="print-value" id="printMae"></span></div>
+      <div class="print-col"><span class="print-label">17 - Tel da Mãe</span><span class="print-value" id="printTelMae"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col" style="flex:2;"><span class="print-label">18 - Pai</span><span class="print-value" id="printPai"></span></div>
+      <div class="print-col"><span class="print-label">19 - Tel do Pai</span><span class="print-value" id="printTelPai"></span></div>
+    </div>
+  </div>
 
-      <!-- RECURSOS (34) -->
-      <div class="print-section">
-        <div class="print-section-title">RECURSOS PARA USO DO(A) ALUNO(A) EM SALA DE AULA E NA AVALIAÇÃO DO INEP (SAEB)</div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label">34 - Necessidade de recursos especiais?</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkRecNao"></span> Não</span>
-              <span class="print-check"><span class="print-check-box" id="chkRecSim"></span> Sim, indicar qual(is)</span>
-            </div>
-            <div class="print-checkgroup" style="margin-top:4px; flex-wrap:wrap;">
-              <span class="print-check"><span class="print-check-box" id="printRecAuxLeitor"></span> Auxílio leitor</span>
-              <span class="print-check"><span class="print-check-box" id="printRecLibras"></span> Tradutor/Intérprete de Libras</span>
-              <span class="print-check"><span class="print-check-box" id="printRecLeituraLabial"></span> Leitura Labial</span>
-              <span class="print-check"><span class="print-check-box" id="printRecBraille"></span> Material em Braille</span>
-              <span class="print-check"><span class="print-check-box" id="printRecTranscricao"></span> Auxílio transcrição</span>
-              <span class="print-check"><span class="print-check-box" id="printRecFonte16"></span> Prova suplementar física (fonte 16)</span>
-              <span class="print-check"><span class="print-check-box" id="printRecGuia"></span> Guia intérprete</span>
-              <span class="print-check"><span class="print-check-box" id="printRecFonte18"></span> Prova ampliada (fonte 18)</span>
-              <span class="print-check"><span class="print-check-box" id="printRecVideoLibras"></span> Prova em Vídeo Libras</span>
-              <span class="print-check"><span class="print-check-box" id="printRecCDAudio"></span> CD áudio para deficiente visual</span>
-              <span class="print-check"><span class="print-check-box" id="printRecLP2Lingua"></span> Prova de LP como Segunda Língua para surdos</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- ESCOLARIZAÇÃO -->
+  <div class="print-section">
+    <div class="print-section-title">ANO/ETAPA DE ESCOLARIZAÇÃO</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">Ano / Série / Etapa</span><span class="print-value" id="printSerie"></span></div>
+      <div class="print-col"><span class="print-label">Turno</span><span class="print-value" id="printTurno"></span></div>
+      <div class="print-col"><span class="print-label">Turma</span><span class="print-value" id="printTurma"></span></div>
+    </div>
+  </div>
 
-      <!-- FICHA DE SAÚDE (36-49) -->
-      <div class="print-section">
-        <div class="print-section-title">FICHA DE SAÚDE / ANAMNESE</div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label">36 - Diabete?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkDiabeteNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkDiabeteSim"></span> Sim</span></div>
-          </div>
-          <div class="print-col">
-            <span class="print-label">37 - Convulsões?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkConvulsoesNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkConvulsoesSim"></span> Sim</span></div>
-          </div>
-          <div class="print-col">
-            <span class="print-label">38 - Asma Brônquica?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkAsmaNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkAsmaSim"></span> Sim</span></div>
-          </div>
-          <div class="print-col">
-            <span class="print-label">39 - Infecções frequentes?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkInfNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkInfSim"></span> Sim</span></div>
-          </div>
-          <div class="print-col">
-            <span class="print-label">40 - Restrição Exercício Físico?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkExNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkExSim"></span> Sim</span></div>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col" style="flex:2;">
-            <span class="print-label">41 - Teve COVID-19?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkCovidNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkCovidSim"></span> Sim</span></div>
-            <span class="print-label">Quando?</span><span class="print-value" id="printCovidQuando"></span>
-          </div>
-          <div class="print-col" style="flex:2;">
-            <span class="print-label">42 - Alergia a matérias/medicamentos?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkAlergiaMedNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkAlergiaMedSim"></span> Sim</span></div>
-            <span class="print-value" id="printAlergiaMedQuais" style="font-size:8px;"></span>
-          </div>
-          <div class="print-col" style="flex:2;">
-            <span class="print-label">43 - Situação Vacinal COVID</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkVacD1"></span> D1</span>
-              <span class="print-check"><span class="print-check-box" id="chkVacD2"></span> D2</span>
-              <span class="print-check"><span class="print-check-box" id="chkVacReforco"></span> Reforço</span>
-              <span class="print-check"><span class="print-check-box" id="chkVacNao"></span> Não foi vacinado</span>
-            </div>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col" style="flex:2;">
-            <span class="print-label">44 - Se não vacinado, motivo? — <strong>ESCOLHA DA MÃE</strong></span>
-            <span class="print-value" id="printMotivoNaoVac"></span>
-          </div>
-          <div class="print-col" style="flex:2;">
-            <span class="print-label">45 - Restrições alimentares?</span>
-            <div class="print-checkgroup"><span class="print-check"><span class="print-check-box" id="chkAlimNao"></span> Não</span><span class="print-check"><span class="print-check-box" id="chkAlimSim"></span> Sim</span></div>
-            <span class="print-value" id="printAlimQuais" style="font-size:8px;"></span>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label" style="color:#333;">49 - Não localizado o responsável, em caso de febre alta, o medicamento a ser ministrado pelo SERVIÇO DE SAÚDE PÚBLICA é:</span>
-            <span class="print-value"><strong>IBUPROFENO</strong></span>
-          </div>
-        </div>
-      </div>
+  <!-- TRANSPORTE -->
+  <div class="print-section">
+    <div class="print-section-title">TRANSPORTE ESCOLAR</div>
+    <div class="print-row">
+      <div class="print-col" style="flex:1;"><span class="print-label">24 - Utiliza Transporte Público?</span><span class="print-value" id="printTransporte"></span></div>
+      <div class="print-col" style="flex:2;"><span class="print-label">25 - Se Sim, qual a rota?</span><span class="print-value" id="printRota"></span></div>
+    </div>
+  </div>
 
-      <!-- NEE E DEFICIÊNCIA (50-51) -->
-      <div class="print-section">
-        <div class="print-section-title">ALUNO(A) COM NECESSIDADE EDUCATIVA ESPECIAL OU DEFICIÊNCIA?</div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label">50 - Alguma Necessidade Educativa Especial (Física ou Intelectual)?</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkNeeNao"></span> Não</span>
-              <span class="print-check"><span class="print-check-box" id="chkNeeSim"></span> Sim, indique qual(is):</span>
-            </div>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col" style="flex:2;">
-            <div class="print-checkgroup" style="flex-direction:column;gap:1px;">
-              <span class="print-check"><span class="print-check-box" id="printNeeFuncoesCognitivas"></span> Desenvolvimento de funções cognitivas</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeVidaAutonoma"></span> Desenvolvimento de vida autônoma</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeEnriquecimento"></span> Enriquecimento curricular</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeInformatica"></span> Ensino de informática acessível</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeBraille"></span> Ensino do Sistema Braille</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeLibras"></span> LP como Segunda Língua (Libras)</span>
-            </div>
-          </div>
-          <div class="print-col">
-            <div class="print-checkgroup" style="flex-direction:column;gap:1px;">
-              <span class="print-check"><span class="print-check-box" id="printNeeSoroban"></span> Técnicas de cálculo no Soroban</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeOrientacao"></span> Orientação e mobilidade</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeCAA"></span> Comunicação Alternativa e Aumentativa (CAA)</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeTEA"></span> Transtorno do Espectro Autista</span>
-              <span class="print-check"><span class="print-check-box" id="printNeeAltasHabilidades"></span> Altas habilidades/Superdotação</span>
-            </div>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col">
-            <span class="print-label">51 - Aluno(a) com deficiência física, auditiva ou visual?</span>
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="chkDefNao"></span> Não</span>
-              <span class="print-check"><span class="print-check-box" id="chkDefSim"></span> Sim, indique qual(is):</span>
-            </div>
-          </div>
-        </div>
-        <div class="print-row">
-          <div class="print-col">
-            <div class="print-checkgroup">
-              <span class="print-check"><span class="print-check-box" id="printDefBaixaVisao"></span> Baixa visão</span>
-              <span class="print-check"><span class="print-check-box" id="printDefSurdez"></span> Surdez</span>
-              <span class="print-check"><span class="print-check-box" id="printDefIntelectual"></span> Deficiência Intelectual</span>
-              <span class="print-check"><span class="print-check-box" id="printDefCegueira"></span> Cegueira</span>
-              <span class="print-check"><span class="print-check-box" id="printDefSurdocegueira"></span> Surdocegueira</span>
-              <span class="print-check"><span class="print-check-box" id="printDefMultipla"></span> Deficiência múltipla</span>
-              <span class="print-check"><span class="print-check-box" id="printDefAuditiva"></span> Deficiência auditiva</span>
-              <span class="print-check"><span class="print-check-box" id="printDefFisica"></span> Deficiência Física</span>
-            </div>
-          </div>
-        </div>
-      </div>
+  <!-- ENDEREÇO -->
+  <div class="print-section">
+    <div class="print-section-title">ENDEREÇO</div>
+    <div class="print-row">
+      <div class="print-col" style="flex:3;"><span class="print-label">26 - Rua / Logradouro</span><span class="print-value" id="printRua"></span></div>
+      <div class="print-col" style="flex:1;"><span class="print-label">27 - Nº</span><span class="print-value" id="printNumero"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">28 - CEP</span><span class="print-value" id="printCep"></span></div>
+      <div class="print-col" style="flex:2;"><span class="print-label">29 - Bairro / Localidade</span><span class="print-value" id="printBairro"></span></div>
+      <div class="print-col" style="flex:2;"><span class="print-label">30 - Cidade</span><span class="print-value" id="printCidadeEnd"></span></div>
+      <div class="print-col"><span class="print-label">31 - UF</span><span class="print-value" id="printUfEnd"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">32 - Área de localização da residência</span><span class="print-value" id="printAreaLocalizacao"></span></div>
+      <div class="print-col" style="flex:2;"><span class="print-label">33 - A residência está em área diferenciada?</span><span class="print-value" id="printAreaDiferenciada"></span></div>
+    </div>
+  </div>
 
-      <!-- ASSINATURAS PÁG 2 -->
-      <div class="print-signatures">
-        <div class="signature-line">Funcionário Responsável pela Matrícula</div>
-        <div class="signature-line">Assinatura do Pai/Mãe/Responsável pelo(a) Aluno(a)</div>
-      </div>
+  <!-- RECURSOS -->
+  <div class="print-section">
+    <div class="print-section-title">RECURSOS PARA USO DO(A) ALUNO(A) EM SALA DE AULA E NA AVALIAÇÃO DO INEP (SAEB)</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">34 - Necessidade de recursos especiais?</span><span class="print-value" id="printRecursos"></span></div>
+    </div>
+  </div>
 
-    </div><!-- fim página 2 -->
-  </div><!-- fim fichaImpressao -->
-  <!-- FIM FICHA DE IMPRESSÃO -->
+  <!-- FICHA DE SAÚDE -->
+  <div class="print-section">
+    <div class="print-section-title">FICHA DE SAÚDE / ANAMNESE</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">36 - Diabete?</span><span class="print-value" id="printDiabete"></span></div>
+      <div class="print-col"><span class="print-label">37 - Convulsões?</span><span class="print-value" id="printConvulsoes"></span></div>
+      <div class="print-col"><span class="print-label">38 - Asma Brônquica?</span><span class="print-value" id="printAsma"></span></div>
+      <div class="print-col"><span class="print-label">39 - Infecções freq.?</span><span class="print-value" id="printInfeccoes"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">40 - Restrição a Exercício?</span><span class="print-value" id="printRestricaoEx"></span></div>
+      <div class="print-col"><span class="print-label">41 - Teve COVID-19? (Quando?)</span><span class="print-value" id="printCovid"></span></div>
+      <div class="print-col" style="flex:1.5;"><span class="print-label">43 - Situação Vacinal COVID</span><span class="print-value" id="printVacinaCovid"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">42 - Alergia a matérias/medicamentos?</span><span class="print-value" id="printAlergiaMed"></span></div>
+      <div class="print-col"><span class="print-label">45 - Restrições alimentares?</span><span class="print-value" id="printAlimentar"></span></div>
+    </div>
+  </div>
+
+  <!-- NEE E DEFICIÊNCIA -->
+  <div class="print-section">
+    <div class="print-section-title">ALUNO(A) COM NECESSIDADE EDUCATIVA ESPECIAL OU DEFICIÊNCIA?</div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">50 - Alguma Necessidade Educativa Especial (Física ou Intelectual)?</span><span class="print-value" id="printNee"></span></div>
+    </div>
+    <div class="print-row">
+      <div class="print-col"><span class="print-label">51 - Aluno(a) com deficiência física, auditiva ou visual?</span><span class="print-value" id="printDeficiencia"></span></div>
+    </div>
+  </div>
+
+  <!-- ASSINATURAS FINAIS -->
+  <div class="print-signatures">
+    <div class="signature-line">Funcionário Responsável pela Matrícula</div>
+    <div class="signature-line">Assinatura do Pai/Mãe/Responsável pelo(a) Aluno(a)</div>
+  </div>
+
+</div>
