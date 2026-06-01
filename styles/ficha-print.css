@@ -1,134 +1,120 @@
 /* Este CSS SÓ funciona na hora de imprimir (Ctrl+P) */
 @media print {
-  /* 1. Esconde todo o sistema (menu, tabelas pretas, modais, fundo escuro) */
-  body {
-    background: white !important;
-  }
-  
-  #app, .login-container, .modal, .overlay {
-    display: none !important;
-  }
-
-  /* 2. Mostra apenas a Ficha que fica oculta na tela normal */
-  #fichaImpressao {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    background: white;
-    color: black;
-    font-family: Arial, Helvetica, sans-serif; /* Fonte padrão de documentos oficiais */
-    font-size: 9px; /* Letra pequena para caber todos os 50 campos! */
-  }
-
-  /* 3. Configura a Folha A4 Retrato */
+  /* Tira as margens do papel para o navegador NÃO imprimir o link do Github e a data */
   @page {
     size: A4 portrait;
-    margin: 5mm; /* Margem da impressora */
+    margin: 0mm; 
+  }
+  
+  /* Esconde o sistema normal */
+  body { background: white !important; }
+  #app, .login-container, .modal, .overlay { display: none !important; }
+
+  /* A Ficha Principal */
+  #fichaImpressao {
+    display: block !important;
+    position: relative; 
+    width: 100%;
+    padding: 8mm; /* Recuo interno para a impressora não cortar o texto das bordas */
+    box-sizing: border-box;
+    background: white;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9px;
   }
 
-  /* --- ESTILOS VISUAIS DA FICHA --- */
-  
+  /* Cabeçalho com Logos */
   .print-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 10px;
+    margin-bottom: 5px;
   }
+  .print-header img { height: 45px; }
+  .print-title { text-align: center; flex: 1; }
+  .print-title h1 { font-size: 14px; margin: 0; text-transform: uppercase; font-weight: bold; }
+  .print-title h2 { font-size: 11px; margin: 2px 0 0 0; font-weight: normal; }
 
-  .print-header img {
-    height: 50px; /* Tamanho das logos da prefeitura */
-  }
-
-  .print-title {
-    text-align: center;
-    flex: 1;
-  }
-
-  .print-title h1 {
-    font-size: 16px;
-    margin: 0;
-    text-transform: uppercase;
-  }
-
-  .print-title h2 {
-    font-size: 12px;
-    margin: 2px 0 0 0;
-    font-weight: normal;
-  }
-
-    .print-section {
-    border: 1.5px solid #000;
-    margin-bottom: 2px;
+  /* Caixas Pretas Principais */
+  .print-section {
+    border: 1px solid #000;
+    margin-bottom: 3px;
+    page-break-inside: avoid;
   }
 
   .print-section-title {
     background-color: #000 !important;
     color: #fff !important;
     font-weight: bold;
-    font-size: 9px; 
-    padding: 2px 4px; 
+    font-size: 9px;
+    padding: 2px 4px;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  .print-col {
+  /* LINHAS DA GRADE (A CLASSE QUE FAZ FICAR LADO A LADO!) */
+  .print-row {
+    display: flex; 
+    border-top: 1px solid #000;
+  }
+  .print-row:first-child { border-top: none; }
+
+  /* COLUNAS DA GRADE */
+  .print-col, .print-escola-col {
     border-right: 1px solid #000;
-    padding: 1px 3px; 
+    padding: 2px 4px;
     flex: 1;
     display: flex;
     flex-direction: column;
   }
-
-  .print-label {
-    font-size: 8px; 
-    font-weight: bold;
-    margin-bottom: 1px;
+  .print-col:last-child, .print-escola-col:last-child {
+    border-right: none;
   }
 
+  /* TEXTOS DENTRO DAS CAIXAS */
+  .print-label {
+    font-size: 8px;
+    font-weight: bold;
+    margin-bottom: 1px;
+    color: #000;
+  }
   .print-value {
-    font-size: 9px; 
+    font-size: 9px;
     min-height: 12px;
   }
 
-  .print-checkbox-group {
+  /* CHECKBOXES E GRUPOS */
+  .print-checkgroup {
     display: flex;
     flex-wrap: wrap;
-    gap: 4px; 
-    font-size: 8px; 
+    gap: 4px;
+    font-size: 8px;
     margin-top: 1px;
   }
+  .print-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
 
+  /* ASSINATURAS FINAIS */
   .print-signatures {
     display: flex;
     justify-content: space-between;
-    margin-top: 20px; /* Traz as assinaturas pra mais perto do fim da ficha */
+    margin-top: 15px;
     padding: 0 30px;
+    page-break-inside: avoid;
   }
   .signature-line {
     border-top: 1px solid #000;
     width: 40%;
     text-align: center;
-    font-size: 10px;
+    font-size: 9px;
     padding-top: 4px;
   }
-
-  
-  
-  /* Garante que os tópicos de fundo preto fiquem cravados na cor preta */
-  .print-section-title {
-    background-color: #000 !important;
-    color: #fff !important;
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-
-  
 }
 
-/* Oculta a ficha quando estiver usando o sistema no navegador normalmente */
+/* Oculta a ficha quando não estiver imprimindo */
 #fichaImpressao {
   display: none;
 }
