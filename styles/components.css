@@ -482,3 +482,19 @@ h1 {
     align-items: flex-start;
   }
 }
+
+
+/* Grid de checkboxes multi-seleção no formulário */
+.form-check-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 12px;
+  background: #121212;
+  border-radius: 10px;
+  border: 1px solid #2a2a2a;
+  margin-bottom: 12px;
+}
+@media (max-width: 760px) {
+  .form-check-grid { grid-template-columns: 1fr; }
+}
