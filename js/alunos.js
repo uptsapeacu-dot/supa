@@ -461,28 +461,33 @@ async function salvarAluno() {
 // ==========================================
 // IMPRIMIR FICHA
 // ==========================================
+// ==========================================
+// IMPRIMIR FICHA
+// ==========================================
 function imprimirFicha(aluno) {
   const dados = aluno.dados_matricula || {}
 
   function set(id, valor) {
     const el = document.getElementById(id)
-    if (el) el.innerText = valor
+    if (el) el.innerText = valor || '-'
   }
 
-  function marcarCheck(mapa, valorAtual) {
-    Object.keys(mapa).forEach(function(id) {
-      const el = document.getElementById(id)
-      if (!el) return
-      el.textContent = mapa[id].toLowerCase() === (valorAtual || '').toLowerCase() ? '■' : ''
-    })
+  // Função mágica: Se for "Não" ele devolve "Não". Se for "Sim" ele junta as respostas (Ex: "Sim. Autismo, Baixa Visão")
+  function formatarResposta(simNao, detalhes, arrOpcoes) {
+    if (simNao !== 'Sim' && simNao !== true) return 'Não'
+    let complementos = []
+    if (detalhes && detalhes.trim() !== '') complementos.push(detalhes)
+    if (arrOpcoes && arrOpcoes.length > 0) complementos.push(arrOpcoes.join(', '))
+    
+    if (complementos.length > 0) return 'Sim. ' + complementos.join(' | ')
+    return 'Sim'
   }
 
   // --- CABEÇALHO ---
   set('printAnoLetivo', 'Ano Letivo ' + new Date().getFullYear())
+  set('printTipoMatricula', dados.tipo_matricula)
   set('printDataMatricula', dados.data_matricula ? formatarDataBR(dados.data_matricula) : '___/___/______')
   set('printLocalizacao', dados.localizacao || 'Zona Urbana')
-  document.getElementById('chkRenovacao').textContent = dados.tipo_matricula === 'Renovação' ? '■' : ''
-  document.getElementById('chkNovaMatricula').textContent = dados.tipo_matricula === 'Nova Matrícula' ? '■' : ''
 
   // --- ESCOLA ---
   let nomeEscola = ''
@@ -497,143 +502,81 @@ function imprimirFicha(aluno) {
   set('printEscola', nomeEscola)
 
   // --- IDENTIFICAÇÃO ---
-  set('printNome', textoOuVazio(aluno.nome))
+  set('printNome', aluno.nome)
   set('printNasc', formatarDataBR(aluno.data_nascimento))
-  set('printInep', textoOuVazio(dados.censo))
-  set('printCpf', textoOuVazio(dados.cpf))
-  set('printTelAluno', textoOuVazio(aluno.telefone))
-
-  marcarCheck({ chkSolteiro:'Solteiro', chkCasado:'Casado', chkSeparado:'Separado',
-    chkDivorciado:'Divorciado', chkViuvo:'Viúvo', chkEstadoCivilND:'Não declarado' }, dados.estado_civil)
-  marcarCheck({ chkAmarela:'Amarela', chkIndigena:'Indígena', chkPreta:'Preta',
-    chkBranca:'Branca', chkParda:'Parda', chkRacaND:'Não declarado' }, dados.cor_raca)
-  marcarCheck({ chkMasculino:'Masculino', chkFeminino:'Feminino',
-    chkOutroSexo:'Outro', chkSexoND:'Não Declarado' }, dados.sexo)
+  set('printInep', dados.censo)
+  set('printCpf', dados.cpf)
+  set('printEstadoCivil', dados.estado_civil || 'Não declarado')
+  set('printCorRaca', dados.cor_raca || 'Não declarado')
+  set('printSexo', dados.sexo || 'Não declarado')
+  set('printTelAluno', aluno.telefone)
 
   // --- DOCUMENTOS ---
-  set('printRg', textoOuVazio(dados.rg))
-  set('printNis', textoOuVazio(dados.nis))
-  set('printSus', textoOuVazio(dados.sus))
-  set('printCertidao', textoOuVazio(dados.certidao))
-  set('printNacionalidade', textoOuVazio(dados.nacionalidade))
-  set('printCidadeNasc', textoOuVazio(dados.cidade_nasc))
-  set('printUfNasc', textoOuVazio(dados.uf_nasc))
+  set('printRg', dados.rg)
+  set('printNis', dados.nis)
+  set('printSus', dados.sus)
+  set('printCertidao', dados.certidao)
+  set('printNacionalidade', dados.nacionalidade || 'BRASILEIRA')
+  set('printCidadeNasc', dados.cidade_nasc)
+  set('printUfNasc', dados.uf_nasc)
 
   // --- FILIAÇÃO ---
-  set('printMae', textoOuVazio(dados.mae))
-  set('printTelMae', textoOuVazio(dados.tel_mae))
-  set('printPai', textoOuVazio(dados.pai))
-  set('printTelPai', textoOuVazio(dados.tel_pai))
+  set('printMae', dados.mae)
+  set('printTelMae', dados.tel_mae)
+  set('printPai', dados.pai)
+  set('printTelPai', dados.tel_pai)
 
   // --- ESCOLARIZAÇÃO ---
-  set('printSerie', textoOuVazio(aluno.serie))
-  set('printTurno', textoOuVazio(dados.turno))
-  set('printTurma', textoOuVazio(dados.turma))
+  set('printSerie', aluno.serie)
+  set('printTurno', dados.turno)
+  set('printTurma', dados.turma)
 
   // --- TRANSPORTE ---
-  document.getElementById('chkTranspNao').textContent = dados.transporte ? '' : '■'
-  document.getElementById('chkTranspSim').textContent = dados.transporte ? '■' : ''
-  set('printRota', dados.rota || '-')
+  set('printTransporte', dados.transporte ? 'Sim' : 'Não')
+  set('printRota', dados.transporte && dados.rota ? dados.rota : '-')
 
-  // --- ENDEREÇO (pág 2) ---
-  set('printRua', textoOuVazio(dados.rua))
-  set('printNumero', textoOuVazio(dados.numero))
-  set('printCep', textoOuVazio(dados.cep))
-  set('printBairro', textoOuVazio(dados.bairro))
-  set('printCidadeEnd', textoOuVazio(dados.cidade_end))
-  set('printUfEnd', textoOuVazio(dados.uf_end))
+  // --- ENDEREÇO ---
+  set('printRua', dados.rua)
+  set('printNumero', dados.numero)
+  set('printCep', dados.cep)
+  set('printBairro', dados.bairro)
+  set('printCidadeEnd', dados.cidade_end)
+  set('printUfEnd', dados.uf_end)
+  set('printAreaLocalizacao', dados.area_localizacao)
+  set('printAreaDiferenciada', dados.area_diferenciada)
 
-  marcarCheck({ chkAreaUrbana:'Urbana', chkAreaRural:'Rural' }, dados.area_localizacao)
-  marcarCheck({
-    chkAreaNaoDif: 'Não está em área diferenciada',
-    chkAreaQuilombola: 'Área quilombola',
-    chkAreaIndigena: 'Terra indígena',
-    chkAreaAssentamento: 'Área de assentamento'
-  }, dados.area_diferenciada)
-
-  // --- RECURSOS ---
-  document.getElementById('chkRecNao').textContent = dados.recursos_especiais === 'Sim' ? '' : '■'
-  document.getElementById('chkRecSim').textContent = dados.recursos_especiais === 'Sim' ? '■' : ''
-  marcarArrayCheck({
-    printRecAuxLeitor: 'Auxílio leitor',
-    printRecLibras: 'Tradutor/intérprete de Libras',
-    printRecLeituraLabial: 'Leitura Labial',
-    printRecBraille: 'Material em Braille',
-    printRecTranscricao: 'Auxílio transcrição',
-    printRecFonte16: 'Prova fonte 16',
-    printRecGuia: 'Guia intérprete',
-    printRecFonte18: 'Prova fonte 18',
-    printRecVideoLibras: 'Vídeo Libras',
-    printRecCDAudio: 'CD áudio',
-    printRecLP2Lingua: 'LP Segunda Língua'
-  }, dados.recursos_tipos)
+  // --- RECURSOS (34) ---
+  set('printRecursos', formatarResposta(dados.recursos_especiais, null, dados.recursos_tipos))
 
   // --- SAÚDE ---
-  function simNao(idNao, idSim, valor) {
-    document.getElementById(idNao).textContent = valor === 'Sim' ? '' : '■'
-    document.getElementById(idSim).textContent = valor === 'Sim' ? '■' : ''
-  }
-  simNao('chkDiabeteNao','chkDiabeteSim', dados.diabete)
-  simNao('chkConvulsoesNao','chkConvulsoesSim', dados.convulsoes)
-  simNao('chkAsmaNao','chkAsmaSim', dados.asma)
-  simNao('chkInfNao','chkInfSim', dados.infeccoes)
-  simNao('chkExNao','chkExSim', dados.restricao_exercicio)
-  simNao('chkCovidNao','chkCovidSim', dados.covid)
-  set('printCovidQuando', textoOuVazio(dados.covid_quando))
-  simNao('chkAlergiaMedNao','chkAlergiaMedSim', dados.alergia_med)
-  set('printAlergiaMedQuais', textoOuVazio(dados.alergia_med_quais))
-  marcarCheck({ chkVacD1:'D1', chkVacD2:'D2', chkVacReforco:'Reforço', chkVacNao:'Não foi vacinado' }, dados.situacao_vacinal)
-  set('printMotivoNaoVac', textoOuVazio(dados.motivo_nao_vac))
-  simNao('chkAlimNao','chkAlimSim', dados.restricao_alimentar)
-  set('printAlimQuais', textoOuVazio(dados.restricao_alim_quais))
+  set('printDiabete', dados.diabete)
+  set('printConvulsoes', dados.convulsoes)
+  set('printAsma', dados.asma)
+  set('printInfeccoes', dados.infeccoes)
+  set('printRestricaoEx', dados.restricao_exercicio)
+  set('printCovid', formatarResposta(dados.covid, dados.covid_quando, null))
+  
+  let vacina = dados.situacao_vacinal || '-'
+  if (dados.motivo_nao_vac) vacina += ' (Motivo: ' + dados.motivo_nao_vac + ')'
+  set('printVacinaCovid', vacina)
+  
+  set('printAlergiaMed', formatarResposta(dados.alergia_med, dados.alergia_med_quais, null))
+  set('printAlimentar', formatarResposta(dados.restricao_alimentar, dados.restricao_alim_quais, null))
 
-  // --- NEE ---
-  document.getElementById('chkNeeNao').textContent = dados.nee === 'Sim' ? '' : '■'
-  document.getElementById('chkNeeSim').textContent = dados.nee === 'Sim' ? '■' : ''
-  marcarArrayCheck({
-    printNeeFuncoesCognitivas: 'Desenvolvimento de funções cognitivas',
-    printNeeVidaAutonoma: 'Desenvolvimento de vida autônoma',
-    printNeeEnriquecimento: 'Enriquecimento curricular',
-    printNeeInformatica: 'Ensino de informática acessível',
-    printNeeBraille: 'Ensino do Sistema Braille',
-    printNeeLibras: 'Língua Portuguesa como Segunda Língua',
-    printNeeSoroban: 'Técnicas de cálculo no Soroban',
-    printNeeOrientacao: 'Orientação e mobilidade',
-    printNeeCAA: 'Comunicação Alternativa e Aumentativa',
-    printNeeTEA: 'Transtorno do Espectro Autista',
-    printNeeAltasHabilidades: 'Altas habilidades/Superdotação'
-  }, dados.nee_tipos)
+  // --- NEE E DEFICIÊNCIA (50-51) ---
+  set('printNee', formatarResposta(dados.nee, null, dados.nee_tipos))
+  set('printDeficiencia', formatarResposta(dados.deficiencia, null, dados.deficiencia_tipos))
 
-  // --- DEFICIÊNCIA ---
-  document.getElementById('chkDefNao').textContent = dados.deficiencia === 'Sim' ? '' : '■'
-  document.getElementById('chkDefSim').textContent = dados.deficiencia === 'Sim' ? '■' : ''
-  marcarArrayCheck({
-    printDefBaixaVisao: 'Baixa visão',
-    printDefSurdez: 'Surdez',
-    printDefIntelectual: 'Deficiência Intelectual',
-    printDefCegueira: 'Cegueira',
-    printDefSurdocegueira: 'Surdocegueira',
-    printDefMultipla: 'Deficiência múltipla',
-    printDefAuditiva: 'Deficiência auditiva',
-    printDefFisica: 'Deficiência Física'
-  }, dados.deficiencia_tipos)
-
-    // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
+  // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
   const ficha = document.getElementById('fichaImpressao');
-  
-  // Tira a ficha de qualquer div escondida e joga na raiz da página
   document.body.appendChild(ficha);
-  
-  // Força a ficha a aparecer na tela
   ficha.style.display = 'block';
 
-  // SÓ esconde a ficha QUANDO a janela de impressão do PDF fechar!
   window.onafterprint = function() {
     ficha.style.display = 'none';
     window.onafterprint = null;
   };
 
-  // Dá tempo pro navegador colorir os campos pretos antes de abrir o PDF
   setTimeout(function() {
     window.print();
   }, 300); 
