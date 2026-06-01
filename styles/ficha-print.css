@@ -19,13 +19,13 @@
     background: white;
     color: black;
     font-family: Arial, Helvetica, sans-serif; /* Fonte padrão de documentos oficiais */
-    font-size: 11px; /* Letra pequena para caber todos os 50 campos! */
+    font-size: 9px; /* Letra pequena para caber todos os 50 campos! */
   }
 
   /* 3. Configura a Folha A4 Retrato */
   @page {
     size: A4 portrait;
-    margin: 1cm; /* Margem da impressora */
+    margin: 5mm; /* Margem da impressora */
   }
 
   /* --- ESTILOS VISUAIS DA FICHA --- */
@@ -58,74 +58,54 @@
     font-weight: normal;
   }
 
-  .print-section {
-    border: 2px solid #000;
-    margin-bottom: 4px;
+    .print-section {
+    border: 1.5px solid #000;
+    margin-bottom: 2px;
   }
 
   .print-section-title {
     background-color: #000 !important;
     color: #fff !important;
     font-weight: bold;
-    font-size: 11px;
-    padding: 3px 6px;
-    -webkit-print-color-adjust: exact; /* Força impressora a imprimir o fundo preto */
-    print-color-adjust: exact;
-  }
-
-  .print-row {
-    display: flex;
-    border-top: 1px solid #000;
-  }
-  
-  .print-row:first-child {
-    border-top: none;
+    font-size: 9px; 
+    padding: 2px 4px; 
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
   }
 
   .print-col {
     border-right: 1px solid #000;
-    padding: 2px 4px;
+    padding: 1px 3px; 
     flex: 1;
     display: flex;
     flex-direction: column;
   }
-  
-  .print-col:last-child {
-    border-right: none;
-  }
 
   .print-label {
-    font-size: 9px;
+    font-size: 8px; 
     font-weight: bold;
-    margin-bottom: 2px;
+    margin-bottom: 1px;
   }
 
   .print-value {
-    font-size: 11px;
-    min-height: 14px; /* Garante altura mesmo vazio */
+    font-size: 9px; 
+    min-height: 12px;
   }
 
   .print-checkbox-group {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    font-size: 10px;
-    margin-top: 2px;
-  }
-
-  .print-checkbox {
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
+    gap: 4px; 
+    font-size: 8px; 
+    margin-top: 1px;
   }
 
   .print-signatures {
     display: flex;
     justify-content: space-between;
-    margin-top: 40px;
+    margin-top: 20px; /* Traz as assinaturas pra mais perto do fim da ficha */
     padding: 0 30px;
   }
-
   .signature-line {
     border-top: 1px solid #000;
     width: 40%;
