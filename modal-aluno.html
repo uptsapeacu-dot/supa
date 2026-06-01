@@ -1,519 +1,264 @@
 <div class="modal" id="modalAluno">
-    <div class="modal-box modal-box-large">
-      <div class="modal-topo">
-        <h2 id="tituloModal">Cadastro de Aluno</h2>
-        <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">×</button>
+  <div class="modal-box modal-box-large">
+    <div class="modal-topo">
+      <h2 id="tituloModal">Cadastro de Aluno</h2>
+      <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">×</button>
+    </div>
+    <!-- SELETOR DE ESCOLA (Visível apenas para Nível 1 sem escola selecionada) -->
+    <div id="seletorEscolaAluno" style="display:none; margin-bottom: 4px;">
+      <h3 class="form-section-title" style="margin-top:0;">Escola de Destino</h3>
+      <select id="escolaDoAluno">
+        <option value="">-- Selecione a Escola --</option>
+      </select>
+    </div>
+    <!-- IDENTIFICAÇÃO -->
+    <h3 class="form-section-title" style="margin-top:0;">Identificação Básica</h3>
+    <div class="form-grid-2">
+      <input type="text" id="nomeAluno" placeholder="Nome Completo do Aluno *" />
+      <div>
+        <label style="font-size:12px; color:#aaa; padding-left:4px;">Nascimento</label>
+        <input type="date" id="nascimentoAluno" style="margin-top: 2px;" />
       </div>
-            <!-- SELETOR DE ESCOLA (Visível apenas para Nível 1 sem escola selecionada) -->
-      <div id="seletorEscolaAluno" style="display:none; margin-bottom: 4px;">
-        <h3 class="form-section-title" style="margin-top:0;">Escola de Destino</h3>
-        <select id="escolaDoAluno">
-          <option value="">-- Selecione a Escola --</option>
-        </select>
-      </div>
-      <!-- IDENTIFICAÇÃO -->
-      <h3 class="form-section-title" style="margin-top:0;">Identificação Básica</h3>
-      <div class="form-grid-2">
-        <input type="text" id="nomeAluno" placeholder="Nome Completo do Aluno *" />
-        <div>
-          <label style="font-size:12px; color:#aaa; padding-left:4px;">Nascimento</label>
-          <input type="date" id="nascimentoAluno" style="margin-top: 2px;" />
-        </div>
-      </div>
-      <div class="form-grid-3">
-        <input type="text" id="censoAluno" placeholder="Código INEP (Censo)" />
-        <input type="text" id="cpfAluno" placeholder="CPF do Aluno" />
-        <input type="text" id="telefoneAluno" placeholder="Telefone de Contato" />
-      </div>
-      <div class="form-grid-3">
-        <select id="estadoCivilAluno">
-          <option value="">Estado Civil</option>
-          <option value="Solteiro">Solteiro</option>
-          <option value="Casado">Casado</option>
-          <option value="Não declarado">Não declarado</option>
-        </select>
-        <select id="corRacaAluno">
-          <option value="">Cor / Raça</option>
-          <option value="Branca">Branca</option>
-          <option value="Preta">Preta</option>
-          <option value="Parda">Parda</option>
-          <option value="Indígena">Indígena</option>
-          <option value="Amarela">Amarela</option>
-          <option value="Não declarado">Não declarado</option>
-        </select>
-        <select id="sexoAluno">
-          <option value="">Sexo</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Feminino">Feminino</option>
-          <option value="Outro">Outro</option>
-        </select>
-      </div>
+    </div>
+    <div class="form-grid-3">
+      <input type="text" id="censoAluno" placeholder="Código INEP (Censo)" />
+      <input type="text" id="cpfAluno" placeholder="CPF do Aluno" />
+      <input type="text" id="telefoneAluno" placeholder="Telefone de Contato" />
+    </div>
+    <div class="form-grid-3">
+      <select id="estadoCivilAluno">
+        <option value="">Estado Civil</option>
+        <option value="Solteiro">Solteiro</option>
+        <option value="Casado">Casado</option>
+        <option value="Não declarado">Não declarado</option>
+      </select>
+      <select id="corRacaAluno">
+        <option value="">Cor / Raça</option>
+        <option value="Branca">Branca</option>
+        <option value="Preta">Preta</option>
+        <option value="Parda">Parda</option>
+        <option value="Indígena">Indígena</option>
+        <option value="Amarela">Amarela</option>
+        <option value="Não declarado">Não declarado</option>
+      </select>
+      <select id="sexoAluno">
+        <option value="">Sexo</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Feminino">Feminino</option>
+        <option value="Outro">Outro</option>
+      </select>
+    </div>
 
-      <!-- DOCUMENTOS -->
-      <h3 class="form-section-title">Documentos</h3>
-      <div class="form-grid-3">
-        <input type="text" id="rgAluno" placeholder="Nº Identidade (RG)" />
-        <input type="text" id="nisAluno" placeholder="Nº do NIS" />
-        <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
-      </div>
-      <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
-      <div class="form-grid-3" style="margin-top: 12px;">
-        <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
-        <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
-        <input type="text" id="ufNascAluno" placeholder="UF Nascimento" maxlength="2" />
-      </div>
+    <!-- DOCUMENTOS -->
+    <h3 class="form-section-title">Documentos</h3>
+    <div class="form-grid-3">
+      <input type="text" id="rgAluno" placeholder="Nº Identidade (RG)" />
+      <input type="text" id="nisAluno" placeholder="Nº do NIS" />
+      <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
+    </div>
+    <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
+    <div class="form-grid-3" style="margin-top: 12px;">
+      <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
+      <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
+      <input type="text" id="ufNascAluno" placeholder="UF Nascimento" maxlength="2" />
+    </div>
 
-      <!-- FILIAÇÃO E ENDEREÇO -->
-      <h3 class="form-section-title">Filiação e Contato</h3>
-      <div class="form-grid-2">
-        <input type="text" id="maeAluno" placeholder="Nome da Mãe *" />
-        <input type="text" id="telMaeAluno" placeholder="Telefone da Mãe" />
-        <input type="text" id="paiAluno" placeholder="Nome do Pai" />
-        <input type="text" id="telPaiAluno" placeholder="Telefone do Pai" />
-      </div>
-      <input type="text" id="enderecoAluno" placeholder="Endereço Completo (Rua, Nº, Bairro)" style="margin-top: 12px;" />
+    <!-- FILIAÇÃO E ENDEREÇO -->
+    <h3 class="form-section-title">Filiação e Contato</h3>
+    <div class="form-grid-2">
+      <input type="text" id="maeAluno" placeholder="Nome da Mãe *" />
+      <input type="text" id="telMaeAluno" placeholder="Telefone da Mãe" />
+      <input type="text" id="paiAluno" placeholder="Nome do Pai" />
+      <input type="text" id="telPaiAluno" placeholder="Telefone do Pai" />
+    </div>
+    <input type="text" id="enderecoAluno" placeholder="Endereço Completo (Rua, Nº, Bairro)" style="margin-top: 12px;" />
 
-                 <!-- MATRÍCULA -->
-      <h3 class="form-section-title">Informações da Matrícula</h3>
-      <div class="form-grid-2">
-        <select id="tipoMatriculaAluno">
-          <option value="">Tipo de Matrícula</option>
-          <option value="Nova Matrícula">Nova Matrícula</option>
-          <option value="Renovação">Renovação</option>
-        </select>
-        <input type="date" id="dataMatriculaAluno" title="Data da Matrícula" />
-      </div>
-      <div class="form-grid-2">
-        <select id="localizacaoAluno">
-          <option value="Zona Urbana">Zona Urbana</option>
-          <option value="Zona Rural">Zona Rural</option>
-        </select>
-      </div>
+    <!-- MATRÍCULA -->
+    <h3 class="form-section-title">Informações da Matrícula</h3>
+    <div class="form-grid-2">
+      <select id="tipoMatriculaAluno">
+        <option value="">Tipo de Matrícula</option>
+        <option value="Nova Matrícula">Nova Matrícula</option>
+        <option value="Renovação">Renovação</option>
+      </select>
+      <input type="date" id="dataMatriculaAluno" title="Data da Matrícula" />
+    </div>
+    <div class="form-grid-2">
+      <select id="localizacaoAluno">
+        <option value="Zona Urbana">Zona Urbana</option>
+        <option value="Zona Rural">Zona Rural</option>
+      </select>
+    </div>
 
-      <h3 class="form-section-title">Matrícula (Etapa de Escolarização)</h3>
-      <div class="form-grid-3">
-        <input type="text" id="serieAluno" placeholder="Ano/Série (Ex: 3º ANO)" />
-        <select id="turnoAluno">
-          <option value="">Turno</option>
-          <option value="Matutino">Matutino</option>
-          <option value="Vespertino">Vespertino</option>
-          <option value="Noturno">Noturno</option>
-          <option value="Integral">Integral</option>
-        </select>
-        <input type="text" id="turmaAluno" placeholder="Turma (Ex: B)" />
-      </div
-        
-        <!-- SAÚDE E TRANSPORTE (campos rápidos existentes — mantidos) -->
-      <h3 class="form-section-title">Saúde e Transporte</h3>
-      <div class="form-grid-2">
-        <label class="checkbox-item"><input type="checkbox" id="transporteAluno"> Utiliza Transporte Público?</label>
-        <input type="text" id="rotaTransporteAluno" placeholder="Se Sim, qual a rota?" />
-      </div>
-      <input type="text" id="restricoesSaudeAluno" placeholder="Outras observações de saúde (campo livre)" style="margin-top: 12px;" />
+    <h3 class="form-section-title">Matrícula (Etapa de Escolarização)</h3>
+    <div class="form-grid-3">
+      <input type="text" id="serieAluno" placeholder="Ano/Série (Ex: 3º ANO)" />
+      <select id="turnoAluno">
+        <option value="">Turno</option>
+        <option value="Matutino">Matutino</option>
+        <option value="Vespertino">Vespertino</option>
+        <option value="Noturno">Noturno</option>
+        <option value="Integral">Integral</option>
+      </select>
+      <input type="text" id="turmaAluno" placeholder="Turma (Ex: B)" />
+    </div>
+      
+    <!-- SAÚDE E TRANSPORTE (campos rápidos existentes — mantidos) -->
+    <h3 class="form-section-title">Saúde e Transporte</h3>
+    <div class="form-grid-2">
+      <label class="checkbox-item"><input type="checkbox" id="transporteAluno"> Utiliza Transporte Público?</label>
+      <input type="text" id="rotaTransporteAluno" placeholder="Se Sim, qual a rota?" />
+    </div>
+    <input type="text" id="restricoesSaudeAluno" placeholder="Outras observações de saúde (campo livre)" style="margin-top: 12px;" />
 
-      <!-- ENDEREÇO RESIDENCIAL (Página 2 da Ficha) -->
-      <h3 class="form-section-title">Endereço Residencial</h3>
-      <div class="form-grid-3">
-        <input type="text" id="ruaAluno" placeholder="26 - Rua / Logradouro" style="grid-column: span 2;" />
-        <input type="text" id="numeroAluno" placeholder="27 - Nº" />
+    <!-- ENDEREÇO RESIDENCIAL (Página 2 da Ficha) -->
+    <h3 class="form-section-title">Endereço Residencial</h3>
+    <div class="form-grid-3">
+      <input type="text" id="ruaAluno" placeholder="26 - Rua / Logradouro" style="grid-column: span 2;" />
+      <input type="text" id="numeroAluno" placeholder="27 - Nº" />
+    </div>
+    <div class="form-grid-3">
+      <input type="text" id="cepAluno" placeholder="28 - CEP" />
+      <input type="text" id="bairroAluno" placeholder="29 - Bairro / Localidade" />
+      <input type="text" id="cidadeEndAluno" placeholder="30 - Cidade" />
+    </div>
+    <div class="form-grid-3">
+      <input type="text" id="ufEndAluno" placeholder="31 - UF" maxlength="2" />
+      <div>
+        <label style="font-size:12px;color:#aaa;">32 - Área de localização</label>
+        <select id="areaLocalizacaoAluno">
+          <option value="Urbana">Urbana</option>
+          <option value="Rural">Rural</option>
+        </select>
       </div>
-      <div class="form-grid-3">
-        <input type="text" id="cepAluno" placeholder="28 - CEP" />
-        <input type="text" id="bairroAluno" placeholder="29 - Bairro / Localidade" />
-        <input type="text" id="cidadeEndAluno" placeholder="30 - Cidade" />
+      <div>
+        <label style="font-size:12px;color:#aaa;">33 - Área diferenciada?</label>
+        <select id="areaDiferenciadaAluno">
+          <option value="Não está em área diferenciada">Não está em área diferenciada</option>
+          <option value="Área quilombola">Área quilombola</option>
+          <option value="Terra indígena">Terra indígena</option>
+          <option value="Área de assentamento">Área de assentamento</option>
+        </select>
       </div>
-      <div class="form-grid-3">
-        <input type="text" id="ufEndAluno" placeholder="31 - UF" maxlength="2" />
-        <div>
-          <label style="font-size:12px;color:#aaa;">32 - Área de localização</label>
-          <select id="areaLocalizacaoAluno">
-            <option value="Urbana">Urbana</option>
-            <option value="Rural">Rural</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">33 - Área diferenciada?</label>
-          <select id="areaDiferenciadaAluno">
-            <option value="Não está em área diferenciada">Não está em área diferenciada</option>
-            <option value="Área quilombola">Área quilombola</option>
-            <option value="Terra indígena">Terra indígena</option>
-            <option value="Área de assentamento">Área de assentamento</option>
-          </select>
-        </div>
-      </div>
+    </div>
 
-      <!-- RECURSOS PARA USO EM SALA / INEP (item 34) -->
-      <h3 class="form-section-title">34 - Recursos para Uso em Sala de Aula (INEP/SAEB)</h3>
-      <div style="margin-bottom:8px;">
-        <label style="font-size:12px;color:#aaa;">Necessita de recursos especiais?</label>
-        <select id="recursosEspeciaisAluno">
-          <option value="Não">Não</option>
-          <option value="Sim">Sim</option>
-        </select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio leitor"> Auxílio leitor</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Tradutor/intérprete de Libras"> Tradutor/Intérprete de Libras</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Leitura Labial"> Leitura Labial</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Material em Braille"> Material em Braille</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio transcrição"> Auxílio transcrição</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 16"> Prova suplementar física (fonte 16)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Guia intérprete"> Guia intérprete</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 18"> Prova ampliada (fonte 18)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Vídeo Libras"> Prova em Vídeo Libras</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="CD áudio"> CD áudio para deficiente visual</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="LP Segunda Língua"> Prova de LP como Segunda Língua para surdos</label>
-      </div>
+    <!-- RECURSOS PARA USO EM SALA / INEP (item 34) -->
+    <h3 class="form-section-title">34 - Recursos para Uso em Sala de Aula (INEP/SAEB)</h3>
+    <div style="margin-bottom:8px;">
+      <label style="font-size:12px;color:#aaa;">Necessita de recursos especiais?</label>
+      <select id="recursosEspeciaisAluno">
+        <option value="Não">Não</option>
+        <option value="Sim">Sim</option>
+      </select>
+    </div>
+    <div class="form-check-grid">
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio leitor"> Auxílio leitor</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Tradutor/intérprete de Libras"> Tradutor/Intérprete de Libras</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Leitura Labial"> Leitura Labial</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Material em Braille"> Material em Braille</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio transcrição"> Auxílio transcrição</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 16"> Prova suplementar física (fonte 16)</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Guia intérprete"> Guia intérprete</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 18"> Prova ampliada (fonte 18)</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Vídeo Libras"> Prova em Vídeo Libras</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="CD áudio"> CD áudio para deficiente visual</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="LP Segunda Língua"> Prova de LP como Segunda Língua para surdos</label>
+    </div>
 
-      <!-- FICHA DE SAÚDE / ANAMNESE -->
-      <h3 class="form-section-title">Ficha de Saúde / Anamnese</h3>
-      <div class="form-grid-3">
-        <div>
-          <label style="font-size:12px;color:#aaa;">36 - Diabete?</label>
-          <select id="diabeteAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">37 - Convulsões?</label>
-          <select id="convulsoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">38 - Asma Brônquica?</label>
-          <select id="asmaAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
+    <!-- FICHA DE SAÚDE / ANAMNESE -->
+    <h3 class="form-section-title">Ficha de Saúde / Anamnese</h3>
+    <div class="form-grid-3">
+      <div>
+        <label style="font-size:12px;color:#aaa;">36 - Diabete?</label>
+        <select id="diabeteAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
-      <div class="form-grid-3">
-        <div>
-          <label style="font-size:12px;color:#aaa;">39 - Infecções frequentes?</label>
-          <select id="infeccoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">40 - Restrição a exercício físico?</label>
-          <select id="restricaoExercicioAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">41 - Teve COVID-19?</label>
-          <select id="covidAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
+      <div>
+        <label style="font-size:12px;color:#aaa;">37 - Convulsões?</label>
+        <select id="convulsoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
-      <div class="form-grid-2">
-        <input type="text" id="covidQuandoAluno" placeholder="Se Sim ao COVID-19, quando?" />
-        <div>
-          <label style="font-size:12px;color:#aaa;">43 - Situação Vacinal COVID</label>
-          <select id="situacaoVacinalAluno">
-            <option value="">Não informado</option>
-            <option value="D1">D1</option>
-            <option value="D2">D2</option>
-            <option value="Reforço">Reforço</option>
-            <option value="Não foi vacinado">Não foi vacinado</option>
-          </select>
-        </div>
+      <div>
+        <label style="font-size:12px;color:#aaa;">38 - Asma Brônquica?</label>
+        <select id="asmaAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
-      <div class="form-grid-2">
-        <div>
-          <label style="font-size:12px;color:#aaa;">42 - Alergia a matérias/medicamentos?</label>
-          <select id="alergiaMedAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <input type="text" id="alergiaMedQuaisAluno" placeholder="Se Sim, quais medicamentos/matérias?" />
+    </div>
+    <div class="form-grid-3">
+      <div>
+        <label style="font-size:12px;color:#aaa;">39 - Infecções frequentes?</label>
+        <select id="infeccoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
-      <input type="text" id="motivoNaoVacinacaoAluno" placeholder="44 - Se não vacinado, por qual motivo?" style="margin-top: 12px;" />
-      <div class="form-grid-2" style="margin-top: 12px;">
-        <div>
-          <label style="font-size:12px;color:#aaa;">45 - Restrições alimentares?</label>
-          <select id="restricaoAlimentarAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <input type="text" id="restricaoAlimentarQuaisAluno" placeholder="Se Sim, quais restrições alimentares?" />
+      <div>
+        <label style="font-size:12px;color:#aaa;">40 - Restrição a exercício físico?</label>
+        <select id="restricaoExercicioAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
+      <div>
+        <label style="font-size:12px;color:#aaa;">41 - Teve COVID-19?</label>
+        <select id="covidAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <input type="text" id="covidQuandoAluno" placeholder="Se Sim ao COVID-19, quando?" />
+      <div>
+        <label style="font-size:12px;color:#aaa;">43 - Situação Vacinal COVID</label>
+        <select id="situacaoVacinalAluno">
+          <option value="">Não informado</option>
+          <option value="D1">D1</option>
+          <option value="D2">D2</option>
+          <option value="Reforço">Reforço</option>
+          <option value="Não foi vacinado">Não foi vacinado</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid-2">
+      <div>
+        <label style="font-size:12px;color:#aaa;">42 - Alergia a matérias/medicamentos?</label>
+        <select id="alergiaMedAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+      </div>
+      <input type="text" id="alergiaMedQuaisAluno" placeholder="Se Sim, quais medicamentos/matérias?" />
+    </div>
+    <input type="text" id="motivoNaoVacinacaoAluno" placeholder="44 - Se não vacinado, por qual motivo?" style="margin-top: 12px;" />
+    <div class="form-grid-2" style="margin-top: 12px;">
+      <div>
+        <label style="font-size:12px;color:#aaa;">45 - Restrições alimentares?</label>
+        <select id="restricaoAlimentarAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+      </div>
+      <input type="text" id="restricaoAlimentarQuaisAluno" placeholder="Se Sim, quais restrições alimentares?" />
+    </div>
 
-      <!-- NEE (item 50) -->
-      <h3 class="form-section-title">50 - Necessidade Educativa Especial (Física ou Intelectual)?</h3>
-      <div style="margin-bottom:8px;">
-        <select id="neeAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de funções cognitivas"> Desenvolvimento de funções cognitivas</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de vida autônoma"> Desenvolvimento de vida autônoma</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Enriquecimento curricular"> Enriquecimento curricular</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino de informática acessível"> Ensino de informática acessível</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino do Sistema Braille"> Ensino do Sistema Braille</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Língua Portuguesa como Segunda Língua"> LP como Segunda Língua (Libras)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Técnicas de cálculo no Soroban"> Técnicas de cálculo no Soroban</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Orientação e mobilidade"> Orientação e mobilidade</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Comunicação Alternativa e Aumentativa"> Comunicação Alternativa e Aumentativa (CAA)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Transtorno do Espectro Autista"> Transtorno do Espectro Autista</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Altas habilidades/Superdotação"> Altas habilidades/Superdotação</label>
-      </div>
+    <!-- NEE (item 50) -->
+    <h3 class="form-section-title">50 - Necessidade Educativa Especial (Física ou Intelectual)?</h3>
+    <div style="margin-bottom:8px;">
+      <select id="neeAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
+    </div>
+    <div class="form-check-grid">
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de funções cognitivas"> Desenvolvimento de funções cognitivas</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de vida autônoma"> Desenvolvimento de vida autônoma</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Enriquecimento curricular"> Enriquecimento curricular</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino de informática acessível"> Ensino de informática acessível</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino do Sistema Braille"> Ensino do Sistema Braille</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Língua Portuguesa como Segunda Língua"> LP como Segunda Língua (Libras)</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Técnicas de cálculo no Soroban"> Técnicas de cálculo no Soroban</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Orientação e mobilidade"> Orientação e mobilidade</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Comunicação Alternativa e Aumentativa"> Comunicação Alternativa e Aumentativa (CAA)</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Transtorno do Espectro Autista"> Transtorno do Espectro Autista</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Altas habilidades/Superdotação"> Altas habilidades/Superdotação</label>
+    </div>
 
-      <!-- DEFICIÊNCIA (item 51) -->
-      <h3 class="form-section-title">51 - Deficiência Física, Auditiva ou Visual?</h3>
-      <div style="margin-bottom:8px;">
-        <select id="deficienciaAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Baixa visão"> Baixa visão</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdez"> Surdez</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Intelectual"> Deficiência Intelectual</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Cegueira"> Cegueira</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdocegueira"> Surdocegueira</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência múltipla"> Deficiência múltipla</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência auditiva"> Deficiência auditiva</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Física"> Deficiência Física</label>
-      </div>
+    <!-- DEFICIÊNCIA (item 51) -->
+    <h3 class="form-section-title">51 - Deficiência Física, Auditiva ou Visual?</h3>
+    <div style="margin-bottom:8px;">
+      <select id="deficienciaAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
+    </div>
+    <div class="form-check-grid">
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Baixa visão"> Baixa visão</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdez"> Surdez</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Intelectual"> Deficiência Intelectual</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Cegueira"> Cegueira</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdocegueira"> Surdocegueira</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência múltipla"> Deficiência múltipla</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência auditiva"> Deficiência auditiva</label>
+      <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Física"> Deficiência Física</label>
+    </div>
 
-      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()" style="margin-top: 24px;">Gravar Aluno</button>
-
-  <!-- FICHA DE IMPRESSÃO (INVISÍVEL NA TELA, SÓ VAI PRO PAPEL) -->
-   <!-- MODAL ALUNO COMPLETO -->
-  <div class="modal" id="modalAluno">
-    <div class="modal-box modal-box-large">
-      <div class="modal-topo">
-        <h2 id="tituloModal">Cadastro de Aluno</h2>
-        <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">×</button>
-      </div>
-      <!-- SELETOR DE ESCOLA (Visível apenas para Nível 1 sem escola selecionada) -->
-      <div id="seletorEscolaAluno" style="display:none; margin-bottom: 4px;">
-        <h3 class="form-section-title" style="margin-top:0;">Escola de Destino</h3>
-        <select id="escolaDoAluno">
-          <option value="">-- Selecione a Escola --</option>
-        </select>
-      </div>
-      <!-- IDENTIFICAÇÃO -->
-      <h3 class="form-section-title" style="margin-top:0;">Identificação Básica</h3>
-      <div class="form-grid-2">
-        <input type="text" id="nomeAluno" placeholder="Nome Completo do Aluno *" />
-        <div>
-          <label style="font-size:12px; color:#aaa; padding-left:4px;">Nascimento</label>
-          <input type="date" id="nascimentoAluno" style="margin-top: 2px;" />
-        </div>
-      </div>
-      <div class="form-grid-3">
-        <input type="text" id="censoAluno" placeholder="Código INEP (Censo)" />
-        <input type="text" id="cpfAluno" placeholder="CPF do Aluno" />
-        <input type="text" id="telefoneAluno" placeholder="Telefone de Contato" />
-      </div>
-      <div class="form-grid-3">
-        <select id="estadoCivilAluno">
-          <option value="">Estado Civil</option>
-          <option value="Solteiro">Solteiro</option>
-          <option value="Casado">Casado</option>
-          <option value="Não declarado">Não declarado</option>
-        </select>
-        <select id="corRacaAluno">
-          <option value="">Cor / Raça</option>
-          <option value="Branca">Branca</option>
-          <option value="Preta">Preta</option>
-          <option value="Parda">Parda</option>
-          <option value="Indígena">Indígena</option>
-          <option value="Amarela">Amarela</option>
-          <option value="Não declarado">Não declarado</option>
-        </select>
-        <select id="sexoAluno">
-          <option value="">Sexo</option>
-          <option value="Masculino">Masculino</option>
-          <option value="Feminino">Feminino</option>
-          <option value="Outro">Outro</option>
-        </select>
-      </div>
-      <!-- DOCUMENTOS -->
-      <h3 class="form-section-title">Documentos</h3>
-      <div class="form-grid-3">
-        <input type="text" id="rgAluno" placeholder="Nº Identidade (RG)" />
-        <input type="text" id="nisAluno" placeholder="Nº do NIS" />
-        <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
-      </div>
-      <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
-      <div class="form-grid-3" style="margin-top: 12px;">
-        <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
-        <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
-        <input type="text" id="ufNascAluno" placeholder="UF Nascimento" maxlength="2" />
-      </div>
-      <!-- FILIAÇÃO E ENDEREÇO -->
-      <h3 class="form-section-title">Filiação e Contato</h3>
-      <div class="form-grid-2">
-        <input type="text" id="maeAluno" placeholder="Nome da Mãe *" />
-        <input type="text" id="telMaeAluno" placeholder="Telefone da Mãe" />
-        <input type="text" id="paiAluno" placeholder="Nome do Pai" />
-        <input type="text" id="telPaiAluno" placeholder="Telefone do Pai" />
-      </div>
-      <input type="text" id="enderecoAluno" placeholder="Endereço Completo (Rua, Nº, Bairro)" style="margin-top: 12px;" />
-      <!-- MATRÍCULA -->
-      <h3 class="form-section-title">Informações da Matrícula</h3>
-      <div class="form-grid-2">
-        <select id="tipoMatriculaAluno">
-          <option value="">Tipo de Matrícula</option>
-          <option value="Nova Matrícula">Nova Matrícula</option>
-          <option value="Renovação">Renovação</option>
-        </select>
-        <input type="date" id="dataMatriculaAluno" title="Data da Matrícula" />
-      </div>
-      <div class="form-grid-2">
-        <select id="localizacaoAluno">
-          <option value="Zona Urbana">Zona Urbana</option>
-          <option value="Zona Rural">Zona Rural</option>
-        </select>
-      </div>
-      <h3 class="form-section-title">Matrícula (Etapa de Escolarização)</h3>
-      <div class="form-grid-3">
-        <input type="text" id="serieAluno" placeholder="Ano/Série (Ex: 3º ANO)" />
-        <select id="turnoAluno">
-          <option value="">Turno</option>
-          <option value="Matutino">Matutino</option>
-          <option value="Vespertino">Vespertino</option>
-          <option value="Noturno">Noturno</option>
-          <option value="Integral">Integral</option>
-        </select>
-        <input type="text" id="turmaAluno" placeholder="Turma (Ex: B)" />
-      </div> <!-- CONSERTADO! -->
-        
-      <!-- SAÚDE E TRANSPORTE (campos rápidos existentes — mantidos) -->
-      <h3 class="form-section-title">Saúde e Transporte</h3>
-      <div class="form-grid-2">
-        <label class="checkbox-item"><input type="checkbox" id="transporteAluno"> Utiliza Transporte Público?</label>
-        <input type="text" id="rotaTransporteAluno" placeholder="Se Sim, qual a rota?" />
-      </div>
-      <input type="text" id="restricoesSaudeAluno" placeholder="Outras observações de saúde (campo livre)" style="margin-top: 12px;" />
-      <!-- ENDEREÇO RESIDENCIAL (Página 2 da Ficha) -->
-      <h3 class="form-section-title">Endereço Residencial</h3>
-      <div class="form-grid-3">
-        <input type="text" id="ruaAluno" placeholder="26 - Rua / Logradouro" style="grid-column: span 2;" />
-        <input type="text" id="numeroAluno" placeholder="27 - Nº" />
-      </div>
-      <div class="form-grid-3">
-        <input type="text" id="cepAluno" placeholder="28 - CEP" />
-        <input type="text" id="bairroAluno" placeholder="29 - Bairro / Localidade" />
-        <input type="text" id="cidadeEndAluno" placeholder="30 - Cidade" />
-      </div>
-      <div class="form-grid-3">
-        <input type="text" id="ufEndAluno" placeholder="31 - UF" maxlength="2" />
-        <div>
-          <label style="font-size:12px;color:#aaa;">32 - Área de localização</label>
-          <select id="areaLocalizacaoAluno">
-            <option value="Urbana">Urbana</option>
-            <option value="Rural">Rural</option>
-          </select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">33 - Área diferenciada?</label>
-          <select id="areaDiferenciadaAluno">
-            <option value="Não está em área diferenciada">Não está em área diferenciada</option>
-            <option value="Área quilombola">Área quilombola</option>
-            <option value="Terra indígena">Terra indígena</option>
-            <option value="Área de assentamento">Área de assentamento</option>
-          </select>
-        </div>
-      </div>
-      <!-- RECURSOS PARA USO EM SALA / INEP (item 34) -->
-      <h3 class="form-section-title">34 - Recursos para Uso em Sala de Aula (INEP/SAEB)</h3>
-      <div style="margin-bottom:8px;">
-        <label style="font-size:12px;color:#aaa;">Necessita de recursos especiais?</label>
-        <select id="recursosEspeciaisAluno">
-          <option value="Não">Não</option>
-          <option value="Sim">Sim</option>
-        </select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio leitor"> Auxílio leitor</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Tradutor/intérprete de Libras"> Tradutor/Intérprete de Libras</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Leitura Labial"> Leitura Labial</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Material em Braille"> Material em Braille</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Auxílio transcrição"> Auxílio transcrição</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 16"> Prova suplementar física (fonte 16)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Guia intérprete"> Guia intérprete</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Prova fonte 18"> Prova ampliada (fonte 18)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="Vídeo Libras"> Prova em Vídeo Libras</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="CD áudio"> CD áudio para deficiente visual</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="recursos" value="LP Segunda Língua"> Prova de LP como Segunda Língua para surdos</label>
-      </div>
-      <!-- FICHA DE SAÚDE / ANAMNESE -->
-      <h3 class="form-section-title">Ficha de Saúde / Anamnese</h3>
-      <div class="form-grid-3">
-        <div>
-          <label style="font-size:12px;color:#aaa;">36 - Diabete?</label>
-          <select id="diabeteAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">37 - Convulsões?</label>
-          <select id="convulsoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">38 - Asma Brônquica?</label>
-          <select id="asmaAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-      </div>
-      <div class="form-grid-3">
-        <div>
-          <label style="font-size:12px;color:#aaa;">39 - Infecções frequentes?</label>
-          <select id="infeccoesAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">40 - Restrição a exercício físico?</label>
-          <select id="restricaoExercicioAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <div>
-          <label style="font-size:12px;color:#aaa;">41 - Teve COVID-19?</label>
-          <select id="covidAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-      </div>
-      <div class="form-grid-2">
-        <input type="text" id="covidQuandoAluno" placeholder="Se Sim ao COVID-19, quando?" />
-        <div>
-          <label style="font-size:12px;color:#aaa;">43 - Situação Vacinal COVID</label>
-          <select id="situacaoVacinalAluno">
-            <option value="">Não informado</option>
-            <option value="D1">D1</option>
-            <option value="D2">D2</option>
-            <option value="Reforço">Reforço</option>
-            <option value="Não foi vacinado">Não foi vacinado</option>
-          </select>
-        </div>
-      </div>
-      <div class="form-grid-2">
-        <div>
-          <label style="font-size:12px;color:#aaa;">42 - Alergia a matérias/medicamentos?</label>
-          <select id="alergiaMedAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <input type="text" id="alergiaMedQuaisAluno" placeholder="Se Sim, quais medicamentos/matérias?" />
-      </div>
-      <input type="text" id="motivoNaoVacinacaoAluno" placeholder="44 - Se não vacinado, por qual motivo?" style="margin-top: 12px;" />
-      <div class="form-grid-2" style="margin-top: 12px;">
-        <div>
-          <label style="font-size:12px;color:#aaa;">45 - Restrições alimentares?</label>
-          <select id="restricaoAlimentarAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
-        </div>
-        <input type="text" id="restricaoAlimentarQuaisAluno" placeholder="Se Sim, quais restrições alimentares?" />
-      </div>
-      <!-- NEE (item 50) -->
-      <h3 class="form-section-title">50 - Necessidade Educativa Especial (Física ou Intelectual)?</h3>
-      <div style="margin-bottom:8px;">
-        <select id="neeAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de funções cognitivas"> Desenvolvimento de funções cognitivas</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Desenvolvimento de vida autônoma"> Desenvolvimento de vida autônoma</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Enriquecimento curricular"> Enriquecimento curricular</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino de informática acessível"> Ensino de informática acessível</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Ensino do Sistema Braille"> Ensino do Sistema Braille</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Língua Portuguesa como Segunda Língua"> LP como Segunda Língua (Libras)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Técnicas de cálculo no Soroban"> Técnicas de cálculo no Soroban</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Orientação e mobilidade"> Orientação e mobilidade</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Comunicação Alternativa e Aumentativa"> Comunicação Alternativa e Aumentativa (CAA)</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Transtorno do Espectro Autista"> Transtorno do Espectro Autista</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="nee" value="Altas habilidades/Superdotação"> Altas habilidades/Superdotação</label>
-      </div>
-      <!-- DEFICIÊNCIA (item 51) -->
-      <h3 class="form-section-title">51 - Deficiência Física, Auditiva ou Visual?</h3>
-      <div style="margin-bottom:8px;">
-        <select id="deficienciaAluno"><option value="Não">Não</option><option value="Sim">Sim, indique qual(is)</option></select>
-      </div>
-      <div class="form-check-grid">
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Baixa visão"> Baixa visão</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdez"> Surdez</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Intelectual"> Deficiência Intelectual</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Cegueira"> Cegueira</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Surdocegueira"> Surdocegueira</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência múltipla"> Deficiência múltipla</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência auditiva"> Deficiência auditiva</label>
-        <label class="checkbox-item"><input type="checkbox" data-grupo="deficiencia" value="Deficiência Física"> Deficiência Física</label>
-      </div>
-      <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()" style="margin-top: 24px;">Gravar Aluno</button>
-    </div> <!-- CONSERTADO: Fechamento do modal-box -->
-  </div> <!-- CONSERTADO: Fechamento do modalAluno -->
+    <button class="btn-login" id="btnSalvarAluno" onclick="salvarAluno()" style="margin-top: 24px;">Gravar Aluno</button>
+  </div>
+</div>
