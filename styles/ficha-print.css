@@ -133,6 +133,24 @@
     font-size: 10px;
     padding-top: 4px;
   }
+
+  /* Força a quebra exata de página para o Endereço iniciar a Página 2 */
+  .print-page-break {
+    page-break-before: always;
+    break-before: page;
+    padding-top: 10px;
+  }
+  
+  /* Garante que os tópicos de fundo preto fiquem cravados na cor preta */
+  .print-section-title {
+    background-color: #000 !important;
+    color: #fff !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+
+  
 }
 
 /* Oculta a ficha quando estiver usando o sistema no navegador normalmente */
