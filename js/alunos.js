@@ -618,5 +618,19 @@ function imprimirFicha(aluno) {
     printDefFisica: 'Deficiência Física'
   }, dados.deficiencia_tipos)
 
-  window.print()
+  // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
+  const ficha = document.getElementById('fichaImpressao');
+  
+  // Tira a ficha de qualquer div escondida e joga na raiz da página
+  document.body.appendChild(ficha);
+  
+  // Força a ficha a aparecer na tela
+  ficha.style.display = 'block';
+
+  // Pequeno delay (0.1s) para o navegador renderizar os campos antes de gerar o PDF
+  setTimeout(function() {
+    window.print();
+    // Esconde a ficha novamente quando a janela de impressão fechar
+    ficha.style.display = 'none';
+  }, 100);
 }
