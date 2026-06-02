@@ -57,20 +57,19 @@
 </style>
 
 <div class="page-header">
-  <div style="display: flex; gap: 14px; align-items: center; flex: 1; flex-wrap: wrap;">
-    <h1 style="margin: 0; min-width: 150px;">Funcionários</h1>
-    
-    <div class="search-container" style="flex: 1; min-width: 200px; position: relative;">
-      <i data-lucide="search" class="search-icon" style="position: absolute; left: 10px; top: 10px; color: #aaa; width: 18px; height: 18px;"></i>
-      <input type="text" id="buscaFuncionario" placeholder="Buscar funcionário..." onkeyup="carregarFuncionariosDaTela()" style="width: 100%; padding: 10px 10px 10px 35px; border-radius: 8px; background: #181818; color: #fff; border: 1px solid #2a2a2a; outline: none; box-sizing: border-box;" />
-    </div>
-    
-    <select id="filtroCargo" onchange="carregarFuncionariosDaTela()" style="padding: 10px; border-radius: 8px; background: #181818; color: #fff; border: 1px solid #2a2a2a; outline: none;">
-      <option value="">Todos os Cargos</option>
-      <!-- Cargos vão entrar aqui via Banco de Dados depois -->
-    </select>
+  <h1>Funcionários</h1>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <!-- O botão fica escondido e só aparece se for Nível 1 ou tiver permissão -->
+    <button class="btn-add" id="btnNovoFuncionario" onclick="abrirModalFuncionario()" title="Adicionar funcionário" aria-label="Adicionar funcionário" style="display: none;">+</button>
   </div>
-  <button class="btn-add" onclick="abrirModalFuncionario()" title="Adicionar Funcionário" id="btnNovoFuncionario" style="display:none;">+</button>
+</div>
+
+<div class="tools-row">
+  <input type="search" id="buscaFuncionario" placeholder="Buscar funcionário por nome, email ou matrícula" oninput="carregarFuncionariosDaTela()" />
+  <select id="filtroCargo" onchange="carregarFuncionariosDaTela()">
+    <option value="">Todos os Cargos</option>
+    <!-- Cargos entrarão aqui dinamicamente -->
+  </select>
 </div>
 
 <div class="funcionarios-grid" id="listaFuncionarios">
