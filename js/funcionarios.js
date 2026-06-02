@@ -1,7 +1,8 @@
 async function carregarFuncionariosDaTela() {
   const lista = document.getElementById('listaFuncionarios')
+  if (!lista) return; // Prevenção de erro caso a tela não tenha carregado
 
-  lista.innerHTML = '<div class="empty-state">Carregando funcionários...</div>'
+  lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Carregando funcionários...</div>'
 
   let orgaosPermitidos = []
 
@@ -40,7 +41,7 @@ async function carregarFuncionariosDaTela() {
   }
 
   if (!orgaosPermitidos.length) {
-    lista.innerHTML = '<div class="empty-state">Nenhum funcionário encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário encontrado.</div>'
     return
   }
 
@@ -52,33 +53,55 @@ async function carregarFuncionariosDaTela() {
 
   if (error) {
     console.log(error)
-    lista.innerHTML = '<div class="empty-state">Erro ao carregar funcionários.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Erro ao carregar funcionários.</div>'
     return
   }
 
   if (!data || !data.length) {
-    lista.innerHTML = '<div class="empty-state">Nenhum funcionário encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário encontrado.</div>'
     return
   }
 
   lista.innerHTML = ''
   const temPermissaoEdicao = usuarioNivel1() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
 
+  // Função mágica para pegar as Iniciais do nome (ex: Maria Silva = MS)
+  function pegarIniciais(nome) {
+    if (!nome) return '👤'
+    const partes = nome.trim().split(' ')
+    if (partes.length === 1) return partes[0].substring(0, 2).toUpperCase()
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
+  }
+
   data.forEach(function(vinculo) {
-    const item = document.createElement('div')
-    item.className = 'item-aluno'
-
-    const info = document.createElement('div')
-    info.innerHTML =
-      '<strong>' + textoOuVazio(vinculo.funcionarios && (vinculo.funcionarios.nome || vinculo.funcionarios.email)) + '</strong>' +
-      '<div class="aluno-info">' +
-      'Órgão: ' + textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome) + '<br>' +
-      'Cargo: ' + textoOuVazio(vinculo.cargo) + '<br>' +
-      'Nascimento: ' + formatarDataBR(vinculo.funcionarios && vinculo.funcionarios.data_nascimento) +
-      '</div>'
+    const funcionario = vinculo.funcionarios || {}
+    const nomeFunc = funcionario.nome || funcionario.email || 'Sem Nome'
+    const cargoFunc = vinculo.cargo || 'Sem Cargo'
     
-    item.appendChild(info)
+    // 1. Cria a casca do Card
+    const item = document.createElement('div')
+    item.className = 'func-card'
 
+    // 2. Cria o Cabeçalho (Avatar + Nome + Badge)
+    const header = document.createElement('div')
+    header.className = 'func-header'
+    
+    const avatar = document.createElement('div')
+    avatar.className = 'func-avatar'
+    avatar.innerText = pegarIniciais(nomeFunc)
+    
+    const info = document.createElement('div')
+    info.className = 'func-info'
+    info.style.flex = '1' // Empurra os botões pra direita
+    
+    info.innerHTML = `
+      <h3>${nomeFunc}</h3>
+      <span class="func-badge">${cargoFunc}</span>
+    `
+    header.appendChild(avatar)
+    header.appendChild(info)
+
+    // 3. Adiciona os botões de Lápis/Lixeira (se estiver em modo edição)
     if (modoEdicaoAtivo && temPermissaoEdicao) {
       const actionsDiv = document.createElement('div')
       actionsDiv.style.display = 'flex'
@@ -86,29 +109,41 @@ async function carregarFuncionariosDaTela() {
 
       const btnEdit = document.createElement('button')
       btnEdit.className = 'btn-editar'
-      btnEdit.textContent = '✎'
+      btnEdit.style.padding = '6px'
+      btnEdit.innerHTML = '<i data-lucide="pencil" style="width:16px; height:16px;"></i>'
       btnEdit.title = 'Editar cargo/dados'
-      btnEdit.onclick = function() {
-        editarFuncionario(vinculo)
-      }
+      btnEdit.onclick = function() { editarFuncionario(vinculo) }
       actionsDiv.appendChild(btnEdit)
 
       const btnDel = document.createElement('button')
       btnDel.className = 'btn-editar'
       btnDel.style.background = '#ff5b5b'
       btnDel.style.color = '#120000'
-      btnDel.textContent = '🗑️'
+      btnDel.style.padding = '6px'
+      btnDel.innerHTML = '<i data-lucide="trash-2" style="width:16px; height:16px;"></i>'
       btnDel.title = 'Desvincular funcionário'
-      btnDel.onclick = function() {
-        removerVinculoFuncionario(vinculo.id)
-      }
+      btnDel.onclick = function() { removerVinculoFuncionario(vinculo.id) }
       actionsDiv.appendChild(btnDel)
 
-      item.appendChild(actionsDiv)
+      header.appendChild(actionsDiv)
     }
 
+    // 4. Cria os Detalhes da parte de baixo
+    const details = document.createElement('div')
+    details.className = 'func-details'
+    details.innerHTML = `
+      <div><strong>Órgão:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
+      <div><strong>Nascimento:</strong> ${formatarDataBR(funcionario.data_nascimento)}</div>
+    `
+
+    // Junta tudo e joga na tela
+    item.appendChild(header)
+    item.appendChild(details)
     lista.appendChild(item)
   })
+
+  // Avisa a biblioteca de ícones para desenhar os lápis e as lixeiras
+  if (window.lucide) { lucide.createIcons(); }
 }
 
 function abrirModalFuncionario() {
