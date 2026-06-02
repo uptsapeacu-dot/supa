@@ -33,7 +33,8 @@ async function carregarDadosMural() {
               nome: v.funcionarios.nome || v.funcionarios.email,
               orgao: v.orgaos ? v.orgaos.nome : 'Escola',
               anivDia: dia,
-              anivMes: mes
+              anivMes: mes,
+              foto_url: v.funcionarios.foto_url
             })
           }
         }
