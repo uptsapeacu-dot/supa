@@ -365,7 +365,9 @@
         <h2 style="margin: 0; font-size: 20px;">Aniversariante! 🎉</h2>
         <button class="fechar" onclick="fecharModalAniversariante()" aria-label="Fechar modal">×</button>
       </div>
-      <div class="foto-3x4-placeholder">Foto 3x4</div>
+            <img id="fotoAniversariante" src="" alt="Foto" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px auto; display: block; border: 4px solid #3ea6ff;" />
+
+      
       <h3 id="nomeAniversariante" style="margin: 10px 0 5px; color: #fff; font-size: 18px;">Nome do Funcionário</h3>
       <p id="orgaoAniversariante" style="margin: 0 0 10px; color: #aaa; font-size: 14px;">Órgão: Escola</p>
       <p id="dataAniversariante" style="margin: 0 0 10px; color: #3ea6ff; font-weight: bold; font-size: 15px;">Dia 15</p>
@@ -383,7 +385,22 @@
       <input type="email" id="emailFuncionario" placeholder="Email" />
       <input type="text" id="telefoneFuncionario" placeholder="Telefone" />
       <input type="text" id="cpfFuncionario" placeholder="CPF" />
-      <input type="text" id="cargoFuncionario" placeholder="Cargo" />
+      
+     
+
+
+      <label style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Cargo / Função</label>
+      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
+        <select id="cargoFuncionario" style="flex: 1; margin: 0;"></select>
+        <button type="button" id="btnNovoCargo" onclick="adicionarNovoCargo()" style="display:none; padding: 12px 16px; border-radius: 10px; background: #3ea6ff; color: #000; font-weight: bold; cursor: pointer; border: none; font-size: 18px; line-height: 1;" title="Cadastrar novo cargo no sistema">+</button>
+      </div>
+
+      <label style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Foto 3x4 (Opcional)</label>
+      <input type="file" id="fotoFuncionario" accept="image/*" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #3f3f3f; background: #121212; color: #fff; margin-bottom: 16px;" />
+
+
+
+      
       <label for="nascimentoFuncionario" style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Data de Nascimento</label>
       <input type="date" id="nascimentoFuncionario" style="margin-top:0;" />
       <button class="btn-login" id="btnSalvarFuncionario" onclick="salvarFuncionario()">Salvar</button>
