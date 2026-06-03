@@ -198,7 +198,8 @@ async function carregarFuncionariosDaTela() {
 
 
 // ====== CRUD ======
-function abrirModalFuncionario() {
+async function abrirModalFuncionario() {
+  await carregarCargos(); // Força a busca dos cargos ANTES de abrir a tela
   vinculoEditando = null
   funcionarioEditandoId = null
 
@@ -221,7 +222,8 @@ function abrirModalFuncionario() {
 function fecharModalFuncionario() {
   document.getElementById('modalFuncionario').style.display = 'none'
 }
-function editarFuncionario(vinculo) {
+async function editarFuncionario(vinculo) {
+  await carregarCargos(); // Força a busca dos cargos ANTES de abrir a tela
   vinculoEditando = vinculo.id
   funcionarioEditandoId = vinculo.funcionarios.id
 
