@@ -23,8 +23,6 @@ async function carregarCargos() {
   }
 }
 
-// Inicia a busca de cargos
-setTimeout(carregarCargos, 500);
 
 async function adicionarNovoCargo() {
   const novoCargo = prompt("Digite o nome do novo cargo (Ex: Psicólogo Escolar):");
@@ -43,6 +41,7 @@ async function adicionarNovoCargo() {
 
 // ====== CARREGAMENTO E TELA ======
 async function carregarFuncionariosDaTela() {
+  await carregarCargos();
   const lista = document.getElementById('listaFuncionarios')
   if (!lista) return;
 
@@ -222,7 +221,6 @@ function abrirModalFuncionario() {
 function fecharModalFuncionario() {
   document.getElementById('modalFuncionario').style.display = 'none'
 }
-
 function editarFuncionario(vinculo) {
   vinculoEditando = vinculo.id
   funcionarioEditandoId = vinculo.funcionarios.id
@@ -232,7 +230,12 @@ function editarFuncionario(vinculo) {
   document.getElementById('emailFuncionario').value = vinculo.funcionarios.email || ''
   document.getElementById('telefoneFuncionario').value = vinculo.funcionarios.telefone || ''
   document.getElementById('cpfFuncionario').value = vinculo.funcionarios.cpf || ''
-  document.getElementById('cargoFuncionario').value = vinculo.cargo || ''
+  
+  // O Cargo ganha um atraso minúsculo para dar tempo do <select> ser preenchido
+  setTimeout(() => {
+    document.getElementById('cargoFuncionario').value = vinculo.cargo || '';
+  }, 200);
+  
   document.getElementById('nascimentoFuncionario').value = vinculo.funcionarios.data_nascimento || ''
   document.getElementById('fotoFuncionario').value = ''
 
