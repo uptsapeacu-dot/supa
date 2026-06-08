@@ -9,7 +9,7 @@ function aplicarVisibilidadeSidebar() {
     matriculas: document.getElementById('menu-matriculas'),
     alunos: document.getElementById('menu-alunos'),
     permissoes: document.getElementById('menu-permissoes'),
-    perfil: document.getElementById('menu-perfil')
+    perfil: document.getElementById('menu-perfil'),
     financeiro: document.getElementById('menu-financeiro')
   }
 
