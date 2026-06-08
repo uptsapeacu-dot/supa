@@ -99,6 +99,10 @@
           <span class="menu-icon"><i data-lucide="shield-check"></i></span>
           <span class="menu-text">Permissões</span>
         </button>
+        <button id="menu-financeiro" onclick="mostrarTela('financeiro')" title="Financeiro" style="display:none">
+          <span class="menu-icon"><i data-lucide="wallet"></i></span>
+          <span class="menu-text">Financeiro</span>
+        </button>
         <button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil">
           <span class="menu-icon"><i data-lucide="circle-user"></i></span>
           <span class="menu-text">Perfil</span>
@@ -307,7 +311,10 @@
           </div>
         </div>
       </section>
-
+      <!-- FINANCEIRO -->
+      <section id="financeiro" style="display:none">
+        
+      </section>
       <!-- PERFIL -->
       <section id="perfil" style="display:none">
         <h1>Perfil</h1>
@@ -464,6 +471,7 @@
   <script src="js/permissoes.js"></script>
   <script src="js/mural.js"></script>
   <script src="js/turmas.js"></script>
+  <script src="js/financeiro.js"></script>
 
   <script>
     lucide.createIcons()
@@ -478,22 +486,24 @@ async function carregarComponentes() {
     const resModal = await fetch('modal-aluno.html');
     const resFicha = await fetch('ficha-impressao.html');
 
-  // NOVO: Busca a tela de Turmas
+    // Busca a tela de Turmas
     const resTurmas = await fetch('htmls/turmas-lista.html');
     document.getElementById('turmas').innerHTML = await resTurmas.text();
     
-
- // NOVO: Busca a tela de Funcionários
+    // Busca a tela de Funcionários
     const resFuncionarios = await fetch('htmls/funcionarios-lista.html');
+    
+    // NOVO: Busca a tela Financeira
+    const resFinanceiro = await fetch('htmls/financeiro.html');
+    document.getElementById('financeiro').innerHTML = await resFinanceiro.text();
     
     // Cola o conteúdo deles nas caixas vazias do index
     document.getElementById('container-modal-aluno').innerHTML = await resModal.text();
     document.getElementById('container-ficha-impressao').innerHTML = await resFicha.text();
 
-   // NOVO: Cola a tela de funcionários na seção vazia
+    // Cola a tela de funcionários na seção vazia
     document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();
 
-    
     console.log("Componentes externos carregados com sucesso!");
   } catch (error) {
     console.error("Erro ao carregar os componentes:", error);
