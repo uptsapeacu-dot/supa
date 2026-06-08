@@ -1,5 +1,6 @@
 function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
+
   const menus = {
     home: document.getElementById('menu-home'),
     mural: document.getElementById('menu-mural'),
@@ -8,8 +9,7 @@ function aplicarVisibilidadeSidebar() {
     matriculas: document.getElementById('menu-matriculas'),
     alunos: document.getElementById('menu-alunos'),
     permissoes: document.getElementById('menu-permissoes'),
-    perfil: document.getElementById('menu-perfil'),
-    financeiro: document.getElementById('menu-financeiro')
+    perfil: document.getElementById('menu-perfil')
   }
 
   Object.keys(menus).forEach(function(chave) {
@@ -17,12 +17,6 @@ function aplicarVisibilidadeSidebar() {
       menus[chave].style.display = 'none'
     }
   })
-// 👇 COLE ESTE BLOCO DO FINANCEIRO AQUI 👇
-  if (menus.financeiro) {
-    // Só Nível 1 (Admin Geral) e Nível 2 (Diretor) podem ver o menu Financeiro
-    menus.financeiro.style.display = (nivel === 1 || nivel === 2) ? 'flex' : 'none';
-  }
-  // 👆 ---------------------------------- 👆
 
   if (nivel === 4) {
     if (menus.perfil) menus.perfil.style.display = 'flex'
@@ -82,7 +76,6 @@ function mostrarTela(tela) {
     'alunos',
     'permissoes',
     'perfil'
-    'financeiro'
   ]
 
   telas.forEach(function(id) {
@@ -120,12 +113,6 @@ function mostrarTela(tela) {
   }
   if (tela === 'permissoes') {
     carregarTelaPermissoes()
-  }
-    if (tela === 'turmas') {
-    carregarTurmasDaTela();
-  }
-    if (tela === 'financeiro') {
-    carregarFinanceiro();
   }
   if (tela === 'mural') {
     carregarDadosMural()
