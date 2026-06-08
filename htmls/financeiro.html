@@ -1,0 +1,135 @@
+<style>
+.finance-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.fin-card { background: #181818; padding: 20px; border-radius: 12px; border: 1px solid #2a2a2a; }
+.fin-card h3 { margin: 0 0 8px 0; font-size: 14px; color: #aaa; }
+.fin-card .valor { font-size: 28px; font-weight: bold; color: #fff; }
+.fin-card.positivo .valor { color: #4ade80; }
+.fin-card.negativo .valor { color: #ff5b5b; }
+
+.extrato-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+.extrato-table th { text-align: left; padding: 12px; border-bottom: 2px solid #333; color: #aaa; font-size: 13px; }
+.extrato-table td { padding: 12px; border-bottom: 1px solid #222; font-size: 14px; color: #eee; }
+.extrato-table tr:hover { background: #1f1f1f; }
+.badge-receita { background: #4ade8022; color: #4ade80; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;}
+.badge-despesa { background: #ff5b5b22; color: #ff5b5b; padding: 4px 8px; border-radius: 6px; font-size: 11px; font-weight: bold; display: inline-block;}
+.btn-comprovante { background: transparent; border: 1px solid #3ea6ff; color: #3ea6ff; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 12px; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;}
+.btn-comprovante:hover { background: #3ea6ff22; }
+</style>
+
+<div class="page-header">
+  <h1>Caixa da Escola</h1>
+  <div style="display:flex; gap:8px;">
+    <!-- Botões para gerenciar dicionários (Contas e Categorias) -->
+    <button class="btn-clear" onclick="abrirModalConfigFin('contas')" title="Gerenciar Contas Bancárias">⚙️ Contas</button>
+    <button class="btn-clear" onclick="abrirModalConfigFin('categorias')" title="Gerenciar Categorias de Gastos">⚙️ Categorias</button>
+    <button class="btn-login" onclick="abrirModalTransacao()" style="margin: 0; width: auto; padding: 0 20px;">+ Lançamento</button>
+  </div>
+</div>
+
+<div class="tools-row" style="display:flex; gap:8px; margin-bottom: 20px;">
+  <select id="filtroConta" onchange="carregarFinanceiro()" style="flex:1;">
+    <option value="">Visão Geral (Todas as Contas)</option>
+  </select>
+  <input type="month" id="filtroMes" onchange="carregarFinanceiro()" style="width: 200px;" />
+</div>
+
+<!-- DASHBOARD DE SALDOS -->
+<div class="finance-cards">
+  <div class="fin-card">
+    <h3>Saldo Acumulado</h3>
+    <div class="valor" id="saldoAtual">R$ 0,00</div>
+  </div>
+  <div class="fin-card positivo">
+    <h3>Receitas no Mês</h3>
+    <div class="valor" id="totalEntradas">R$ 0,00</div>
+  </div>
+  <div class="fin-card negativo">
+    <h3>Despesas no Mês</h3>
+    <div class="valor" id="totalSaidas">R$ 0,00</div>
+  </div>
+</div>
+
+<!-- EXTRATO -->
+<div style="background: #181818; padding: 16px; border-radius: 12px; border: 1px solid #2a2a2a; overflow-x: auto;">
+  <h2 style="margin: 0 0 16px 0; font-size: 16px;">Extrato de Movimentações</h2>
+  <table class="extrato-table">
+    <thead>
+      <tr>
+        <th>Data</th>
+        <th>Tipo</th>
+        <th>Descrição</th>
+        <th>Categoria</th>
+        <th>Conta / Verba</th>
+        <th>Valor</th>
+        <th>Comprovante</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody id="listaExtrato">
+      <tr><td colspan="8" style="text-align: center; color: #888;">Carregando transações...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- MODAL NOVO LANÇAMENTO -->
+<div class="modal" id="modalTransacao">
+  <div class="modal-box" style="max-width: 500px;">
+    <div class="modal-topo">
+      <h2>Novo Lançamento</h2>
+      <button class="fechar" onclick="fecharModalTransacao()">×</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Tipo *</label>
+        <select id="tipoTransacao" style="margin: 4px 0 0;">
+          <option value="Despesa">Despesa (Saída de Dinheiro)</option>
+          <option value="Receita">Receita (Entrada de Dinheiro)</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Data *</label>
+        <input type="date" id="dataTransacao" style="margin: 4px 0 0;" />
+      </div>
+    </div>
+
+    <label style="font-size: 12px; color: #aaa; margin-top: 8px; display: block;">Descrição do Gasto ou Origem do Dinheiro *</label>
+    <input type="text" id="descTransacao" placeholder="Ex: Compra de tintas e cartolinas" style="margin: 4px 0 12px;" />
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Valor (R$) *</label>
+        <input type="number" step="0.01" id="valorTransacao" placeholder="0.00" style="margin: 4px 0 0; font-weight: bold; font-size: 18px;" />
+      </div>
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Conta Bancária / Origem da Verba *</label>
+        <select id="contaTransacao" style="margin: 4px 0 0;"></select>
+      </div>
+    </div>
+
+    <label style="font-size: 12px; color: #aaa; margin-top: 8px; display: block;">Categoria da Despesa/Receita *</label>
+    <select id="categoriaTransacao" style="margin: 4px 0 16px;"></select>
+
+    <label style="font-size: 12px; color: #aaa; margin-top: 8px; display: block;">Comprovante / Nota Fiscal (Foto ou PDF) *</label>
+    <input type="file" id="comprovanteTransacao" accept="image/*,.pdf" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #3f3f3f; background: #121212; color: #fff; margin: 4px 0 20px;" />
+
+    <button class="btn-login" id="btnSalvarTransacao" onclick="salvarTransacao()">Salvar Lançamento</button>
+  </div>
+</div>
+
+<!-- MODAL AUXILIAR (Cadastrar Contas e Categorias) -->
+<div class="modal" id="modalConfigFin">
+  <div class="modal-box">
+    <div class="modal-topo">
+      <h2 id="tituloConfigFin">Configuração</h2>
+      <button class="fechar" onclick="document.getElementById('modalConfigFin').style.display='none'">×</button>
+    </div>
+    <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+      <input type="text" id="inputNovoConfigFin" placeholder="Digite o nome..." style="margin: 0; flex: 1;" />
+      <button class="btn-login" style="width: auto; margin: 0; padding: 0 16px;" onclick="salvarConfigFin()">Adicionar</button>
+    </div>
+    <div id="listaConfigFin" style="background: #121212; border: 1px solid #333; border-radius: 8px; padding: 8px; max-height: 200px; overflow-y: auto;">
+      <!-- Lista gerada dinamicamente -->
+    </div>
+  </div>
+</div>
