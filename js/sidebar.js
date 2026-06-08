@@ -124,6 +124,9 @@ function mostrarTela(tela) {
     if (tela === 'turmas') {
     carregarTurmasDaTela();
   }
+    if (tela === 'financeiro') {
+    carregarFinanceiro();
+  }
   if (tela === 'mural') {
     carregarDadosMural()
   }
