@@ -1,0 +1,148 @@
+<style>
+.turmas-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.turma-card {
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.turma-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  border-color: #3ea6ff;
+}
+.turma-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.turma-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #fff;
+}
+.turma-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  background: #3ea6ff22;
+  color: #3ea6ff;
+}
+.turma-details {
+  font-size: 13px;
+  color: #aaa;
+  line-height: 1.5;
+  background: #222;
+  padding: 10px;
+  border-radius: 8px;
+}
+.professores-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+.prof-tag {
+  background: #333;
+  color: #ddd;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.prof-tag-remove {
+  cursor: pointer;
+  color: #ff5b5b;
+  font-weight: bold;
+}
+</style>
+
+<div class="page-header">
+  <h1>Turmas</h1>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <!-- Botão de adicionar turma (será exibido via JS se tiver permissão de edição) -->
+    <button class="btn-add btn-modo-edicao-somente" id="btnNovaTurma" onclick="abrirModalTurma()" title="Criar nova turma" style="display: none;">+</button>
+  </div>
+</div>
+
+<div class="tools-row" style="display:flex; gap:8px;">
+  <input type="search" id="buscaTurma" placeholder="Buscar turma por nome..." oninput="carregarTurmasDaTela()" style="flex:1;" />
+  <select id="filtroTurno" onchange="carregarTurmasDaTela()" style="width: 150px;">
+    <option value="">Todos os Turnos</option>
+    <option value="Matutino">Matutino</option>
+    <option value="Vespertino">Vespertino</option>
+    <option value="Integral">Integral</option>
+  </select>
+  <select id="filtroAno" onchange="carregarTurmasDaTela()" style="width: 120px;">
+    <!-- Anos letivos entrarão dinamicamente aqui -->
+  </select>
+</div>
+
+<div class="turmas-grid" id="listaTurmas">
+  <!-- JS vai injetar os cards das turmas aqui -->
+</div>
+
+<!-- MODAL DE TURMA -->
+<div class="modal" id="modalTurma">
+  <div class="modal-box" style="max-width: 500px;">
+    <div class="modal-topo">
+      <h2 id="tituloModalTurma">Nova Turma</h2>
+      <button class="fechar" onclick="fecharModalTurma()">×</button>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Nome da Turma *</label>
+        <input type="text" id="nomeTurma" placeholder="Ex: 5º Ano B" style="margin: 4px 0 0;" />
+      </div>
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Ano Letivo *</label>
+        <input type="number" id="anoTurma" placeholder="Ex: 2026" style="margin: 4px 0 0;" />
+      </div>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Turno *</label>
+        <select id="turnoTurma" style="margin: 4px 0 0;">
+          <option value="Matutino">Matutino</option>
+          <option value="Vespertino">Vespertino</option>
+          <option value="Integral">Integral</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size: 12px; color: #aaa;">Capacidade de Alunos</label>
+        <input type="number" id="capacidadeTurma" placeholder="Ex: 30" style="margin: 4px 0 0;" />
+      </div>
+    </div>
+
+    <!-- SESSÃO DE MULTIPLOS PROFESSORES -->
+    <div style="background: #1f1f1f; padding: 12px; border-radius: 8px; border: 1px solid #333; margin-bottom: 16px;">
+      <label style="font-size: 13px; color: #fff; font-weight: bold; display: block; margin-bottom: 8px;">👨‍🏫 Professores da Turma</label>
+      
+      <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+        <select id="selectProfessorTurma" style="flex: 1; margin: 0;"></select>
+        <button class="btn-login" onclick="adicionarProfessorNaTag()" style="width: auto; margin: 0; padding: 0 16px;">Adicionar</button>
+      </div>
+      
+      <div class="professores-tags" id="tagsProfessores">
+        <!-- Tags com os nomes dos professores vão aparecer aqui -->
+      </div>
+    </div>
+
+    <button class="btn-login" id="btnSalvarTurma" onclick="salvarTurma()">Salvar Turma</button>
+  </div>
+</div>
