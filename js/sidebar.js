@@ -10,6 +10,7 @@ function aplicarVisibilidadeSidebar() {
     alunos: document.getElementById('menu-alunos'),
     permissoes: document.getElementById('menu-permissoes'),
     perfil: document.getElementById('menu-perfil')
+    financeiro: document.getElementById('menu-financeiro')
   }
 
   Object.keys(menus).forEach(function(chave) {
@@ -17,6 +18,12 @@ function aplicarVisibilidadeSidebar() {
       menus[chave].style.display = 'none'
     }
   })
+// 👇 COLE ESTE BLOCO DO FINANCEIRO AQUI 👇
+  if (menus.financeiro) {
+    // Só Nível 1 (Admin Geral) e Nível 2 (Diretor) podem ver o menu Financeiro
+    menus.financeiro.style.display = (nivel === 1 || nivel === 2) ? 'flex' : 'none';
+  }
+  // 👆 ---------------------------------- 👆
 
   if (nivel === 4) {
     if (menus.perfil) menus.perfil.style.display = 'flex'
