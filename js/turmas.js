@@ -31,16 +31,26 @@ async function carregarTurmasDaTela() {
 
   const { data, error } = await query;
 
+  // CORREÇÃO: Lógica robusta para detectar Nível 2 e Nível 3 corretamente
+  const temPermissaoEdicao = usuarioNivel1() || acessosAtual.some(function(acesso) {
+    if (acesso.orgao_id !== escolaAtual) return false;
+    if (acesso.nivel === 2) return true;
+    if (acesso.nivel === 3) return acesso.pode_turmas === true;
+    return false;
+  });
+
+  const btnNovaTurma = document.getElementById('btnNovaTurma');
+  if (btnNovaTurma) {
+    // Mostra o botão sempre que tiver permissão (igual alunos e funcionários)
+    btnNovaTurma.style.display = temPermissaoEdicao ? 'block' : 'none';
+  }
+
   if (error || !data || data.length === 0) {
     lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhuma turma encontrada nesta escola.</div>';
     return;
   }
 
   lista.innerHTML = '';
-  const temPermissaoEdicao = usuarioNivel1() || podeAcessarModulo('turmas', escolaAtual);
-
-  const btnNovaTurma = document.getElementById('btnNovaTurma');
-  if (btnNovaTurma) btnNovaTurma.style.display = temPermissaoEdicao ? 'block' : 'none';
 
   data.forEach(turma => {
     // Filtro de busca de texto pelo Nome
@@ -72,7 +82,7 @@ async function carregarTurmasDaTela() {
       </div>
     `;
 
-    // Botões (Editar / Lixeira)
+    // Botões (Editar / Lixeira) só aparecem se o modo de edição estiver ativado
     if (modoEdicaoAtivo && temPermissaoEdicao) {
       const actionsDiv = document.createElement('div');
       actionsDiv.style.display = 'flex';
@@ -299,4 +309,8 @@ async function excluirTurma(id) {
   } else {
     await carregarTurmasDaTela();
   }
+}
+
+function fecharModalTurma() {
+  document.getElementById('modalTurma').style.display = 'none';
 }
