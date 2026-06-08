@@ -1,6 +1,5 @@
 function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
-
   const menus = {
     home: document.getElementById('menu-home'),
     mural: document.getElementById('menu-mural'),
