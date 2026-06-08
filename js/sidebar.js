@@ -114,6 +114,9 @@ function mostrarTela(tela) {
   if (tela === 'permissoes') {
     carregarTelaPermissoes()
   }
+    if (tela === 'turmas') {
+    carregarTurmasDaTela();
+  }
   if (tela === 'mural') {
     carregarDadosMural()
   }
