@@ -415,8 +415,7 @@
   <div id="container-modal-aluno"></div>
   <div id="container-ficha-impressao"></div>
 
-   
-
+  
   <!-- SCRIPTS -->
   <script>
     const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
@@ -474,45 +473,46 @@
   <script src="js/financeiro.js"></script>
 
   <script>
-    lucide.createIcons()
-    verificarLogin()
+    // Função para carregar os HTMLs pesados de forma limpa
+    async function carregarComponentes() {
+      try {
+        // Busca os arquivos
+        const resModal = await fetch('modal-aluno.html');
+        const resFicha = await fetch('ficha-impressao.html');
+
+        // Busca a tela de Turmas
+        const resTurmas = await fetch('htmls/turmas-lista.html');
+        document.getElementById('turmas').innerHTML = await resTurmas.text();
+        
+        // Busca a tela de Funcionários
+        const resFuncionarios = await fetch('htmls/funcionarios-lista.html');
+        
+        // NOVO: Busca a tela Financeira
+        const resFinanceiro = await fetch('htmls/financeiro.html');
+        document.getElementById('financeiro').innerHTML = await resFinanceiro.text();
+        
+        // Cola o conteúdo deles nas caixas vazias do index
+        document.getElementById('container-modal-aluno').innerHTML = await resModal.text();
+        document.getElementById('container-ficha-impressao').innerHTML = await resFicha.text();
+
+        // Cola a tela de funcionários na seção vazia
+        document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();
+
+        console.log("Componentes externos carregados com sucesso!");
+      } catch (error) {
+        console.error("Erro ao carregar os componentes:", error);
+      }
+    }
+
+    // Inicialização segura: aguarda os componentes antes de seguir
+    async function iniciarApp() {
+      await carregarComponentes();
+      lucide.createIcons();
+      verificarLogin();
+    }
+
+    // Dispara a função assim que o site abre
+    iniciarApp();
   </script>
-
-<script>
-// Função para carregar os HTMLs pesados de forma limpa
-async function carregarComponentes() {
-  try {
-    // Busca os arquivos
-    const resModal = await fetch('modal-aluno.html');
-    const resFicha = await fetch('ficha-impressao.html');
-
-    // Busca a tela de Turmas
-    const resTurmas = await fetch('htmls/turmas-lista.html');
-    document.getElementById('turmas').innerHTML = await resTurmas.text();
-    
-    // Busca a tela de Funcionários
-    const resFuncionarios = await fetch('htmls/funcionarios-lista.html');
-    
-    // NOVO: Busca a tela Financeira
-    const resFinanceiro = await fetch('htmls/financeiro.html');
-    document.getElementById('financeiro').innerHTML = await resFinanceiro.text();
-    
-    // Cola o conteúdo deles nas caixas vazias do index
-    document.getElementById('container-modal-aluno').innerHTML = await resModal.text();
-    document.getElementById('container-ficha-impressao').innerHTML = await resFicha.text();
-
-    // Cola a tela de funcionários na seção vazia
-    document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();
-
-    console.log("Componentes externos carregados com sucesso!");
-  } catch (error) {
-    console.error("Erro ao carregar os componentes:", error);
-  }
-}
-
-// Dispara a função assim que o site abre
-carregarComponentes();
-
-</script>
 </body>
 </html>
