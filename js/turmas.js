@@ -139,13 +139,44 @@ async function carregarListaDeProfessoresNoSelect() {
   const select = document.getElementById('selectProfessorTurma');
   select.innerHTML = '<option value="">Carregando professores...</option>';
   
-  // Puxa todos os vínculos ativos DESSA escola que tem a palavra 'Professor' no cargo
+  // Busca o órgão correspondente à escola atual
+  const { data: orgaoData, error: orgaoError } = await clienteSupabase
+    .from('orgaos')
+    .select('id')
+    .eq('escola_id', escolaAtual)
+    .eq('tipo', 'escola')
+    .eq('ativo', true)
+    .maybeSingle();
+
+  let orgaoId = null;
+  if (orgaoData) {
+    orgaoId = orgaoData.id;
+  } else {
+    // Fallback: tenta buscar qualquer órgão ativo dessa escola se não houver um com tipo 'escola'
+    const { data: fallbackOrgao } = await clienteSupabase
+      .from('orgaos')
+      .select('id')
+      .eq('escola_id', escolaAtual)
+      .eq('ativo', true)
+      .limit(1)
+      .maybeSingle();
+    
+    if (fallbackOrgao) {
+      orgaoId = fallbackOrgao.id;
+    }
+  }
+
+  if (!orgaoId) {
+    select.innerHTML = '<option value="">Nenhum órgão encontrado para esta escola</option>';
+    return;
+  }
+
+  // Puxa todos os vínculos ativos DESSA escola (órgão correspondente)
   const { data, error } = await clienteSupabase
     .from('vinculos_funcionarios')
     .select('id, cargo, funcionarios(nome, email)')
-    .eq('orgao_id', escolaAtual)
-    .eq('ativo', true)
-    .ilike('cargo', '%Prof%'); // Magia que puxa Professor, Professora, Professor Adjunto, etc
+    .eq('orgao_id', orgaoId)
+    .eq('ativo', true);
 
   if (error || !data || data.length === 0) {
     select.innerHTML = '<option value="">Nenhum professor cadastrado nesta escola</option>';
@@ -154,8 +185,10 @@ async function carregarListaDeProfessoresNoSelect() {
 
   select.innerHTML = '<option value="">-- Selecione um Professor --</option>';
   data.forEach(v => {
+    if (!v.funcionarios) return;
     const nome = v.funcionarios.nome || v.funcionarios.email;
-    select.innerHTML += `<option value="${v.id}" data-nome="${nome}">${nome} (${v.cargo})</option>`;
+    const cargoExibido = v.cargo ? ` (${v.cargo})` : '';
+    select.innerHTML += `<option value="${v.id}" data-nome="${nome}">${nome}${cargoExibido}</option>`;
   });
 }
 
