@@ -145,7 +145,6 @@ async function confirmarSenhaModoEdicao() {
   document.getElementById('modalConfirmacaoSenha').style.display = 'none'
   document.querySelectorAll('.btn-modo-edicao').forEach(function(toggle) { toggle.checked = true })
   atualizarInterfaceModo()
-  alert('Modo de Edição ativado!')
 }
 
 function atualizarInterfaceModo() {

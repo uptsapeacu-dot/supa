@@ -169,6 +169,7 @@ async function carregarFuncionariosDaTela() {
     actionsDiv.style.display = 'flex'
     actionsDiv.style.gap = '6px'
     actionsDiv.style.flexShrink = '0'
+    actionsDiv.style.flexWrap = 'wrap'
 
     // Botão M (Movimentações) — sempre visível para quem tem permissão
     if (temPermissaoGeral) {
@@ -455,7 +456,11 @@ async function salvarFuncionario() {
 
     fecharModalFuncionario()
     await carregarFuncionariosDaTela()
-    alert('Funcionário salvo com sucesso!')
+    
+    // Exibe o modal de sucesso estilizado
+    document.getElementById('msgModalSucesso').innerText = 'Alterações salvas com sucesso!'
+    document.getElementById('modalSucesso').style.display = 'flex'
+    
   } catch (err) {
     console.error(err)
     alert(err.message || err)

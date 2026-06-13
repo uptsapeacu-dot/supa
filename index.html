@@ -477,6 +477,16 @@
   <div id="container-ficha-impressao"></div>
 
   
+  <!-- MODAL SUCESSO -->
+  <div class="modal" id="modalSucesso" style="z-index: 9999;">
+    <div class="modal-box" style="max-width: 350px; text-align: center; border-color: #22c55e;">
+      <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+      <h2 style="margin: 0 0 8px; color: #fff; font-size: 20px;">Sucesso!</h2>
+      <p id="msgModalSucesso" style="color: #aaa; font-size: 14px; margin: 0 0 24px; line-height: 1.4;">Alterações salvas com sucesso</p>
+      <button class="btn-login" style="background: #22c55e; color: #000;" onclick="document.getElementById('modalSucesso').style.display='none'">OK</button>
+    </div>
+  </div>
+
   <!-- SCRIPTS -->
   <script>
     const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
