@@ -180,7 +180,7 @@ function atualizarInterfaceModo() {
 
   const btnAddFuncionario = document.getElementById('btnAddFuncionario')
   if (btnAddFuncionario) {
-    const podeCriarFuncionarios = escolaAtual && (usuarioNivel1() || podeAcessarModulo('funcionarios', escolaAtual))
+    const podeCriarFuncionarios = usuarioNivel1() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
     btnAddFuncionario.style.display = (modoEdicaoAtivo && podeCriarFuncionarios) ? 'flex' : 'none'
   }
 

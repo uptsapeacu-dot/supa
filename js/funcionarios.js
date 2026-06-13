@@ -1,4 +1,5 @@
 let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
+let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionário para impressão do histórico
 
 // ====== GESTÃO DINÂMICA DE CARGOS ======
 async function carregarCargos() {
@@ -70,9 +71,10 @@ async function carregarFuncionariosDaTela() {
     return
   }
 
-  // PEGAR O FILTRO DE CARGO DA TELA (Se houver)
   const filtroCargoSelect = document.getElementById('filtroCargo');
   const cargoSelecionado = filtroCargoSelect ? filtroCargoSelect.value : '';
+  const filtroStatus = document.getElementById('filtroStatus');
+  const statusSelecionado = filtroStatus ? filtroStatus.value : '';
 
   let query = clienteSupabase
     .from('vinculos_funcionarios')
@@ -80,7 +82,6 @@ async function carregarFuncionariosDaTela() {
     .in('orgao_id', orgaosPermitidos)
     .eq('ativo', true);
 
-  // Aplica o filtro de Cargo na query se o usuário escolheu algum
   if (cargoSelecionado !== '') {
     query = query.eq('cargo', cargoSelecionado);
   }
@@ -93,12 +94,23 @@ async function carregarFuncionariosDaTela() {
     return
   }
 
-  funcionariosAtuaisNaTela = data; // Salva para a impressora em massa
+  // Filtra por status localmente se necessário
+  let dadosFiltrados = data;
+  if (statusSelecionado !== '') {
+    dadosFiltrados = data.filter(v => v.funcionarios && v.funcionarios.status === statusSelecionado);
+  }
+
+  if (!dadosFiltrados.length) {
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário com esse status encontrado.</div>'
+    funcionariosAtuaisNaTela = [];
+    return
+  }
+
+  funcionariosAtuaisNaTela = dadosFiltrados;
   lista.innerHTML = ''
   
   const temPermissaoGeral = usuarioNivel1() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual));
 
-  // Libera o botão de Imprimir Todos para quem tem permissão
   const btnPrintTodos = document.getElementById('btnImprimirTodos');
   if (btnPrintTodos) btnPrintTodos.style.display = temPermissaoGeral ? 'block' : 'none';
 
@@ -109,10 +121,11 @@ async function carregarFuncionariosDaTela() {
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
   }
 
-  data.forEach(function(vinculo) {
+  dadosFiltrados.forEach(function(vinculo) {
     const funcionario = vinculo.funcionarios || {}
     const nomeFunc = funcionario.nome || funcionario.email || 'Sem Nome'
     const cargoFunc = vinculo.cargo || 'Sem Cargo'
+    const statusFunc = funcionario.status || 'ativo'
     
     const item = document.createElement('div')
     item.className = 'func-card'
@@ -123,7 +136,6 @@ async function carregarFuncionariosDaTela() {
     const avatar = document.createElement('div')
     avatar.className = 'func-avatar'
     
-    // MÁGICA DA FOTO: Se tiver foto, mostra ela em vez das iniciais
     if (funcionario.foto_url) {
       avatar.style.background = 'transparent';
       avatar.innerHTML = `<img src="${funcionario.foto_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;">`;
@@ -134,7 +146,20 @@ async function carregarFuncionariosDaTela() {
     const info = document.createElement('div')
     info.className = 'func-info'
     info.style.flex = '1'
-    info.innerHTML = `<h3>${nomeFunc}</h3><span class="func-badge">${cargoFunc}</span>`
+
+    // Badge de status colorido
+    const statusConfig = {
+      'ativo':     { cor: '#22c55e', bg: '#22c55e22', label: 'Ativo' },
+      'afastado':  { cor: '#f59e0b', bg: '#f59e0b22', label: 'Afastado' },
+      'desligado': { cor: '#ef4444', bg: '#ef444422', label: 'Desligado' }
+    }
+    const sc = statusConfig[statusFunc] || statusConfig['ativo']
+    info.innerHTML = `
+      <h3>${nomeFunc}</h3>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; align-items:center; margin-top:4px;">
+        <span class="func-badge">${cargoFunc}</span>
+        <span class="func-badge" style="background:${sc.bg}; color:${sc.cor};">${sc.label}</span>
+      </div>`
     
     header.appendChild(avatar)
     header.appendChild(info)
@@ -143,18 +168,29 @@ async function carregarFuncionariosDaTela() {
     const actionsDiv = document.createElement('div')
     actionsDiv.style.display = 'flex'
     actionsDiv.style.gap = '6px'
+    actionsDiv.style.flexShrink = '0'
 
-    // Botão de Imprimir Ficha Única (Sempre aparece pra quem pode ver a tela)
+    // Botão M (Movimentações) — sempre visível para quem tem permissão
     if (temPermissaoGeral) {
-        const btnPrint = document.createElement('button')
-        btnPrint.className = 'btn-editar'
-        btnPrint.style.background = '#e0e0e0';
-        btnPrint.style.color = '#000';
-        btnPrint.style.padding = '6px';
-        btnPrint.innerHTML = '<i data-lucide="printer" style="width:16px; height:16px;"></i>';
-        btnPrint.title = 'Imprimir ficha';
-        btnPrint.onclick = function() { imprimirFichaUnica(vinculo.id) };
-        actionsDiv.appendChild(btnPrint);
+      const btnMov = document.createElement('button')
+      btnMov.className = 'btn-editar btn-movimentacoes'
+      btnMov.title = 'Histórico de movimentações'
+      btnMov.innerHTML = 'M'
+      btnMov.onclick = function() { abrirModalMovimentacoes(funcionario.id, nomeFunc) }
+      actionsDiv.appendChild(btnMov)
+    }
+
+    // Botão Imprimir Ficha
+    if (temPermissaoGeral) {
+      const btnPrint = document.createElement('button')
+      btnPrint.className = 'btn-editar'
+      btnPrint.style.background = '#e0e0e0';
+      btnPrint.style.color = '#000';
+      btnPrint.style.padding = '6px';
+      btnPrint.innerHTML = '<i data-lucide="printer" style="width:16px; height:16px;"></i>';
+      btnPrint.title = 'Imprimir ficha';
+      btnPrint.onclick = function() { imprimirFichaUnica(vinculo.id) };
+      actionsDiv.appendChild(btnPrint);
     }
 
     if (modoEdicaoAtivo && temPermissaoGeral) {
@@ -186,6 +222,7 @@ async function carregarFuncionariosDaTela() {
     details.innerHTML = `
       <div><strong>Órgão:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
       <div><strong>Nascimento:</strong> ${formatarDataBR(funcionario.data_nascimento)}</div>
+      ${funcionario.formacao_academica ? `<div><strong>Formação:</strong> ${funcionario.formacao_academica}</div>` : ''}
     `
 
     item.appendChild(header)
@@ -199,7 +236,7 @@ async function carregarFuncionariosDaTela() {
 
 // ====== CRUD ======
 async function abrirModalFuncionario() {
-  await carregarCargos(); // Força a busca dos cargos ANTES de abrir a tela
+  await carregarCargos();
   vinculoEditando = null
   funcionarioEditandoId = null
 
@@ -211,9 +248,20 @@ async function abrirModalFuncionario() {
   document.getElementById('cargoFuncionario').value = ''
   document.getElementById('nascimentoFuncionario').value = ''
   document.getElementById('fotoFuncionario').value = ''
+  document.getElementById('formacaoFuncionario').value = ''
+  document.getElementById('enderecoFuncionario').value = ''
+  document.getElementById('statusFuncionario').value = 'ativo'
+  document.getElementById('statusObservacao').value = ''
+  document.getElementById('statusObservacaoBox').style.display = 'none'
 
   document.getElementById('emailFuncionario').disabled = false
   document.getElementById('btnNovoCargo').style.display = usuarioNivel1() ? 'block' : 'none';
+
+  // Mostra caixa de observação ao mudar status
+  document.getElementById('statusFuncionario').onchange = function() {
+    const v = this.value;
+    document.getElementById('statusObservacaoBox').style.display = (v === 'afastado' || v === 'desligado') ? 'block' : 'none';
+  }
 
   document.getElementById('modalFuncionario').style.display = 'flex'
   document.getElementById('nomeFuncionario').focus()
@@ -222,18 +270,25 @@ async function abrirModalFuncionario() {
 function fecharModalFuncionario() {
   document.getElementById('modalFuncionario').style.display = 'none'
 }
+
 async function editarFuncionario(vinculo) {
-  await carregarCargos(); // Força a busca dos cargos ANTES de abrir a tela
+  await carregarCargos();
   vinculoEditando = vinculo.id
   funcionarioEditandoId = vinculo.funcionarios.id
+
+  const statusAtual = vinculo.funcionarios.status || 'ativo'
 
   document.getElementById('tituloModalFuncionario').innerText = 'Editar Funcionário'
   document.getElementById('nomeFuncionario').value = vinculo.funcionarios.nome || ''
   document.getElementById('emailFuncionario').value = vinculo.funcionarios.email || ''
   document.getElementById('telefoneFuncionario').value = vinculo.funcionarios.telefone || ''
   document.getElementById('cpfFuncionario').value = vinculo.funcionarios.cpf || ''
+  document.getElementById('formacaoFuncionario').value = vinculo.funcionarios.formacao_academica || ''
+  document.getElementById('enderecoFuncionario').value = vinculo.funcionarios.endereco || ''
+  document.getElementById('statusFuncionario').value = statusAtual
+  document.getElementById('statusObservacao').value = ''
+  document.getElementById('statusObservacaoBox').style.display = (statusAtual === 'afastado' || statusAtual === 'desligado') ? 'block' : 'none'
   
-  // O Cargo ganha um atraso minúsculo para dar tempo do <select> ser preenchido
   setTimeout(() => {
     document.getElementById('cargoFuncionario').value = vinculo.cargo || '';
   }, 200);
@@ -243,6 +298,12 @@ async function editarFuncionario(vinculo) {
 
   document.getElementById('emailFuncionario').disabled = true
   document.getElementById('btnNovoCargo').style.display = usuarioNivel1() ? 'block' : 'none';
+
+  // Mostra caixa de observação ao mudar status
+  document.getElementById('statusFuncionario').onchange = function() {
+    const v = this.value;
+    document.getElementById('statusObservacaoBox').style.display = (v === 'afastado' || v === 'desligado') ? 'block' : 'none';
+  }
 
   document.getElementById('modalFuncionario').style.display = 'flex'
   document.getElementById('nomeFuncionario').focus()
@@ -256,6 +317,10 @@ async function salvarFuncionario() {
   var cpf = document.getElementById('cpfFuncionario').value.trim()
   var cargo = document.getElementById('cargoFuncionario').value.trim()
   var dataNascimento = document.getElementById('nascimentoFuncionario').value || null
+  var formacao = document.getElementById('formacaoFuncionario').value.trim()
+  var endereco = document.getElementById('enderecoFuncionario').value.trim()
+  var novoStatus = document.getElementById('statusFuncionario').value || 'ativo'
+  var obsStatus = document.getElementById('statusObservacao').value.trim()
 
   if (!nome || !email) {
     alert('Nome e Email são obrigatórios')
@@ -301,7 +366,6 @@ async function salvarFuncionario() {
       const fileName = `foto_${Date.now()}.${fileExt}`;
       
       const { error: uploadError } = await clienteSupabase.storage.from('fotos_funcionarios').upload(fileName, file);
-        
       if (uploadError) throw new Error("Erro no upload da foto: " + uploadError.message);
       
       const { data: publicData } = clienteSupabase.storage.from('fotos_funcionarios').getPublicUrl(fileName);
@@ -309,28 +373,74 @@ async function salvarFuncionario() {
     }
 
     // === 2. MONTAR DADOS PARA O BANCO ===
-    const payloadFunc = { nome: nome, telefone: telefone, cpf: cpf, data_nascimento: dataNascimento, ativo: true };
-    if (fotoUrl) payloadFunc.foto_url = fotoUrl; // Só envia a foto se o cara selecionou uma nova
+    const payloadFunc = {
+      nome: nome,
+      telefone: telefone,
+      cpf: cpf,
+      data_nascimento: dataNascimento,
+      formacao_academica: formacao,
+      endereco: endereco,
+      status: novoStatus,
+      ativo: novoStatus === 'ativo'
+    };
+    if (fotoUrl) payloadFunc.foto_url = fotoUrl;
 
     var funcionarioId = funcionarioEditandoId
 
     if (funcionarioEditandoId) {
+      // Verificar se mudou o status para registrar histórico
+      const { data: funcAntes } = await clienteSupabase.from('funcionarios').select('status').eq('id', funcionarioEditandoId).single()
+      const statusAnterior = funcAntes ? funcAntes.status : 'ativo'
+
       var { error: errFunc } = await clienteSupabase.from('funcionarios').update(payloadFunc).eq('id', funcionarioEditandoId)
       if (errFunc) throw errFunc
 
       var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo }).eq('id', vinculoEditando)
       if (errVinc) throw errVinc
+
+      // Registrar histórico de status se mudou
+      if (statusAnterior !== novoStatus) {
+        await clienteSupabase.from('historico_status_funcionarios').insert([{
+          funcionario_id: funcionarioEditandoId,
+          status_anterior: statusAnterior,
+          status_novo: novoStatus,
+          observacao: obsStatus || null,
+          registrado_por: funcionarioAtual ? funcionarioAtual.id : null
+        }])
+      }
+
     } else {
-      payloadFunc.email = email; // Email só vai na criação
-      var { data: funcExistente } = await clienteSupabase.from('funcionarios').select('id').eq('email', email).maybeSingle()
+      payloadFunc.email = email;
+      var { data: funcExistente } = await clienteSupabase.from('funcionarios').select('id, status').eq('email', email).maybeSingle()
 
       if (funcExistente) {
         funcionarioId = funcExistente.id
+        const statusAnterior = funcExistente.status || 'ativo'
         await clienteSupabase.from('funcionarios').update(payloadFunc).eq('id', funcionarioId)
+        if (statusAnterior !== novoStatus) {
+          await clienteSupabase.from('historico_status_funcionarios').insert([{
+            funcionario_id: funcionarioId,
+            status_anterior: statusAnterior,
+            status_novo: novoStatus,
+            observacao: obsStatus || null,
+            registrado_por: funcionarioAtual ? funcionarioAtual.id : null
+          }])
+        }
       } else {
         var { data: novoFunc, error: errFunc2 } = await clienteSupabase.from('funcionarios').insert([payloadFunc]).select().single()
         if (errFunc2) throw errFunc2
         funcionarioId = novoFunc.id
+
+        // Registrar status inicial se não for ativo
+        if (novoStatus !== 'ativo') {
+          await clienteSupabase.from('historico_status_funcionarios').insert([{
+            funcionario_id: funcionarioId,
+            status_anterior: null,
+            status_novo: novoStatus,
+            observacao: obsStatus || null,
+            registrado_por: funcionarioAtual ? funcionarioAtual.id : null
+          }])
+        }
       }
 
       var { data: vincExistente } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioId).eq('orgao_id', orgaoId).eq('ativo', true).maybeSingle()
@@ -363,50 +473,214 @@ async function removerVinculoFuncionario(vinculoId) {
 }
 
 
-// ====== SISTEMA DE IMPRESSÃO DE FICHAS ======
+// ====== MODAL DE MOVIMENTAÇÕES ======
+async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
+  document.getElementById('nomeMovimentacoesModal').innerText = nomeFunc
+  document.getElementById('conteudoMovimentacoes').innerHTML = '<div class="empty-state">Carregando...</div>'
+  document.getElementById('modalMovimentacoes').style.display = 'flex'
+  funcionarioMovimentacaoAtual = { id: funcionarioId, nome: nomeFunc }
 
-// Gera o visual de papel A4 com a Ficha
+  if (window.lucide) lucide.createIcons()
+
+  // Buscar histórico de status
+  const { data: histStatus } = await clienteSupabase
+    .from('historico_status_funcionarios')
+    .select('*')
+    .eq('funcionario_id', funcionarioId)
+    .order('data_registro', { ascending: false })
+
+  // Buscar histórico de vínculos (lotação)
+  const { data: histVinculos } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .select('*, orgaos(nome)')
+    .eq('funcionario_id', funcionarioId)
+    .order('created_at', { ascending: false })
+
+  const container = document.getElementById('conteudoMovimentacoes')
+
+  let html = ''
+
+  // Seção de Histórico de Lotação
+  html += `<div class="form-section-title">📋 Histórico de Lotação</div>`
+  if (!histVinculos || histVinculos.length === 0) {
+    html += `<div class="empty-state" style="margin-bottom:16px;">Nenhum registro de lotação encontrado.</div>`
+  } else {
+    html += `<div class="timeline-movimentacao">`
+    histVinculos.forEach(v => {
+      const orgaoNome = v.orgaos ? v.orgaos.nome : 'Órgão não encontrado'
+      const dataIni = formatarDataBR(v.data_inicio)
+      const dataFim = v.data_fim ? formatarDataBR(v.data_fim) : 'até o momento'
+      const ativo = v.ativo
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot ${ativo ? 'dot-ativo' : 'dot-inativo'}"></div>
+          <div class="timeline-conteudo">
+            <strong>${orgaoNome}</strong>
+            <span class="timeline-cargo">${v.cargo || 'Sem cargo definido'}</span>
+            <span class="timeline-data">${dataIni} → ${dataFim}</span>
+            ${ativo ? '<span class="func-badge" style="background:#22c55e22;color:#22c55e;font-size:11px;">Atual</span>' : ''}
+          </div>
+        </div>`
+    })
+    html += `</div>`
+  }
+
+  // Seção de Histórico de Status
+  html += `<div class="form-section-title" style="margin-top:24px;">🔄 Histórico de Status</div>`
+  if (!histStatus || histStatus.length === 0) {
+    html += `<div class="empty-state">Nenhuma mudança de status registrada.</div>`
+  } else {
+    html += `<div class="timeline-movimentacao">`
+    const statusLabels = { ativo: '✅ Ativo', afastado: '⚠️ Afastado', desligado: '🔴 Desligado' }
+    const statusCores = { ativo: '#22c55e', afastado: '#f59e0b', desligado: '#ef4444' }
+    histStatus.forEach(h => {
+      const dataReg = new Date(h.data_registro).toLocaleString('pt-BR')
+      const anterior = h.status_anterior ? (statusLabels[h.status_anterior] || h.status_anterior) : '(novo cadastro)'
+      const novo = statusLabels[h.status_novo] || h.status_novo
+      const cor = statusCores[h.status_novo] || '#aaa'
+      html += `
+        <div class="timeline-item">
+          <div class="timeline-dot" style="background:${cor};"></div>
+          <div class="timeline-conteudo">
+            <strong>${anterior} → <span style="color:${cor}">${novo}</span></strong>
+            ${h.observacao ? `<span class="timeline-cargo">${h.observacao}</span>` : ''}
+            <span class="timeline-data">${dataReg}</span>
+          </div>
+        </div>`
+    })
+    html += `</div>`
+  }
+
+  container.innerHTML = html
+}
+
+function fecharModalMovimentacoes() {
+  document.getElementById('modalMovimentacoes').style.display = 'none'
+  funcionarioMovimentacaoAtual = null
+}
+
+function imprimirHistoricoMovimentacoes() {
+  const conteudo = document.getElementById('conteudoMovimentacoes')
+  const nome = funcionarioMovimentacaoAtual ? funcionarioMovimentacaoAtual.nome : 'Funcionário'
+  const dataImpressao = new Date().toLocaleString('pt-BR')
+
+  const htmlPrint = `
+    <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+      <div style="text-align:center; margin-bottom:24px; border-bottom:2px solid #000; padding-bottom:16px;">
+        <h2 style="margin:0 0 4px;">Histórico de Movimentações</h2>
+        <p style="margin:0; font-size:14px; color:#555;">${nome}</p>
+      </div>
+      ${conteudo.innerHTML
+        .replace(/class="form-section-title[^"]*"/g, 'style="font-size:14px;font-weight:bold;color:#333;border-bottom:1px solid #ccc;padding-bottom:4px;margin:20px 0 12px;text-transform:uppercase;letter-spacing:.5px;"')
+        .replace(/class="timeline-movimentacao"/g, 'style="display:flex;flex-direction:column;gap:12px;"')
+        .replace(/class="timeline-item"/g, 'style="display:flex;gap:12px;align-items:flex-start;"')
+        .replace(/class="timeline-dot[^"]*"/g, 'style="width:12px;height:12px;border-radius:50%;background:#555;flex-shrink:0;margin-top:4px;"')
+        .replace(/class="timeline-conteudo"/g, 'style="display:flex;flex-direction:column;gap:2px;"')
+        .replace(/class="timeline-cargo"/g, 'style="font-size:13px;color:#555;"')
+        .replace(/class="timeline-data"/g, 'style="font-size:12px;color:#888;"')
+        .replace(/class="func-badge[^"]*"/g, 'style="font-size:11px;background:#eee;padding:2px 8px;border-radius:10px;"')
+        .replace(/class="empty-state"/g, 'style="color:#aaa;font-size:14px;padding:8px 0;"')
+      }
+      <p style="margin-top:40px;text-align:right;font-size:12px;color:#888;">Impresso em: ${dataImpressao}</p>
+    </div>`
+
+  abrirJanelaImpressao(htmlPrint)
+}
+
+
+// ====== SISTEMA DE IMPRESSÃO DE FICHAS ======
 function gerarHTMLFicha(func) {
   const nome = func.funcionarios.nome || func.funcionarios.email;
   const orgao = func.orgaos ? func.orgaos.nome : '';
+  const statusFunc = func.funcionarios.status || 'ativo'
+  const statusLabels = { ativo: 'Ativo', afastado: 'Afastado', desligado: 'Desligado' }
+  const statusLabel = statusLabels[statusFunc] || statusFunc
   const foto = func.funcionarios.foto_url 
     ? `<img src="${func.funcionarios.foto_url}" style="width: 100%; height: 100%; object-fit: cover;" />` 
-    : `<div style="text-align:center; padding-top: 60px; color:#aaa; font-family:sans-serif;">Sem Foto</div>`;
-  
+    : `<div style="text-align:center; padding-top: 40px; color:#999; font-family:sans-serif; font-size:12px;">Sem Foto</div>`;
+
+  const logosPrefeitura = `
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <img src="img/brasaoSapeaçu.png" alt="Brasão" style="height:64px; object-fit:contain;" onerror="this.style.display='none'">
+        <div style="text-align:left; line-height:1.3;">
+          <div style="font-size:11px; color:#555; text-transform:uppercase; letter-spacing:.5px;">Prefeitura Municipal de</div>
+          <div style="font-size:16px; font-weight:bold; color:#1a1a1a;">Sapeaçu</div>
+          <div style="font-size:11px; color:#555;">Secretaria Municipal de Educação</div>
+        </div>
+      </div>
+      <div style="text-align:right; font-size:10px; color:#888; line-height:1.5;">
+        <div>Ficha Cadastral de Servidor</div>
+        <div>Emitido em: ${new Date().toLocaleDateString('pt-BR')}</div>
+      </div>
+    </div>
+    <div style="height:3px; background: linear-gradient(90deg, #1a56db, #3ea6ff, #1a56db); margin-bottom:20px; border-radius:2px;"></div>
+  `;
+
   return `
-    <div style="page-break-after: always; font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
-      <h2 style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 30px;">Ficha Cadastral de Servidor</h2>
+    <div style="page-break-after: always; font-family: Arial, sans-serif; padding: 36px; max-width: 780px; margin: 0 auto; border: 1px solid #ddd; border-radius: 8px;">
       
-      <div style="display: flex; gap: 30px;">
-        <!-- Retângulo da Foto -->
-        <div style="width: 120px; height: 160px; border: 1px solid #000; background: #f9f9f9; box-sizing: border-box;">
+      ${logosPrefeitura}
+
+      <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+        <!-- Foto 3x4 -->
+        <div style="width: 110px; height: 145px; border: 2px solid #1a56db; border-radius: 6px; background: #f5f5f5; overflow:hidden; flex-shrink:0;">
           ${foto}
         </div>
         
-        <!-- Dados do Servidor -->
-        <div style="flex: 1; font-size: 16px; line-height: 1.8;">
-          <p style="margin:0;"><strong>Nome Completo:</strong> ${nome}</p>
-          <p style="margin:0;"><strong>Órgão/Lotação:</strong> ${orgao}</p>
-          <p style="margin:0;"><strong>Cargo / Função:</strong> ${func.cargo || ''}</p>
-          <p style="margin:0;"><strong>CPF:</strong> ${func.funcionarios.cpf || 'Não informado'}</p>
-          <p style="margin:0;"><strong>Telefone:</strong> ${func.funcionarios.telefone || 'Não informado'}</p>
-          <p style="margin:0;"><strong>Data de Nascimento:</strong> ${formatarDataBR(func.funcionarios.data_nascimento)}</p>
+        <!-- Dados Principais -->
+        <div style="flex: 1;">
+          <div style="background:#f0f4ff; border-left:4px solid #1a56db; padding:10px 14px; border-radius:0 6px 6px 0; margin-bottom:12px;">
+            <div style="font-size:11px; color:#555; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px;">Nome Completo</div>
+            <div style="font-size:18px; font-weight:bold; color:#111;">${nome}</div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+            <div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px;">
+              <div style="font-size:10px; color:#888; text-transform:uppercase; margin-bottom:2px;">Cargo / Função</div>
+              <div style="font-size:14px; font-weight:600; color:#222;">${func.cargo || 'Não informado'}</div>
+            </div>
+            <div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px;">
+              <div style="font-size:10px; color:#888; text-transform:uppercase; margin-bottom:2px;">Status</div>
+              <div style="font-size:14px; font-weight:600; color:${statusFunc === 'ativo' ? '#16a34a' : statusFunc === 'afastado' ? '#d97706' : '#dc2626'};">${statusLabel}</div>
+            </div>
+          </div>
         </div>
       </div>
-      
-      <!-- Assinatura e Data -->
-      <div style="margin-top: 80px; border-top: 1px dashed #000; padding-top: 20px; font-size: 14px;">
-        <p>Declaramos para os devidos fins que as informações acima constam em nossa base de dados oficial.</p>
-        <br><br><br>
-        <p style="text-align: center;">____________________________________________________<br>Assinatura do Servidor</p>
-        <br>
-        <p style="text-align: right; color: #555;">Impresso pelo sistema em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}</p>
+
+      <!-- Grade de Dados -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#e5e7eb; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin-bottom:20px;">
+        ${[
+          ['CPF', func.funcionarios.cpf || 'Não informado'],
+          ['Telefone', func.funcionarios.telefone || 'Não informado'],
+          ['E-mail', func.funcionarios.email || 'Não informado'],
+          ['Data de Nascimento', formatarDataBR(func.funcionarios.data_nascimento)],
+          ['Órgão / Lotação', orgao || 'Não informado'],
+          ['Formação Acadêmica', func.funcionarios.formacao_academica || 'Não informado'],
+          ['Endereço', func.funcionarios.endereco || 'Não informado', true]
+        ].map(([label, valor, fullWidth]) => `
+          <div style="${fullWidth ? 'grid-column:span 2;' : ''} background:#fff; padding:10px 14px;">
+            <div style="font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.3px; margin-bottom:2px;">${label}</div>
+            <div style="font-size:14px; color:#222;">${valor}</div>
+          </div>
+        `).join('')}
       </div>
+      
+      <!-- Rodapé com assinaturas -->
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; padding-top:16px; border-top:1px dashed #aaa;">
+        <div style="text-align:center;">
+          <div style="border-top:1px solid #000; padding-top:8px; font-size:12px; color:#555;">Assinatura do Servidor</div>
+        </div>
+        <div style="text-align:center;">
+          <div style="border-top:1px solid #000; padding-top:8px; font-size:12px; color:#555;">Secretaria de Educação</div>
+        </div>
+      </div>
+      <p style="text-align:right; font-size:10px; color:#aaa; margin-top:12px;">
+        Impresso pelo sistema em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+      </p>
     </div>
   `;
 }
 
-// Abre uma aba invisível e manda para a impressora do Windows
 function abrirJanelaImpressao(htmlConteudo) {
   const printWindow = window.open('', '_blank');
   printWindow.document.write(`
@@ -415,7 +689,7 @@ function abrirJanelaImpressao(htmlConteudo) {
         <title>Impressão de Fichas</title>
         <style>
           @media print {
-            body { -webkit-print-color-adjust: exact; margin: 0; padding: 0; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; }
           }
           body { margin: 0; padding: 0; }
         </style>
@@ -427,10 +701,9 @@ function abrirJanelaImpressao(htmlConteudo) {
   `);
   printWindow.document.close();
   printWindow.focus();
-  // Dá meio segundo para as fotos 3x4 carregarem da internet antes do Windows imprimir
   setTimeout(() => {
     printWindow.print();
-  }, 500); 
+  }, 600); 
 }
 
 function imprimirFichaUnica(vinculoId) {

@@ -1,7 +1,7 @@
 <style>
 .funcionarios-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 16px;
 }
 .func-card {
@@ -34,6 +34,7 @@
   font-size: 18px;
   font-weight: bold;
   color: #fff;
+  flex-shrink: 0;
 }
 .func-info h3 {
   margin: 0 0 4px 0;
@@ -54,54 +55,107 @@
   color: #aaa;
   line-height: 1.5;
 }
+
+/* Botão M de Movimentações */
+.btn-movimentacoes {
+  background: linear-gradient(135deg, #1a56db, #3ea6ff) !important;
+  color: #fff !important;
+  font-weight: 900 !important;
+  font-size: 14px !important;
+  letter-spacing: 0.5px;
+  padding: 6px !important;
+  font-style: italic;
+}
+.btn-movimentacoes:hover {
+  background: linear-gradient(135deg, #3ea6ff, #1a56db) !important;
+  color: #fff !important;
+  transform: scale(1.08);
+}
+
+/* Timeline de movimentações */
+.timeline-movimentacao {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-left: 8px;
+  margin-bottom: 8px;
+}
+.timeline-item {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  position: relative;
+}
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 18px;
+  bottom: -14px;
+  width: 2px;
+  background: #2a2a2a;
+}
+.timeline-item:last-child::before {
+  display: none;
+}
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #3ea6ff;
+  flex-shrink: 0;
+  margin-top: 4px;
+  border: 2px solid #121212;
+  box-shadow: 0 0 0 2px #3ea6ff44;
+}
+.dot-ativo    { background: #22c55e; box-shadow: 0 0 0 2px #22c55e44; }
+.dot-inativo  { background: #555; box-shadow: none; }
+.timeline-conteudo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+.timeline-conteudo strong {
+  color: #fff;
+  font-size: 14px;
+}
+.timeline-cargo {
+  font-size: 13px;
+  color: #aaa;
+}
+.timeline-data {
+  font-size: 12px;
+  color: #666;
+  margin-top: 2px;
+}
 </style>
 
 <div class="page-header">
   <h1>Funcionários</h1>
   <div style="display:flex; gap:8px; align-items:center;">
-    <!-- O botão fica escondido e só aparece se for Nível 1 ou tiver permissão -->
-    <button class="btn-add" id="btnNovoFuncionario" onclick="abrirModalFuncionario()" title="Adicionar funcionário" aria-label="Adicionar funcionário" style="display: none;">+</button>
+    <button class="btn-add" id="btnAddFuncionario" onclick="abrirModalFuncionario()" title="Adicionar funcionário" aria-label="Adicionar funcionário" style="display: none;">+</button>
   </div>
 </div>
 
-<div class="tools-row" style="display:flex; gap:8px;">
-  <input type="search" id="buscaFuncionario" placeholder="Buscar funcionário por nome ou matrícula" oninput="carregarFuncionariosDaTela()" style="flex: 1;" />
-  <select id="filtroCargo" onchange="carregarFuncionariosDaTela()" style="width: 200px;">
+<div class="tools-row" style="display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:18px;">
+  <input type="search" id="buscaFuncionario" placeholder="Buscar funcionário por nome..." oninput="carregarFuncionariosDaTela()" style="flex: 1; min-width:160px;" />
+  <select id="filtroCargo" onchange="carregarFuncionariosDaTela()" style="width: 180px;">
     <option value="">Todos os Cargos</option>
   </select>
-  <!-- Este botão de imprimir as fichas em massa só aparecerá para Nível 1, 2 e 3 autorizados -->
+  <select id="filtroStatus" onchange="carregarFuncionariosDaTela()" style="width: 160px;">
+    <option value="">Todos os Status</option>
+    <option value="ativo">✅ Ativo</option>
+    <option value="afastado">⚠️ Afastado</option>
+    <option value="desligado">🔴 Desligado</option>
+  </select>
   <button class="btn-login" id="btnImprimirTodos" onclick="imprimirTodosFuncionarios()" style="width: auto; margin: 0; padding: 0 20px; display: none;" title="Gerar dossiê com todas as fichas da tela">🖨️ Imprimir Lista</button>
 </div>
 
 <div class="funcionarios-grid" id="listaFuncionarios">
-  <!-- CARDS FAKE DE DEMONSTRAÇÃO -->
-  <div class="func-card">
-    <div class="func-header">
-      <div class="func-avatar">MD</div>
-      <div class="func-info">
-        <h3>Maria das Dores</h3>
-        <span class="func-badge">Professora</span>
-      </div>
-    </div>
-    <div class="func-details">
-      <div><strong>Órgão:</strong> Secretaria de Educação</div>
-      <div><strong>Status:</strong> Ativo</div>
-      <div><strong>Matrícula:</strong> 12345-6</div>
-    </div>
-  </div>
-  
-  <div class="func-card">
-    <div class="func-header">
-      <div class="func-avatar">JR</div>
-      <div class="func-info">
-        <h3>José Raimundo</h3>
-        <span class="func-badge" style="background:#ff980022; color:#ff9800;">Zelador</span>
-      </div>
-    </div>
-    <div class="func-details">
-      <div><strong>Órgão:</strong> Colégio Moisés Alves</div>
-      <div><strong>Status:</strong> Férias</div>
-      <div><strong>Matrícula:</strong> 98765-4</div>
-    </div>
-  </div>
+  <!-- Cards renderizados pelo JS -->
 </div>
