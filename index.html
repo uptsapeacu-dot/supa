@@ -99,6 +99,10 @@
           <span class="menu-icon"><i data-lucide="shield-check"></i></span>
           <span class="menu-text">Permissões</span>
         </button>
+        <button id="menu-relatorios" onclick="mostrarTela('relatorios')" title="Relatórios" style="display:none">
+          <span class="menu-icon"><i data-lucide="bar-chart-2"></i></span>
+          <span class="menu-text">Relatórios</span>
+        </button>
         <button id="menu-financeiro" onclick="mostrarTela('financeiro')" title="Financeiro" style="display:none">
           <span class="menu-icon"><i data-lucide="wallet"></i></span>
           <span class="menu-text">Financeiro</span>
@@ -321,6 +325,23 @@
         <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
       </section>
 
+      <!-- RELATÓRIOS -->
+      <section id="relatorios" style="display:none">
+        <div class="page-header">
+          <h1>Relatórios</h1>
+          <button class="btn-editar" onclick="imprimirRelatorio()" title="Imprimir relatório" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;width:auto;">
+            <i data-lucide="printer" style="width:16px;height:16px;"></i> Imprimir
+          </button>
+        </div>
+        <div class="relatorio-filtros">
+          <span style="font-size:13px;color:#aaa;">📊 Frequência dos últimos 30 dias por turma</span>
+          <button class="btn-clear" onclick="carregarRelatorios()" style="margin-left:auto;">🔄 Atualizar</button>
+        </div>
+        <div id="relatorioConteudo">
+          <div class="empty-state">Selecione uma escola no Início para ver os relatórios.</div>
+        </div>
+      </section>
+
     </main>
 
   </div>
@@ -477,6 +498,24 @@
   <div id="container-ficha-impressao"></div>
 
   
+  <!-- MODAL FREQUÊNCIA -->
+  <div class="modal" id="modalFrequencia">
+    <div class="modal-box" style="max-width:700px; max-height:90vh; overflow-y:auto;">
+      <div class="modal-topo" style="position:sticky;top:0;background:#181818;z-index:10;padding-bottom:12px;border-bottom:1px solid #2a2a2a;">
+        <div>
+          <h2 id="tituloFrequencia" style="margin:0;font-size:18px;">📅 Frequência</h2>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <input type="date" id="dataFrequencia" onchange="carregarFrequenciaDoDia()" style="margin:0;padding:8px 12px;width:auto;" />
+          <button class="fechar" onclick="fecharModalFrequencia()" aria-label="Fechar">×</button>
+        </div>
+      </div>
+      <div id="avisoPermissaoFrequencia" class="aviso-permissao-freq" style="display:none;margin-top:16px;"></div>
+      <div id="listaFrequencia" style="display:flex;flex-direction:column;gap:8px;padding-top:16px;"></div>
+      <button class="btn-login" id="btnSalvarFrequencia" onclick="salvarFrequencia()" style="margin-top:20px;display:none;">💾 Salvar Frequência</button>
+    </div>
+  </div>
+
   <!-- MODAL SUCESSO -->
   <div class="modal" id="modalSucesso" style="z-index: 9999;">
     <div class="modal-box" style="max-width: 350px; text-align: center; border-color: #22c55e;">
@@ -542,6 +581,7 @@
   <script src="js/permissoes.js"></script>
   <script src="js/mural.js"></script>
   <script src="js/turmas.js"></script>
+  <script src="js/frequencia.js"></script>
   <script src="js/financeiro.js"></script>
 
   <script>

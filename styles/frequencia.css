@@ -1,0 +1,160 @@
+<style>
+/* ===========================
+   MODAL DE FREQUÊNCIA
+   =========================== */
+.freq-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  transition: border-color 0.2s;
+}
+.freq-item:hover {
+  border-color: #3ea6ff44;
+}
+.freq-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2a2a2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: #fff;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.freq-nome {
+  flex: 1;
+  font-size: 14px;
+  color: #fff;
+  font-weight: 500;
+}
+.freq-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+.freq-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+  background: #1e1e1e;
+  color: #666;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.freq-btn:hover:not(:disabled) {
+  border-color: #3a3a3a;
+  color: #aaa;
+}
+.freq-btn-presente {
+  background: #22c55e22 !important;
+  border-color: #22c55e !important;
+  color: #22c55e !important;
+}
+.freq-btn-falta {
+  background: #ef444422 !important;
+  border-color: #ef4444 !important;
+  color: #ef4444 !important;
+}
+.freq-btn:disabled {
+  cursor: default;
+  opacity: 0.7;
+}
+.aviso-permissao-freq {
+  background: #f59e0b18;
+  border: 1px solid #f59e0b44;
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: 13px;
+  color: #f59e0b;
+  margin-bottom: 16px;
+}
+
+/* ===========================
+   RELATÓRIOS
+   =========================== */
+.relatorio-turma-card {
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 18px;
+  transition: box-shadow 0.2s;
+}
+.relatorio-turma-card:hover {
+  box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+}
+.relatorio-turma-header {
+  background: #1f1f1f;
+  border-bottom: 1px solid #2a2a2a;
+  padding: 14px 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.relatorio-turma-header strong {
+  color: #fff;
+  font-size: 16px;
+}
+.relatorio-alunos-lista {
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.relatorio-aluno-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.relatorio-aluno-nome {
+  flex: 1;
+  font-size: 13px;
+  color: #ccc;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.relatorio-barra-container {
+  width: 160px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  height: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.relatorio-barra {
+  height: 8px;
+  border-radius: 6px;
+  transition: width 0.4s ease;
+}
+.relatorio-pct {
+  font-size: 13px;
+  font-weight: 700;
+  min-width: 50px;
+  text-align: right;
+}
+
+/* Filtros da tela de relatório */
+.relatorio-filtros {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  background: #181818;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+}
+</style>

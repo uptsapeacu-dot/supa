@@ -9,6 +9,7 @@ function aplicarVisibilidadeSidebar() {
     matriculas: document.getElementById('menu-matriculas'),
     alunos: document.getElementById('menu-alunos'),
     permissoes: document.getElementById('menu-permissoes'),
+    relatorios: document.getElementById('menu-relatorios'),
     perfil: document.getElementById('menu-perfil')
   }
 
@@ -48,6 +49,12 @@ function aplicarVisibilidadeSidebar() {
   if (menus.permissoes && podeVerPermissoes()) {
     menus.permissoes.style.display = 'flex'
   }
+
+  // Relatórios: visível para nível 1, 2 e 3 com pode_turmas
+  const podeVerRelatorios = usuarioNivel1() || usuarioNivel2() || acessosAtual.some(function(a) {
+    return a.nivel === 3 && a.pode_turmas === true && a.ativo
+  })
+  if (menus.relatorios) menus.relatorios.style.display = podeVerRelatorios ? 'flex' : 'none'
 }
 
 function toggleSidebar() {
@@ -75,6 +82,7 @@ function mostrarTela(tela) {
     'matriculas',
     'alunos',
     'permissoes',
+    'relatorios',
     'perfil'
   ]
 
@@ -116,6 +124,9 @@ function mostrarTela(tela) {
   }
   if (tela === 'mural') {
     carregarDadosMural()
+  }
+  if (tela === 'relatorios') {
+    carregarRelatorios()
   }
   fecharSidebarMobile()
 }

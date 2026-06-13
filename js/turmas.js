@@ -119,8 +119,14 @@ async function carregarTurmasDaTela() {
     item.appendChild(header);
     item.appendChild(details);
     
-    // Ao clicar no card inteiro, poderemos mandar o usuário para a tela de Alunos daquela turma futuramente
-    item.onclick = function() { alert('Turma: ' + turma.nome + '\nAqui abriremos a lista de chamada/matrículas num futuro próximo!') };
+    // Ao clicar no card, abre o modal de frequência da turma
+    item.onclick = function() {
+      if (!podeVerFrequencia()) {
+        alert('Você não tem permissão para acessar a frequência desta turma.');
+        return;
+      }
+      abrirFrequenciaTurma(turma.id, turma.nome);
+    };
 
     lista.appendChild(item);
   });
