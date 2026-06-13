@@ -379,20 +379,60 @@
 
   <!-- MODAL FUNCIONÁRIO -->
   <div class="modal" id="modalFuncionario">
-    <div class="modal-box">
-      <div class="modal-topo">
+    <div class="modal-box" style="max-width: 560px; max-height: 90vh; overflow-y: auto;">
+      <div class="modal-topo" style="position: sticky; top: 0; background: #181818; z-index: 10; padding-bottom: 12px; border-bottom: 1px solid #2a2a2a;">
         <h2 id="tituloModalFuncionario">Novo Funcionário</h2>
         <button class="fechar" onclick="fecharModalFuncionario()" aria-label="Fechar modal">×</button>
       </div>
-      <input type="text" id="nomeFuncionario" placeholder="Nome do funcionário" />
-      <input type="email" id="emailFuncionario" placeholder="Email" />
-      <input type="text" id="telefoneFuncionario" placeholder="Telefone" />
-      <input type="text" id="cpfFuncionario" placeholder="CPF" />
-      
-     
 
+      <div class="form-section-title" style="margin-top: 16px;">Dados Pessoais</div>
+      <div class="form-grid-2">
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Nome Completo *</label>
+          <input type="text" id="nomeFuncionario" placeholder="Nome completo" style="margin:0;" />
+        </div>
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">CPF</label>
+          <input type="text" id="cpfFuncionario" placeholder="000.000.000-00" style="margin:0;" />
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Email *</label>
+          <input type="email" id="emailFuncionario" placeholder="email@exemplo.com" style="margin:0;" />
+        </div>
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Telefone</label>
+          <input type="text" id="telefoneFuncionario" placeholder="(00) 00000-0000" style="margin:0;" />
+        </div>
+      </div>
+      <div class="form-grid-2">
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Data de Nascimento</label>
+          <input type="date" id="nascimentoFuncionario" style="margin:0;" />
+        </div>
+        <div>
+          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Status</label>
+          <select id="statusFuncionario" style="margin:0;">
+            <option value="ativo">✅ Ativo</option>
+            <option value="afastado">⚠️ Afastado</option>
+            <option value="desligado">🔴 Desligado</option>
+          </select>
+        </div>
+      </div>
 
-      <label style="display:block; margin-top:12px; margin-bottom:4px; font-size:13px; color:#aaa; text-align:left;">Cargo / Função</label>
+      <div class="form-section-title">Formação e Endereço</div>
+      <div>
+        <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Formação Acadêmica</label>
+        <input type="text" id="formacaoFuncionario" placeholder="Ex: Licenciatura em Pedagogia, Ensino Médio..." style="margin:0 0 12px 0;" />
+      </div>
+      <div>
+        <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Endereço</label>
+        <input type="text" id="enderecoFuncionario" placeholder="Rua, número, bairro, cidade" style="margin:0 0 12px 0;" />
+      </div>
+
+      <div class="form-section-title">Cargo e Vínculo</div>
+      <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Cargo / Função</label>
       <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
         <select id="cargoFuncionario" style="flex: 1; margin: 0;"></select>
         <button type="button" id="btnNovoCargo" onclick="adicionarNovoCargo()" style="display:none; padding: 12px 16px; border-radius: 10px; background: #3ea6ff; color: #000; font-weight: bold; cursor: pointer; border: none; font-size: 18px; line-height: 1;" title="Cadastrar novo cargo no sistema">+</button>
