@@ -41,8 +41,7 @@ async function carregarTurmasDaTela() {
 
   const btnNovaTurma = document.getElementById('btnNovaTurma');
   if (btnNovaTurma) {
-    // Mostra o botão sempre que tiver permissão (igual alunos e funcionários)
-    btnNovaTurma.style.display = temPermissaoEdicao ? 'block' : 'none';
+    btnNovaTurma.style.display = (modoEdicaoAtivo && temPermissaoEdicao) ? 'block' : 'none';
   }
 
   if (error || !data || data.length === 0) {

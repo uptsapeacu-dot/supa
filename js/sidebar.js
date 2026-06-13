@@ -116,6 +116,9 @@ function mostrarTela(tela) {
   if (tela === 'alunos') {
     carregarAlunos()
   }
+  if (tela === 'turmas') {
+    carregarTurmasDaTela()
+  }
   if (tela === 'funcionarios') {
     carregarFuncionariosDaTela()
   }

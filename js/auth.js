@@ -205,6 +205,7 @@ function atualizarInterfaceModo() {
   if (telaAtual) {
     const telaId = telaAtual.id.replace('menu-', '')
     if (telaId === 'home') renderizarEscolas()
+    else if (telaId === 'turmas') carregarTurmasDaTela()
     else if (telaId === 'alunos') renderizarAlunos()
     else if (telaId === 'funcionarios') carregarFuncionariosDaTela()
     else if (telaId === 'permissoes') renderizarPermissoes()
