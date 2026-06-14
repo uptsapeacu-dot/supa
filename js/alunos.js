@@ -196,7 +196,28 @@ function preencherSeletorEscolaAluno(escolaPreSelecionada) {
 // ==========================================
 // MODAL: ABRIR / FECHAR / LIMPAR
 // ==========================================
-function abrirModalAluno() {
+async function carregarTurmasDoSeletorAluno(turmaIdSelecionada) {
+  const select = document.getElementById('turmaIdAluno')
+  if (!select) return
+  const escolaId = escolaAtual || document.getElementById('escolaDoAluno')?.value
+  select.innerHTML = '<option value="">-- Sem turma vinculada --</option>'
+  if (!escolaId) return
+  const { data } = await clienteSupabase
+    .from('turmas')
+    .select('id, nome, ano_letivo, turno')
+    .eq('escola_id', escolaId)
+    .eq('ativo', true)
+    .order('nome', { ascending: true })
+  ;(data || []).forEach(function(t) {
+    const opt = document.createElement('option')
+    opt.value = t.id
+    opt.textContent = t.nome + ' (' + t.turno + ' — ' + t.ano_letivo + ')'
+    if (t.id === turmaIdSelecionada) opt.selected = true
+    select.appendChild(opt)
+  })
+}
+
+async function abrirModalAluno() {
   if (!usuarioNivel1() && !escolaAtual) {
     alert('Selecione uma escola antes de cadastrar alunos')
     return
@@ -205,6 +226,7 @@ function abrirModalAluno() {
   document.getElementById('tituloModal').innerText = 'Cadastro de Aluno'
   limparCamposModalAluno()
   preencherSeletorEscolaAluno(null)
+  await carregarTurmasDoSeletorAluno(null)
   document.getElementById('modalAluno').style.display = 'flex'
   document.getElementById('nomeAluno').focus()
 }
@@ -259,6 +281,8 @@ function limparCamposModalAluno() {
 
   document.getElementById('transporteAluno').checked = false
   document.querySelectorAll('[data-grupo]').forEach(function(el) { el.checked = false })
+  const selTurma = document.getElementById('turmaIdAluno')
+  if (selTurma) selTurma.value = ''
 }
 
 // ==========================================
@@ -346,6 +370,7 @@ function editarAluno(aluno) {
   definirCheckboxes('deficiencia', dados.deficiencia_tipos)
 
   preencherSeletorEscolaAluno(aluno.escola_id)
+  await carregarTurmasDoSeletorAluno(aluno.turma_id || null)
   document.getElementById('modalAluno').style.display = 'flex'
   document.getElementById('nomeAluno').focus()
 }
@@ -429,6 +454,8 @@ async function salvarAluno() {
     deficiencia_tipos: coletarCheckboxes('deficiencia')
   }
 
+  const turmaIdSelecionada = document.getElementById('turmaIdAluno')?.value || null
+
   const dadosAluno = {
     nome: nome,
     telefone: document.getElementById('telefoneAluno').value.trim(),
@@ -436,6 +463,7 @@ async function salvarAluno() {
     serie: document.getElementById('serieAluno').value.trim(),
     data_nascimento: document.getElementById('nascimentoAluno').value || null,
     escola_id: escolaId,
+    turma_id: turmaIdSelecionada || null,
     dados_matricula: pacoteDeDados
   }
 

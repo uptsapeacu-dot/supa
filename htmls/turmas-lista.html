@@ -1,79 +1,7 @@
-<style>
-.turmas-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
-}
-.turma-card {
-  background: #181818;
-  border: 1px solid #2a2a2a;
-  border-radius: 12px;
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-.turma-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  border-color: #3ea6ff;
-}
-.turma-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-.turma-header h3 {
-  margin: 0;
-  font-size: 18px;
-  color: #fff;
-}
-.turma-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  background: #3ea6ff22;
-  color: #3ea6ff;
-}
-.turma-details {
-  font-size: 13px;
-  color: #aaa;
-  line-height: 1.5;
-  background: #222;
-  padding: 10px;
-  border-radius: 8px;
-}
-.professores-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 8px;
-}
-.prof-tag {
-  background: #333;
-  color: #ddd;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.prof-tag-remove {
-  cursor: pointer;
-  color: #ff5b5b;
-  font-weight: bold;
-}
-</style>
-
+<!-- CABEÇALHO DA TELA DE TURMAS -->
 <div class="page-header">
   <h1>Turmas</h1>
   <div style="display:flex; gap:8px; align-items:center;">
-    <!-- Botão de adicionar turma (será exibido via JS se tiver permissão de edição) -->
     <button class="btn-add btn-modo-edicao-somente" id="btnNovaTurma" onclick="abrirModalTurma()" title="Criar nova turma" style="display: none;">+</button>
   </div>
 </div>
@@ -95,7 +23,101 @@
   <!-- JS vai injetar os cards das turmas aqui -->
 </div>
 
-<!-- MODAL DE TURMA -->
+<!-- ============================================
+     HUB DE TURMA (painel com abas)
+     ============================================ -->
+<div class="hub-overlay" id="hubTurmaOverlay" onclick="fecharHubTurma(event)">
+  <div class="hub-panel" onclick="event.stopPropagation()">
+    <!-- TOPO FIXO -->
+    <div class="hub-topo">
+      <div class="hub-topo-row">
+        <div>
+          <h2 id="hubTurmaNome">Turma</h2>
+          <p id="hubTurmaInfo"></p>
+        </div>
+        <button class="fechar" onclick="fecharHubTurma()" aria-label="Fechar">×</button>
+      </div>
+      <!-- ABAS -->
+      <div class="hub-abas">
+        <button class="hub-aba-btn ativa" id="aba-materias"   onclick="abrirAbaTurma('materias')">📚 Matérias</button>
+        <button class="hub-aba-btn"       id="aba-alunos"     onclick="abrirAbaTurma('alunos')">👥 Alunos</button>
+        <button class="hub-aba-btn"       id="aba-frequencia" onclick="abrirAbaTurma('frequencia')">📅 Frequência</button>
+        <button class="hub-aba-btn"       id="aba-notas"      onclick="abrirAbaTurma('notas')">📊 Notas</button>
+      </div>
+    </div>
+
+    <!-- CORPO DAS ABAS -->
+    <div class="hub-corpo">
+
+      <!-- ABA: MATÉRIAS -->
+      <div id="conteudo-materias">
+        <!-- Formulário de nova matéria (modo edição) -->
+        <div id="formMateria" class="materia-form" style="display:none;">
+          <div class="materia-form-titulo">➕ Nova Matéria</div>
+          <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
+            <div>
+              <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Nome da Matéria *</label>
+              <input type="text" id="inputNomeMateria" placeholder="Ex: Matemática, Português..." style="margin:0;" />
+            </div>
+            <div>
+              <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Professor Responsável</label>
+              <select id="selectProfMateria" style="margin:0;"><option value="">-- Selecione --</option></select>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-login" onclick="salvarMateria()" style="width:auto;padding:10px 20px;margin:0;">Salvar Matéria</button>
+            <button class="btn-clear" onclick="cancelarFormMateria()" style="width:auto;padding:10px 16px;">Cancelar</button>
+          </div>
+        </div>
+
+        <!-- Botão adicionar (modo edição) -->
+        <div id="btnAdicionarMateriaWrap" style="display:none; margin-bottom:14px;">
+          <button class="btn-add" onclick="abrirFormMateria()" title="Adicionar matéria" style="width:auto;padding:8px 16px;font-size:14px;border-radius:10px;">+ Adicionar Matéria</button>
+        </div>
+
+        <!-- Lista de matérias -->
+        <div id="listaMateriasTurma">
+          <div class="hub-empty">Carregando matérias...</div>
+        </div>
+      </div>
+
+      <!-- ABA: ALUNOS -->
+      <div id="conteudo-alunos" style="display:none;">
+        <div id="listaAlunosTurmaHub">
+          <div class="hub-empty">Carregando alunos...</div>
+        </div>
+      </div>
+
+      <!-- ABA: FREQUÊNCIA -->
+      <div id="conteudo-frequencia" style="display:none;">
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:16px;">
+          <input type="date" id="dataFrequenciaHub" style="margin:0;padding:8px 12px;width:auto;" />
+          <button class="btn-clear" onclick="carregarFrequenciaHub()">🔄 Carregar</button>
+        </div>
+        <div id="avisoPermissaoFreqHub" class="aviso-permissao-freq" style="display:none;margin-bottom:12px;"></div>
+        <div id="listaFrequenciaHub" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <button class="btn-login" id="btnSalvarFrequenciaHub" onclick="salvarFrequenciaHub()" style="margin-top:20px;display:none;">💾 Salvar Frequência</button>
+      </div>
+
+      <!-- ABA: NOTAS -->
+      <div id="conteudo-notas" style="display:none;">
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
+          <span style="font-size:13px;color:#aaa;">Clique no cabeçalho da matéria para expandir e lançar notas por unidade.</span>
+          <button class="btn-clear" onclick="carregarNotasHub()" style="margin-left:auto;">🔄 Atualizar</button>
+          <button class="btn-login" id="btnSalvarNotasHub" onclick="salvarNotasHub()" style="display:none;width:auto;padding:8px 20px;margin:0;">💾 Salvar Notas</button>
+        </div>
+        <div id="listaNotesTurmaHub">
+          <div class="hub-empty">Carregando notas...</div>
+        </div>
+      </div>
+
+    </div><!-- fim hub-corpo -->
+  </div><!-- fim hub-panel -->
+</div><!-- fim hub-overlay -->
+
+<!-- ============================================
+     MODAL DE TURMA (criar/editar)
+     ============================================ -->
 <div class="modal" id="modalTurma">
   <div class="modal-box" style="max-width: 500px;">
     <div class="modal-topo">
@@ -132,15 +154,11 @@
     <!-- SESSÃO DE MULTIPLOS PROFESSORES -->
     <div style="background: #1f1f1f; padding: 12px; border-radius: 8px; border: 1px solid #333; margin-bottom: 16px;">
       <label style="font-size: 13px; color: #fff; font-weight: bold; display: block; margin-bottom: 8px;">👨‍🏫 Professores da Turma</label>
-      
       <div style="display: flex; gap: 8px; margin-bottom: 8px;">
         <select id="selectProfessorTurma" style="flex: 1; margin: 0;"></select>
         <button class="btn-login" onclick="adicionarProfessorNaTag()" style="width: auto; margin: 0; padding: 0 16px;">Adicionar</button>
       </div>
-      
-      <div class="professores-tags" id="tagsProfessores">
-        <!-- Tags com os nomes dos professores vão aparecer aqui -->
-      </div>
+      <div class="professores-tags" id="tagsProfessores"></div>
     </div>
 
     <button class="btn-login" id="btnSalvarTurma" onclick="salvarTurma()">Salvar Turma</button>

@@ -568,6 +568,11 @@
         fecharModalMovimentacoes()
         cancelarModoEdicao()
         fecharSidebarMobile()
+        // Fecha o hub de turma se estiver aberto
+        const hubOverlay = document.getElementById('hubTurmaOverlay')
+        if (hubOverlay && hubOverlay.classList.contains('aberto')) {
+          hubOverlay.classList.remove('aberto')
+        }
       }
     })
   </script>
