@@ -806,6 +806,11 @@ async function abrirModalTurma() {
   document.getElementById('anoTurma').value = new Date().getFullYear();
   document.getElementById('turnoTurma').value = 'Matutino';
   document.getElementById('capacidadeTurma').value = 30;
+  
+  // Oculta matérias em novas turmas
+  const secaoMat = document.getElementById('secaoMateriasModalTurma');
+  if (secaoMat) secaoMat.style.display = 'none';
+
   renderizarTagsProfessores();
   await carregarListaDeProfessoresNoSelect();
   document.getElementById('modalTurma').style.display = 'flex';
@@ -826,6 +831,15 @@ async function editarTurma(turma) {
       professoresSelecionados.push({ id: tp.vinculo_id, nome: nomeProf });
     });
   }
+
+  // Exibe e carrega as matérias da turma no modal
+  const secaoMat = document.getElementById('secaoMateriasModalTurma');
+  if (secaoMat) {
+    secaoMat.style.display = 'block';
+    await carregarListaDeProfessoresNoSelectModalMateria();
+    await carregarMateriasNoModalTurma();
+  }
+
   renderizarTagsProfessores();
   await carregarListaDeProfessoresNoSelect();
   document.getElementById('modalTurma').style.display = 'flex';
@@ -887,4 +901,119 @@ async function excluirTurma(id) {
 
 function fecharModalTurma() {
   document.getElementById('modalTurma').style.display = 'none';
+}
+
+async function carregarListaDeProfessoresNoSelectModalMateria() {
+  const select = document.getElementById('selectProfMateriaModal');
+  if (!select) return;
+  select.innerHTML = '<option value="">Carregando professores...</option>';
+
+  const { data: orgaoData } = await clienteSupabase
+    .from('orgaos')
+    .select('id')
+    .eq('escola_id', escolaAtual)
+    .eq('tipo', 'escola')
+    .eq('ativo', true)
+    .maybeSingle();
+
+  let orgaoId = orgaoData?.id;
+  if (!orgaoId) {
+    const { data: fallback } = await clienteSupabase
+      .from('orgaos').select('id')
+      .eq('escola_id', escolaAtual).eq('ativo', true).limit(1).maybeSingle();
+    orgaoId = fallback?.id;
+  }
+
+  if (!orgaoId) {
+    select.innerHTML = '<option value="">Nenhum órgão encontrado</option>';
+    return;
+  }
+
+  const { data, error } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .select('id, cargo, funcionarios(nome, email)')
+    .eq('orgao_id', orgaoId)
+    .eq('ativo', true);
+
+  if (error || !data || data.length === 0) {
+    select.innerHTML = '<option value="">-- Sem professor --</option>';
+    return;
+  }
+
+  select.innerHTML = '<option value="">-- Selecione o Professor --</option>';
+  data.forEach(v => {
+    if (!v.funcionarios) return;
+    const nome = v.funcionarios.nome || v.funcionarios.email;
+    const cargoExibido = v.cargo ? ` (${v.cargo})` : '';
+    select.innerHTML += `<option value="${v.id}">${nome}${cargoExibido}</option>`;
+  });
+}
+
+async function carregarMateriasNoModalTurma() {
+  const lista = document.getElementById('listaMateriasModalTurma');
+  if (!lista || !turmaEditandoId) return;
+  lista.innerHTML = '<div style="color: #aaa; font-size:13px; text-align:center; padding:10px;">Carregando matérias...</div>';
+
+  const { data, error } = await clienteSupabase
+    .from('materias_turmas')
+    .select('*, vinculos_funcionarios(funcionarios(nome))')
+    .eq('turma_id', turmaEditandoId)
+    .eq('ativo', true)
+    .order('nome', { ascending: true });
+
+  if (error || !data || data.length === 0) {
+    lista.innerHTML = '<div style="color: #666; font-size:13px; text-align:center; padding:10px;">Nenhuma matéria vinculada a esta turma ainda.</div>';
+    return;
+  }
+
+  lista.innerHTML = '';
+  data.forEach(mat => {
+    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || 'Sem professor';
+    const div = document.createElement('div');
+    div.style.cssText = 'display:flex; align-items:center; justify-content:space-between; padding:8px 10px; background:#181818; border:1px solid #2a2a2a; border-radius:6px;';
+    
+    div.innerHTML = `
+      <div style="display:flex; flex-direction:column; gap:2px;">
+        <span style="font-weight:500; color:#fff; font-size:13.5px;">${mat.nome}</span>
+        <span style="font-size:11.5px; color:#aaa;">👨‍🏫 ${nomeProf}</span>
+      </div>
+      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir Matéria" onclick="excluirMateriaPeloModal('${mat.id}')">🗑</button>
+    `;
+    lista.appendChild(div);
+  });
+}
+
+async function salvarMateriaPeloModal() {
+  const nome = document.getElementById('nomeMateriaModal').value.trim();
+  if (!nome) { alert('Digite o nome da matéria.'); return; }
+  const vinculoId = document.getElementById('selectProfMateriaModal').value || null;
+
+  const { error } = await clienteSupabase.from('materias_turmas').insert([{
+    turma_id: turmaEditandoId,
+    nome,
+    vinculo_id: vinculoId || null
+  }]);
+
+  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
+
+  document.getElementById('nomeMateriaModal').value = '';
+  document.getElementById('selectProfMateriaModal').value = '';
+  await carregarMateriasNoModalTurma();
+  
+  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
+  if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
+    await carregarMateriasTurma();
+  }
+}
+
+async function excluirMateriaPeloModal(materiaId) {
+  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
+  const { error } = await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', materiaId);
+  if (error) { alert('Erro ao excluir matéria: ' + error.message); return; }
+  await carregarMateriasNoModalTurma();
+  
+  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
+  if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
+    await carregarMateriasTurma();
+  }
 }

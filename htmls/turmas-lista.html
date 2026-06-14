@@ -161,6 +161,25 @@
       <div class="professores-tags" id="tagsProfessores"></div>
     </div>
 
+    <!-- SEÇÃO DE GESTÃO DE MATÉRIAS (Apenas no Modo Edição) -->
+    <div id="secaoMateriasModalTurma" style="background: #1f1f1f; padding: 12px; border-radius: 8px; border: 1px solid #333; margin-bottom: 16px; display: none;">
+      <label style="font-size: 13px; color: #fff; font-weight: bold; display: block; margin-bottom: 8px;">📚 Matérias da Turma</label>
+      
+      <!-- Formulário de Nova Matéria no Modal -->
+      <div id="formNovaMateriaModal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; padding: 10px; background: #121212; border-radius: 6px; border: 1px dashed #444;">
+        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+          <input type="text" id="nomeMateriaModal" placeholder="Nome da Matéria (Ex: Português)" style="margin: 0; flex: 1; min-width: 150px;" />
+          <select id="selectProfMateriaModal" style="margin: 0; flex: 1; min-width: 150px;"></select>
+        </div>
+        <button class="btn-login" onclick="salvarMateriaPeloModal()" style="width: auto; margin: 0; padding: 8px 16px; font-size: 13px; align-self: flex-start;">+ Adicionar Matéria</button>
+      </div>
+
+      <!-- Lista de Matérias Atuais -->
+      <div id="listaMateriasModalTurma" style="display: flex; flex-direction: column; gap: 6px; max-height: 180px; overflow-y: auto;">
+        <!-- Injetado via JS -->
+      </div>
+    </div>
+
     <button class="btn-login" id="btnSalvarTurma" onclick="salvarTurma()">Salvar Turma</button>
   </div>
 </div>

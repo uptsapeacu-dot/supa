@@ -220,7 +220,7 @@ async function carregarTurmasDoSeletorAluno(turmaIdSelecionada) {
     const opt = document.createElement('option')
     opt.value = t.id
     opt.textContent = t.nome + ' (' + t.turno + ' — ' + t.ano_letivo + ')'
-    if (t.id === turmaIdSelecionada) opt.selected = true
+    if (t.id && turmaIdSelecionada && String(t.id) === String(turmaIdSelecionada)) opt.selected = true
     select.appendChild(opt)
   })
 }
