@@ -25,17 +25,19 @@ input,
 select {
   width: 100%;
   padding: 13px 14px;
-  border: 1px solid #3f3f3f;
+  border: 1px solid #2a2a2a;
   border-radius: 10px;
   background: #121212;
   color: #f1f1f1;
   outline: none;
   font-size: 15px;
+  transition: all 0.2s ease;
 }
 
 input:focus,
 select:focus {
   border-color: #3ea6ff;
+  box-shadow: 0 0 0 2px rgba(62, 166, 255, 0.2);
 }
 /* Lucide Icons - Cards */
 .home-card .icon svg {

@@ -104,12 +104,22 @@ function renderizarAlunos() {
 
     const detalhes = document.createElement('div')
     detalhes.className = 'aluno-info'
-    detalhes.innerHTML =
-      'Telefone: ' + textoOuVazio(aluno.telefone) + '<br>' +
-      'Email: ' + textoOuVazio(aluno.email) + '<br>' +
-      'Endereço: ' + textoOuVazio(aluno.endereco) + '<br>' +
-      'Série: ' + textoOuVazio(aluno.serie) + '<br>' +
-      'Nascimento: ' + formatarDataBR(aluno.data_nascimento)
+    
+    let infoHtml = ''
+    if (aluno.telefone && aluno.telefone.trim() !== '' && aluno.telefone.trim() !== '-') {
+      infoHtml += '<strong>Telefone:</strong> ' + aluno.telefone.trim() + '<br>'
+    }
+    if (aluno.email && aluno.email.trim() !== '' && aluno.email.trim() !== '-') {
+      infoHtml += '<strong>Email:</strong> ' + aluno.email.trim() + '<br>'
+    }
+    if (aluno.endereco && aluno.endereco.trim() !== '' && aluno.endereco.trim() !== '-') {
+      infoHtml += '<strong>Endereço:</strong> ' + aluno.endereco.trim() + '<br>'
+    }
+    if (aluno.serie && aluno.serie.trim() !== '' && aluno.serie.trim() !== '-') {
+      infoHtml += '<strong>Série:</strong> ' + aluno.serie.trim() + '<br>'
+    }
+    
+    detalhes.innerHTML = infoHtml
 
     info.appendChild(nome)
     info.appendChild(detalhes)
@@ -120,8 +130,7 @@ function renderizarAlunos() {
 
     if (temPermissaoEdicao || usuarioNivel1()) {
       const btnImprimir = document.createElement('button')
-      btnImprimir.className = 'btn-editar'
-      btnImprimir.style.cssText = 'background:transparent;color:#3ea6ff;'
+      btnImprimir.className = 'btn-imprimir-card'
       btnImprimir.title = 'Imprimir Ficha Oficial'
       btnImprimir.type = 'button'
       btnImprimir.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>'
@@ -139,8 +148,7 @@ function renderizarAlunos() {
       actionsDiv.appendChild(btnEditar)
 
       const btnExcluir = document.createElement('button')
-      btnExcluir.className = 'btn-editar'
-      btnExcluir.style.cssText = 'background:#ff5b5b;color:#120000;'
+      btnExcluir.className = 'btn-excluir-card'
       btnExcluir.title = 'Excluir aluno'
       btnExcluir.type = 'button'
       btnExcluir.textContent = '🗑'

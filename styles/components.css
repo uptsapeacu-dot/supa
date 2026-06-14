@@ -116,42 +116,108 @@ h1 {
 .item-aluno {
   background: #181818;
   border: 1px solid #2a2a2a;
-  padding: 16px;
-  border-radius: 12px;
+  padding: 20px;
+  border-radius: 14px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 15px;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.item-aluno:hover {
+  transform: translateY(-2px);
+  border-color: #3ea6ff44;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 .item-aluno strong {
   color: #fff;
-  font-size: 16px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
 .aluno-info {
-  margin-top: 6px;
-  color: #aaa;
-  line-height: 1.5;
-  font-size: 14px;
+  margin-top: 8px;
+  color: #999;
+  line-height: 1.6;
+  font-size: 13.5px;
+}
+
+.aluno-info strong {
+  color: #ccc;
+  font-weight: 500;
+  font-size: 13.5px;
 }
 
 .btn-editar {
-  width: 42px;
-  height: 42px;
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
   background: #272727;
   color: #fff;
-  font-size: 18px;
+  font-size: 16px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+  border: 1px solid #3a3a3a;
+  transition: all 0.2s ease;
+  cursor: pointer;
 }
 
 .btn-editar:hover {
   background: #3ea6ff;
   color: #050505;
+  border-color: #3ea6ff;
+  transform: scale(1.05);
+}
+
+.btn-imprimir-card {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #1a2333;
+  color: #3ea6ff;
+  font-size: 16px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #223554;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-imprimir-card:hover {
+  background: #3ea6ff;
+  color: #050505;
+  border-color: #3ea6ff;
+  transform: scale(1.05);
+}
+
+.btn-excluir-card {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #2d1919;
+  color: #ff5b5b;
+  font-size: 16px;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #542222;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.btn-excluir-card:hover {
+  background: #ff5b5b;
+  color: #120000;
+  border-color: #ff5b5b;
+  transform: scale(1.05);
 }
 
 .empty-state {
