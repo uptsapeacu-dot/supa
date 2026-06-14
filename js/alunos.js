@@ -288,7 +288,7 @@ function limparCamposModalAluno() {
 // ==========================================
 // EDITAR ALUNO
 // ==========================================
-function editarAluno(aluno) {
+async function editarAluno(aluno) {
   alunoEditando = aluno.id
   document.getElementById('tituloModal').innerText = 'Editar Aluno'
 
