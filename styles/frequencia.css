@@ -425,3 +425,23 @@
 .nota-aprovado { color: #22c55e; }
 .nota-reprovado { color: #ff5b5b; }
 .nota-pendente { color: #888; }
+
+/* Botão de imprimir boletim individual por aluno */
+.btn-imprimir-boletim {
+  background: transparent;
+  border: 1px solid #3ea6ff44;
+  color: #3ea6ff;
+  padding: 4px 10px;
+  border-radius: 7px;
+  font-size: 12px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.18s, border-color 0.18s, color 0.18s;
+  font-family: inherit;
+}
+.btn-imprimir-boletim:hover {
+  background: #3ea6ff18;
+  border-color: #3ea6ff;
+  color: #fff;
+}
+

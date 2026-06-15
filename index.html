@@ -496,6 +496,7 @@
   <!-- Os modais pesados vão ser carregados dinamicamente aqui -->
   <div id="container-modal-aluno"></div>
   <div id="container-ficha-impressao"></div>
+  <div id="container-boletim-impressao"></div>
 
   
   <!-- MODAL FREQUÊNCIA -->
@@ -611,6 +612,10 @@
         // Cola o conteúdo deles nas caixas vazias do index
         document.getElementById('container-modal-aluno').innerHTML = await resModal.text();
         document.getElementById('container-ficha-impressao').innerHTML = await resFicha.text();
+
+        // Carrega o boletim escolar
+        const resBoletim = await fetch('htmls/boletim-impressao.html');
+        document.getElementById('container-boletim-impressao').innerHTML = await resBoletim.text();
 
         // Cola a tela de funcionários na seção vazia
         document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();

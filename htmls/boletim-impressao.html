@@ -1,0 +1,75 @@
+﻿<div id="boletimImpressao" style="display:none;">
+
+  <!-- ===== CABECALHO COM LOGOS ===== -->
+  <div class="boletim-header">
+    <img src="img/logo-prefeitura.png" alt="Prefeitura de Sapeacu">
+    <div class="boletim-title">
+      <h1>Boletim Escolar</h1>
+      <h2 id="boletimAnoLetivo">Ano Letivo 2026</h2>
+    </div>
+    <img src="img/logo-secretaria.png" alt="Secretaria Municipal de Educacao">
+  </div>
+
+  <!-- ===== DADOS DA ESCOLA E DO ALUNO ===== -->
+  <div class="boletim-info-bloco">
+    <div class="boletim-info-linha">
+      <div class="boletim-info-campo" style="flex:3;">
+        <span class="boletim-label">Unidade Escolar</span>
+        <strong id="boletimEscola" class="boletim-valor"></strong>
+      </div>
+      <div class="boletim-info-campo">
+        <span class="boletim-label">Turno / Ano Letivo</span>
+        <span id="boletimTurmaInfo" class="boletim-valor"></span>
+      </div>
+      <div class="boletim-info-campo">
+        <span class="boletim-label">Turma</span>
+        <span id="boletimTurma" class="boletim-valor"></span>
+      </div>
+    </div>
+    <div class="boletim-info-linha">
+      <div class="boletim-info-campo" style="flex:1;">
+        <span class="boletim-label">Nome do(a) Aluno(a)</span>
+        <strong id="boletimNomeAluno" class="boletim-valor"></strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TABELA DE NOTAS DETALHADA ===== -->
+  <table class="boletim-tabela" id="boletimTabela">
+    <thead>
+      <tr class="boletim-thead-grupo">
+        <th rowspan="2" class="boletim-th-disciplina">Disciplina</th>
+        <th colspan="4" class="boletim-th-unidade">1a Unidade</th>
+        <th colspan="4" class="boletim-th-unidade">2a Unidade</th>
+        <th colspan="4" class="boletim-th-unidade">3a Unidade</th>
+        <th rowspan="2" class="boletim-th-final">Media Final</th>
+        <th rowspan="2" class="boletim-th-situacao">Situacao</th>
+      </tr>
+      <tr class="boletim-thead-sub">
+        <th>N1</th><th>N2</th><th>N3</th><th class="boletim-th-med">Med.</th>
+        <th>N1</th><th>N2</th><th>N3</th><th class="boletim-th-med">Med.</th>
+        <th>N1</th><th>N2</th><th>N3</th><th class="boletim-th-med">Med.</th>
+      </tr>
+    </thead>
+    <tbody id="boletimTabelaCorpo">
+    </tbody>
+  </table>
+
+  <!-- ===== NOTA DE RODAPE ===== -->
+  <div class="boletim-rodape-nota">
+    <p>* Media de aprovacao: <strong>5,0</strong> &nbsp;|&nbsp; Avaliacoes: N1, N2 e N3 por unidade</p>
+  </div>
+
+  <!-- ===== ASSINATURAS ===== -->
+  <div class="boletim-assinaturas">
+    <div class="boletim-assinatura">
+      <div class="boletim-linha-assinatura"></div>
+      <div class="boletim-label-assinatura">Assinatura do(a) Diretor(a)</div>
+    </div>
+    <div class="boletim-assinatura">
+      <div class="boletim-linha-assinatura"></div>
+      <div class="boletim-label-assinatura">Assinatura do(a) Responsavel pelo Aluno</div>
+    </div>
+  </div>
+
+</div>

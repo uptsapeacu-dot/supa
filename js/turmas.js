@@ -4,6 +4,8 @@ let turmaEditandoId = null;
 // Estado do hub de turma
 let hubTurmaId = null;
 let hubTurmaNomeAtual = '';
+let hubEscolaNome = ''; // Nome da escola para o boletim
+let hubTurmaInfo = ''; // Turno e ano letivo para o boletim
 let hubAbaAtiva = 'materias';
 let hubMateriaEditandoId = null;
 let hubAlunosDaTurma = [];
@@ -133,8 +135,13 @@ async function abrirHubTurma(turma) {
   hubMateriaEditandoId = null;
   hubMateriaUnidadeAtiva = {};
 
+  // Captura nome da escola atual para o boletim
+  const badgeEscola = document.querySelector('.header-escola-nome');
+  hubEscolaNome = badgeEscola ? badgeEscola.innerText : '';
+  hubTurmaInfo = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
+
   document.getElementById('hubTurmaNome').innerText = turma.nome;
-  document.getElementById('hubTurmaInfo').innerText = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
+  document.getElementById('hubTurmaInfo').innerText = hubTurmaInfo;
 
   document.getElementById('hubTurmaOverlay').classList.add('aberto');
 
@@ -593,6 +600,18 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
     const mediaClass = media === null ? 'nota-pendente' : (media >= 5 ? 'nota-aprovado' : 'nota-reprovado');
     const mediaLabel = media === null ? '—' : (media >= 5 ? `${mediaStr} ✅` : `${mediaStr} ❌`);
 
+    // Calcula Média Final (média das médias de todas as 3 unidades)
+    const mU1 = hubNotasCache[materiaId]?.[1]?.[aluno.id]?.media;
+    const mU2 = hubNotasCache[materiaId]?.[2]?.[aluno.id]?.media;
+    const mU3 = hubNotasCache[materiaId]?.[3]?.[aluno.id]?.media;
+    const mFinals = [mU1, mU2, mU3].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
+    const mediaFinal = mFinals.length > 0 ? mFinals.reduce((s, v) => s + parseFloat(v), 0) / mFinals.length : null;
+    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : '—';
+    const mediaFinalClass = mediaFinal === null ? 'nota-pendente' : (mediaFinal >= 5 ? 'nota-aprovado' : 'nota-reprovado');
+    const mediaFinalLabel = mediaFinal === null ? '—' : (mediaFinal >= 5 ? `${mediaFinalStr} ✅` : `${mediaFinalStr} ❌`);
+
+    const nomeEscapado = (aluno.nome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
     linhas += `
       <tr>
         <td style="color:#fff;">${aluno.nome}</td>
@@ -612,6 +631,9 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           ${podeEditar ? '' : 'disabled'}
           oninput="recalcularMediaDOM('${materiaId}',${unidade},${aluno.id})" /></td>
         <td><span class="nota-media ${mediaClass}" id="media-${materiaId}-${unidade}-${aluno.id}">${mediaLabel}</span></td>
+        <td><span class="nota-media ${mediaFinalClass}" id="media-final-${materiaId}-${aluno.id}">${mediaFinalLabel}</span></td>
+        <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button"
+          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">🖨️ Boletim</button></td>
       </tr>`;
   });
 
@@ -624,6 +646,8 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           <th>Nota 2</th>
           <th>Nota 3</th>
           <th>Média ${unidade}ª Unid.</th>
+          <th>Média Final</th>
+          <th></th>
         </tr>
       </thead>
       <tbody>${linhas}</tbody>
@@ -646,6 +670,34 @@ function recalcularMediaDOM(materiaId, unidade, alunoId) {
     el.textContent = `${media.toFixed(1)} ✅`; el.className = 'nota-media nota-aprovado';
   } else {
     el.textContent = `${media.toFixed(1)} ❌`; el.className = 'nota-media nota-reprovado';
+  }
+
+  // Atualiza cache da média desta unidade para refletir no cálculo da Média Final
+  if (!hubNotasCache[materiaId]) hubNotasCache[materiaId] = {};
+  if (!hubNotasCache[materiaId][unidade]) hubNotasCache[materiaId][unidade] = {};
+  if (!hubNotasCache[materiaId][unidade][alunoId]) hubNotasCache[materiaId][unidade][alunoId] = {};
+  hubNotasCache[materiaId][unidade][alunoId].media = media;
+
+  // Atualiza célula de Média Final
+  recalcularMediaFinalDOM(materiaId, alunoId);
+}
+
+function recalcularMediaFinalDOM(materiaId, alunoId) {
+  const elFinal = document.getElementById(`media-final-${materiaId}-${alunoId}`);
+  if (!elFinal) return;
+
+  const mU1 = hubNotasCache[materiaId]?.[1]?.[alunoId]?.media;
+  const mU2 = hubNotasCache[materiaId]?.[2]?.[alunoId]?.media;
+  const mU3 = hubNotasCache[materiaId]?.[3]?.[alunoId]?.media;
+  const medias = [mU1, mU2, mU3].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
+  const mediaFinal = medias.length > 0 ? medias.reduce((s, v) => s + parseFloat(v), 0) / medias.length : null;
+
+  if (mediaFinal === null) {
+    elFinal.textContent = '—'; elFinal.className = 'nota-media nota-pendente';
+  } else if (mediaFinal >= 5) {
+    elFinal.textContent = `${mediaFinal.toFixed(1)} ✅`; elFinal.className = 'nota-media nota-aprovado';
+  } else {
+    elFinal.textContent = `${mediaFinal.toFixed(1)} ❌`; elFinal.className = 'nota-media nota-reprovado';
   }
 }
 
@@ -1009,3 +1061,78 @@ async function excluirMateriaPeloModal(materiaId) {
     await carregarMateriasTurma();
   }
 }
+
+// ====== IMPRESSÃO DO BOLETIM INDIVIDUAL ======
+
+async function imprimirBoletimAluno(alunoId, alunoNome) {
+  // Coleta os dados do DOM atual para garantir que o cache está atualizado
+  hubMateriasList.forEach(mat => {
+    [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
+  });
+
+  // Preenche o cabeçalho do boletim
+  const anoLetivo = new Date().getFullYear();
+  const elEscola = document.getElementById('boletimEscola');
+  const elTurma  = document.getElementById('boletimTurma');
+  const elAluno  = document.getElementById('boletimNomeAluno');
+  const elAno    = document.getElementById('boletimAnoLetivo');
+  const elInfo   = document.getElementById('boletimTurmaInfo');
+
+  if (elEscola) elEscola.textContent = hubEscolaNome || '—';
+  if (elTurma)  elTurma.textContent  = hubTurmaNomeAtual || '—';
+  if (elAluno)  elAluno.textContent  = alunoNome || '—';
+  if (elAno)    elAno.textContent    = `Ano Letivo ${anoLetivo}`;
+  if (elInfo)   elInfo.textContent   = hubTurmaInfo || '—';
+
+  // Monta a tabela do boletim
+  const corpo = document.getElementById('boletimTabelaCorpo');
+  if (!corpo) { alert('Template do boletim não encontrado.'); return; }
+  corpo.innerHTML = '';
+
+  const fmt = v => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v).toFixed(1) : '—';
+
+  hubMateriasList.forEach(mat => {
+    const u1 = hubNotasCache[mat.id]?.[1]?.[alunoId] || {};
+    const u2 = hubNotasCache[mat.id]?.[2]?.[alunoId] || {};
+    const u3 = hubNotasCache[mat.id]?.[3]?.[alunoId] || {};
+
+    const medias = [u1.media, u2.media, u3.media].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
+    const mediaFinal = medias.length > 0 ? medias.reduce((s, v) => s + parseFloat(v), 0) / medias.length : null;
+    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : '—';
+    const situacao = mediaFinal !== null ? (mediaFinal >= 5 ? 'APROVADO' : 'REPROVADO') : '—';
+    const situacaoClass = mediaFinal !== null ? (mediaFinal >= 5 ? 'boletim-aprovado' : 'boletim-reprovado') : '';
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="boletim-td-materia">${mat.nome}</td>
+      <td>${fmt(u1.nota1)}</td><td>${fmt(u1.nota2)}</td><td>${fmt(u1.nota3)}</td>
+      <td class="boletim-td-media">${fmt(u1.media)}</td>
+      <td>${fmt(u2.nota1)}</td><td>${fmt(u2.nota2)}</td><td>${fmt(u2.nota3)}</td>
+      <td class="boletim-td-media">${fmt(u2.media)}</td>
+      <td>${fmt(u3.nota1)}</td><td>${fmt(u3.nota2)}</td><td>${fmt(u3.nota3)}</td>
+      <td class="boletim-td-media">${fmt(u3.media)}</td>
+      <td class="boletim-td-final">${mediaFinalStr}</td>
+      <td class="boletim-td-situacao ${situacaoClass}">${situacao}</td>
+    `;
+    corpo.appendChild(tr);
+  });
+
+  // Exibe o template e imprime
+  const boletim = document.getElementById('boletimImpressao');
+  if (!boletim) { alert('Template do boletim não encontrado.'); return; }
+  document.body.appendChild(boletim);
+  boletim.style.display = 'block';
+
+  const tituloOriginal = document.title;
+  const nomeLimpo = (alunoNome || 'aluno').replace(/\s+/g, '_');
+  document.title = 'boletim_' + nomeLimpo;
+
+  window.onafterprint = function() {
+    boletim.style.display = 'none';
+    document.title = tituloOriginal;
+    window.onafterprint = null;
+  };
+
+  setTimeout(function() { window.print(); }, 300);
+}
+
