@@ -4,10 +4,10 @@ let turmaFrequenciaAtual = null;
 let turmaFrequenciaNome = '';
 let alunosDaTurmaFrequencia = [];
 
-// Verifica se usuário pode SUBMETER frequência (nível 3 com permissão de turmas, ou nível 1 e 2)
+// Verifica se usuário pode SUBMETER frequência (nível 1, 2 ou nível 3 com permissão de turmas)
 function podeLancarFrequencia() {
   if (!modoEdicaoAtivo) return false;
-  if (usuarioNivel1() || usuarioNivel2()) return false; // Níveis 1 e 2 só visualizam
+  if (usuarioNivel1() || usuarioNivel2()) return true;
   return acessosAtual.some(function(acesso) {
     return acesso.nivel === 3 && acesso.pode_turmas === true && acesso.ativo;
   });
@@ -55,7 +55,7 @@ async function carregarFrequenciaDoDia() {
   // Busca alunos da turma
   const { data: alunos, error: errAlunos } = await clienteSupabase
     .from('alunos')
-    .select('id, nome, foto_url')
+    .select('id, nome')
     .eq('turma_id', turmaFrequenciaAtual)
     .order('nome', { ascending: true });
 
@@ -88,7 +88,7 @@ async function carregarFrequenciaDoDia() {
       avisoPermissao.innerHTML = '🔒 Ative o <strong>Modo Edição</strong> e tenha nível 3 para lançar frequência.';
       avisoPermissao.style.display = 'block';
     } else if (!podeLancar) {
-      avisoPermissao.innerHTML = '👁️ Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
+      avisoPermissao.innerHTML = 'Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
       avisoPermissao.style.display = 'block';
     } else {
       avisoPermissao.style.display = 'none';
@@ -112,11 +112,7 @@ async function carregarFrequenciaDoDia() {
     item.className = 'freq-item';
     item.id = 'freq-item-' + aluno.id;
     item.innerHTML = `
-      <div class="freq-avatar">
-        ${aluno.foto_url
-          ? `<img src="${aluno.foto_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-          : iniciais}
-      </div>
+      <div class="freq-avatar">${iniciais}</div>
       <div class="freq-nome">${aluno.nome}</div>
       <div class="freq-toggle-group">
         <button

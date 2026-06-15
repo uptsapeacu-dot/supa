@@ -302,7 +302,7 @@ async function carregarAlunosDaTurmaHub() {
 
   const { data, error } = await clienteSupabase
     .from('alunos')
-    .select('id, nome, serie, foto_url')
+    .select('id, nome, serie')
     .eq('turma_id', hubTurmaId)
     .order('nome', { ascending: true });
 
@@ -323,11 +323,7 @@ async function carregarAlunosDaTurmaHub() {
     const div = document.createElement('div');
     div.className = 'hub-aluno-item';
     div.innerHTML = `
-      <div class="hub-aluno-avatar">
-        ${aluno.foto_url
-          ? `<img src="${aluno.foto_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-          : iniciais}
-      </div>
+      <div class="hub-aluno-avatar">${iniciais}</div>
       <span class="hub-aluno-nome">${aluno.nome}</span>
       <span class="hub-aluno-serie">${aluno.serie || ''}</span>
     `;
@@ -347,7 +343,7 @@ async function inicializarFrequenciaHub() {
       aviso.innerHTML = '🔒 Ative o <strong>Modo Edição</strong> e tenha nível 3 para lançar frequência.';
       aviso.style.display = 'block';
     } else if (!podeLancar) {
-      aviso.innerHTML = '👁️ Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
+      aviso.innerHTML = 'Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
       aviso.style.display = 'block';
     } else {
       aviso.style.display = 'none';
@@ -368,7 +364,7 @@ async function carregarFrequenciaHub() {
 
   const { data: alunos, error } = await clienteSupabase
     .from('alunos')
-    .select('id, nome, foto_url')
+    .select('id, nome')
     .eq('turma_id', hubTurmaId)
     .order('nome', { ascending: true });
 
@@ -400,11 +396,7 @@ async function carregarFrequenciaHub() {
     item.className = 'freq-item';
     item.id = 'freq-hub-item-' + aluno.id;
     item.innerHTML = `
-      <div class="freq-avatar">
-        ${aluno.foto_url
-          ? `<img src="${aluno.foto_url}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;">`
-          : iniciais}
-      </div>
+      <div class="freq-avatar">${iniciais}</div>
       <div class="freq-nome">${aluno.nome}</div>
       <div class="freq-toggle-group">
         <button class="freq-btn ${presente ? 'freq-btn-presente' : ''}"
