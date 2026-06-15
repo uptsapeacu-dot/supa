@@ -462,8 +462,7 @@ async function salvarAluno() {
     deficiencia_tipos: coletarCheckboxes('deficiencia')
   }
 
-  const turmaIdSelecionada = document.getElementById('turmaIdAluno')?.value
-  const turmaIdInt = (turmaIdSelecionada && turmaIdSelecionada !== '') ? parseInt(turmaIdSelecionada) : null
+  const turmaIdSelecionada = document.getElementById('turmaIdAluno')?.value || null
 
   const dadosAluno = {
     nome: nome,
@@ -472,7 +471,7 @@ async function salvarAluno() {
     serie: document.getElementById('serieAluno').value.trim(),
     data_nascimento: document.getElementById('nascimentoAluno').value || null,
     escola_id: escolaId,
-    turma_id: turmaIdInt,
+    turma_id: turmaIdSelecionada || null,
     dados_matricula: pacoteDeDados
   }
 
