@@ -39,10 +39,10 @@
       </div>
       <!-- ABAS -->
       <div class="hub-abas">
-        <button class="hub-aba-btn ativa" id="aba-materias"   onclick="abrirAbaTurma('materias')">📚 Matérias</button>
-        <button class="hub-aba-btn"       id="aba-alunos"     onclick="abrirAbaTurma('alunos')">👥 Alunos</button>
-        <button class="hub-aba-btn"       id="aba-frequencia" onclick="abrirAbaTurma('frequencia')">📅 Frequência</button>
-        <button class="hub-aba-btn"       id="aba-notas"      onclick="abrirAbaTurma('notas')">📊 Notas</button>
+        <button class="hub-aba-btn ativa" id="aba-materias"   onclick="abrirAbaTurma('materias')"><i data-lucide="book-open" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> Matérias</button>
+        <button class="hub-aba-btn"       id="aba-alunos"     onclick="abrirAbaTurma('alunos')"><i data-lucide="users" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> Alunos</button>
+        <button class="hub-aba-btn"       id="aba-frequencia" onclick="abrirAbaTurma('frequencia')"><i data-lucide="calendar" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> Frequência</button>
+        <button class="hub-aba-btn"       id="aba-notas"      onclick="abrirAbaTurma('notas')"><i data-lucide="bar-chart-2" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> Notas</button>
       </div>
     </div>
 
@@ -53,7 +53,7 @@
       <div id="conteudo-materias">
         <!-- Formulário de nova matéria (modo edição) -->
         <div id="formMateria" class="materia-form" style="display:none;">
-          <div class="materia-form-titulo">➕ Nova Matéria</div>
+          <div class="materia-form-titulo"><i data-lucide="plus" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i> Nova Matéria</div>
           <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:10px;">
             <div>
               <label style="font-size:12px;color:#aaa;display:block;margin-bottom:4px;">Nome da Matéria *</label>
@@ -153,7 +153,7 @@
 
     <!-- SESSÃO DE MULTIPLOS PROFESSORES -->
     <div style="background: #1f1f1f; padding: 12px; border-radius: 8px; border: 1px solid #333; margin-bottom: 16px;">
-      <label style="font-size: 13px; color: #fff; font-weight: bold; display: block; margin-bottom: 8px;">👨‍🏫 Professores da Turma</label>
+      <label style="font-size: 13px; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;"><i data-lucide="users" style="width:16px;height:16px;"></i> Professores da Turma</label>
       <div style="display: flex; gap: 8px; margin-bottom: 8px;">
         <select id="selectProfessorTurma" style="flex: 1; margin: 0;"></select>
         <button class="btn-login" onclick="adicionarProfessorNaTag()" style="width: auto; margin: 0; padding: 0 16px;">Adicionar</button>
@@ -163,7 +163,7 @@
 
     <!-- SEÇÃO DE GESTÃO DE MATÉRIAS (Apenas no Modo Edição) -->
     <div id="secaoMateriasModalTurma" style="background: #1f1f1f; padding: 12px; border-radius: 8px; border: 1px solid #333; margin-bottom: 16px; display: none;">
-      <label style="font-size: 13px; color: #fff; font-weight: bold; display: block; margin-bottom: 8px;">📚 Matérias da Turma</label>
+      <label style="font-size: 13px; color: #fff; font-weight: bold; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> Matérias da Turma</label>
       
       <!-- Formulário de Nova Matéria no Modal -->
       <div id="formNovaMateriaModal" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; padding: 10px; background: #121212; border-radius: 6px; border: 1px dashed #444;">

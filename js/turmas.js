@@ -110,9 +110,9 @@ async function carregarTurmasDaTela() {
     details.className = 'turma-details';
     details.innerHTML = `
       <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-        <span><strong>🎓 Lotação:</strong> ${capacidadeText}</span>
+        <span><strong><i data-lucide="graduation-cap" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Lotação:</strong> ${capacidadeText}</span>
       </div>
-      <div><strong>👨‍🏫 Corpo Docente:</strong> ${textoProfessores}</div>
+      <div><strong><i data-lucide="users" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Corpo Docente:</strong> ${textoProfessores}</div>
     `;
 
     item.appendChild(header);
@@ -225,7 +225,7 @@ async function carregarMateriasTurma() {
     div.className = 'materia-item';
     div.innerHTML = `
       <span class="materia-nome">${mat.nome}</span>
-      <span class="materia-prof">👨‍🏫 ${nomeProf}</span>
+      <span class="materia-prof"><i data-lucide="user" style="width:14px;height:14px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i>${nomeProf}</span>
     `;
 
     if (modoEdicaoAtivo && temPermissao) {
@@ -531,7 +531,7 @@ async function carregarNotasHub() {
     // Header da matéria
     const header = document.createElement('div');
     header.className = 'notas-materia-header';
-    header.innerHTML = `<span>📚 ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher ▾</span>`;
+    header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher ▾</span>`;
 
     const corpoBlocoId = 'corpo-materia-' + mat.id;
     header.onclick = () => {
