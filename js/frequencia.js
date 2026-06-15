@@ -84,15 +84,7 @@ async function carregarFrequenciaDoDia() {
   const btnSalvar = document.getElementById('btnSalvarFrequencia');
 
   if (avisoPermissao) {
-    if (!modoEdicaoAtivo) {
-      avisoPermissao.innerHTML = '🔒 Ative o <strong>Modo Edição</strong> e tenha nível 3 para lançar frequência.';
-      avisoPermissao.style.display = 'block';
-    } else if (!podeLancar) {
-      avisoPermissao.innerHTML = 'Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
-      avisoPermissao.style.display = 'block';
-    } else {
-      avisoPermissao.style.display = 'none';
-    }
+    avisoPermissao.style.display = 'none';
   }
 
   if (btnSalvar) btnSalvar.style.display = podeLancar ? 'block' : 'none';

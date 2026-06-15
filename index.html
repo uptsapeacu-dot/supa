@@ -103,6 +103,10 @@
           <span class="menu-icon"><i data-lucide="bar-chart-2"></i></span>
           <span class="menu-text">Relatórios</span>
         </button>
+        <button id="menu-diretrizes" onclick="mostrarTela('diretrizes')" title="Diretrizes do Sistema">
+          <span class="menu-icon"><i data-lucide="book-check"></i></span>
+          <span class="menu-text">Diretrizes</span>
+        </button>
         <button id="menu-financeiro" onclick="mostrarTela('financeiro')" title="Financeiro" style="display:none">
           <span class="menu-icon"><i data-lucide="wallet"></i></span>
           <span class="menu-text">Financeiro</span>
@@ -340,6 +344,11 @@
         <div id="relatorioConteudo">
           <div class="empty-state">Selecione uma escola no Início para ver os relatórios.</div>
         </div>
+      </section>
+
+      <!-- DIRETRIZES -->
+      <section id="diretrizes" style="display:none">
+        <!-- O arquivo diretrizes.html será injetado aqui -->
       </section>
 
     </main>
@@ -619,6 +628,10 @@
 
         // Cola a tela de funcionários na seção vazia
         document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();
+
+        // Carrega as diretrizes
+        const resDiretrizes = await fetch('htmls/diretrizes.html');
+        document.getElementById('diretrizes').innerHTML = await resDiretrizes.text();
 
         console.log("Componentes externos carregados com sucesso!");
       } catch (error) {

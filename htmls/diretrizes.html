@@ -1,0 +1,69 @@
+<div class="page-header">
+  <h1>Diretrizes do Sistema</h1>
+</div>
+<div class="diretrizes-layout" style="max-width: 800px; margin: 0 auto; padding: 20px;">
+  
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d1', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="shield" style="width:18px;height:18px;"></i> Níveis de Acesso</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d1" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">O sistema possui 4 níveis hierárquicos de acesso:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;"><strong>Nível 1 (Administrador Global):</strong> Acesso total a todas as escolas e módulos do sistema. Permite controle irrestrito.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 2 (Gestor de Escola):</strong> Acesso de gestão total apenas na escola onde o funcionário está vinculado. Pode realizar qualquer alteração na sua unidade.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 3 (Edição Restrita):</strong> Precisa de permissões específicas concedidas pelo Gestor ou Administrador (ex: permissão para editar turmas, alunos, mural). Ideal para professores e secretários.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 4 (Visualizador):</strong> Acesso apenas para leitura (visualização) das informações na escola vinculada. Nenhuma alteração é permitida.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d2', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="edit-3" style="width:18px;height:18px;"></i> Modo de Edição</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d2" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">Por padrão, todos os usuários acessam o sistema no <strong>Modo Visualização</strong> para evitar edições acidentais de dados críticos. Para modificar dados, o usuário deve:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;">Ativar o interruptor do <strong>Modo Edição</strong> no painel superior.</li>
+        <li style="margin-bottom:6px;">Confirmar a ação digitando a sua <strong>senha pessoal</strong> de acesso.</li>
+        <li style="margin-bottom:6px;">Ter um nível de permissão adequado para o módulo desejado (Níveis 1, 2 ou 3 com permissão do módulo).</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d3', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="calendar-check" style="width:18px;height:18px;"></i> Lançamentos Diários (Frequência e Notas)</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d3" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">A manipulação de registros essenciais do aluno (como frequências e notas) exige um rigor de segurança:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;">Lançamentos de frequência ou notas são estritamente <strong>bloqueados</strong> sem o Modo de Edição ativo.</li>
+        <li style="margin-bottom:6px;">Apenas usuários com a permissão "Turmas" explícita ou nível hierárquico superior podem executar lançamentos.</li>
+        <li style="margin-bottom:6px;">Todos os salvamentos gravam o funcionário responsável ("registrado_por") para garantir a rastreabilidade e auditoria da gestão escolar.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  window.toggleDiretriz = function(id, btn) {
+    const content = document.getElementById(id);
+    const icon = btn.querySelector('.d-icon');
+    if (content.style.display === 'none') {
+      content.style.display = 'block';
+      icon.setAttribute('data-lucide', 'chevron-up');
+    } else {
+      content.style.display = 'none';
+      icon.setAttribute('data-lucide', 'chevron-down');
+    }
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+</script>

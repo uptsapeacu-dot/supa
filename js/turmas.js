@@ -351,15 +351,7 @@ async function inicializarFrequenciaHub() {
   const btnSalvar = document.getElementById('btnSalvarFrequenciaHub');
 
   if (aviso) {
-    if (!modoEdicaoAtivo) {
-      aviso.innerHTML = '🔒 Ative o <strong>Modo Edição</strong> e tenha nível 3 para lançar frequência.';
-      aviso.style.display = 'block';
-    } else if (!podeLancar) {
-      aviso.innerHTML = 'Você tem permissão apenas para <strong>visualizar</strong> a frequência.';
-      aviso.style.display = 'block';
-    } else {
-      aviso.style.display = 'none';
-    }
+    aviso.style.display = 'none';
   }
   if (btnSalvar) btnSalvar.style.display = podeLancar ? 'block' : 'none';
 
