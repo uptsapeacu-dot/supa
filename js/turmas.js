@@ -136,8 +136,13 @@ async function abrirHubTurma(turma) {
   hubMateriaUnidadeAtiva = {};
 
   // Captura nome da escola atual para o boletim
-  const badgeEscola = document.querySelector('.header-escola-nome');
-  hubEscolaNome = badgeEscola ? badgeEscola.innerText : '';
+  const escolaObj = (typeof escolas !== 'undefined' && escolas) ? escolas.find(e => e.id === escolaAtual) : null;
+  if (escolaObj) {
+    hubEscolaNome = escolaObj.nome;
+  } else {
+    const badgeEscola = document.querySelector('.header-escola-nome');
+    hubEscolaNome = badgeEscola ? badgeEscola.innerText : '';
+  }
   hubTurmaInfo = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
 
   document.getElementById('hubTurmaNome').innerText = turma.nome;
@@ -564,6 +569,7 @@ async function carregarNotasHub() {
 }
 
 function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
+  const unidadeAntiga = hubMateriaUnidadeAtiva[materiaId] || 1;
   hubMateriaUnidadeAtiva[materiaId] = unidade;
   // Atualiza botões
   [1, 2, 3].forEach(u => {
@@ -575,9 +581,8 @@ function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
   // Re-renderiza tabela
   const container = document.getElementById(`tabela-materia-${materiaId}`);
   if (container) {
-    // Salva valores editados antes de trocar
-    coletarNotasDoDOM(materiaId, hubMateriaUnidadeAtiva[materiaId] === unidade
-      ? unidade : hubMateriaUnidadeAtiva[materiaId]);
+    // Salva valores editados da unidade antiga antes de trocar a tabela
+    coletarNotasDoDOM(materiaId, unidadeAntiga);
     container.innerHTML = renderizarTabelaNotas(materiaId, unidade, alunos || hubAlunosDaTurma, podeEditar);
   }
 }
@@ -714,7 +719,17 @@ function coletarNotasDoDOM(materiaId, unidade) {
     const v3el = document.getElementById(`nota3-${materiaId}-${unidade}-${alunoId}`);
     const v2 = v2el && v2el.value !== '' ? parseFloat(v2el.value) : null;
     const v3 = v3el && v3el.value !== '' ? parseFloat(v3el.value) : null;
-    hubNotasCache[materiaId][unidade][alunoId] = { nota1: v1, nota2: v2, nota3: v3 };
+    
+    // Calcula a média para manter no cache
+    const vals = [v1, v2, v3].filter(v => v !== null && !isNaN(v));
+    const media = vals.length > 0 ? parseFloat((vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1)) : null;
+
+    hubNotasCache[materiaId][unidade][alunoId] = { 
+      nota1: v1, 
+      nota2: v2, 
+      nota3: v3, 
+      media: media 
+    };
   });
 }
 
@@ -1122,6 +1137,7 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
   if (!boletim) { alert('Template do boletim não encontrado.'); return; }
   document.body.appendChild(boletim);
   boletim.style.display = 'block';
+  document.body.classList.add('imprimindo-boletim');
 
   const tituloOriginal = document.title;
   const nomeLimpo = (alunoNome || 'aluno').replace(/\s+/g, '_');
@@ -1129,6 +1145,7 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
   window.onafterprint = function() {
     boletim.style.display = 'none';
+    document.body.classList.remove('imprimindo-boletim');
     document.title = tituloOriginal;
     window.onafterprint = null;
   };

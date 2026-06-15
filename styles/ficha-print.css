@@ -136,19 +136,24 @@
 }
 
 @media print {
+  /* Força a orientação paisagem em todo o documento do boletim */
+  body.imprimindo-boletim {
+    page: boletim !important;
+  }
+
   /* Quando imprimindo o boletim, ocultar o sistema e a ficha de matrícula */
-  body:has(#boletimImpressao[style*="block"]) #app,
-  body:has(#boletimImpressao[style*="block"]) .login-container,
-  body:has(#boletimImpressao[style*="block"]) #fichaImpressao,
-  body:has(#boletimImpressao[style*="block"]) .modal,
-  body:has(#boletimImpressao[style*="block"]) .overlay {
+  body.imprimindo-boletim #app,
+  body.imprimindo-boletim .login-container,
+  body.imprimindo-boletim #fichaImpressao,
+  body.imprimindo-boletim .modal,
+  body.imprimindo-boletim .overlay {
     display: none !important;
   }
 
   #boletimImpressao {
     display: flex !important;
     flex-direction: column;
-    min-height: 100vh;
+    height: 194mm; /* Altura exata da folha A4 paisagem (210mm) menos 16mm de padding vertical */
     width: 100%;
     padding: 8mm;
     box-sizing: border-box;
@@ -207,7 +212,7 @@
   .boletim-tabela th,
   .boletim-tabela td {
     border: 1px solid #000;
-    padding: 3px 4px;
+    padding: 2px 4px; /* Reduzido de 3px para 2px para otimizar espaço */
     text-align: center;
   }
 
@@ -255,7 +260,7 @@
     padding: 0 20px 10mm 20px;
     page-break-inside: avoid;
   }
-  .boletim-assinatura { text-align: center; width: 35%; }
+  .boletim-assinatura { text-align: center; width: 30%; } /* Reduzido de 35% para 30% para mais elegância */
   .boletim-linha-assinatura {
     border-top: 1px solid #000;
     margin-bottom: 4px;
