@@ -443,12 +443,11 @@ async function salvarFrequenciaHub() {
   const itens = document.querySelectorAll('[id^="fhub-presente-"]');
   if (itens.length === 0) return;
 
-  const usuarioId = (await clienteSupabase.auth.getUser()).data?.user?.id;
   const registros = [];
   itens.forEach(btn => {
     const alunoId = btn.id.replace('fhub-presente-', '');
     const presente = btn.classList.contains('freq-btn-presente');
-    registros.push({ aluno_id: parseInt(alunoId), turma_id: hubTurmaId, data, presente, registrado_por: usuarioId });
+    registros.push({ aluno_id: parseInt(alunoId), turma_id: hubTurmaId, data, presente, registrado_por: funcionarioAtual ? funcionarioAtual.id : null });
   });
 
   const btn = document.getElementById('btnSalvarFrequenciaHub');
@@ -742,7 +741,6 @@ async function salvarNotasHub() {
     [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
   });
 
-  const usuarioId = (await clienteSupabase.auth.getUser()).data?.user?.id;
   const upserts = [];
 
   Object.entries(hubNotasCache).forEach(([materiaId, unidades]) => {
@@ -759,7 +757,7 @@ async function salvarNotasHub() {
           nota2: notas.nota2,
           nota3: notas.nota3,
           media,
-          registrado_por: usuarioId
+          registrado_por: funcionarioAtual ? funcionarioAtual.id : null
         });
       });
     });
