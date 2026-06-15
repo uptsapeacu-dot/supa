@@ -534,7 +534,7 @@ async function carregarNotasHub() {
     // Tabs de unidade
     const tabsDiv = document.createElement('div');
     tabsDiv.className = 'notas-unidade-tabs';
-    [1, 2, 3, 4].forEach(u => {
+    [1, 2, 3].forEach(u => {
       const btn = document.createElement('button');
       btn.className = 'notas-unidade-btn' + (hubMateriaUnidadeAtiva[mat.id] === u ? ' ativa' : '');
       btn.id = `unidade-btn-${mat.id}-${u}`;
@@ -559,7 +559,7 @@ async function carregarNotasHub() {
 function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
   hubMateriaUnidadeAtiva[materiaId] = unidade;
   // Atualiza botões
-  [1, 2, 3, 4].forEach(u => {
+  [1, 2, 3].forEach(u => {
     const btn = document.getElementById(`unidade-btn-${materiaId}-${u}`);
     if (btn) {
       btn.className = 'notas-unidade-btn' + (u === unidade ? ' ativa' : '');
@@ -672,7 +672,7 @@ async function salvarNotasHub() {
 
   // Coleta todos os valores do DOM antes de salvar
   hubMateriasList.forEach(mat => {
-    [1, 2, 3, 4].forEach(u => coletarNotasDoDOM(mat.id, u));
+    [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
   });
 
   const usuarioId = (await clienteSupabase.auth.getUser()).data?.user?.id;
