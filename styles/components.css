@@ -259,6 +259,17 @@ h1 {
   border: 1px solid #2a2a2a;
   border-radius: 14px;
   padding: 20px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+/* Scrollbar discreta para todos os modais */
+.modal-box::-webkit-scrollbar {
+  width: 5px;
+}
+.modal-box::-webkit-scrollbar-thumb {
+  background: #3a3a3a;
+  border-radius: 4px;
 }
 
 .modal-topo {
