@@ -67,16 +67,17 @@ async function carregarRelatoriosGlobais() {
 
   // 1. DESEMPENHO (Média por escola)
   const { data: notas } = await clienteSupabase.from('notas_alunos')
-    .select('media, turma_id, turmas(escola_id)');
+    .select('media, alunos!inner(escola_id)')
+    .not('media', 'is', null);
   
   const mediasEscolas = {};
   escolas.forEach(e => mediasEscolas[e.id] = { totalNotas: 0, soma: 0 });
 
   if (notas) {
     notas.forEach(n => {
-      if (n.media && n.turmas && n.turmas.escola_id) {
-        mediasEscolas[n.turmas.escola_id].soma += Number(n.media);
-        mediasEscolas[n.turmas.escola_id].totalNotas++;
+      if (n.media && n.alunos && n.alunos.escola_id) {
+        mediasEscolas[n.alunos.escola_id].soma += Number(n.media);
+        mediasEscolas[n.alunos.escola_id].totalNotas++;
       }
     });
   }

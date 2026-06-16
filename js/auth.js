@@ -213,6 +213,8 @@ function atualizarInterfaceModo() {
     else if (telaId === 'funcionarios') carregarFuncionariosDaTela()
     else if (telaId === 'permissoes') renderizarPermissoes()
     else if (telaId === 'mural') carregarAvisos()
+    else if (telaId === 'relatorios') carregarRelatorios()
+    else if (telaId === 'financeiro') carregarFinanceiro()
   }
 }
 
