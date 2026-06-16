@@ -36,10 +36,12 @@ async function carregarRelatorios() {
   mudarAbaRelatorio('desempenho');
 
   if (!escolaAtual) {
-    document.getElementById('tituloRelatorio').innerText = '📊 Visão Geral da Rede (Todas as Escolas)';
+    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Visão Geral da Rede</span>';
+    if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosGlobais();
   } else {
-    document.getElementById('tituloRelatorio').innerText = '📊 Relatórios: ' + escolaAtualNome;
+    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Relatórios: ' + escolaAtualNome + '</span>';
+    if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosEscola();
   }
 }
