@@ -16,7 +16,7 @@ async function carregarTurmasDaTela() {
   const lista = document.getElementById('listaTurmas');
   if (!lista) return;
 
-  if (!escolaAtual) {
+  if (escolaAtual == null || escolaAtual === '') {
     lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Selecione uma escola no menu "Início" primeiro.</div>';
     return;
   }
@@ -849,7 +849,7 @@ function renderizarTagsProfessores() {
 }
 
 async function abrirModalTurma() {
-  if (!escolaAtual) { alert('Selecione uma escola primeiro.'); return; }
+  if (escolaAtual == null || escolaAtual === '') { alert('Selecione uma escola primeiro.'); return; }
   turmaEditandoId = null;
   professoresSelecionados = [];
   document.getElementById('tituloModalTurma').innerText = 'Nova Turma';

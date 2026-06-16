@@ -3,7 +3,7 @@ async function carregarDadosMural() {
   muralFuncionarios = []
   let orgaosPermitidos = []
   // Resolve os órgãos da escola selecionada OU carrega todos permitidos globalmente
-  if (escolaAtual) {
+  if (escolaAtual != null && escolaAtual !== '') {
     const orgaoEscola = orgaos.find(function(orgao) { return orgao.escola_id === escolaAtual })
     if (orgaoEscola) {
       orgaosPermitidos = [orgaoEscola.id]
@@ -147,7 +147,7 @@ function carregarAvisos() {
   if (!lista) return
   let avisosGlobais = []
   
-  if (escolaAtual) {
+  if (escolaAtual != null && escolaAtual !== '') {
     const key = 'mural_avisos_' + escolaAtual
     avisosGlobais = JSON.parse(localStorage.getItem(key) || '[]')
   } else {

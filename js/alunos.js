@@ -31,7 +31,7 @@ async function carregarAlunos() {
     .select('*')
     .order('nome', { ascending: true })
 
-  if (escolaAtual) {
+  if (escolaAtual != null && escolaAtual !== '') {
     query = query.eq('escola_id', escolaAtual)
   } else if (!usuarioNivel1()) {
     const idsPermitidos = idsEscolasPermitidas()
@@ -185,7 +185,7 @@ function preencherSeletorEscolaAluno(escolaPreSelecionada) {
   const seletor = document.getElementById('seletorEscolaAluno')
   const select = document.getElementById('escolaDoAluno')
 
-  if (usuarioNivel1() && !escolaAtual) {
+  if (usuarioNivel1() && (escolaAtual == null || escolaAtual === '')) {
     seletor.style.display = 'block'
     select.innerHTML = '<option value="">-- Selecione a Escola --</option>'
     const listaEscolas = (typeof escolas !== 'undefined' ? escolas : [])
@@ -226,7 +226,7 @@ async function carregarTurmasDoSeletorAluno(turmaIdSelecionada) {
 }
 
 async function abrirModalAluno() {
-  if (!usuarioNivel1() && !escolaAtual) {
+  if (!usuarioNivel1() && (escolaAtual == null || escolaAtual === '')) {
     alert('Selecione uma escola antes de cadastrar alunos')
     return
   }

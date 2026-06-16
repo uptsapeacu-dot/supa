@@ -200,7 +200,7 @@ function voltarParaEscolas() {
 }
 
 function voltarParaEscola() {
-  if (escolaAtual) abrirEscola(escolaAtual)
+  if (escolaAtual != null && escolaAtual !== '') abrirEscola(escolaAtual)
   else mostrarTela('home')
 }
 

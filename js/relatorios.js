@@ -35,7 +35,7 @@ async function carregarRelatorios() {
   // Resetar abas para desempenho
   mudarAbaRelatorio('desempenho');
 
-  if (!escolaAtual) {
+  if (escolaAtual == null || escolaAtual === '') {
     document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Visão Geral da Rede</span>';
     if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosGlobais();

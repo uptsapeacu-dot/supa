@@ -50,7 +50,7 @@ async function carregarFuncionariosDaTela() {
 
   let orgaosPermitidos = []
 
-  if (escolaAtual) {
+  if (escolaAtual != null && escolaAtual !== '') {
     const orgaoEscola = orgaos.find(function(o) { return o.escola_id === escolaAtual })
     if (orgaoEscola) {
       orgaosPermitidos = [orgaoEscola.id]
@@ -329,7 +329,7 @@ async function salvarFuncionario() {
   }
 
   var orgaoId = null
-  if (escolaAtual) {
+  if (escolaAtual != null && escolaAtual !== '') {
     var orgaoEscola = orgaos.find(function(o) { return o.escola_id === escolaAtual })
     if (!orgaoEscola) {
       var { data: orgaoBuscado } = await clienteSupabase.from('orgaos').select('*').eq('escola_id', escolaAtual).eq('tipo', 'escola').eq('ativo', true).limit(1).maybeSingle()

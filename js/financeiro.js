@@ -7,7 +7,7 @@ async function carregarFinanceiro() {
   const lista = document.getElementById('listaExtrato');
   if (!lista) return;
 
-  if (!escolaAtual) {
+  if (escolaAtual == null || escolaAtual === '') {
     lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Selecione uma escola no Início.</td></tr>';
     return;
   }
@@ -257,7 +257,7 @@ async function excluirTransacao(id) {
 let tipoConfigAtual = 'contas';
 
 function abrirModalConfigFin(tipo) {
-  if (!escolaAtual) return alert("Selecione a escola primeiro.");
+  if (escolaAtual == null || escolaAtual === '') return alert("Selecione a escola primeiro.");
   tipoConfigAtual = tipo;
   document.getElementById('tituloConfigFin').innerText = tipo === 'contas' ? 'Contas Bancárias / Verbas' : 'Categorias de Gastos';
   document.getElementById('inputNovoConfigFin').value = '';
