@@ -168,9 +168,9 @@ async function carregarRelatoriosGlobais() {
     alunos.forEach(a => {
       const d = a.dados_matricula;
       if (d) {
-        if (d.transporte === 'Sim') usaTransporte++;
-        if (d.zona === 'Rural') rural++;
-        if (d.alergia_restricao === 'Sim' || d.necessidades_especiais === 'Sim') alergiasCount++;
+        if (d.transporte === true) usaTransporte++;
+        if (d.localizacao === 'Zona Rural') rural++;
+        if (d.alergia_med === 'Sim' || d.restricao_alimentar === 'Sim' || d.nee === 'Sim' || d.deficiencia === 'Sim') alergiasCount++;
       }
     });
   }
@@ -263,18 +263,21 @@ async function carregarRelatoriosEscola() {
     .eq('escola_id', escolaAtual);
   
   let necessidades = [];
-  if(alunosEscola) {
+  if (alunosEscola) {
     alunosEscola.forEach(a => {
       const d = a.dados_matricula;
-      if(d && (d.alergia_restricao === 'Sim' || d.necessidades_especiais === 'Sim' || d.transporte === 'Sim')) {
+      if (d && (d.alergia_med === 'Sim' || d.restricao_alimentar === 'Sim' || d.nee === 'Sim' || d.deficiencia === 'Sim' || d.transporte === true)) {
         necessidades.push({
           nome: a.nome,
           turma: a.turmas ? a.turmas.nome : 'Sem Turma',
-          transporte: d.transporte === 'Sim' ? (d.rota_transporte || 'Sim') : '-',
+          transporte: d.transporte === true ? (d.rota || 'Sim') : '-',
           saude: []
         });
-        if(d.alergia_restricao === 'Sim') necessidades[necessidades.length-1].saude.push(d.qual_alergia || 'Alergia');
-        if(d.necessidades_especiais === 'Sim') necessidades[necessidades.length-1].saude.push(d.qual_necessidade || 'NEE');
+        const nIdx = necessidades.length - 1;
+        if (d.alergia_med === 'Sim') necessidades[nIdx].saude.push(d.alergia_med_quais || 'Alergia Médica');
+        if (d.restricao_alimentar === 'Sim') necessidades[nIdx].saude.push(d.restricao_alim_quais || 'Restrição Alimentar');
+        if (d.nee === 'Sim') necessidades[nIdx].saude.push(d.nee_tipos ? d.nee_tipos.join(', ') : 'NEE');
+        if (d.deficiencia === 'Sim') necessidades[nIdx].saude.push(d.deficiencia_tipos ? d.deficiencia_tipos.join(', ') : 'Deficiência');
       }
     });
   }
