@@ -1,0 +1,30 @@
+<div class="page-header">
+  <h1 id="tituloRelatorio">Relatórios</h1>
+  <button class="btn-editar" onclick="imprimirRelatorio()" title="Imprimir relatório" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;width:auto;">
+    <i data-lucide="printer" style="width:16px;height:16px;"></i> Imprimir
+  </button>
+</div>
+
+<div class="relatorios-tabs" style="display:flex; gap:16px; border-bottom: 1px solid #333; margin-bottom: 24px;">
+  <button class="tab-btn active" onclick="mudarAbaRelatorio('desempenho')" id="tab-desempenho" style="background:none; border:none; color:#fff; padding:8px 16px; cursor:pointer; border-bottom: 2px solid #3ea6ff;">Desempenho Escolar</button>
+  <button class="tab-btn" onclick="mudarAbaRelatorio('frequencia')" id="tab-frequencia" style="background:none; border:none; color:#aaa; padding:8px 16px; cursor:pointer; border-bottom: 2px solid transparent;">Frequência e Evasão</button>
+  <button class="tab-btn" onclick="mudarAbaRelatorio('censo')" id="tab-censo" style="background:none; border:none; color:#aaa; padding:8px 16px; cursor:pointer; border-bottom: 2px solid transparent;">Censo e Logística</button>
+</div>
+
+<!-- CONTAINER DE IMPRESSÃO (Recebe classe no body via JS) -->
+<div id="relatorioImpressaoContainer">
+  <!-- Aba Desempenho -->
+  <div id="relatorio-desempenho" class="relatorio-aba">
+    <div id="conteudo-desempenho"><div class="empty-state">Carregando relatórios de desempenho...</div></div>
+  </div>
+
+  <!-- Aba Frequencia -->
+  <div id="relatorio-frequencia" class="relatorio-aba" style="display:none;">
+    <div id="conteudo-frequencia"><div class="empty-state">Carregando relatórios de frequência...</div></div>
+  </div>
+
+  <!-- Aba Censo -->
+  <div id="relatorio-censo" class="relatorio-aba" style="display:none;">
+    <div id="conteudo-censo"><div class="empty-state">Carregando relatórios de censo...</div></div>
+  </div>
+</div>

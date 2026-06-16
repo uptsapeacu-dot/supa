@@ -269,3 +269,38 @@
   .boletim-label-assinatura { font-size: 8px; }
 }
 
+/* =============================================
+   RELATÓRIOS — ESTILOS DE IMPRESSÃO
+   ============================================= */
+
+@media print {
+  body.imprimindo-relatorio #app,
+  body.imprimindo-relatorio .login-container,
+  body.imprimindo-relatorio .modal,
+  body.imprimindo-relatorio .overlay {
+    display: none !important;
+  }
+
+  body.imprimindo-relatorio #relatorios {
+    display: block !important;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin: 0;
+    padding: 10mm;
+    box-sizing: border-box;
+    background: white;
+    color: black;
+  }
+
+  body.imprimindo-relatorio .relatorios-tabs,
+  body.imprimindo-relatorio .btn-editar {
+    display: none !important;
+  }
+
+  body.imprimindo-relatorio * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

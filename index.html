@@ -13,6 +13,7 @@
   <title>Sapeaçu Painel Escolar</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
   <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="styles/ficha-print.css">
@@ -331,19 +332,7 @@
 
       <!-- RELATÓRIOS -->
       <section id="relatorios" style="display:none">
-        <div class="page-header">
-          <h1>Relatórios</h1>
-          <button class="btn-editar" onclick="imprimirRelatorio()" title="Imprimir relatório" style="display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:10px;width:auto;">
-            <i data-lucide="printer" style="width:16px;height:16px;"></i> Imprimir
-          </button>
-        </div>
-        <div class="relatorio-filtros">
-          <span style="font-size:13px;color:#aaa;">📊 Frequência dos últimos 30 dias por turma</span>
-          <button class="btn-clear" onclick="carregarRelatorios()" style="margin-left:auto;">🔄 Atualizar</button>
-        </div>
-        <div id="relatorioConteudo">
-          <div class="empty-state">Selecione uma escola no Início para ver os relatórios.</div>
-        </div>
+        <!-- O arquivo relatorios.html será injetado aqui -->
       </section>
 
       <!-- DIRETRIZES -->
@@ -598,6 +587,7 @@
   <script src="js/turmas.js"></script>
   <script src="js/frequencia.js"></script>
   <script src="js/financeiro.js"></script>
+  <script src="js/relatorios.js"></script>
 
   <script>
     // Função para carregar os HTMLs pesados de forma limpa
@@ -632,6 +622,10 @@
         // Carrega as diretrizes
         const resDiretrizes = await fetch('htmls/diretrizes.html');
         document.getElementById('diretrizes').innerHTML = await resDiretrizes.text();
+
+        // Carrega relatórios
+        const resRelatorios = await fetch('htmls/relatorios.html');
+        document.getElementById('relatorios').innerHTML = await resRelatorios.text();
 
         console.log("Componentes externos carregados com sucesso!");
       } catch (error) {
