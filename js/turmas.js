@@ -733,6 +733,8 @@ async function salvarNotasHub() {
     [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
   });
 
+  const authReq = await clienteSupabase.auth.getUser();
+  const authUserId = authReq.data.user ? authReq.data.user.id : null;
   const upserts = [];
 
   Object.entries(hubNotasCache).forEach(([materiaId, unidades]) => {
@@ -749,7 +751,7 @@ async function salvarNotasHub() {
           nota2: notas.nota2,
           nota3: notas.nota3,
           media,
-          registrado_por: funcionarioAtual ? funcionarioAtual.id : null
+          registrado_por: authUserId
         });
       });
     });

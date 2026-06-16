@@ -326,24 +326,24 @@ async function carregarEvasaoLocal(container) {
   turmas.forEach(t => {
     const daTurma = apt[t.id] || [];
     if(daTurma.length===0) return;
-    html += \`
+    html += `
       <div style="background:#222; border:1px solid #333; border-radius:8px; margin-bottom:16px; padding:16px;">
-        <div style="margin-bottom:12px; font-weight:bold;">\${t.nome} <span style="font-size:12px; color:#aaa; font-weight:normal;">- \${t.turno}</span></div>
-    \`;
+        <div style="margin-bottom:12px; font-weight:bold;">${t.nome} <span style="font-size:12px; color:#aaa; font-weight:normal;">- ${t.turno}</span></div>
+    `;
     daTurma.forEach(a => {
       const f = mapaFreq[a.id];
       const pct = f && f.t > 0 ? Math.round((f.p/f.t)*100) : null;
       const cor = pct===null ? '#555' : pct >= 75 ? '#22c55e' : '#ef4444';
       const w = pct!==null ? pct : 0;
-      html += \`
+      html += `
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
-          <div style="flex:1; font-size:13px;">\${a.nome}</div>
+          <div style="flex:1; font-size:13px;">${a.nome}</div>
           <div style="width:200px; background:#333; height:8px; border-radius:4px;">
-            <div style="height:8px; border-radius:4px; width:\${w}%; background:\${cor};"></div>
+            <div style="height:8px; border-radius:4px; width:${w}%; background:${cor};"></div>
           </div>
-          <div style="width:40px; text-align:right; font-size:13px; font-weight:bold; color:\${cor};">\${pct!==null?pct+'%':'-'}</div>
+          <div style="width:40px; text-align:right; font-size:13px; font-weight:bold; color:${cor};">${pct!==null?pct+'%':'-'}</div>
         </div>
-      \`;
+      `;
     });
     html += '</div>';
   });
