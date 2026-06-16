@@ -177,22 +177,26 @@ async function carregarRelatoriosGlobais() {
     <h3 style="margin-top:0;">Logística e Inclusão da Rede</h3>
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
-        <div style="font-size:36px; margin-bottom:12px;">🚌</div>
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="bus" style="width:36px; height:36px; color:#3ea6ff;"></i></div>
         <div style="font-size:32px; font-weight:bold;">${usaTransporte}</div>
         <div style="font-size:14px; color:#aaa; margin-top:4px;">Usuários de Transporte</div>
       </div>
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
-        <div style="font-size:36px; margin-bottom:12px;">🌾</div>
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="tractor" style="width:36px; height:36px; color:#eab308;"></i></div>
         <div style="font-size:32px; font-weight:bold;">${rural}</div>
         <div style="font-size:14px; color:#aaa; margin-top:4px;">Residem na Zona Rural</div>
       </div>
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
-        <div style="font-size:36px; margin-bottom:12px;">⚕️</div>
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="stethoscope" style="width:36px; height:36px; color:#ef4444;"></i></div>
         <div style="font-size:32px; font-weight:bold; color:#ef4444;">${alergiasCount}</div>
         <div style="font-size:14px; color:#aaa; margin-top:4px;">Laudos Médicos / Restrições</div>
       </div>
     </div>
   `;
+
+  setTimeout(() => {
+    if (window.lucide) window.lucide.createIcons();
+  }, 50);
 }
 
 async function carregarRelatoriosEscola() {
