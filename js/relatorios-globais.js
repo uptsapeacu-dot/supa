@@ -1,0 +1,170 @@
+// ====== RELATÓRIOS GLOBAIS DA REDE ======
+
+async function carregarRelatoriosGlobais() {
+  const containerDesempenho = document.getElementById('conteudo-desempenho');
+  const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
+  const containerCenso = document.getElementById('conteudo-censo');
+
+  if (!containerDesempenho || !containerFreq || !containerCenso) {
+    console.error('Elementos de relatório não encontrados no DOM.');
+    return;
+  }
+
+  containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
+  containerFreq.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
+  containerCenso.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
+
+  try {
+    // Buscar todas escolas
+    const { data: escolas, error } = await clienteSupabase.from('escolas').select('id, nome');
+    if (error || !escolas) throw new Error('Falha ao carregar escolas');
+
+  // 1. DESEMPENHO (Média por escola)
+  const { data: notas } = await clienteSupabase.from('notas_alunos')
+    .select('media, alunos!inner(escola_id)')
+    .not('media', 'is', null);
+  
+  const mediasEscolas = {};
+  escolas.forEach(e => mediasEscolas[e.id] = { totalNotas: 0, soma: 0 });
+
+  if (notas) {
+    notas.forEach(n => {
+      if (n.media && n.alunos && n.alunos.escola_id) {
+        mediasEscolas[n.alunos.escola_id].soma += Number(n.media);
+        mediasEscolas[n.alunos.escola_id].totalNotas++;
+      }
+    });
+  }
+
+  const labelsEscolas = [];
+  const dadosMedias = [];
+  
+  escolas.forEach(e => {
+    labelsEscolas.push(e.nome);
+    const m = mediasEscolas[e.id];
+    dadosMedias.push(m.totalNotas > 0 ? (m.soma / m.totalNotas).toFixed(1) : 0);
+  });
+
+  containerDesempenho.innerHTML = `
+    <div style="background:#222; padding:20px; border-radius:12px; margin-bottom:20px;">
+      <h3 style="margin-top:0;">Termômetro de Desempenho (Média Geral)</h3>
+      <canvas id="chartDesempenhoRede" style="max-height: 350px;"></canvas>
+    </div>
+  `;
+
+  setTimeout(() => {
+    const ctx = document.getElementById('chartDesempenhoRede');
+    if (ctx) {
+      graficoDesempenho = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labelsEscolas,
+          datasets: [{
+            label: 'Média Escolar',
+            data: dadosMedias,
+            backgroundColor: '#3ea6ff',
+            borderRadius: 6
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { display: false }
+          },
+          scales: {
+            y: { beginAtZero: true, max: 10, grid: { color: '#333' }, ticks: { color: '#aaa' } },
+            x: { grid: { display: false }, ticks: { color: '#aaa' } }
+          }
+        }
+      });
+    }
+  }, 100);
+
+  // 2. FREQUÊNCIA (Radar de Faltas 30 dias)
+  const dataLimite = new Date();
+  dataLimite.setDate(dataLimite.getDate() - 30);
+  const dataLimiteStr = dataLimite.toISOString().split('T')[0];
+
+  const { data: freqs } = await clienteSupabase.from('frequencia')
+    .select('presente, turmas(escola_id)')
+    .gte('data', dataLimiteStr);
+
+  const freqEscolas = {};
+  escolas.forEach(e => freqEscolas[e.id] = { faltas: 0, total: 0 });
+
+  if (freqs) {
+    freqs.forEach(f => {
+      if (f.turmas && f.turmas.escola_id) {
+        freqEscolas[f.turmas.escola_id].total++;
+        if (!f.presente) freqEscolas[f.turmas.escola_id].faltas++;
+      }
+    });
+  }
+
+  let htmlFreq = '<h3 style="margin-top:0;">Radar de Faltas (Últimos 30 Dias)</h3><div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:16px;">';
+  escolas.forEach(e => {
+    const d = freqEscolas[e.id];
+    const pctFaltas = d.total > 0 ? ((d.faltas / d.total) * 100).toFixed(1) : 0;
+    const corAlert = pctFaltas > 15 ? '#ef4444' : '#22c55e';
+    htmlFreq += `
+      <div style="background:#222; padding:16px; border-radius:12px; border-left: 4px solid ${corAlert}">
+        <div style="font-size:14px; color:#aaa; font-weight:bold; margin-bottom:8px;">${e.nome}</div>
+        <div style="font-size:28px; font-weight:bold; color:${corAlert};">${pctFaltas}%</div>
+        <div style="font-size:12px; color:#666; margin-top:4px;">De faltas em ${d.total} presenças registradas</div>
+      </div>
+    `;
+  });
+  htmlFreq += '</div>';
+  containerFreq.innerHTML = htmlFreq;
+
+  // 3. CENSO E LOGÍSTICA
+  const { data: alunos } = await clienteSupabase.from('alunos').select('id, dados_matricula');
+  
+  let usaTransporte = 0;
+  let rural = 0;
+  let alergiasCount = 0;
+
+  if (alunos) {
+    alunos.forEach(a => {
+      const d = a.dados_matricula;
+      if (d) {
+        if (d.transporte === true) usaTransporte++;
+        if (d.localizacao === 'Zona Rural') rural++;
+        if (d.alergia_med === 'Sim' || d.restricao_alimentar === 'Sim' || d.nee === 'Sim' || d.deficiencia === 'Sim') alergiasCount++;
+      }
+    });
+  }
+
+  containerCenso.innerHTML = `
+    <h3 style="margin-top:0;">Logística e Inclusão da Rede</h3>
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
+      <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="bus" style="width:36px; height:36px; color:#3ea6ff;"></i></div>
+        <div style="font-size:32px; font-weight:bold;">${usaTransporte}</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Usuários de Transporte</div>
+      </div>
+      <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="tractor" style="width:36px; height:36px; color:#eab308;"></i></div>
+        <div style="font-size:32px; font-weight:bold;">${rural}</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Residem na Zona Rural</div>
+      </div>
+      <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
+        <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="stethoscope" style="width:36px; height:36px; color:#ef4444;"></i></div>
+        <div style="font-size:32px; font-weight:bold; color:#ef4444;">${alergiasCount}</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Laudos Médicos / Restrições</div>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => {
+    if (window.lucide) window.lucide.createIcons();
+  }, 50);
+  } catch (err) {
+    console.error('Erro em carregarRelatoriosGlobais:', err);
+    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados globais da rede.</div>';
+    containerDesempenho.innerHTML = msgErro;
+    containerFreq.innerHTML = msgErro;
+    containerCenso.innerHTML = msgErro;
+  }
+}
