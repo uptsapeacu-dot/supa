@@ -8,3 +8,4 @@
   1. **Navegação e Estado:** Garantir que o componente está registrado nas listas de controle (ex: arrays de visibilidade como `telas`).
   2. **Menu e Permissões:** O botão de acesso à nova tela deve estar no `sidebar.js` com as regras de visibilidade (níveis de acesso e cargos) devidamente aplicadas.
   3. **Eventos Globais:** Se for um Modal, garantir que ele foi adicionado à lista de fechamento global (tecla `Escape` no listener de teclado).
+- **Arquitetura de Impressão Segura:** Ao criar novas telas ou documentos imprimíveis (fichas, boletins, relatórios), o elemento não deve ser visível por padrão na hora de imprimir. A sua exibição no `@media print` deve ser rigorosamente bloqueada e só autorizada através de uma classe específica no `body` (ex: `body.imprimindo-recibo #idRecibo { display: flex !important; }`). O JavaScript deve injetar essa classe antes do `window.print()` e removê-la no evento `window.onafterprint` para evitar vazamento de layout.

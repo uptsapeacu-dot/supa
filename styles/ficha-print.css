@@ -17,7 +17,7 @@
 
   /* A Ficha Principal */
 
-  #fichaImpressao {
+  body.imprimindo-ficha #fichaImpressao {
     display: flex !important; /* Transforma a ficha numa caixa flexível */
     flex-direction: column;   /* Empilha tudo de cima para baixo */
     min-height: 100vh;        /* Garante que a caixa tenha 100% da altura da folha A4 */
@@ -150,7 +150,7 @@
     display: none !important;
   }
 
-  #boletimImpressao {
+  body.imprimindo-boletim #boletimImpressao {
     display: flex !important;
     flex-direction: column;
     height: 194mm; /* Altura exata da folha A4 paisagem (210mm) menos 16mm de padding vertical */

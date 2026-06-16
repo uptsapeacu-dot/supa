@@ -606,6 +606,7 @@ function imprimirFicha(aluno) {
    // --- PREPARAÇÃO FINAL PARA IMPRESSÃO ---
   const ficha = document.getElementById('fichaImpressao');
   document.body.appendChild(ficha);
+  document.body.classList.add('imprimindo-ficha'); // Garante autorização exclusiva
   ficha.style.display = 'block';
 
   // TRUQUE DO NOME DO ARQUIVO: Salva o nome original do site
@@ -618,6 +619,7 @@ function imprimirFicha(aluno) {
   // O que acontece quando a janela de impressão FECHAR:
   window.onafterprint = function() {
     ficha.style.display = 'none';
+    document.body.classList.remove('imprimindo-ficha'); // Remove autorização
     document.title = tituloOriginal; // Devolve o nome original para a aba do navegador
     window.onafterprint = null;
   };
