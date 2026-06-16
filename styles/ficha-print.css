@@ -282,21 +282,51 @@
   }
 
   body.imprimindo-relatorio #relatorios {
-    display: block !important;
-    position: absolute;
-    left: 0;
-    top: 0;
+    display: none !important; /* Esconde a tela de relatórios original (com gráficos) */
+  }
+
+  body.imprimindo-relatorio #relatorioImpressaoProfissional {
+    display: flex !important; /* Mostra o container profissional de impressão */
+    flex-direction: column;
+    position: relative;
     width: 100%;
     margin: 0;
     padding: 10mm;
     box-sizing: border-box;
     background: white;
     color: black;
+    font-family: Arial, Helvetica, sans-serif;
   }
 
-  body.imprimindo-relatorio .relatorios-tabs,
-  body.imprimindo-relatorio .btn-editar {
-    display: none !important;
+  body.imprimindo-relatorio #printRelatorioConteudo {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    margin-bottom: 20px;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela th,
+  body.imprimindo-relatorio .boletim-tabela td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: center;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela th {
+    background-color: #000 !important;
+    color: #fff !important;
+    font-weight: bold;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.imprimindo-relatorio .text-left {
+    text-align: left !important;
   }
 
   body.imprimindo-relatorio * {

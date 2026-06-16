@@ -19,13 +19,18 @@ async function carregarRelatoriosGlobais() {
     const { data: escolas, error } = await clienteSupabase.from('escolas').select('id, nome');
     if (error || !escolas) throw new Error('Falha ao carregar escolas');
 
+  // Variáveis globais para impressão
+  window.htmlImpressaoDesempenho = '';
+  window.htmlImpressaoFrequencia = '';
+  window.htmlImpressaoCenso = '';
+
   // 1. DESEMPENHO (Média por escola)
   const { data: notas } = await clienteSupabase.from('notas_alunos')
     .select('media, alunos!inner(escola_id)')
     .not('media', 'is', null);
   
   const mediasEscolas = {};
-  escolas.forEach(e => mediasEscolas[e.id] = { totalNotas: 0, soma: 0 });
+  escolas.forEach(e => mediasEscolas[e.id] = { nome: e.nome, totalNotas: 0, soma: 0 });
 
   if (notas) {
     notas.forEach(n => {
@@ -39,11 +44,22 @@ async function carregarRelatoriosGlobais() {
   const labelsEscolas = [];
   const dadosMedias = [];
   
+  let tabelaDesempenhoPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Desempenho - Rede Municipal</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Notas Registradas</th><th>Média Geral</th></tr></thead>
+      <tbody>
+  `;
+
   escolas.forEach(e => {
     labelsEscolas.push(e.nome);
     const m = mediasEscolas[e.id];
-    dadosMedias.push(m.totalNotas > 0 ? (m.soma / m.totalNotas).toFixed(1) : 0);
+    const mediaMedia = m.totalNotas > 0 ? (m.soma / m.totalNotas).toFixed(1) : '0.0';
+    dadosMedias.push(mediaMedia);
+    tabelaDesempenhoPrint += `<tr><td class="text-left">${e.nome}</td><td>${m.totalNotas}</td><td><strong>${mediaMedia}</strong></td></tr>`;
   });
+  tabelaDesempenhoPrint += '</tbody></table>';
+  window.htmlImpressaoDesempenho = tabelaDesempenhoPrint;
 
   containerDesempenho.innerHTML = `
     <div style="background:#222; padding:20px; border-radius:12px; margin-bottom:20px;">
@@ -91,18 +107,27 @@ async function carregarRelatoriosGlobais() {
     .gte('data', dataLimiteStr);
 
   const freqEscolas = {};
-  escolas.forEach(e => freqEscolas[e.id] = { faltas: 0, total: 0 });
+  escolas.forEach(e => freqEscolas[e.id] = { faltas: 0, presencas: 0, total: 0 });
 
   if (freqs) {
     freqs.forEach(f => {
       if (f.turmas && f.turmas.escola_id) {
         freqEscolas[f.turmas.escola_id].total++;
         if (!f.presente) freqEscolas[f.turmas.escola_id].faltas++;
+        else freqEscolas[f.turmas.escola_id].presencas++;
       }
     });
   }
 
   let htmlFreq = '<h3 style="margin-top:0;">Radar de Faltas (Últimos 30 Dias)</h3><div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:16px;">';
+  
+  let tabelaFreqPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Frequência (30 dias) - Rede Municipal</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Presenças</th><th>Faltas</th><th>Total Reg.</th><th>% Evasão/Falta</th></tr></thead>
+      <tbody>
+  `;
+
   escolas.forEach(e => {
     const d = freqEscolas[e.id];
     const pctFaltas = d.total > 0 ? ((d.faltas / d.total) * 100).toFixed(1) : 0;
@@ -114,27 +139,50 @@ async function carregarRelatoriosGlobais() {
         <div style="font-size:12px; color:#666; margin-top:4px;">De faltas em ${d.total} presenças registradas</div>
       </div>
     `;
+    tabelaFreqPrint += `<tr><td class="text-left">${e.nome}</td><td>${d.presencas}</td><td>${d.faltas}</td><td>${d.total}</td><td><strong style="color:${corAlert}">${pctFaltas}%</strong></td></tr>`;
   });
   htmlFreq += '</div>';
   containerFreq.innerHTML = htmlFreq;
+  
+  tabelaFreqPrint += '</tbody></table>';
+  window.htmlImpressaoFrequencia = tabelaFreqPrint;
 
   // 3. CENSO E LOGÍSTICA
-  const { data: alunos } = await clienteSupabase.from('alunos').select('id, dados_matricula');
+  const { data: alunos } = await clienteSupabase.from('alunos').select('id, escola_id, dados_matricula');
   
   let usaTransporte = 0;
   let rural = 0;
   let alergiasCount = 0;
+  
+  const censoEscolas = {};
+  escolas.forEach(e => censoEscolas[e.id] = { transporte: 0, rural: 0, saude: 0 });
 
   if (alunos) {
     alunos.forEach(a => {
       const d = a.dados_matricula;
       if (d) {
-        if (d.transporte === true) usaTransporte++;
-        if (d.localizacao === 'Zona Rural') rural++;
-        if (d.alergia_med === 'Sim' || d.restricao_alimentar === 'Sim' || d.nee === 'Sim' || d.deficiencia === 'Sim') alergiasCount++;
+        if (d.transporte === true) { usaTransporte++; if(censoEscolas[a.escola_id]) censoEscolas[a.escola_id].transporte++; }
+        if (d.localizacao === 'Zona Rural') { rural++; if(censoEscolas[a.escola_id]) censoEscolas[a.escola_id].rural++; }
+        if (d.alergia_med === 'Sim' || d.restricao_alimentar === 'Sim' || d.nee === 'Sim' || d.deficiencia === 'Sim') {
+          alergiasCount++;
+          if(censoEscolas[a.escola_id]) censoEscolas[a.escola_id].saude++;
+        }
       }
     });
   }
+  
+  let tabelaCensoPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Logístico e de Inclusão - Rede Municipal</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Necessitam Transporte</th><th>Zona Rural</th><th>Atenção Especial/Saúde</th></tr></thead>
+      <tbody>
+  `;
+  escolas.forEach(e => {
+    const c = censoEscolas[e.id];
+    tabelaCensoPrint += `<tr><td class="text-left">${e.nome}</td><td>${c.transporte}</td><td>${c.rural}</td><td>${c.saude}</td></tr>`;
+  });
+  tabelaCensoPrint += '</tbody></table>';
+  window.htmlImpressaoCenso = tabelaCensoPrint;
 
   containerCenso.innerHTML = `
     <h3 style="margin-top:0;">Logística e Inclusão da Rede</h3>
@@ -152,7 +200,7 @@ async function carregarRelatoriosGlobais() {
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
         <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="stethoscope" style="width:36px; height:36px; color:#ef4444;"></i></div>
         <div style="font-size:32px; font-weight:bold; color:#ef4444;">${alergiasCount}</div>
-        <div style="font-size:14px; color:#aaa; margin-top:4px;">Laudos Médicos / Restrições</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Atenção Especial/Saúde</div>
       </div>
     </div>
   `;

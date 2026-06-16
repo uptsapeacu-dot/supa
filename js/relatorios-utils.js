@@ -53,19 +53,39 @@ async function carregarRelatorios() {
   }
 }
 
-// ARQUITETURA DE IMPRESSÃO SEGURA
+// ARQUITETURA DE IMPRESSÃO SEGURA E DETALHADA
 function imprimirRelatorio() {
-  const container = document.getElementById('relatorioImpressaoContainer');
+  const container = document.getElementById('relatorioImpressaoProfissional');
   if (!container) return;
+
+  // Descobrir qual aba está ativa
+  let abaAtiva = 'desempenho';
+  if (document.getElementById('tab-frequencia') && document.getElementById('tab-frequencia').classList.contains('active')) {
+    abaAtiva = 'frequencia';
+  } else if (document.getElementById('tab-censo') && document.getElementById('tab-censo').classList.contains('active')) {
+    abaAtiva = 'censo';
+  }
+
+  // Pegar o conteúdo HTML correspondente gerado no backend
+  let conteudoDetalhado = '';
+  if (abaAtiva === 'desempenho') conteudoDetalhado = window.htmlImpressaoDesempenho || '<p>Sem dados.</p>';
+  else if (abaAtiva === 'frequencia') conteudoDetalhado = window.htmlImpressaoFrequencia || '<p>Sem dados.</p>';
+  else if (abaAtiva === 'censo') conteudoDetalhado = window.htmlImpressaoCenso || '<p>Sem dados.</p>';
+
+  document.getElementById('printRelatorioConteudo').innerHTML = conteudoDetalhado;
+
+  // Atualiza os cabeçalhos do ofício
+  const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
+  const nomeDaEscola = escolaObj ? escolaObj.nome : 'Rede Municipal';
+  
+  document.getElementById('printRelatorioTitulo').innerText = 'Relatório Analítico de ' + (abaAtiva === 'desempenho' ? 'Desempenho' : (abaAtiva === 'frequencia' ? 'Frequência e Evasão' : 'Censo e Logística'));
+  document.getElementById('printRelatorioSubtitulo').innerText = nomeDaEscola;
 
   // Injeta a autorização temporária no body
   document.body.classList.add('imprimindo-relatorio');
 
   const tituloOriginal = document.title;
-  const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
-  const nomeDaEscola = escolaObj ? escolaObj.nome : 'Escola';
-  
-  document.title = "Relatorio_" + (escolaAtual ? nomeDaEscola.replace(/\s+/g, '_') : 'Geral_Rede_Municipal');
+  document.title = "Relatorio_" + (escolaAtual ? nomeDaEscola.replace(/\s+/g, '_') : 'Geral_Rede_Municipal') + "_" + abaAtiva;
 
   window.onafterprint = function() {
     // Remove a autorização após impressão

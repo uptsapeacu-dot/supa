@@ -14,6 +14,11 @@ async function carregarRelatoriosEscola() {
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
 
+  // Variáveis globais para impressão local
+  window.htmlImpressaoDesempenho = '';
+  window.htmlImpressaoFrequencia = '';
+  window.htmlImpressaoCenso = '';
+
   try {
     // 1. DESEMPENHO (Boletim Vermelho)
     const { data: notas, error: errorNotas } = await clienteSupabase.from('notas_alunos')
@@ -36,6 +41,13 @@ async function carregarRelatoriosEscola() {
 
   const riscoArray = Object.values(alunosRisco).sort((a,b) => b.materias.length - a.materias.length);
 
+  let tabelaRiscoPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Risco (Boletim Vermelho)</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Aluno</th><th class="text-left">Disciplinas em Risco (Abaixo da Média)</th></tr></thead>
+      <tbody>
+  `;
+
   let htmlRisco = `
     <h3 style="margin-top:0; color:#ef4444;">Boletim Vermelho (Abaixo da Média)</h3>
     <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
@@ -54,11 +66,16 @@ async function carregarRelatoriosEscola() {
           <td style="padding:12px; font-weight:bold;">${r.nome}</td>
           <td style="padding:12px; color:#ef4444;">${r.materias.join(', ')}</td>
         </tr>`;
+      tabelaRiscoPrint += `<tr><td class="text-left"><strong>${r.nome}</strong></td><td class="text-left">${r.materias.join(', ')}</td></tr>`;
     });
   } else {
     htmlRisco += '<tr><td colspan="2" style="padding:16px;text-align:center;color:#aaa;">Nenhum aluno em risco crítico registrado.</td></tr>';
+    tabelaRiscoPrint += '<tr><td colspan="2">Nenhum aluno em risco crítico registrado.</td></tr>';
   }
   htmlRisco += '</tbody></table>';
+  tabelaRiscoPrint += '</tbody></table>';
+  
+  window.htmlImpressaoDesempenho = tabelaRiscoPrint;
   containerDesempenho.innerHTML = htmlRisco;
 
   // 2. FREQUENCIA (Evasão Local)
@@ -89,6 +106,20 @@ async function carregarRelatoriosEscola() {
     });
   }
 
+  // Ordena por turma e depois por nome
+  necessidades.sort((a,b) => {
+    if(a.turma < b.turma) return -1;
+    if(a.turma > b.turma) return 1;
+    return a.nome.localeCompare(b.nome);
+  });
+
+  let tabelaCensoPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Alunos com Demandas Logísticas e de Inclusão</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Turma</th><th class="text-left">Aluno</th><th>Transporte Escolar</th><th>Atenção Especial/Saúde</th></tr></thead>
+      <tbody>
+  `;
+
   let htmlCenso = `
     <h3 style="margin-top:0;">Alunos com Demandas Logísticas/Saúde</h3>
     <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
@@ -97,7 +128,7 @@ async function carregarRelatoriosEscola() {
           <th style="padding:12px;">Aluno</th>
           <th style="padding:12px;">Turma</th>
           <th style="padding:12px;">Transporte</th>
-          <th style="padding:12px;">Restrições / Laudos</th>
+          <th style="padding:12px;">Atenção Especial/Saúde</th>
         </tr>
       </thead>
       <tbody>
@@ -111,11 +142,16 @@ async function carregarRelatoriosEscola() {
           <td style="padding:12px; color:#3ea6ff;">${n.transporte}</td>
           <td style="padding:12px; color:#ef4444;">${n.saude.join(' | ')}</td>
         </tr>`;
+      tabelaCensoPrint += `<tr><td class="text-left">${n.turma}</td><td class="text-left"><strong>${n.nome}</strong></td><td>${n.transporte}</td><td class="text-left" style="color:#600">${n.saude.join(' | ')}</td></tr>`;
     });
   } else {
     htmlCenso += '<tr><td colspan="4" style="padding:16px;text-align:center;color:#aaa;">Nenhum aluno com demandas registradas.</td></tr>';
+    tabelaCensoPrint += '<tr><td colspan="4">Nenhum aluno com demandas registradas.</td></tr>';
   }
   htmlCenso += '</tbody></table>';
+  tabelaCensoPrint += '</tbody></table>';
+  
+  window.htmlImpressaoCenso = tabelaCensoPrint;
   containerCenso.innerHTML = htmlCenso;
   } catch (err) {
     console.error('Erro em carregarRelatoriosEscola:', err);
@@ -146,9 +182,21 @@ async function carregarEvasaoLocal(container) {
   (alunos || []).forEach(a => { if(!apt[a.turma_id]) apt[a.turma_id]=[]; apt[a.turma_id].push(a); });
 
   let html = '<h3 style="margin-top:0;">Relatório de Frequência (30 dias)</h3>';
+  
+  let tabelaFreqPrint = `
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Frequência por Aluno e Turma (Últimos 30 dias)</h3>
+    <table class="boletim-tabela">
+      <thead><tr><th class="text-left">Turma</th><th class="text-left">Aluno</th><th>Frequência %</th><th>Situação</th></tr></thead>
+      <tbody>
+  `;
+
   turmas.forEach(t => {
     const daTurma = apt[t.id] || [];
     if(daTurma.length===0) return;
+    
+    // Sort students alphabetically
+    daTurma.sort((a,b) => a.nome.localeCompare(b.nome));
+
     html += `
       <div style="background:#222; border:1px solid #333; border-radius:8px; margin-bottom:16px; padding:16px;">
         <div style="margin-bottom:12px; font-weight:bold;">${t.nome} <span style="font-size:12px; color:#aaa; font-weight:normal;">- ${t.turno}</span></div>
@@ -157,6 +205,8 @@ async function carregarEvasaoLocal(container) {
       const f = mapaFreq[a.id];
       const pct = f && f.t > 0 ? Math.round((f.p/f.t)*100) : null;
       const cor = pct===null ? '#555' : pct >= 75 ? '#22c55e' : '#ef4444';
+      const statusPrint = pct===null ? 'Sem Reg.' : pct >= 75 ? 'Regular' : 'Risco de Evasão';
+      const corPrint = pct===null ? '#555' : pct >= 75 ? '#1a6e1a' : '#8b0000';
       const w = pct!==null ? pct : 0;
       html += `
         <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
@@ -167,8 +217,13 @@ async function carregarEvasaoLocal(container) {
           <div style="width:40px; text-align:right; font-size:13px; font-weight:bold; color:${cor};">${pct!==null?pct+'%':'-'}</div>
         </div>
       `;
+      tabelaFreqPrint += `<tr><td class="text-left">${t.nome}</td><td class="text-left">${a.nome}</td><td><strong>${pct!==null?pct+'%':'-'}</strong></td><td style="color:${corPrint}; font-weight:bold;">${statusPrint}</td></tr>`;
     });
     html += '</div>';
   });
+  
+  tabelaFreqPrint += '</tbody></table>';
+  window.htmlImpressaoFrequencia = tabelaFreqPrint;
+  
   container.innerHTML = html;
 }
