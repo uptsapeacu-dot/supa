@@ -23,6 +23,9 @@ async function fazerLogin() {
     return
   }
 
+  if (typeof promiseComponentes !== 'undefined') {
+    await promiseComponentes;
+  }
   iniciarSistema()
 }
 

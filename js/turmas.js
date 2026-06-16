@@ -1026,12 +1026,13 @@ async function carregarMateriasNoModalTurma() {
     div.innerHTML = `
       <div style="display:flex; flex-direction:column; gap:2px;">
         <span style="font-weight:500; color:#fff; font-size:13.5px;">${mat.nome}</span>
-        <span style="font-size:11.5px; color:#aaa;">👨‍🏫 ${nomeProf}</span>
+        <span style="font-size:11.5px; color:#aaa;"><i data-lucide="user" style="width:14px;height:14px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i>${nomeProf}</span>
       </div>
-      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir Matéria" onclick="excluirMateriaPeloModal('${mat.id}')">🗑</button>
+      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir Matéria" onclick="excluirMateriaPeloModal('${mat.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
     `;
     lista.appendChild(div);
   });
+  if (window.lucide) window.lucide.createIcons();
 }
 
 async function salvarMateriaPeloModal() {

@@ -590,53 +590,39 @@
   <script src="js/relatorios.js"></script>
 
   <script>
-    // Função para carregar os HTMLs pesados de forma limpa
+    let promiseComponentes;
+
+    // Função para carregar os HTMLs pesados em paralelo e de forma resiliente
     async function carregarComponentes() {
-      try {
-        // Busca os arquivos
-        const resModal = await fetch('modal-aluno.html');
-        const resFicha = await fetch('ficha-impressao.html');
+      const components = [
+        { url: 'modal-aluno.html', target: 'container-modal-aluno' },
+        { url: 'ficha-impressao.html', target: 'container-ficha-impressao' },
+        { url: 'htmls/turmas-lista.html', target: 'turmas' },
+        { url: 'htmls/funcionarios-lista.html', target: 'funcionarios' },
+        { url: 'htmls/financeiro.html', target: 'financeiro' },
+        { url: 'htmls/boletim-impressao.html', target: 'container-boletim-impressao' },
+        { url: 'htmls/diretrizes.html', target: 'diretrizes' },
+        { url: 'htmls/relatorios.html', target: 'relatorios' }
+      ];
 
-        // Busca a tela de Turmas
-        const resTurmas = await fetch('htmls/turmas-lista.html');
-        document.getElementById('turmas').innerHTML = await resTurmas.text();
-        
-        // Busca a tela de Funcionários
-        const resFuncionarios = await fetch('htmls/funcionarios-lista.html');
-        
-        // NOVO: Busca a tela Financeira
-        const resFinanceiro = await fetch('htmls/financeiro.html');
-        document.getElementById('financeiro').innerHTML = await resFinanceiro.text();
-        
-        // Cola o conteúdo deles nas caixas vazias do index
-        document.getElementById('container-modal-aluno').innerHTML = await resModal.text();
-        document.getElementById('container-ficha-impressao').innerHTML = await resFicha.text();
+      await Promise.allSettled(components.map(async (comp) => {
+        try {
+          const res = await fetch(comp.url);
+          if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+          document.getElementById(comp.target).innerHTML = await res.text();
+        } catch (error) {
+          console.error(`Erro ao carregar componente ${comp.url}:`, error);
+        }
+      }));
 
-        // Carrega o boletim escolar
-        const resBoletim = await fetch('htmls/boletim-impressao.html');
-        document.getElementById('container-boletim-impressao').innerHTML = await resBoletim.text();
-
-        // Cola a tela de funcionários na seção vazia
-        document.getElementById('funcionarios').innerHTML = await resFuncionarios.text();
-
-        // Carrega as diretrizes
-        const resDiretrizes = await fetch('htmls/diretrizes.html');
-        document.getElementById('diretrizes').innerHTML = await resDiretrizes.text();
-
-        // Carrega relatórios
-        const resRelatorios = await fetch('htmls/relatorios.html');
-        document.getElementById('relatorios').innerHTML = await resRelatorios.text();
-
-        console.log("Componentes externos carregados com sucesso!");
-      } catch (error) {
-        console.error("Erro ao carregar os componentes:", error);
-      }
+      console.log("Componentes externos carregados com sucesso!");
     }
 
     // Inicialização segura: aguarda os componentes antes de seguir
     async function iniciarApp() {
-      await carregarComponentes();
-      lucide.createIcons();
+      promiseComponentes = carregarComponentes();
+      await promiseComponentes;
+      if (window.lucide) lucide.createIcons();
       verificarLogin();
     }
 

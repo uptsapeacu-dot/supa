@@ -51,13 +51,19 @@ async function carregarRelatoriosGlobais() {
   const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
 
+  if (!containerDesempenho || !containerFreq || !containerCenso) {
+    console.error('Elementos de relatório não encontrados no DOM.');
+    return;
+  }
+
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
 
-  // Buscar todas escolas
-  const { data: escolas } = await clienteSupabase.from('escolas').select('id, nome');
-  if (!escolas) return;
+  try {
+    // Buscar todas escolas
+    const { data: escolas, error } = await clienteSupabase.from('escolas').select('id, nome');
+    if (error || !escolas) throw new Error('Falha ao carregar escolas');
 
   // 1. DESEMPENHO (Média por escola)
   const { data: notas } = await clienteSupabase.from('notas_alunos')
@@ -199,6 +205,13 @@ async function carregarRelatoriosGlobais() {
   setTimeout(() => {
     if (window.lucide) window.lucide.createIcons();
   }, 50);
+  } catch (err) {
+    console.error('Erro em carregarRelatoriosGlobais:', err);
+    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados globais da rede.</div>';
+    containerDesempenho.innerHTML = msgErro;
+    containerFreq.innerHTML = msgErro;
+    containerCenso.innerHTML = msgErro;
+  }
 }
 
 async function carregarRelatoriosEscola() {
@@ -206,14 +219,22 @@ async function carregarRelatoriosEscola() {
   const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
 
+  if (!containerDesempenho || !containerFreq || !containerCenso) {
+    console.error('Elementos de relatório não encontrados no DOM.');
+    return;
+  }
+
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
 
-  // 1. DESEMPENHO (Boletim Vermelho)
-  const { data: notas } = await clienteSupabase.from('notas_alunos')
-    .select('media, materia_id, materias_turmas(nome), alunos!inner(id, nome, escola_id)')
-    .eq('alunos.escola_id', escolaAtual);
+  try {
+    // 1. DESEMPENHO (Boletim Vermelho)
+    const { data: notas, error: errorNotas } = await clienteSupabase.from('notas_alunos')
+      .select('media, materia_id, materias_turmas(nome), alunos!inner(id, nome, escola_id)')
+      .eq('alunos.escola_id', escolaAtual);
+
+    if (errorNotas) throw new Error('Falha ao carregar notas_alunos');
 
   const alunosRisco = {};
   if (notas) {
@@ -310,6 +331,13 @@ async function carregarRelatoriosEscola() {
   }
   htmlCenso += '</tbody></table>';
   containerCenso.innerHTML = htmlCenso;
+  } catch (err) {
+    console.error('Erro em carregarRelatoriosEscola:', err);
+    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados locais.</div>';
+    containerDesempenho.innerHTML = msgErro;
+    containerFreq.innerHTML = msgErro;
+    containerCenso.innerHTML = msgErro;
+  }
 }
 
 // Lógica isolada de frequência por turma da escola
