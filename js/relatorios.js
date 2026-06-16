@@ -46,7 +46,7 @@ async function carregarRelatorios() {
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
-  const containerFreq = document.getElementById('conteudo-frequencia');
+  const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
 
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
@@ -197,7 +197,7 @@ async function carregarRelatoriosGlobais() {
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
-  const containerFreq = document.getElementById('conteudo-frequencia');
+  const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
 
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
