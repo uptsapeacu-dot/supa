@@ -83,7 +83,9 @@ function mostrarTela(tela) {
     'alunos',
     'permissoes',
     'relatorios',
-    'perfil'
+    'perfil',
+    'diretrizes',
+    'financeiro'
   ]
 
   telas.forEach(function(id) {
