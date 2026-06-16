@@ -44,7 +44,10 @@ async function carregarRelatorios() {
     if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosGlobais();
   } else {
-    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Relatórios: ' + escolaAtualNome + '</span>';
+    const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
+    const nomeDaEscola = escolaObj ? escolaObj.nome : 'Escola';
+    
+    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Relatórios: ' + nomeDaEscola + '</span>';
     if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosEscola();
   }
@@ -59,7 +62,10 @@ function imprimirRelatorio() {
   document.body.classList.add('imprimindo-relatorio');
 
   const tituloOriginal = document.title;
-  document.title = "Relatorio_" + (escolaAtual ? escolaAtualNome.replace(/\s+/g, '_') : 'Geral_Rede_Municipal');
+  const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
+  const nomeDaEscola = escolaObj ? escolaObj.nome : 'Escola';
+  
+  document.title = "Relatorio_" + (escolaAtual ? nomeDaEscola.replace(/\s+/g, '_') : 'Geral_Rede_Municipal');
 
   window.onafterprint = function() {
     // Remove a autorização após impressão
