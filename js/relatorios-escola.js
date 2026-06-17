@@ -167,8 +167,16 @@ let relatorioFreqMes = new Date().getMonth();
 let relatorioFreqAno = new Date().getFullYear();
 let relatorioFreqTurmasSel = [];
 let relatorioFreqTodasTurmasCache = [];
+let relatorioFreqEscolaCacheId = null;
 
 async function carregarEvasaoLocal(container) {
+  // Se mudou a escola, limpa o cache
+  if (relatorioFreqEscolaCacheId !== escolaAtual) {
+    relatorioFreqTodasTurmasCache = [];
+    relatorioFreqTurmasSel = [];
+    relatorioFreqEscolaCacheId = escolaAtual;
+  }
+
   // Se não temos turmas carregadas em cache para o seletor, busca
   if (relatorioFreqTodasTurmasCache.length === 0) {
     const { data: turmas } = await clienteSupabase.from('turmas').select('id, nome, turno').eq('escola_id', escolaAtual);
@@ -305,7 +313,7 @@ async function renderizarDadosRelatorioEvasao() {
     <h3 style="text-align:center; font-family:Arial; margin-top:10px;">Matriz de Frequência — ${nomesMeses[relatorioFreqMes]} ${relatorioFreqAno}</h3>
   `;
 
-  const turmasParaExibir = relatorioFreqTodasTurmasCache.filter(t => relatorioFreqTurmasSel.includes(t.id));
+  const turmasParaExibir = relatorioFreqTodasTurmasCache.filter(t => relatorioFreqTurmasSel.includes(String(t.id)));
 
   turmasParaExibir.forEach(t => {
     const daTurma = apt[t.id] || [];

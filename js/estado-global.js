@@ -16,6 +16,29 @@ let funcionarioEditandoId = null
 let muralFuncionarios = []
 let calendarMes = new Date().getMonth()
 let calendarAno = new Date().getFullYear()
+
+function usuarioNivel3() {
+  return acessosAtual.some(function(acesso) {
+    return acesso.nivel === 3 && acesso.ativo;
+  });
+}
+
+function podeLancarFrequencia() {
+  if (!modoEdicaoAtivo) return false;
+  if (usuarioNivel1() || usuarioNivel2()) return true;
+  return acessosAtual.some(function(acesso) {
+    return acesso.nivel === 3 && acesso.pode_turmas === true && acesso.ativo;
+  });
+}
+
+function podeVerFrequencia() {
+  if (usuarioNivel1() || usuarioNivel2()) return true;
+  return acessosAtual.some(function(acesso) {
+    return acesso.nivel === 3 && acesso.pode_turmas === true && acesso.ativo;
+  });
+}
+
+// ====== FUNÇÕES GERAIS / UTILITÁRIOS ====== false
 const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const modulosEscola = [
   { id: 'mural',        nome: 'Mural',        icone: 'pin',            permissao: 'pode_mural'        },

@@ -501,15 +501,17 @@ async function carregarFrequenciaHub() {
         <button class="freq-btn ${presente ? 'freq-btn-presente' : ''}"
           id="fhub-presente-${aluno.id}"
           onclick="${podeLancar ? `marcarFreqHub(${aluno.id}, true)` : ''}"
-          ${podeLancar ? '' : 'disabled'} title="Presente">✅ Presente</button>
+          ${podeLancar ? '' : 'disabled'} title="Presente"><i data-lucide="check-circle" style="width:14px;height:14px;"></i> Presente</button>
         <button class="freq-btn ${!presente ? 'freq-btn-falta' : ''}"
           id="fhub-falta-${aluno.id}"
           onclick="${podeLancar ? `marcarFreqHub(${aluno.id}, false)` : ''}"
-          ${podeLancar ? '' : 'disabled'} title="Falta">❌ Falta</button>
+          ${podeLancar ? '' : 'disabled'} title="Falta"><i data-lucide="x-circle" style="width:14px;height:14px;"></i> Falta</button>
       </div>
     `;
     lista.appendChild(item);
   });
+
+  if (window.lucide) lucide.createIcons();
 }
 
 function marcarFreqHub(alunoId, presente) {
