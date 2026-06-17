@@ -3,6 +3,10 @@
 </div>
 <div class="diretrizes-layout" style="max-width: 800px; margin: 0 auto; padding: 20px;">
   
+  <div style="margin-bottom: 20px;">
+    <input type="text" id="buscaDiretrizes" placeholder="Buscar conteúdos por tópico..." oninput="filtrarDiretrizes()" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 15px; outline: none;" onfocus="this.style.borderColor='#3ea6ff'" onblur="this.style.borderColor='#333'">
+  </div>
+
   <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d1', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="shield" style="width:18px;height:18px;"></i> Níveis de Acesso</span>
@@ -64,6 +68,20 @@
     </div>
   </div>
 
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d5', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="map" style="width:18px;height:18px;"></i> Navegação do Professor</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d5" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">O fluxo de navegação do professor foi otimizado para ir direto ao que interessa:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;"><strong>Módulos Administrativos:</strong> Ao clicar na escola na tela inicial, o professor verá que não tem acesso aos módulos gerais, isso é esperado já que ele não é secretário ou gestor e não precisa ver os módulos de cadastro.</li>
+        <li style="margin-bottom:6px;"><strong>Menu Lateral Direto:</strong> Professores devem utilizar o menu <strong>"Turmas"</strong> na barra lateral esquerda (sidebar) para acessar diretamente suas disciplinas, frequência e alunos.</li>
+      </ul>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -77,6 +95,32 @@
       content.style.display = 'none';
       icon.setAttribute('data-lucide', 'chevron-down');
     }
+    if (window.lucide) {
+      lucide.createIcons();
+    }
+  }
+
+  window.filtrarDiretrizes = function() {
+    const termo = document.getElementById('buscaDiretrizes').value.toLowerCase();
+    const cards = document.querySelectorAll('.diretriz-card');
+    
+    cards.forEach(function(card) {
+      const texto = card.textContent.toLowerCase();
+      if (texto.includes(termo)) {
+        card.style.display = 'block';
+        if (termo.trim() !== '') {
+          const content = card.querySelector('div[id^="d"]');
+          const icon = card.querySelector('.d-icon');
+          if(content && content.style.display === 'none') {
+            content.style.display = 'block';
+            if(icon) icon.setAttribute('data-lucide', 'chevron-up');
+          }
+        }
+      } else {
+        card.style.display = 'none';
+      }
+    });
+    
     if (window.lucide) {
       lucide.createIcons();
     }

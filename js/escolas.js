@@ -1,4 +1,4 @@
-﻿﻿async function carregarEscolas() {
+﻿async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {
@@ -45,7 +45,20 @@ function renderizarEscolas() {
   if (!lista) return
 
   if (escolas.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Nenhuma escola cadastrada ainda.</div>'
+    lista.innerHTML = `
+      <div class="empty-state" style="max-width: 600px; margin: 0 auto; text-align: center; line-height: 1.6;">
+        <h3 style="margin-bottom: 12px; color: #555;">Nenhuma escola cadastrada</h3>
+        <p style="font-size: 14px; color: #666; margin-bottom: 8px;">
+          Você ainda não possui vínculo com nenhuma escola no sistema.
+        </p>
+        <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 12px; text-align: left; border-radius: 4px;">
+          <strong>Atenção Professor / Funcionário:</strong>
+          <p style="margin-top: 6px; font-size: 13px; color: #664d03;">
+            Certifique-se de que fez o login usando o <b>mesmo e-mail</b> que a secretaria utilizou para te cadastrar. Se os e-mails forem diferentes, o sistema não consegue encontrar seu perfil original. Entre em contato com a secretaria para confirmar seu e-mail de acesso.
+          </p>
+        </div>
+      </div>
+    `
     return
   }
 
