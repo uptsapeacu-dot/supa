@@ -12,9 +12,24 @@
       <p style="margin-top:10px;">O sistema possui 4 níveis hierárquicos de acesso:</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
         <li style="margin-bottom:6px;"><strong>Nível 1 (Administrador Global):</strong> Acesso total a todas as escolas e módulos do sistema. Permite controle irrestrito.</li>
-        <li style="margin-bottom:6px;"><strong>Nível 2 (Gestor de Escola):</strong> Acesso de gestão total apenas na escola onde o funcionário está vinculado. Pode realizar qualquer alteração na sua unidade.</li>
-        <li style="margin-bottom:6px;"><strong>Nível 3 (Edição Restrita):</strong> Precisa de permissões específicas concedidas pelo Gestor ou Administrador (ex: permissão para editar turmas, alunos, mural). Ideal para professores e secretários.</li>
-        <li style="margin-bottom:6px;"><strong>Nível 4 (Visualizador):</strong> Acesso apenas para leitura (visualização) das informações na escola vinculada. Nenhuma alteração é permitida.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 2 (Diretor Escolar):</strong> Acesso de gestão total apenas na escola onde o funcionário está vinculado. Pode realizar qualquer alteração na sua unidade.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 3 (Secretário Escolar / Coordenador):</strong> Precisa de permissões específicas concedidas pelo Diretor (ex: permissão para editar turmas, alunos, mural).</li>
+        <li style="margin-bottom:6px;"><strong>Nível 4 (Professor):</strong> Acesso restrito e inteligente. O professor só consegue visualizar e lançar notas/frequência das disciplinas e turmas nas quais está diretamente vinculado.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d4', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="user-plus" style="width:18px;height:18px;"></i> Cadastro e Acesso de Professores</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d4" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">Para garantir a segurança, o professor não cria a própria conta do zero. O fluxo oficial é:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;"><strong>Passo 1 (Cadastro):</strong> O Diretor acessa o menu "Funcionários", cadastra os dados do Professor incluindo o seu <strong>E-mail</strong>, e cria o vínculo na escola.</li>
+        <li style="margin-bottom:6px;"><strong>Passo 2 (Permissão):</strong> O Diretor acessa o menu "Permissões", seleciona o funcionário e concede a ele o acesso de <strong>Nível 4 - Professor</strong>.</li>
+        <li style="margin-bottom:6px;"><strong>Passo 3 (Primeiro Acesso):</strong> Quando o Professor fizer o login pela primeira vez usando aquele mesmo e-mail, o sistema fará o vínculo automático e seguro, liberando o Diário Eletrônico.</li>
       </ul>
     </div>
   </div>
@@ -25,11 +40,11 @@
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
     </button>
     <div id="d2" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
-      <p style="margin-top:10px;">Por padrão, todos os usuários acessam o sistema no <strong>Modo Visualização</strong> para evitar edições acidentais de dados críticos. Para modificar dados, o usuário deve:</p>
+      <p style="margin-top:10px;">Por padrão, usuários administrativos (Níveis 1 a 3) acessam o sistema no <strong>Modo Visualização</strong> para evitar edições acidentais de dados críticos. Para modificar dados gerais:</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
-        <li style="margin-bottom:6px;">Ativar o interruptor do <strong>Modo Edição</strong> no painel superior.</li>
-        <li style="margin-bottom:6px;">Confirmar a ação digitando a sua <strong>senha pessoal</strong> de acesso.</li>
-        <li style="margin-bottom:6px;">Ter um nível de permissão adequado para o módulo desejado (Níveis 1, 2 ou 3 com permissão do módulo).</li>
+        <li style="margin-bottom:6px;">Ative o interruptor do <strong>Modo Edição</strong> no painel superior.</li>
+        <li style="margin-bottom:6px;">Confirme a ação digitando a sua <strong>senha pessoal</strong> de acesso.</li>
+        <li style="margin-bottom:6px;"><em>Exceção: O Professor (Nível 4) não precisa ativar o Modo Edição para lançar suas próprias notas e faltas no seu Diário.</em></li>
       </ul>
     </div>
   </div>
@@ -40,11 +55,11 @@
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
     </button>
     <div id="d3" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
-      <p style="margin-top:10px;">A manipulação de registros essenciais do aluno (como frequências e notas) exige um rigor de segurança:</p>
+      <p style="margin-top:10px;">A manipulação de registros essenciais do aluno exige segurança e rastreabilidade:</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
-        <li style="margin-bottom:6px;">Lançamentos de frequência ou notas são estritamente <strong>bloqueados</strong> sem o Modo de Edição ativo.</li>
-        <li style="margin-bottom:6px;">Apenas usuários com a permissão "Turmas" explícita ou nível hierárquico superior podem executar lançamentos.</li>
-        <li style="margin-bottom:6px;">Todos os salvamentos gravam o funcionário responsável ("registrado_por") para garantir a rastreabilidade e auditoria da gestão escolar.</li>
+        <li style="margin-bottom:6px;">Lançamentos por Gestores/Secretaria exigem o Modo de Edição ativo.</li>
+        <li style="margin-bottom:6px;">Professores têm permissão nativa para lançar apenas na aba de Notas das disciplinas que ensinam e na Frequência das suas turmas.</li>
+        <li style="margin-bottom:6px;">Todos os salvamentos gravam no banco de dados qual funcionário ("registrado_por") realizou a ação.</li>
       </ul>
     </div>
   </div>
