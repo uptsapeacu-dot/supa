@@ -1,4 +1,4 @@
-﻿async function fazerLogin() {
+async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')
@@ -72,17 +72,29 @@ async function carregarFuncionarioAtual() {
     .maybeSingle()
 
   if (!funcionario) {
-    const resposta = await clienteSupabase
+    let { data: funcByEmail } = await clienteSupabase
       .from('funcionarios')
-      .insert([{
-        auth_user_id: user.id,
-        email: user.email,
-        nome: user.email
-      }])
-      .select()
-      .single()
+      .select('*')
+      .eq('email', user.email)
+      .maybeSingle()
 
-    funcionario = resposta.data
+    if (funcByEmail) {
+      await clienteSupabase.from('funcionarios').update({auth_user_id: user.id}).eq('id', funcByEmail.id)
+      funcionario = funcByEmail
+      funcionario.auth_user_id = user.id
+    } else {
+      const resposta = await clienteSupabase
+        .from('funcionarios')
+        .insert([{
+          auth_user_id: user.id,
+          email: user.email,
+          nome: user.email
+        }])
+        .select()
+        .single()
+
+      funcionario = resposta.data
+    }
   }
 
   funcionarioAtual = funcionario

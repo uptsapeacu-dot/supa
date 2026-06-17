@@ -1,4 +1,4 @@
-﻿let permissaoEditando = null;
+let permissaoEditando = null;
 
 async function carregarTelaPermissoes() {
   if (!podeVerPermissoes()) {
@@ -116,7 +116,7 @@ function preencherSelectsPermissoes() {
     selectNivel.innerHTML = ''
     if (isSecretaria()) selectNivel.innerHTML += '<option value="2">NÃ­vel 2 - Diretor Escolar</option>'
     selectNivel.innerHTML += '<option value="3">NÃ­vel 3 - SecretÃ¡rio Escolar</option>'
-    selectNivel.innerHTML += '<option value="4">NÃ­vel 4 - Perfil</option>'
+    selectNivel.innerHTML += '<option value="4">Nível 4 - Professor</option>'
   }
 
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')

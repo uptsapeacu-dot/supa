@@ -1,4 +1,4 @@
-﻿let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
+let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
 let turmaEditandoId = null;
 
 // Estado do hub de turma
@@ -26,6 +26,25 @@ async function carregarTurmasDaTela() {
   const busca = document.getElementById('buscaTurma') ? document.getElementById('buscaTurma').value.trim().toLowerCase() : '';
   const turno = document.getElementById('filtroTurno') ? document.getElementById('filtroTurno').value : '';
 
+  let turmasPermitidas = null;
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(function(a) { return a.orgao_id === escolaAtual && a.ativo });
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', escolaAtual).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(function(v) { return v.id });
+      if (vinculoIds.length > 0) {
+        const { data: mats } = await clienteSupabase.from('materias_turmas').select('turma_id').in('vinculo_id', vinculoIds).eq('ativo', true);
+        const { data: tps } = await clienteSupabase.from('turmas_professores').select('turma_id').in('vinculo_id', vinculoIds);
+        const ids = new Set();
+        (mats || []).forEach(function(m) { if (m.turma_id) ids.add(m.turma_id) });
+        (tps || []).forEach(function(t) { if (t.turma_id) ids.add(t.turma_id) });
+        turmasPermitidas = Array.from(ids);
+      } else {
+        turmasPermitidas = [];
+      }
+    }
+  }
+
   let query = clienteSupabase
     .from('turmas')
     .select('*, alunos(count), turmas_professores(vinculo_id, vinculos_funcionarios(funcionarios(nome, foto_url)))')
@@ -36,6 +55,14 @@ async function carregarTurmasDaTela() {
 
   if (turno !== '') {
     query = query.eq('turno', turno);
+  }
+
+  if (turmasPermitidas !== null) {
+      if (turmasPermitidas.length === 0) {
+         lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Você não tem nenhuma turma vinculada nesta escola.</div>';
+         return;
+      }
+      query = query.in('id', turmasPermitidas);
   }
 
   const { data, error } = await query;
@@ -563,21 +590,41 @@ async function carregarNotasHub() {
   lista.innerHTML = '<div class="hub-empty">Carregando...</div>';
   hubNotasCache = {};
 
-  const temPermissao = isSecretaria() || acessosAtual.some(a =>
+  let temPermissao = isSecretaria() || acessosAtual.some(a =>
     (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo
   );
-  const podeEditar = modoEdicaoAtivo && temPermissao;
+  let podeEditar = modoEdicaoAtivo && temPermissao;
+
+  if (!podeEditar) {
+    const acessoProf = acessosAtual.find(a => a.orgao_id === escolaAtual && a.ativo && a.nivel === PERFIS.PROFESSOR);
+    if (acessoProf) podeEditar = true;
+  }
 
   const btnSalvar = document.getElementById('btnSalvarNotasHub');
   if (btnSalvar) btnSalvar.style.display = podeEditar ? 'block' : 'none';
 
   // Carrega matÃ©rias
-  const { data: materias } = await clienteSupabase
+  let queryMaterias = clienteSupabase
     .from('materias_turmas')
-    .select('id, nome')
+    .select('id, nome, vinculo_id')
     .eq('turma_id', hubTurmaId)
     .eq('ativo', true)
     .order('nome', { ascending: true });
+
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(function(a) { return a.orgao_id === escolaAtual && a.ativo });
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', escolaAtual).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(function(v) { return v.id });
+      if (vinculoIds.length > 0) {
+        queryMaterias = queryMaterias.in('vinculo_id', vinculoIds);
+      } else {
+        queryMaterias = queryMaterias.in('vinculo_id', []);
+      }
+    }
+  }
+
+  const { data: materias } = await queryMaterias;
 
   hubMateriasList = materias || [];
 

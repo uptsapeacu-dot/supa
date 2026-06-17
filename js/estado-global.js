@@ -25,21 +25,26 @@ function isProfessorOuCoordenador() {
 }
 
 function podeLancarFrequencia() {
-  if (!modoEdicaoAtivo) return false;
-  if (isSecretaria() || isGestorEscolar()) return true;
+  if (isSecretaria() || isGestorEscolar()) return modoEdicaoAtivo;
   return acessosAtual.some(function(acesso) {
-    return (acesso.nivel === PERFIS.COORDENADOR || acesso.nivel === PERFIS.PROFESSOR) && acesso.pode_turmas === true && acesso.ativo;
+    if (!acesso.ativo) return false;
+    if (acesso.nivel === PERFIS.PROFESSOR) return true; // Professor sempre pode nas suas turmas
+    if (acesso.nivel === PERFIS.COORDENADOR) return acesso.pode_turmas === true && modoEdicaoAtivo;
+    return false;
   });
 }
 
 function podeVerFrequencia() {
   if (isSecretaria() || isGestorEscolar()) return true;
   return acessosAtual.some(function(acesso) {
-    return (acesso.nivel === PERFIS.COORDENADOR || acesso.nivel === PERFIS.PROFESSOR) && acesso.pode_turmas === true && acesso.ativo;
+    if (!acesso.ativo) return false;
+    if (acesso.nivel === PERFIS.PROFESSOR) return true;
+    if (acesso.nivel === PERFIS.COORDENADOR) return acesso.pode_turmas === true;
+    return false;
   });
 }
 
-// ====== FUNÃ‡Ã•ES GERAIS / UTILITÃRIOS ====== false
+// ====== FUNÃ‡Ã•ES GERAIS / UTILITÃ RIOS ====== false
 const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const modulosEscola = [
   { id: 'mural',        nome: 'Mural',        icone: 'pin',            permissao: 'pode_mural'        },
