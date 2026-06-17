@@ -345,7 +345,100 @@ async function carregarAlunosDaTurmaHub() {
 
 // ====== ABA: FREQUÊNCIA (wrapper para o sistema existente) ======
 
+let dataFrequenciaHubObj = new Date();
+let mesVisivelFreqHub = dataFrequenciaHubObj.getMonth();
+let anoVisivelFreqHub = dataFrequenciaHubObj.getFullYear();
+
+function atualizarLabelDataFrequenciaHub() {
+  const btn = document.getElementById('btnCalendarioFrequenciaHub');
+  if (btn) btn.innerText = typeof formatarDataPorExtenso === 'function' ? formatarDataPorExtenso(dataFrequenciaHubObj) : dataFrequenciaHubObj.toLocaleDateString('pt-BR');
+  
+  const input = document.getElementById('dataFrequenciaHub');
+  if (input) {
+    const ano = dataFrequenciaHubObj.getFullYear();
+    const mes = String(dataFrequenciaHubObj.getMonth() + 1).padStart(2, '0');
+    const dia = String(dataFrequenciaHubObj.getDate()).padStart(2, '0');
+    input.value = `${ano}-${mes}-${dia}`;
+  }
+}
+
+function mudarDiaFrequenciaHub(offset) {
+  dataFrequenciaHubObj.setDate(dataFrequenciaHubObj.getDate() + offset);
+  atualizarLabelDataFrequenciaHub();
+  carregarFrequenciaHub();
+}
+
+function toggleCalendarioFrequenciaHub() {
+  const popup = document.getElementById('calendarioFrequenciaPopupHub');
+  if (!popup) return;
+  if (popup.style.display === 'none') {
+    popup.style.display = 'block';
+    mesVisivelFreqHub = dataFrequenciaHubObj.getMonth();
+    anoVisivelFreqHub = dataFrequenciaHubObj.getFullYear();
+    renderizarCalendarioFrequenciaHub();
+  } else {
+    popup.style.display = 'none';
+  }
+}
+
+function mudarMesCalendarioFrequenciaHub(offset) {
+  mesVisivelFreqHub += offset;
+  if (mesVisivelFreqHub > 11) { mesVisivelFreqHub = 0; anoVisivelFreqHub++; }
+  else if (mesVisivelFreqHub < 0) { mesVisivelFreqHub = 11; anoVisivelFreqHub--; }
+  renderizarCalendarioFrequenciaHub();
+}
+
+function selecionarHojeCalendarioFrequenciaHub() {
+  dataFrequenciaHubObj = new Date();
+  atualizarLabelDataFrequenciaHub();
+  document.getElementById('calendarioFrequenciaPopupHub').style.display = 'none';
+  carregarFrequenciaHub();
+}
+
+function selecionarDataCalendarioHub(dia, mes, ano) {
+  dataFrequenciaHubObj = new Date(ano, mes, dia);
+  atualizarLabelDataFrequenciaHub();
+  document.getElementById('calendarioFrequenciaPopupHub').style.display = 'none';
+  carregarFrequenciaHub();
+}
+
+function renderizarCalendarioFrequenciaHub() {
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  document.getElementById('labelMesAnoCalendarioFrequenciaHub').innerText = `${nomesMeses[mesVisivelFreqHub]} ${anoVisivelFreqHub}`;
+  
+  const grid = document.getElementById('gridDiasCalendarioFrequenciaHub');
+  grid.innerHTML = '';
+  
+  const primeiroDia = new Date(anoVisivelFreqHub, mesVisivelFreqHub, 1).getDay();
+  const diasNoMes = new Date(anoVisivelFreqHub, mesVisivelFreqHub + 1, 0).getDate();
+  
+  for (let i = 0; i < primeiroDia; i++) {
+    grid.innerHTML += `<div></div>`;
+  }
+  
+  const diaSelecionado = dataFrequenciaHubObj.getDate();
+  const mesSelecionado = dataFrequenciaHubObj.getMonth();
+  const anoSelecionado = dataFrequenciaHubObj.getFullYear();
+  
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const isSelecionado = dia === diaSelecionado && mesVisivelFreqHub === mesSelecionado && anoVisivelFreqHub === anoSelecionado;
+    const estilo = isSelecionado 
+      ? 'background:#3ea6ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:0 auto; cursor:pointer; font-weight:bold;' 
+      : 'width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:0 auto; cursor:pointer; border-radius:50%; transition:background 0.2s;';
+      
+    const onhover = isSelecionado ? '' : `onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'"`;
+      
+    grid.innerHTML += `<div style="${estilo}" ${onhover} onclick="selecionarDataCalendarioHub(${dia}, ${mesVisivelFreqHub}, ${anoVisivelFreqHub})">${dia}</div>`;
+  }
+}
+
 async function inicializarFrequenciaHub() {
+  const popup = document.getElementById('calendarioFrequenciaPopupHub');
+  if (popup) popup.style.display = 'none';
+
+  dataFrequenciaHubObj = new Date();
+  atualizarLabelDataFrequenciaHub();
+
   const podeLancar = podeLancarFrequencia();
   const aviso = document.getElementById('avisoPermissaoFreqHub');
   const btnSalvar = document.getElementById('btnSalvarFrequenciaHub');
@@ -354,6 +447,8 @@ async function inicializarFrequenciaHub() {
     aviso.style.display = 'none';
   }
   if (btnSalvar) btnSalvar.style.display = podeLancar ? 'block' : 'none';
+
+  if (window.lucide) lucide.createIcons();
 
   await carregarFrequenciaHub();
 }

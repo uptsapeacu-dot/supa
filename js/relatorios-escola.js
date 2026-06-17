@@ -173,8 +173,8 @@ async function carregarEvasaoLocal(container) {
   if (relatorioFreqTodasTurmasCache.length === 0) {
     const { data: turmas } = await clienteSupabase.from('turmas').select('id, nome, turno').eq('escola_id', escolaAtual);
     if (turmas) relatorioFreqTodasTurmasCache = turmas.sort((a, b) => a.nome.localeCompare(b.nome));
-    // Seleciona todas por padrão no início
-    relatorioFreqTurmasSel = relatorioFreqTodasTurmasCache.map(t => t.id);
+    // Seleciona todas por padrão no início como strings
+    relatorioFreqTurmasSel = relatorioFreqTodasTurmasCache.map(t => String(t.id));
   }
 
   if (relatorioFreqTodasTurmasCache.length === 0) {
@@ -211,10 +211,11 @@ function renderizarInterfaceRelatorioEvasao(container) {
 
   // Checkboxes dinâmicos de turma
   relatorioFreqTodasTurmasCache.forEach(t => {
-    const isChecked = relatorioFreqTurmasSel.includes(t.id);
+    const tIdStr = String(t.id);
+    const isChecked = relatorioFreqTurmasSel.includes(tIdStr);
     html += `
-      <label style="display:inline-flex; align-items:center; gap:6px; background:${isChecked ? '#3ea6ff20' : '#111'}; border:1px solid ${isChecked ? '#3ea6ff' : '#333'}; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; color:${isChecked ? '#fff' : '#888'}; transition:all 0.2s;">
-        <input type="checkbox" style="display:none;" onchange="toggleTurmaRelatorioEvasao(${t.id})" ${isChecked ? 'checked' : ''}>
+      <label style="display:inline-flex; align-items:center; gap:6px; background:${isChecked ? '#3ea6ff20' : '#111'}; border:1px solid ${isChecked ? '#3ea6ff' : '#333'}; padding:6px 12px; border-radius:6px; cursor:pointer; font-size:13px; color:${isChecked ? '#fff' : '#888'}; transition:all 0.2s; user-select:none;">
+        <input type="checkbox" style="display:none;" onchange="toggleTurmaRelatorioEvasao('${tIdStr}')" ${isChecked ? 'checked' : ''}>
         ${t.nome}
       </label>
     `;
@@ -241,11 +242,12 @@ function mudarMesRelatorioEvasao(offset) {
   renderizarDadosRelatorioEvasao();
 }
 
-function toggleTurmaRelatorioEvasao(id) {
-  if (relatorioFreqTurmasSel.includes(id)) {
-    relatorioFreqTurmasSel = relatorioFreqTurmasSel.filter(tid => tid !== id);
+function toggleTurmaRelatorioEvasao(idStr) {
+  idStr = String(idStr);
+  if (relatorioFreqTurmasSel.includes(idStr)) {
+    relatorioFreqTurmasSel = relatorioFreqTurmasSel.filter(tid => tid !== idStr);
   } else {
-    relatorioFreqTurmasSel.push(id);
+    relatorioFreqTurmasSel.push(idStr);
   }
   const container = document.getElementById('relatorio-conteudo-frequencia');
   renderizarInterfaceRelatorioEvasao(container);
