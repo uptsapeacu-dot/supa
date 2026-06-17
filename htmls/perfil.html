@@ -1,2 +1,40 @@
-        <h1>Perfil</h1>
-        <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
+<div class="page-header">
+  <h1>Meu Perfil</h1>
+</div>
+
+<div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+  
+  <!-- Alerta visível para orientar professores (e outros usuários novos) -->
+  <div style="background: #2563eb20; border-left: 4px solid #2563eb; padding: 16px; border-radius: 4px; margin-bottom: 24px; color: #dbeafe;">
+    <h3 style="margin-top: 0; margin-bottom: 8px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+      <i data-lucide="info" style="width: 18px; height: 18px;"></i> Recomendações de Segurança
+    </h3>
+    <p style="margin: 0; font-size: 14px; line-height: 1.5;">
+      Se este é o seu primeiro acesso usando uma senha padrão fornecida pela secretaria, por favor, crie uma senha forte e pessoal abaixo.
+    </p>
+  </div>
+
+  <div class="form-grid" style="background: #1f1f1f; padding: 24px; border-radius: 8px; border: 1px solid #333;">
+    <h2 style="grid-column: 1 / -1; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid #333; padding-bottom: 12px; font-size: 18px; color: #fff;">
+      <i data-lucide="lock" style="width: 18px; height: 18px; display: inline-block; vertical-align: text-bottom; margin-right: 6px;"></i> 
+      Alterar Senha de Acesso
+    </h2>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label for="novaSenhaPerfil">Nova Senha</label>
+      <input type="password" id="novaSenhaPerfil" placeholder="Mínimo 6 caracteres" />
+    </div>
+
+    <div class="form-group" style="grid-column: 1 / -1;">
+      <label for="confirmaSenhaPerfil">Confirmar Nova Senha</label>
+      <input type="password" id="confirmaSenhaPerfil" placeholder="Digite a nova senha novamente" />
+    </div>
+
+    <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 16px;">
+      <button class="btn-salvar" id="btnSalvarSenha" onclick="atualizarSenhaPerfil()">
+        Atualizar Senha
+      </button>
+    </div>
+  </div>
+
+</div>
