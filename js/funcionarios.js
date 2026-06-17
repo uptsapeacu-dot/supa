@@ -1,4 +1,4 @@
-﻿﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
+﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
 let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionário para impressão do histórico
 
 // ====== GESTÃƒO DINÃ‚MICA DE CARGOS ======
@@ -297,7 +297,7 @@ async function editarFuncionario(vinculo) {
   document.getElementById('nascimentoFuncionario').value = vinculo.funcionarios.data_nascimento || ''
   document.getElementById('fotoFuncionario').value = ''
 
-  document.getElementById('emailFuncionario').disabled = true
+  document.getElementById('emailFuncionario').disabled = !!vinculo.funcionarios.auth_user_id
   document.getElementById('btnNovoCargo').style.display = isSecretaria() ? 'block' : 'none';
 
   // Mostra caixa de observação ao mudar status
