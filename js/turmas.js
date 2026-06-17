@@ -1,4 +1,4 @@
-﻿let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
+let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
 let turmaEditandoId = null;
 
 // Estado do hub de turma
@@ -28,9 +28,9 @@ async function carregarTurmasDaTela() {
 
   let turmasPermitidas = null;
   if (!isSecretaria() && !isGestorEscolar()) {
-    const acesso = acessosAtual.find(function(a) { return a.orgao_id === escolaAtual && a.ativo });
+    const acesso = acessosAtual.find(function(a) { return a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo });
     if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
-      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', escolaAtual).eq('ativo', true);
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
       const vinculoIds = (vinculos || []).map(function(v) { return v.id });
       if (vinculoIds.length > 0) {
         const { data: mats } = await clienteSupabase.from('materias_turmas').select('turma_id').in('vinculo_id', vinculoIds).eq('ativo', true);
@@ -68,7 +68,7 @@ async function carregarTurmasDaTela() {
   const { data, error } = await query;
 
   const temPermissaoEdicao = isSecretaria() || acessosAtual.some(function(acesso) {
-    if (acesso.orgao_id !== escolaAtual) return false;
+    if (!acesso.orgaos || acesso.orgaos.escola_id !== escolaAtual) return false;
     if (acesso.nivel === 2) return true;
     if (acesso.nivel === 3) return acesso.pode_turmas === true;
     return false;
@@ -596,7 +596,7 @@ async function carregarNotasHub() {
   let podeEditar = modoEdicaoAtivo && temPermissao;
 
   if (!podeEditar) {
-    const acessoProf = acessosAtual.find(a => a.orgao_id === escolaAtual && a.ativo && a.nivel === PERFIS.PROFESSOR);
+    const acessoProf = acessosAtual.find(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo && a.nivel === PERFIS.PROFESSOR);
     if (acessoProf) podeEditar = true;
   }
 
@@ -612,9 +612,9 @@ async function carregarNotasHub() {
     .order('nome', { ascending: true });
 
   if (!isSecretaria() && !isGestorEscolar()) {
-    const acesso = acessosAtual.find(function(a) { return a.orgao_id === escolaAtual && a.ativo });
+    const acesso = acessosAtual.find(function(a) { return a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo });
     if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
-      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', escolaAtual).eq('ativo', true);
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
       const vinculoIds = (vinculos || []).map(function(v) { return v.id });
       if (vinculoIds.length > 0) {
         queryMaterias = queryMaterias.in('vinculo_id', vinculoIds);
