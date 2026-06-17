@@ -1,4 +1,4 @@
-let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
+﻿let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
 let turmaEditandoId = null;
 
 // Estado do hub de turma
@@ -17,7 +17,7 @@ async function carregarTurmasDaTela() {
   if (!lista) return;
 
   if (escolaAtual == null || escolaAtual === '') {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Selecione uma escola no menu "Início" primeiro.</div>';
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Selecione uma escola no menu "InÃ­cio" primeiro.</div>';
     return;
   }
 
@@ -40,7 +40,7 @@ async function carregarTurmasDaTela() {
 
   const { data, error } = await query;
 
-  const temPermissaoEdicao = usuarioNivel1() || acessosAtual.some(function(acesso) {
+  const temPermissaoEdicao = isSecretaria() || acessosAtual.some(function(acesso) {
     if (acesso.orgao_id !== escolaAtual) return false;
     if (acesso.nivel === 2) return true;
     if (acesso.nivel === 3) return acesso.pode_turmas === true;
@@ -110,7 +110,7 @@ async function carregarTurmasDaTela() {
     details.className = 'turma-details';
     details.innerHTML = `
       <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-        <span><strong><i data-lucide="graduation-cap" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Lotação:</strong> ${capacidadeText}</span>
+        <span><strong><i data-lucide="graduation-cap" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> LotaÃ§Ã£o:</strong> ${capacidadeText}</span>
       </div>
       <div><strong><i data-lucide="users" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Corpo Docente:</strong> ${textoProfessores}</div>
     `;
@@ -143,14 +143,14 @@ async function abrirHubTurma(turma) {
     const badgeEscola = document.querySelector('.header-escola-nome');
     hubEscolaNome = badgeEscola ? badgeEscola.innerText : '';
   }
-  hubTurmaInfo = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
+  hubTurmaInfo = `${turma.turno} â€¢ Ano letivo ${turma.ano_letivo}`;
 
   document.getElementById('hubTurmaNome').innerText = turma.nome;
   document.getElementById('hubTurmaInfo').innerText = hubTurmaInfo;
 
   document.getElementById('hubTurmaOverlay').classList.add('aberto');
 
-  // Data padrão para frequência
+  // Data padrÃ£o para frequÃªncia
   const hoje = new Date().toISOString().split('T')[0];
   const dataInput = document.getElementById('dataFrequenciaHub');
   if (dataInput) dataInput.value = hoje;
@@ -169,12 +169,12 @@ function fecharHubTurma(event) {
 
 async function abrirAbaTurma(aba) {
   hubAbaAtiva = aba;
-  // Troca botões de aba
+  // Troca botÃµes de aba
   document.querySelectorAll('.hub-aba-btn').forEach(btn => btn.classList.remove('ativa'));
   const btnAtivo = document.getElementById('aba-' + aba);
   if (btnAtivo) btnAtivo.classList.add('ativa');
 
-  // Esconde todos os conteúdos
+  // Esconde todos os conteÃºdos
   ['materias', 'alunos', 'frequencia', 'notas'].forEach(a => {
     const el = document.getElementById('conteudo-' + a);
     if (el) el.style.display = 'none';
@@ -189,14 +189,14 @@ async function abrirAbaTurma(aba) {
   if (aba === 'notas')      await carregarNotasHub();
 }
 
-// ====== ABA: MATÉRIAS ======
+// ====== ABA: MATÃ‰RIAS ======
 
 async function carregarMateriasTurma() {
   const lista = document.getElementById('listaMateriasTurma');
   if (!lista) return;
-  lista.innerHTML = '<div class="hub-empty">Carregando matérias...</div>';
+  lista.innerHTML = '<div class="hub-empty">Carregando matÃ©rias...</div>';
 
-  const temPermissao = usuarioNivel1() || acessosAtual.some(a =>
+  const temPermissao = isSecretaria() || acessosAtual.some(a =>
     (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo
   );
 
@@ -214,13 +214,13 @@ async function carregarMateriasTurma() {
     .order('nome', { ascending: true });
 
   if (error || !data || data.length === 0) {
-    lista.innerHTML = '<div class="hub-empty">Nenhuma matéria cadastrada nesta turma.</div>';
+    lista.innerHTML = '<div class="hub-empty">Nenhuma matÃ©ria cadastrada nesta turma.</div>';
     return;
   }
 
   lista.innerHTML = '';
   data.forEach(mat => {
-    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || '—';
+    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || 'â€”';
     const div = document.createElement('div');
     div.className = 'materia-item';
     div.innerHTML = `
@@ -233,7 +233,7 @@ async function carregarMateriasTurma() {
       btnDel.className = 'btn-editar';
       btnDel.style.cssText = 'background:#ff5b5b;color:#120000;padding:5px 8px;';
       btnDel.innerHTML = '<i data-lucide="trash-2" style="width:14px;height:14px;"></i>';
-      btnDel.title = 'Remover matéria';
+      btnDel.title = 'Remover matÃ©ria';
       btnDel.onclick = () => excluirMateria(mat.id);
       div.appendChild(btnDel);
     }
@@ -284,7 +284,7 @@ function cancelarFormMateria() {
 
 async function salvarMateria() {
   const nome = document.getElementById('inputNomeMateria').value.trim();
-  if (!nome) { alert('Digite o nome da matéria.'); return; }
+  if (!nome) { alert('Digite o nome da matÃ©ria.'); return; }
   const vinculoId = document.getElementById('selectProfMateria').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -293,14 +293,14 @@ async function salvarMateria() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar matÃ©ria: ' + error.message); return; }
 
   cancelarFormMateria();
   await carregarMateriasTurma();
 }
 
 async function excluirMateria(id) {
-  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
+  if (!confirm('Remover esta matÃ©ria? As notas vinculadas a ela tambÃ©m serÃ£o removidas.')) return;
   await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', id);
   await carregarMateriasTurma();
 }
@@ -343,7 +343,7 @@ async function carregarAlunosDaTurmaHub() {
   });
 }
 
-// ====== ABA: FREQUÊNCIA (wrapper para o sistema existente) ======
+// ====== ABA: FREQUÃŠNCIA (wrapper para o sistema existente) ======
 
 let dataFrequenciaHubObj = new Date();
 let mesVisivelFreqHub = dataFrequenciaHubObj.getMonth();
@@ -403,7 +403,7 @@ function selecionarDataCalendarioHub(dia, mes, ano) {
 }
 
 function renderizarCalendarioFrequenciaHub() {
-  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   document.getElementById('labelMesAnoCalendarioFrequenciaHub').innerText = `${nomesMeses[mesVisivelFreqHub]} ${anoVisivelFreqHub}`;
   
   const grid = document.getElementById('gridDiasCalendarioFrequenciaHub');
@@ -543,13 +543,13 @@ async function salvarFrequenciaHub() {
   btn.disabled = true; btn.innerText = 'Salvando...';
 
   const { error } = await clienteSupabase.from('frequencia').upsert(registros, { onConflict: 'aluno_id,turma_id,data' });
-  btn.disabled = false; btn.innerText = '💾 Salvar Frequência';
+  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar FrequÃªncia';
 
-  if (error) { alert('Erro ao salvar frequência: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar frequÃªncia: ' + error.message); return; }
 
   const modal = document.getElementById('modalSucesso');
   const msg = document.getElementById('msgModalSucesso');
-  if (modal && msg) { msg.innerText = 'Frequência salva com sucesso!'; modal.style.display = 'flex'; }
+  if (modal && msg) { msg.innerText = 'FrequÃªncia salva com sucesso!'; modal.style.display = 'flex'; }
 }
 
 // ====== ABA: NOTAS ======
@@ -563,7 +563,7 @@ async function carregarNotasHub() {
   lista.innerHTML = '<div class="hub-empty">Carregando...</div>';
   hubNotasCache = {};
 
-  const temPermissao = usuarioNivel1() || acessosAtual.some(a =>
+  const temPermissao = isSecretaria() || acessosAtual.some(a =>
     (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo
   );
   const podeEditar = modoEdicaoAtivo && temPermissao;
@@ -571,7 +571,7 @@ async function carregarNotasHub() {
   const btnSalvar = document.getElementById('btnSalvarNotasHub');
   if (btnSalvar) btnSalvar.style.display = podeEditar ? 'block' : 'none';
 
-  // Carrega matérias
+  // Carrega matÃ©rias
   const { data: materias } = await clienteSupabase
     .from('materias_turmas')
     .select('id, nome')
@@ -582,7 +582,7 @@ async function carregarNotasHub() {
   hubMateriasList = materias || [];
 
   if (!hubMateriasList.length) {
-    lista.innerHTML = '<div class="hub-empty">Cadastre matérias na aba Matérias primeiro.</div>';
+    lista.innerHTML = '<div class="hub-empty">Cadastre matÃ©rias na aba MatÃ©rias primeiro.</div>';
     return;
   }
 
@@ -617,10 +617,10 @@ async function carregarNotasHub() {
     bloco.className = 'notas-materia-bloco';
     bloco.id = 'bloco-materia-' + mat.id;
 
-    // Header da matéria
+    // Header da matÃ©ria
     const header = document.createElement('div');
     header.className = 'notas-materia-header';
-    header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher ▾</span>`;
+    header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher â–¾</span>`;
 
     const corpoBlocoId = 'corpo-materia-' + mat.id;
     header.onclick = () => {
@@ -638,7 +638,7 @@ async function carregarNotasHub() {
       const btn = document.createElement('button');
       btn.className = 'notas-unidade-btn' + (hubMateriaUnidadeAtiva[mat.id] === u ? ' ativa' : '');
       btn.id = `unidade-btn-${mat.id}-${u}`;
-      btn.textContent = `${u}ª Unidade`;
+      btn.textContent = `${u}Âª Unidade`;
       btn.onclick = () => trocarUnidade(mat.id, u, alunos, podeEditar);
       tabsDiv.appendChild(btn);
     });
@@ -659,7 +659,7 @@ async function carregarNotasHub() {
 function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
   const unidadeAntiga = hubMateriaUnidadeAtiva[materiaId] || 1;
   hubMateriaUnidadeAtiva[materiaId] = unidade;
-  // Atualiza botões
+  // Atualiza botÃµes
   [1, 2, 3].forEach(u => {
     const btn = document.getElementById(`unidade-btn-${materiaId}-${u}`);
     if (btn) {
@@ -689,19 +689,19 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
     const vals = [m1, m2, m3].filter(v => v !== null);
     if (vals.length > 0) media = vals.reduce((s, v) => s + v, 0) / vals.length;
 
-    const mediaStr = media !== null ? media.toFixed(1) : '—';
+    const mediaStr = media !== null ? media.toFixed(1) : 'â€”';
     const mediaClass = media === null ? 'nota-pendente' : (media >= 5 ? 'nota-aprovado' : 'nota-reprovado');
-    const mediaLabel = media === null ? '—' : (media >= 5 ? `${mediaStr} ✅` : `${mediaStr} ❌`);
+    const mediaLabel = media === null ? 'â€”' : (media >= 5 ? `${mediaStr} âœ…` : `${mediaStr} âŒ`);
 
-    // Calcula Média Final (média das médias de todas as 3 unidades)
+    // Calcula MÃ©dia Final (mÃ©dia das mÃ©dias de todas as 3 unidades)
     const mU1 = hubNotasCache[materiaId]?.[1]?.[aluno.id]?.media;
     const mU2 = hubNotasCache[materiaId]?.[2]?.[aluno.id]?.media;
     const mU3 = hubNotasCache[materiaId]?.[3]?.[aluno.id]?.media;
     const mFinals = [mU1, mU2, mU3].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
     const mediaFinal = mFinals.length > 0 ? mFinals.reduce((s, v) => s + parseFloat(v), 0) / mFinals.length : null;
-    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : '—';
+    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : 'â€”';
     const mediaFinalClass = mediaFinal === null ? 'nota-pendente' : (mediaFinal >= 5 ? 'nota-aprovado' : 'nota-reprovado');
-    const mediaFinalLabel = mediaFinal === null ? '—' : (mediaFinal >= 5 ? `${mediaFinalStr} ✅` : `${mediaFinalStr} ❌`);
+    const mediaFinalLabel = mediaFinal === null ? 'â€”' : (mediaFinal >= 5 ? `${mediaFinalStr} âœ…` : `${mediaFinalStr} âŒ`);
 
     const nomeEscapado = (aluno.nome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
@@ -726,7 +726,7 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
         <td><span class="nota-media ${mediaClass}" id="media-${materiaId}-${unidade}-${aluno.id}">${mediaLabel}</span></td>
         <td><span class="nota-media ${mediaFinalClass}" id="media-final-${materiaId}-${aluno.id}">${mediaFinalLabel}</span></td>
         <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button"
-          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">🖨️ Boletim</button></td>
+          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">ðŸ–¨ï¸ Boletim</button></td>
       </tr>`;
   });
 
@@ -738,8 +738,8 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           <th>Nota 1</th>
           <th>Nota 2</th>
           <th>Nota 3</th>
-          <th>Média ${unidade}ª Unid.</th>
-          <th>Média Final</th>
+          <th>MÃ©dia ${unidade}Âª Unid.</th>
+          <th>MÃ©dia Final</th>
           <th></th>
         </tr>
       </thead>
@@ -758,20 +758,20 @@ function recalcularMediaDOM(materiaId, unidade, alunoId) {
   if (!el) return;
 
   if (media === null) {
-    el.textContent = '—'; el.className = 'nota-media nota-pendente';
+    el.textContent = 'â€”'; el.className = 'nota-media nota-pendente';
   } else if (media >= 5) {
-    el.textContent = `${media.toFixed(1)} ✅`; el.className = 'nota-media nota-aprovado';
+    el.textContent = `${media.toFixed(1)} âœ…`; el.className = 'nota-media nota-aprovado';
   } else {
-    el.textContent = `${media.toFixed(1)} ❌`; el.className = 'nota-media nota-reprovado';
+    el.textContent = `${media.toFixed(1)} âŒ`; el.className = 'nota-media nota-reprovado';
   }
 
-  // Atualiza cache da média desta unidade para refletir no cálculo da Média Final
+  // Atualiza cache da mÃ©dia desta unidade para refletir no cÃ¡lculo da MÃ©dia Final
   if (!hubNotasCache[materiaId]) hubNotasCache[materiaId] = {};
   if (!hubNotasCache[materiaId][unidade]) hubNotasCache[materiaId][unidade] = {};
   if (!hubNotasCache[materiaId][unidade][alunoId]) hubNotasCache[materiaId][unidade][alunoId] = {};
   hubNotasCache[materiaId][unidade][alunoId].media = media;
 
-  // Atualiza célula de Média Final
+  // Atualiza cÃ©lula de MÃ©dia Final
   recalcularMediaFinalDOM(materiaId, alunoId);
 }
 
@@ -786,16 +786,16 @@ function recalcularMediaFinalDOM(materiaId, alunoId) {
   const mediaFinal = medias.length > 0 ? medias.reduce((s, v) => s + parseFloat(v), 0) / medias.length : null;
 
   if (mediaFinal === null) {
-    elFinal.textContent = '—'; elFinal.className = 'nota-media nota-pendente';
+    elFinal.textContent = 'â€”'; elFinal.className = 'nota-media nota-pendente';
   } else if (mediaFinal >= 5) {
-    elFinal.textContent = `${mediaFinal.toFixed(1)} ✅`; elFinal.className = 'nota-media nota-aprovado';
+    elFinal.textContent = `${mediaFinal.toFixed(1)} âœ…`; elFinal.className = 'nota-media nota-aprovado';
   } else {
-    elFinal.textContent = `${mediaFinal.toFixed(1)} ❌`; elFinal.className = 'nota-media nota-reprovado';
+    elFinal.textContent = `${mediaFinal.toFixed(1)} âŒ`; elFinal.className = 'nota-media nota-reprovado';
   }
 }
 
 function coletarNotasDoDOM(materiaId, unidade) {
-  // Lê inputs do DOM e atualiza cache
+  // LÃª inputs do DOM e atualiza cache
   if (!hubNotasCache[materiaId]) hubNotasCache[materiaId] = {};
   if (!hubNotasCache[materiaId][unidade]) hubNotasCache[materiaId][unidade] = {};
 
@@ -808,7 +808,7 @@ function coletarNotasDoDOM(materiaId, unidade) {
     const v2 = v2el && v2el.value !== '' ? parseFloat(v2el.value) : null;
     const v3 = v3el && v3el.value !== '' ? parseFloat(v3el.value) : null;
     
-    // Calcula a média para manter no cache
+    // Calcula a mÃ©dia para manter no cache
     const vals = [v1, v2, v3].filter(v => v !== null && !isNaN(v));
     const media = vals.length > 0 ? parseFloat((vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1)) : null;
 
@@ -854,10 +854,10 @@ async function salvarNotasHub() {
     });
   });
 
-  if (upserts.length === 0) { btn.disabled = false; btn.innerText = '💾 Salvar Notas'; return; }
+  if (upserts.length === 0) { btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Notas'; return; }
 
   const { error } = await clienteSupabase.from('notas_alunos').upsert(upserts, { onConflict: 'aluno_id,materia_id,unidade' });
-  btn.disabled = false; btn.innerText = '💾 Salvar Notas';
+  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Notas';
 
   if (error) { alert('Erro ao salvar notas: ' + error.message); return; }
 
@@ -866,13 +866,13 @@ async function salvarNotasHub() {
   if (modal && msg) { msg.innerText = 'Notas salvas com sucesso!'; modal.style.display = 'flex'; }
 }
 
-// ====== GESTÃO DO MODAL DE TURMA E PROFESSORES ======
+// ====== GESTÃƒO DO MODAL DE TURMA E PROFESSORES ======
 
 async function carregarListaDeProfessoresNoSelect() {
   const select = document.getElementById('selectProfessorTurma');
   select.innerHTML = '<option value="">Carregando professores...</option>';
   
-  // Busca o órgão correspondente à escola atual
+  // Busca o Ã³rgÃ£o correspondente Ã  escola atual
   const { data: orgaoData } = await clienteSupabase
     .from('orgaos')
     .select('id')
@@ -891,7 +891,7 @@ async function carregarListaDeProfessoresNoSelect() {
   }
 
   if (!orgaoId) {
-    select.innerHTML = '<option value="">Nenhum órgão encontrado para esta escola</option>';
+    select.innerHTML = '<option value="">Nenhum Ã³rgÃ£o encontrado para esta escola</option>';
     return;
   }
 
@@ -921,7 +921,7 @@ function adicionarProfessorNaTag() {
   if (!vinculoId) return;
   const nomeProf = select.options[select.selectedIndex].getAttribute('data-nome');
   if (professoresSelecionados.find(p => p.id === vinculoId)) {
-    alert('Esse professor já está na lista!'); return;
+    alert('Esse professor jÃ¡ estÃ¡ na lista!'); return;
   }
   professoresSelecionados.push({ id: vinculoId, nome: nomeProf });
   renderizarTagsProfessores();
@@ -940,7 +940,7 @@ function renderizarTagsProfessores() {
     divTags.innerHTML += `
       <div class="prof-tag">
         <span>${p.nome}</span>
-        <span class="prof-tag-remove" onclick="removerProfessorDaTag('${p.id}')">×</span>
+        <span class="prof-tag-remove" onclick="removerProfessorDaTag('${p.id}')">Ã—</span>
       </div>`;
   });
 }
@@ -955,7 +955,7 @@ async function abrirModalTurma() {
   document.getElementById('turnoTurma').value = 'Matutino';
   document.getElementById('capacidadeTurma').value = 30;
   
-  // Oculta matérias em novas turmas
+  // Oculta matÃ©rias em novas turmas
   const secaoMat = document.getElementById('secaoMateriasModalTurma');
   if (secaoMat) secaoMat.style.display = 'none';
 
@@ -980,7 +980,7 @@ async function editarTurma(turma) {
     });
   }
 
-  // Exibe e carrega as matérias da turma no modal
+  // Exibe e carrega as matÃ©rias da turma no modal
   const secaoMat = document.getElementById('secaoMateriasModalTurma');
   if (secaoMat) {
     secaoMat.style.display = 'block';
@@ -1000,7 +1000,7 @@ async function salvarTurma() {
   const turno = document.getElementById('turnoTurma').value;
   const capacidade = parseInt(document.getElementById('capacidadeTurma').value) || 30;
 
-  if (!nome || !ano || !turno) { alert('Nome, Ano Letivo e Turno são obrigatórios.'); return; }
+  if (!nome || !ano || !turno) { alert('Nome, Ano Letivo e Turno sÃ£o obrigatÃ³rios.'); return; }
 
   btn.disabled = true; btn.innerText = 'Salvando...';
 
@@ -1073,7 +1073,7 @@ async function carregarListaDeProfessoresNoSelectModalMateria() {
   }
 
   if (!orgaoId) {
-    select.innerHTML = '<option value="">Nenhum órgão encontrado</option>';
+    select.innerHTML = '<option value="">Nenhum Ã³rgÃ£o encontrado</option>';
     return;
   }
 
@@ -1100,7 +1100,7 @@ async function carregarListaDeProfessoresNoSelectModalMateria() {
 async function carregarMateriasNoModalTurma() {
   const lista = document.getElementById('listaMateriasModalTurma');
   if (!lista || !turmaEditandoId) return;
-  lista.innerHTML = '<div style="color: #aaa; font-size:13px; text-align:center; padding:10px;">Carregando matérias...</div>';
+  lista.innerHTML = '<div style="color: #aaa; font-size:13px; text-align:center; padding:10px;">Carregando matÃ©rias...</div>';
 
   const { data, error } = await clienteSupabase
     .from('materias_turmas')
@@ -1110,7 +1110,7 @@ async function carregarMateriasNoModalTurma() {
     .order('nome', { ascending: true });
 
   if (error || !data || data.length === 0) {
-    lista.innerHTML = '<div style="color: #666; font-size:13px; text-align:center; padding:10px;">Nenhuma matéria vinculada a esta turma ainda.</div>';
+    lista.innerHTML = '<div style="color: #666; font-size:13px; text-align:center; padding:10px;">Nenhuma matÃ©ria vinculada a esta turma ainda.</div>';
     return;
   }
 
@@ -1125,7 +1125,7 @@ async function carregarMateriasNoModalTurma() {
         <span style="font-weight:500; color:#fff; font-size:13.5px;">${mat.nome}</span>
         <span style="font-size:11.5px; color:#aaa;"><i data-lucide="user" style="width:14px;height:14px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i>${nomeProf}</span>
       </div>
-      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir Matéria" onclick="excluirMateriaPeloModal('${mat.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir MatÃ©ria" onclick="excluirMateriaPeloModal('${mat.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
     `;
     lista.appendChild(div);
   });
@@ -1134,7 +1134,7 @@ async function carregarMateriasNoModalTurma() {
 
 async function salvarMateriaPeloModal() {
   const nome = document.getElementById('nomeMateriaModal').value.trim();
-  if (!nome) { alert('Digite o nome da matéria.'); return; }
+  if (!nome) { alert('Digite o nome da matÃ©ria.'); return; }
   const vinculoId = document.getElementById('selectProfMateriaModal').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -1143,39 +1143,39 @@ async function salvarMateriaPeloModal() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar matÃ©ria: ' + error.message); return; }
 
   document.getElementById('nomeMateriaModal').value = '';
   document.getElementById('selectProfMateriaModal').value = '';
   await carregarMateriasNoModalTurma();
   
-  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
+  // Se o hub de turmas estiver aberto, atualiza a aba de matÃ©rias tambÃ©m
   if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
     await carregarMateriasTurma();
   }
 }
 
 async function excluirMateriaPeloModal(materiaId) {
-  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
+  if (!confirm('Remover esta matÃ©ria? As notas vinculadas a ela tambÃ©m serÃ£o removidas.')) return;
   const { error } = await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', materiaId);
-  if (error) { alert('Erro ao excluir matéria: ' + error.message); return; }
+  if (error) { alert('Erro ao excluir matÃ©ria: ' + error.message); return; }
   await carregarMateriasNoModalTurma();
   
-  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
+  // Se o hub de turmas estiver aberto, atualiza a aba de matÃ©rias tambÃ©m
   if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
     await carregarMateriasTurma();
   }
 }
 
-// ====== IMPRESSÃO DO BOLETIM INDIVIDUAL ======
+// ====== IMPRESSÃƒO DO BOLETIM INDIVIDUAL ======
 
 async function imprimirBoletimAluno(alunoId, alunoNome) {
-  // Coleta os dados do DOM atual para garantir que o cache está atualizado
+  // Coleta os dados do DOM atual para garantir que o cache estÃ¡ atualizado
   hubMateriasList.forEach(mat => {
     [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
   });
 
-  // Preenche o cabeçalho do boletim
+  // Preenche o cabeÃ§alho do boletim
   const anoLetivo = new Date().getFullYear();
   const elEscola = document.getElementById('boletimEscola');
   const elTurma  = document.getElementById('boletimTurma');
@@ -1183,18 +1183,18 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
   const elAno    = document.getElementById('boletimAnoLetivo');
   const elInfo   = document.getElementById('boletimTurmaInfo');
 
-  if (elEscola) elEscola.textContent = hubEscolaNome || '—';
-  if (elTurma)  elTurma.textContent  = hubTurmaNomeAtual || '—';
-  if (elAluno)  elAluno.textContent  = alunoNome || '—';
+  if (elEscola) elEscola.textContent = hubEscolaNome || 'â€”';
+  if (elTurma)  elTurma.textContent  = hubTurmaNomeAtual || 'â€”';
+  if (elAluno)  elAluno.textContent  = alunoNome || 'â€”';
   if (elAno)    elAno.textContent    = `Ano Letivo ${anoLetivo}`;
-  if (elInfo)   elInfo.textContent   = hubTurmaInfo || '—';
+  if (elInfo)   elInfo.textContent   = hubTurmaInfo || 'â€”';
 
   // Monta a tabela do boletim
   const corpo = document.getElementById('boletimTabelaCorpo');
-  if (!corpo) { alert('Template do boletim não encontrado.'); return; }
+  if (!corpo) { alert('Template do boletim nÃ£o encontrado.'); return; }
   corpo.innerHTML = '';
 
-  const fmt = v => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v).toFixed(1) : '—';
+  const fmt = v => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v).toFixed(1) : 'â€”';
 
   hubMateriasList.forEach(mat => {
     const u1 = hubNotasCache[mat.id]?.[1]?.[alunoId] || {};
@@ -1203,8 +1203,8 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
     const medias = [u1.media, u2.media, u3.media].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
     const mediaFinal = medias.length > 0 ? medias.reduce((s, v) => s + parseFloat(v), 0) / medias.length : null;
-    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : '—';
-    const situacao = mediaFinal !== null ? (mediaFinal >= 5 ? 'APROVADO' : 'REPROVADO') : '—';
+    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : 'â€”';
+    const situacao = mediaFinal !== null ? (mediaFinal >= 5 ? 'APROVADO' : 'REPROVADO') : 'â€”';
     const situacaoClass = mediaFinal !== null ? (mediaFinal >= 5 ? 'boletim-aprovado' : 'boletim-reprovado') : '';
 
     const tr = document.createElement('tr');
@@ -1224,7 +1224,7 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
   // Exibe o template e imprime
   const boletim = document.getElementById('boletimImpressao');
-  if (!boletim) { alert('Template do boletim não encontrado.'); return; }
+  if (!boletim) { alert('Template do boletim nÃ£o encontrado.'); return; }
   document.body.appendChild(boletim);
   boletim.style.display = 'block';
   document.body.classList.add('imprimindo-boletim');
@@ -1242,4 +1242,5 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
   setTimeout(function() { window.print(); }, 300);
 }
+
 

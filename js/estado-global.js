@@ -1,3 +1,4 @@
+const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
 const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
 const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
 const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)
@@ -17,34 +18,34 @@ let muralFuncionarios = []
 let calendarMes = new Date().getMonth()
 let calendarAno = new Date().getFullYear()
 
-function usuarioNivel3() {
+function isProfessorOuCoordenador() {
   return acessosAtual.some(function(acesso) {
-    return acesso.nivel === 3 && acesso.ativo;
+    return (acesso.nivel === PERFIS.COORDENADOR || acesso.nivel === PERFIS.PROFESSOR) && acesso.ativo;
   });
 }
 
 function podeLancarFrequencia() {
   if (!modoEdicaoAtivo) return false;
-  if (usuarioNivel1() || usuarioNivel2()) return true;
+  if (isSecretaria() || isGestorEscolar()) return true;
   return acessosAtual.some(function(acesso) {
-    return acesso.nivel === 3 && acesso.pode_turmas === true && acesso.ativo;
+    return (acesso.nivel === PERFIS.COORDENADOR || acesso.nivel === PERFIS.PROFESSOR) && acesso.pode_turmas === true && acesso.ativo;
   });
 }
 
 function podeVerFrequencia() {
-  if (usuarioNivel1() || usuarioNivel2()) return true;
+  if (isSecretaria() || isGestorEscolar()) return true;
   return acessosAtual.some(function(acesso) {
-    return acesso.nivel === 3 && acesso.pode_turmas === true && acesso.ativo;
+    return (acesso.nivel === PERFIS.COORDENADOR || acesso.nivel === PERFIS.PROFESSOR) && acesso.pode_turmas === true && acesso.ativo;
   });
 }
 
-// ====== FUNÇÕES GERAIS / UTILITÁRIOS ====== false
-const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+// ====== FUNÃ‡Ã•ES GERAIS / UTILITÃRIOS ====== false
+const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const modulosEscola = [
   { id: 'mural',        nome: 'Mural',        icone: 'pin',            permissao: 'pode_mural'        },
   { id: 'turmas',       nome: 'Turmas',       icone: 'book-open',      permissao: 'pode_turmas'       },
-  { id: 'funcionarios', nome: 'Funcionários', icone: 'users',          permissao: 'pode_funcionarios' },
-  { id: 'matriculas',   nome: 'Matrículas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
+  { id: 'funcionarios', nome: 'FuncionÃ¡rios', icone: 'users',          permissao: 'pode_funcionarios' },
+  { id: 'matriculas',   nome: 'MatrÃ­culas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
   { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       }
 ]
 let alunos = []
@@ -69,3 +70,5 @@ document.addEventListener('keydown', function(event) {
     }
   }
 })
+
+

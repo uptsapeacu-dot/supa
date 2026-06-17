@@ -1,4 +1,4 @@
-function aplicarVisibilidadeSidebar() {
+﻿function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
 
   const menus = {
@@ -25,19 +25,19 @@ function aplicarVisibilidadeSidebar() {
   }
 
   if (menus.home) menus.home.style.display = 'flex'
-  // O botão perfil foi removido daqui para não aparecer para Níveis 1, 2 e 3
+  // O botÃ£o perfil foi removido daqui para nÃ£o aparecer para NÃ­veis 1, 2 e 3
 
   modulosEscola.forEach(function(modulo) {
     const menu = menus[modulo.id]
     if (!menu) return
 
-    // Quem for nível 1 não deve ver 'turmas' nem 'matriculas' no sidebar
-    if (usuarioNivel1() && (modulo.id === 'turmas' || modulo.id === 'matriculas')) {
+    // Quem for nÃ­vel 1 nÃ£o deve ver 'turmas' nem 'matriculas' no sidebar
+    if (isSecretaria() && (modulo.id === 'turmas' || modulo.id === 'matriculas')) {
       menu.style.display = 'none'
       return
     }
 
-    const podeVer = usuarioNivel1() || acessosAtual.some(function(acesso) {
+    const podeVer = isSecretaria() || acessosAtual.some(function(acesso) {
       if (acesso.nivel === 2) return true
       if (acesso.nivel === 3) return acesso[modulo.permissao] === true
       return false
@@ -50,8 +50,8 @@ function aplicarVisibilidadeSidebar() {
     menus.permissoes.style.display = 'flex'
   }
 
-  // Relatórios: visível para nível 1, 2 e 3 com pode_turmas
-  const podeVerRelatorios = usuarioNivel1() || usuarioNivel2() || acessosAtual.some(function(a) {
+  // RelatÃ³rios: visÃ­vel para nÃ­vel 1, 2 e 3 com pode_turmas
+  const podeVerRelatorios = isSecretaria() || isGestorEscolar() || acessosAtual.some(function(a) {
     return a.nivel === 3 && a.pode_turmas === true && a.ativo
   })
   if (menus.relatorios) menus.relatorios.style.display = podeVerRelatorios ? 'flex' : 'none'
@@ -135,3 +135,4 @@ function mostrarTela(tela) {
   }
   fecharSidebarMobile()
 }
+

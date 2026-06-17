@@ -1,4 +1,4 @@
-async function fazerLogin() {
+﻿async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')
@@ -17,7 +17,7 @@ async function fazerLogin() {
   })
 
   if (error) {
-    alert('Login inválido')
+    alert('Login invÃ¡lido')
     btnLogin.disabled = false
     btnLogin.innerText = 'Entrar'
     return
@@ -139,7 +139,7 @@ async function confirmarSenhaModoEdicao() {
   btn.innerText = 'Confirmar'
 
   if (error) {
-    alert('Senha incorreta! Não foi possível ativar o modo de edição.')
+    alert('Senha incorreta! NÃ£o foi possÃ­vel ativar o modo de ediÃ§Ã£o.')
     document.querySelectorAll('.btn-modo-edicao').forEach(function(toggle) { toggle.checked = false })
     return
   }
@@ -153,42 +153,42 @@ async function confirmarSenhaModoEdicao() {
 function atualizarInterfaceModo() {
   document.querySelectorAll('.mode-text').forEach(function(textLabel) {
     if (modoEdicaoAtivo) {
-      textLabel.textContent = 'Modo Edição'
+      textLabel.textContent = 'Modo EdiÃ§Ã£o'
       textLabel.classList.add('active')
     } else {
-      textLabel.textContent = 'Modo Visualização'
+      textLabel.textContent = 'Modo VisualizaÃ§Ã£o'
       textLabel.classList.remove('active')
     }
   })
 
   const btnAddEscola = document.getElementById('btnAddEscola')
   if (btnAddEscola) {
-    btnAddEscola.style.display = (modoEdicaoAtivo && usuarioNivel1()) ? 'flex' : 'none'
+    btnAddEscola.style.display = (modoEdicaoAtivo && isSecretaria()) ? 'flex' : 'none'
   }
 
   const btnEditarEscola = document.getElementById('btnEditarEscola')
   const btnExcluirEscola = document.getElementById('btnExcluirEscola')
   if (btnEditarEscola && btnExcluirEscola) {
-    const editavel = modoEdicaoAtivo && usuarioNivel1()
+    const editavel = modoEdicaoAtivo && isSecretaria()
     btnEditarEscola.style.display = editavel ? 'inline-block' : 'none'
     btnExcluirEscola.style.display = editavel ? 'inline-block' : 'none'
   }
 
   const btnAddAluno = document.getElementById('btnAddAluno')
   if (btnAddAluno) {
-    const podeCriarAlunos = escolaAtual && (usuarioNivel1() || podeAcessarModulo('alunos', escolaAtual))
+    const podeCriarAlunos = escolaAtual && (isSecretaria() || podeAcessarModulo('alunos', escolaAtual))
     btnAddAluno.style.display = (modoEdicaoAtivo && podeCriarAlunos) ? 'flex' : 'none'
   }
 
   const btnAddFuncionario = document.getElementById('btnAddFuncionario')
   if (btnAddFuncionario) {
-    const podeCriarFuncionarios = usuarioNivel1() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
+    const podeCriarFuncionarios = isSecretaria() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
     btnAddFuncionario.style.display = (modoEdicaoAtivo && podeCriarFuncionarios) ? 'flex' : 'none'
   }
 
   const formNovoAviso = document.getElementById('formNovoAviso')
   if (formNovoAviso) {
-    const podePostarMural = escolaAtual && (usuarioNivel1() || podeAcessarModulo('mural', escolaAtual))
+    const podePostarMural = escolaAtual && (isSecretaria() || podeAcessarModulo('mural', escolaAtual))
     formNovoAviso.style.display = (modoEdicaoAtivo && podePostarMural) ? 'block' : 'none'
   }
 
@@ -219,7 +219,7 @@ function atualizarInterfaceModo() {
 }
 
 async function verificarECriarOrgaosFaltantes() {
-  if (!usuarioNivel1()) return
+  if (!isSecretaria()) return
   try {
     const { data: todasEscolas } = await clienteSupabase.from('escolas').select('id, nome')
     const { data: todosOrgaosEscola } = await clienteSupabase.from('orgaos').select('escola_id').eq('tipo', 'escola')
@@ -232,42 +232,44 @@ async function verificarECriarOrgaosFaltantes() {
         return { nome: e.nome, tipo: 'escola', escola_id: e.id, ativo: true }
       })
       const { error } = await clienteSupabase.from('orgaos').insert(novosOrgaos)
-      if (error) console.error('Erro ao auto-criar órgãos para escolas:', error)
+      if (error) console.error('Erro ao auto-criar Ã³rgÃ£os para escolas:', error)
     }
   } catch (err) {
-    console.error('Falha no auto-recovery de órgãos escolares:', err)
+    console.error('Falha no auto-recovery de Ã³rgÃ£os escolares:', err)
   }
 }
 
+
 function nivelMaisAlto() {
-  if (!acessosAtual.length) return 4
+  if (!acessosAtual.length) return PERFIS.PROFESSOR
   return Math.min.apply(null, acessosAtual.map(function(acesso) { return acesso.nivel }))
 }
 
-function usuarioNivel1() {
-  return acessosAtual.some(function(acesso) { return acesso.nivel === 1 && acesso.ativo })
+function isSecretaria() {
+  return acessosAtual.some(function(acesso) { return acesso.nivel === PERFIS.SECRETARIA && acesso.ativo })
 }
 
-function usuarioNivel2() {
-  return acessosAtual.some(function(acesso) { return acesso.nivel === 2 && acesso.ativo })
+function isGestorEscolar() {
+  return acessosAtual.some(function(acesso) { return acesso.nivel === PERFIS.GESTOR && acesso.ativo })
 }
 
 function idsEscolasPermitidas() {
-  if (usuarioNivel1()) return escolas.map(function(escola) { return escola.id })
+  if (isSecretaria()) return escolas.map(function(escola) { return escola.id })
   return acessosAtual.filter(function(acesso) { return acesso.orgaos && acesso.orgaos.escola_id }).map(function(acesso) { return acesso.orgaos.escola_id })
 }
 
 function podeAcessarModulo(moduloId, escolaId) {
-  if (usuarioNivel1()) return true
+  if (isSecretaria()) return true
   const modulo = modulosEscola.find(function(item) { return item.id === moduloId })
   if (!modulo) return false
   const acesso = acessosAtual.find(function(item) { return item.orgaos && item.orgaos.escola_id === escolaId && item.ativo })
   if (!acesso) return false
-  if (acesso.nivel === 2) return true
+  if (acesso.nivel === PERFIS.GESTOR) return true
   if (acesso.nivel === 4) return false
   return acesso[modulo.permissao] === true
 }
 
 function podeVerPermissoes() {
-  return usuarioNivel1() || usuarioNivel2()
+  return isSecretaria() || isGestorEscolar()
 }
+

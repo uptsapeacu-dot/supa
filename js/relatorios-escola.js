@@ -1,4 +1,4 @@
-// ====== RELATÓRIOS ESPECÍFICOS DA ESCOLA ======
+﻿// ====== RELATÃ“RIOS ESPECÃFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -6,7 +6,7 @@ async function carregarRelatoriosEscola() {
   const containerCenso = document.getElementById('conteudo-censo');
 
   if (!containerDesempenho || !containerFreq || !containerCenso) {
-    console.error('Elementos de relatório não encontrados no DOM.');
+    console.error('Elementos de relatÃ³rio nÃ£o encontrados no DOM.');
     return;
   }
 
@@ -14,7 +14,7 @@ async function carregarRelatoriosEscola() {
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
 
-  // Variáveis globais para impressão local
+  // VariÃ¡veis globais para impressÃ£o local
   window.htmlImpressaoDesempenho = '';
   window.htmlImpressaoFrequencia = '';
   window.htmlImpressaoCenso = '';
@@ -42,14 +42,14 @@ async function carregarRelatoriosEscola() {
   const riscoArray = Object.values(alunosRisco).sort((a,b) => b.materias.length - a.materias.length);
 
   let tabelaRiscoPrint = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Risco (Boletim Vermelho)</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">RelatÃ³rio AnalÃ­tico de Risco (Boletim Vermelho)</h3>
     <table class="boletim-tabela">
-      <thead><tr><th class="text-left">Aluno</th><th class="text-left">Disciplinas em Risco (Abaixo da Média)</th></tr></thead>
+      <thead><tr><th class="text-left">Aluno</th><th class="text-left">Disciplinas em Risco (Abaixo da MÃ©dia)</th></tr></thead>
       <tbody>
   `;
 
   let htmlRisco = `
-    <h3 style="margin-top:0; color:#ef4444;">Boletim Vermelho (Abaixo da Média)</h3>
+    <h3 style="margin-top:0; color:#ef4444;">Boletim Vermelho (Abaixo da MÃ©dia)</h3>
     <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
       <thead>
         <tr style="background:#333; text-align:left;">
@@ -69,8 +69,8 @@ async function carregarRelatoriosEscola() {
       tabelaRiscoPrint += `<tr><td class="text-left"><strong>${r.nome}</strong></td><td class="text-left">${r.materias.join(', ')}</td></tr>`;
     });
   } else {
-    htmlRisco += '<tr><td colspan="2" style="padding:16px;text-align:center;color:#aaa;">Nenhum aluno em risco crítico registrado.</td></tr>';
-    tabelaRiscoPrint += '<tr><td colspan="2">Nenhum aluno em risco crítico registrado.</td></tr>';
+    htmlRisco += '<tr><td colspan="2" style="padding:16px;text-align:center;color:#aaa;">Nenhum aluno em risco crÃ­tico registrado.</td></tr>';
+    tabelaRiscoPrint += '<tr><td colspan="2">Nenhum aluno em risco crÃ­tico registrado.</td></tr>';
   }
   htmlRisco += '</tbody></table>';
   tabelaRiscoPrint += '</tbody></table>';
@@ -78,10 +78,10 @@ async function carregarRelatoriosEscola() {
   window.htmlImpressaoDesempenho = tabelaRiscoPrint;
   containerDesempenho.innerHTML = htmlRisco;
 
-  // 2. FREQUENCIA (Evasão Local)
+  // 2. FREQUENCIA (EvasÃ£o Local)
   await carregarEvasaoLocal(containerFreq);
 
-  // 3. CENSO E LOGÍSTICA (Lista nominal de demandas)
+  // 3. CENSO E LOGÃSTICA (Lista nominal de demandas)
   const { data: alunosEscola } = await clienteSupabase.from('alunos')
     .select('nome, dados_matricula, turmas(nome)')
     .eq('escola_id', escolaAtual);
@@ -98,10 +98,10 @@ async function carregarRelatoriosEscola() {
           saude: []
         });
         const nIdx = necessidades.length - 1;
-        if (d.alergia_med === 'Sim') necessidades[nIdx].saude.push(d.alergia_med_quais || 'Alergia Médica');
-        if (d.restricao_alimentar === 'Sim') necessidades[nIdx].saude.push(d.restricao_alim_quais || 'Restrição Alimentar');
+        if (d.alergia_med === 'Sim') necessidades[nIdx].saude.push(d.alergia_med_quais || 'Alergia MÃ©dica');
+        if (d.restricao_alimentar === 'Sim') necessidades[nIdx].saude.push(d.restricao_alim_quais || 'RestriÃ§Ã£o Alimentar');
         if (d.nee === 'Sim') necessidades[nIdx].saude.push(d.nee_tipos ? d.nee_tipos.join(', ') : 'NEE');
-        if (d.deficiencia === 'Sim') necessidades[nIdx].saude.push(d.deficiencia_tipos ? d.deficiencia_tipos.join(', ') : 'Deficiência');
+        if (d.deficiencia === 'Sim') necessidades[nIdx].saude.push(d.deficiencia_tipos ? d.deficiencia_tipos.join(', ') : 'DeficiÃªncia');
       }
     });
   }
@@ -114,21 +114,21 @@ async function carregarRelatoriosEscola() {
   });
 
   let tabelaCensoPrint = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Alunos com Demandas Logísticas e de Inclusão</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Alunos com Demandas LogÃ­sticas e de InclusÃ£o</h3>
     <table class="boletim-tabela">
-      <thead><tr><th class="text-left">Turma</th><th class="text-left">Aluno</th><th>Transporte Escolar</th><th>Atenção Especial/Saúde</th></tr></thead>
+      <thead><tr><th class="text-left">Turma</th><th class="text-left">Aluno</th><th>Transporte Escolar</th><th>AtenÃ§Ã£o Especial/SaÃºde</th></tr></thead>
       <tbody>
   `;
 
   let htmlCenso = `
-    <h3 style="margin-top:0;">Alunos com Demandas Logísticas/Saúde</h3>
+    <h3 style="margin-top:0;">Alunos com Demandas LogÃ­sticas/SaÃºde</h3>
     <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
       <thead>
         <tr style="background:#333; text-align:left;">
           <th style="padding:12px;">Aluno</th>
           <th style="padding:12px;">Turma</th>
           <th style="padding:12px;">Transporte</th>
-          <th style="padding:12px;">Atenção Especial/Saúde</th>
+          <th style="padding:12px;">AtenÃ§Ã£o Especial/SaÃºde</th>
         </tr>
       </thead>
       <tbody>
@@ -155,14 +155,14 @@ async function carregarRelatoriosEscola() {
   containerCenso.innerHTML = htmlCenso;
   } catch (err) {
     console.error('Erro em carregarRelatoriosEscola:', err);
-    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados locais.</div>';
+    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexÃ£o. NÃ£o foi possÃ­vel carregar os dados locais.</div>';
     containerDesempenho.innerHTML = msgErro;
     containerFreq.innerHTML = msgErro;
     containerCenso.innerHTML = msgErro;
   }
 }
 
-// Lógica isolada de frequência por turma da escola - MATRIZ DE FREQUÊNCIA
+// LÃ³gica isolada de frequÃªncia por turma da escola - MATRIZ DE FREQUÃŠNCIA
 let relatorioFreqMes = new Date().getMonth();
 let relatorioFreqAno = new Date().getFullYear();
 let relatorioFreqTurmasSel = [];
@@ -177,11 +177,11 @@ async function carregarEvasaoLocal(container) {
     relatorioFreqEscolaCacheId = escolaAtual;
   }
 
-  // Se não temos turmas carregadas em cache para o seletor, busca
+  // Se nÃ£o temos turmas carregadas em cache para o seletor, busca
   if (relatorioFreqTodasTurmasCache.length === 0) {
     const { data: turmas } = await clienteSupabase.from('turmas').select('id, nome, turno').eq('escola_id', escolaAtual);
     if (turmas) relatorioFreqTodasTurmasCache = turmas.sort((a, b) => a.nome.localeCompare(b.nome));
-    // Seleciona todas por padrão no início como strings
+    // Seleciona todas por padrÃ£o no inÃ­cio como strings
     relatorioFreqTurmasSel = relatorioFreqTodasTurmasCache.map(t => String(t.id));
   }
 
@@ -190,7 +190,7 @@ async function carregarEvasaoLocal(container) {
     return;
   }
 
-  // Anexa essas funções no escopo global para funcionarem com onclick caso o arquivo seja englobado em módulos
+  // Anexa essas funÃ§Ãµes no escopo global para funcionarem com onclick caso o arquivo seja englobado em mÃ³dulos
   window.mudarMesRelatorioEvasao = mudarMesRelatorioEvasao;
   window.toggleTurmaRelatorioEvasao = toggleTurmaRelatorioEvasao;
 
@@ -199,25 +199,25 @@ async function carregarEvasaoLocal(container) {
 }
 
 function renderizarInterfaceRelatorioEvasao(container) {
-  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   const mesAtualNome = nomesMeses[relatorioFreqMes];
 
-  // Controles de cabeçalho
+  // Controles de cabeÃ§alho
   let html = `
     <div style="background:#222; border:1px solid #333; border-radius:10px; padding:16px; margin-bottom:20px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
-        <h3 style="margin:0;">Matriz de Frequência Mensal</h3>
+        <h3 style="margin:0;">Matriz de FrequÃªncia Mensal</h3>
         <div style="display:flex; align-items:center; background:#181818; border:1px solid #3f3f3f; border-radius:8px;">
-          <button class="btn-clear" onclick="mudarMesRelatorioEvasao(-1)" style="padding:8px 12px; border-right:1px solid #3f3f3f;">◀</button>
+          <button class="btn-clear" onclick="mudarMesRelatorioEvasao(-1)" style="padding:8px 12px; border-right:1px solid #3f3f3f;">â—€</button>
           <div style="padding:8px 20px; font-weight:bold; color:#3ea6ff; min-width:140px; text-align:center;">${mesAtualNome} ${relatorioFreqAno}</div>
-          <button class="btn-clear" onclick="mudarMesRelatorioEvasao(1)" style="padding:8px 12px; border-left:1px solid #3f3f3f;">▶</button>
+          <button class="btn-clear" onclick="mudarMesRelatorioEvasao(1)" style="padding:8px 12px; border-left:1px solid #3f3f3f;">â–¶</button>
         </div>
       </div>
       <div style="margin-bottom:8px; font-size:13px; color:#aaa; font-weight:bold;">Turmas Selecionadas:</div>
       <div style="display:flex; flex-wrap:wrap; gap:8px;">
   `;
 
-  // Checkboxes dinâmicos de turma
+  // Checkboxes dinÃ¢micos de turma
   relatorioFreqTodasTurmasCache.forEach(t => {
     const tIdStr = String(t.id);
     const isChecked = relatorioFreqTurmasSel.includes(tIdStr);
@@ -267,7 +267,7 @@ async function renderizarDadosRelatorioEvasao() {
   if (!containerResultado) return;
   
   if (relatorioFreqTurmasSel.length === 0) {
-    containerResultado.innerHTML = '<div class="empty-state">Selecione pelo menos uma turma para gerar o relatório.</div>';
+    containerResultado.innerHTML = '<div class="empty-state">Selecione pelo menos uma turma para gerar o relatÃ³rio.</div>';
     window.htmlImpressaoFrequencia = '';
     return;
   }
@@ -284,7 +284,7 @@ async function renderizarDadosRelatorioEvasao() {
   // Buscar Alunos
   const { data: alunos } = await clienteSupabase.from('alunos').select('id, nome, turma_id').in('turma_id', relatorioFreqTurmasSel);
   
-  // Buscar Frequências do período e turmas
+  // Buscar FrequÃªncias do perÃ­odo e turmas
   const { data: freqs } = await clienteSupabase.from('frequencia')
     .select('aluno_id, data, presente')
     .in('turma_id', relatorioFreqTurmasSel)
@@ -306,11 +306,11 @@ async function renderizarDadosRelatorioEvasao() {
   const apt = {};
   (alunos || []).forEach(a => { if(!apt[a.turma_id]) apt[a.turma_id]=[]; apt[a.turma_id].push(a); });
 
-  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
   let htmlMatriz = '';
   let htmlImpressao = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:10px;">Matriz de Frequência — ${nomesMeses[relatorioFreqMes]} ${relatorioFreqAno}</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:10px;">Matriz de FrequÃªncia â€” ${nomesMeses[relatorioFreqMes]} ${relatorioFreqAno}</h3>
   `;
 
   const turmasParaExibir = relatorioFreqTodasTurmasCache.filter(t => relatorioFreqTurmasSel.includes(String(t.id)));
@@ -321,7 +321,7 @@ async function renderizarDadosRelatorioEvasao() {
 
     daTurma.sort((a,b) => a.nome.localeCompare(b.nome));
 
-    // Montando Cabeçalho dos Dias (1 a 31)
+    // Montando CabeÃ§alho dos Dias (1 a 31)
     let cabecalhoDiasHtml = '';
     let cabecalhoDiasPrint = '';
     let colunasCss = 'min-width: 150px; text-align: left; position: sticky; left: 0; background: #333; z-index: 2;';
@@ -344,7 +344,7 @@ async function renderizarDadosRelatorioEvasao() {
           <tbody>
     `;
 
-    // Impressão Tabela (Otimizada para Folha A4 Paisagem)
+    // ImpressÃ£o Tabela (Otimizada para Folha A4 Paisagem)
     let tabelaPrint = `
       <h4 style="margin-top:20px; margin-bottom:5px;">Turma: ${t.nome}</h4>
       <table class="boletim-tabela" style="width:100%; table-layout: fixed; margin-bottom: 20px;">
@@ -367,7 +367,7 @@ async function renderizarDadosRelatorioEvasao() {
       for (let d = 1; d <= diasNoMes; d++) {
         // Verifica final de semana
         const dataDia = new Date(relatorioFreqAno, relatorioFreqMes, d);
-        const diaSemana = dataDia.getDay(); // 0 = Dom, 6 = Sáb
+        const diaSemana = dataDia.getDay(); // 0 = Dom, 6 = SÃ¡b
         const isFds = (diaSemana === 0 || diaSemana === 6);
         
         const pres = mapaFreq[a.id] ? mapaFreq[a.id][d] : undefined;
@@ -377,11 +377,11 @@ async function renderizarDadosRelatorioEvasao() {
         let corBgPrint = isFds ? '#d9d9d9' : 'transparent';
         
         if (pres === true) { 
-          marca = '✅'; 
+          marca = 'âœ…'; 
           marcaPrint = 'P';
           contPresencas++; 
         } else if (pres === false) { 
-          marca = '❌'; 
+          marca = 'âŒ'; 
           marcaPrint = 'F';
           contFaltas++; 
         }
@@ -421,3 +421,4 @@ async function renderizarDadosRelatorioEvasao() {
   containerResultado.innerHTML = htmlMatriz;
   window.htmlImpressaoFrequencia = htmlImpressao;
 }
+

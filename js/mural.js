@@ -1,8 +1,8 @@
-async function carregarDadosMural() {
+﻿async function carregarDadosMural() {
   carregarAvisos()
   muralFuncionarios = []
   let orgaosPermitidos = []
-  // Resolve os órgãos da escola selecionada OU carrega todos permitidos globalmente
+  // Resolve os Ã³rgÃ£os da escola selecionada OU carrega todos permitidos globalmente
   if (escolaAtual != null && escolaAtual !== '') {
     const orgaoEscola = orgaos.find(function(orgao) { return orgao.escola_id === escolaAtual })
     if (orgaoEscola) {
@@ -12,7 +12,7 @@ async function carregarDadosMural() {
       orgaosPermitidos = (data || []).map(function(o) { return o.id })
     }
   } else {
-    if (usuarioNivel1()) {
+    if (isSecretaria()) {
       const { data } = await clienteSupabase.from('orgaos').select('id').eq('ativo', true)
       orgaosPermitidos = (data || []).map(function(o) { return o.id })
     } else {
@@ -133,8 +133,8 @@ function abrirModalAniversariante(aniversariantes) {
   if (!aniversariantes || aniversariantes.length === 0) return
   const f = aniversariantes[0]
   document.getElementById('nomeAniversariante').textContent = f.nome
-  document.getElementById('orgaoAniversariante').textContent = 'Órgão: ' + f.orgao
-  document.getElementById('dataAniversariante').textContent = 'Aniversário dia ' + f.anivDia + ' de ' + nomesMeses[f.anivMes]
+  document.getElementById('orgaoAniversariante').textContent = 'Ã“rgÃ£o: ' + f.orgao
+  document.getElementById('dataAniversariante').textContent = 'AniversÃ¡rio dia ' + f.anivDia + ' de ' + nomesMeses[f.anivMes]
   document.getElementById('modalAniversariante').style.display = 'flex'
 }
 
@@ -170,7 +170,7 @@ function carregarAvisos() {
     return
   }
   lista.innerHTML = ''
-  const temPermissaoEdicao = modoEdicaoAtivo && (usuarioNivel1() || (escolaAtual && podeAcessarModulo('mural', escolaAtual)))
+  const temPermissaoEdicao = modoEdicaoAtivo && (isSecretaria() || (escolaAtual && podeAcessarModulo('mural', escolaAtual)))
   avisosGlobais.forEach(function(aviso) {
     const card = document.createElement('div')
     card.className = 'item-aluno'
@@ -187,13 +187,13 @@ function carregarAvisos() {
     left.appendChild(autor)
     left.appendChild(meta)
     header.appendChild(left)
-    // O botão excluir avisa só aparece se houver uma escola selecionada e tiver edição ativa
+    // O botÃ£o excluir avisa sÃ³ aparece se houver uma escola selecionada e tiver ediÃ§Ã£o ativa
     if (temPermissaoEdicao && escolaAtual) {
       const btnDel = document.createElement('button')
       btnDel.className = 'btn-editar'
       btnDel.style.background = '#ff5b5b'
       btnDel.style.color = '#120000'
-      btnDel.textContent = '🗑️'
+      btnDel.textContent = 'ðŸ—‘ï¸'
       btnDel.title = 'Excluir aviso'
       btnDel.onclick = function() { excluirAviso(aviso.id) }
       header.appendChild(btnDel)
@@ -225,7 +225,7 @@ function publicarAviso() {
     id: 'aviso_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
     texto: texto,
     data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    autor: funcionarioAtual ? (funcionarioAtual.nome || funcionarioAtual.email) : 'Usuário'
+    autor: funcionarioAtual ? (funcionarioAtual.nome || funcionarioAtual.email) : 'UsuÃ¡rio'
   }
 
   avisos.unshift(novo)
@@ -244,3 +244,4 @@ function excluirAviso(avisoId) {
   localStorage.setItem(key, JSON.stringify(avisos))
   carregarAvisos()
 }
+

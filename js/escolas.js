@@ -1,4 +1,4 @@
-async function carregarEscolas() {
+﻿async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {
@@ -20,7 +20,7 @@ async function carregarEscolas() {
 
   const todas = data || []
 
-  if (usuarioNivel1()) {
+  if (isSecretaria()) {
     escolas = todas
   } else {
     const idsPermitidos = acessosAtual
@@ -61,19 +61,19 @@ function renderizarEscolas() {
 
     const iconeHtml = escola.logo_url
       ? '<img src="' + escola.logo_url + '" alt="Logo ' + escola.nome + '" style="width:56px; height:56px; border-radius:50%; object-fit:cover; border:2px solid #3ea6ff;">'
-      : '<span class="icon">🏫</span>'
+      : '<span class="icon">ðŸ«</span>'
 
     card.innerHTML =
       iconeHtml +
       '<span class="label">' + escola.nome + '</span>'
 
-    if (modoEdicaoAtivo && usuarioNivel1()) {
+    if (modoEdicaoAtivo && isSecretaria()) {
       const actions = document.createElement('div')
       actions.className = 'card-actions'
 
       const editBtn = document.createElement('button')
       editBtn.className = 'card-action-btn'
-      editBtn.innerHTML = '✎'
+      editBtn.innerHTML = 'âœŽ'
       editBtn.title = 'Editar escola'
       editBtn.onclick = function(e) {
         e.stopPropagation()
@@ -84,10 +84,10 @@ function renderizarEscolas() {
         if (escola.logo_url) {
           document.getElementById('imgPreviewLogo').src = escola.logo_url
           document.getElementById('previewLogoEscola').style.display = 'block'
-          document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo (opcional)'
+          document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Trocar Logo (opcional)'
         } else {
           document.getElementById('previewLogoEscola').style.display = 'none'
-          document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+          document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
         }
 
         document.getElementById('logoEscola').value = ''
@@ -98,7 +98,7 @@ function renderizarEscolas() {
 
       const deleteBtn = document.createElement('button')
       deleteBtn.className = 'card-action-btn btn-delete-card'
-      deleteBtn.innerHTML = '🗑️'
+      deleteBtn.innerHTML = 'ðŸ—‘ï¸'
       deleteBtn.title = 'Excluir escola'
       deleteBtn.onclick = function(e) {
         e.stopPropagation()
@@ -122,7 +122,7 @@ function previewLogo(input) {
   reader.onload = function(e) {
     document.getElementById('imgPreviewLogo').src = e.target.result
     document.getElementById('previewLogoEscola').style.display = 'block'
-    document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo'
+    document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Trocar Logo'
     document.getElementById('msgLogoObrigatoria').style.display = 'none'
   }
   reader.readAsDataURL(file)
@@ -151,7 +151,7 @@ function abrirEscola(escolaId) {
   document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
     const logoHeader = school.logo_url
       ? '<img src="' + school.logo_url + '" style="width:22px; height:22px; border-radius:50%; object-fit:cover; vertical-align:middle; margin-right:6px;">'
-      : '🏫 '
+      : 'ðŸ« '
 
     headerEscola.innerHTML =
       '<span class="nome-texto">' + logoHeader + school.nome + '</span>' +
@@ -175,7 +175,7 @@ function renderizarModulosDaEscola() {
   })
 
   if (modulosPermitidos.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>'
+    lista.innerHTML = '<div class="empty-state">VocÃª nÃ£o tem acesso aos mÃ³dulos desta escola.</div>'
     return
   }
 
@@ -210,7 +210,7 @@ function abrirModalEscola() {
   document.getElementById('nomeEscola').value = ''
   document.getElementById('logoEscola').value = ''
   document.getElementById('previewLogoEscola').style.display = 'none'
-  document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+  document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
   document.getElementById('msgLogoObrigatoria').style.display = 'none'
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
@@ -229,10 +229,10 @@ function abrirModalEditarEscola() {
   if (escola.logo_url) {
     document.getElementById('imgPreviewLogo').src = escola.logo_url
     document.getElementById('previewLogoEscola').style.display = 'block'
-    document.getElementById('labelLogoEscola').innerHTML = '📷 Trocar Logo (opcional)'
+    document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Trocar Logo (opcional)'
   } else {
     document.getElementById('previewLogoEscola').style.display = 'none'
-    document.getElementById('labelLogoEscola').innerHTML = '📷 Selecionar Logo da Escola *'
+    document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
   }
 
   document.getElementById('modalEscola').style.display = 'flex'
@@ -248,7 +248,7 @@ async function excluirEscola() {
 async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
   if (redirecionar === undefined) redirecionar = false
 
-  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
+  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vÃ­nculos e dados associados serÃ£o removidos.')) return
 
   try {
     var { data: listOrgaos, error: errOrgaos } = await clienteSupabase.from('orgaos').select('id').eq('escola_id', escolaId)
@@ -283,10 +283,10 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
     if (errEscDel) throw errEscDel
 
     if (!deletedEscola || deletedEscola.length === 0) {
-      throw new Error('A exclusão foi bloqueada pelas políticas de segurança (RLS).')
+      throw new Error('A exclusÃ£o foi bloqueada pelas polÃ­ticas de seguranÃ§a (RLS).')
     }
 
-    alert('Escola ' + nomeEscola + ' excluída com sucesso!')
+    alert('Escola ' + nomeEscola + ' excluÃ­da com sucesso!')
     if (redirecionar) limparEscolaAtual()
 
     await carregarEscolas()
@@ -338,7 +338,7 @@ async function salvarEscola() {
         document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
           if (headerEscola.classList.contains('visible')) {
             headerEscola.innerHTML =
-              '<span class="nome-texto">🏫 ' + nome + '</span>' +
+              '<span class="nome-texto">ðŸ« ' + nome + '</span>' +
               '<button class="fechar-escola" onclick="limparEscolaAtual()" title="Desselecionar escola"><i data-lucide="x"></i></button>'
           }
         })
@@ -387,3 +387,4 @@ function limparEscolaAtual() {
     mostrarTela('home')
   }
 }
+

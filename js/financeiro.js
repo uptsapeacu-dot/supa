@@ -1,4 +1,4 @@
-let contasFinanceiras = [];
+﻿let contasFinanceiras = [];
 let categoriasFinanceiras = [];
 let mesFiltroAtual = new Date().toISOString().slice(0, 7); // Guarda o 'YYYY-MM'
 
@@ -8,27 +8,27 @@ async function carregarFinanceiro() {
   if (!lista) return;
 
   if (escolaAtual == null || escolaAtual === '') {
-    lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Selecione uma escola no Início.</td></tr>';
+    lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Selecione uma escola no InÃ­cio.</td></tr>';
     return;
   }
 
-  // Define o mês inicial (Hoje) se o campo estiver vazio
+  // Define o mÃªs inicial (Hoje) se o campo estiver vazio
   const inputMes = document.getElementById('filtroMes');
   if (!inputMes.value) inputMes.value = mesFiltroAtual;
   mesFiltroAtual = inputMes.value;
 
   const contaSelecionada = document.getElementById('filtroConta').value;
 
-  // 1. Carrega os dicionários para podermos usar os nomes reais (Conta PDDE, Material, etc)
+  // 1. Carrega os dicionÃ¡rios para podermos usar os nomes reais (Conta PDDE, Material, etc)
   await carregarDicionariosFinanceiros();
 
   lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Calculando valores...</td></tr>';
 
-  // 2. Busca do Mês (O Supabase exige data exata, então calculamos o 1º e último dia do mês)
+  // 2. Busca do MÃªs (O Supabase exige data exata, entÃ£o calculamos o 1Âº e Ãºltimo dia do mÃªs)
   const ano = parseInt(mesFiltroAtual.split('-')[0]);
   const mes = parseInt(mesFiltroAtual.split('-')[1]);
   const dataInicio = `${ano}-${String(mes).padStart(2, '0')}-01`;
-  const dataFim = new Date(ano, mes, 0).toISOString().split('T')[0]; // Magia para pegar o último dia
+  const dataFim = new Date(ano, mes, 0).toISOString().split('T')[0]; // Magia para pegar o Ãºltimo dia
 
   let query = clienteSupabase
     .from('financeiro_transacoes')
@@ -45,7 +45,7 @@ async function carregarFinanceiro() {
   const { data, error } = await query;
 
   if (error || !data || data.length === 0) {
-    lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Nenhuma transação neste mês.</td></tr>';
+    lista.innerHTML = '<tr><td colspan="8" style="text-align:center; color:#888;">Nenhuma transaÃ§Ã£o neste mÃªs.</td></tr>';
     atualizarCardsDashboard(0, 0); 
   } else {
     lista.innerHTML = '';
@@ -63,7 +63,7 @@ async function carregarFinanceiro() {
       
       let linkComprovante = '-';
       if (t.comprovante_url) {
-        linkComprovante = `<a href="${t.comprovante_url}" target="_blank" class="btn-comprovante">📄 Anexo</a>`;
+        linkComprovante = `<a href="${t.comprovante_url}" target="_blank" class="btn-comprovante">ðŸ“„ Anexo</a>`;
       }
 
       // Convertendo a data de YYYY-MM-DD para DD/MM/YYYY
@@ -79,7 +79,7 @@ async function carregarFinanceiro() {
         <td style="font-weight:bold; color: ${isReceita ? '#4ade80' : '#ff5b5b'}">R$ ${parseFloat(t.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
         <td>${linkComprovante}</td>
         <td>
-          <button class="btn-clear" style="padding: 4px; color: #ff5b5b;" onclick="excluirTransacao('${t.id}')" title="Excluir Transação">❌</button>
+          <button class="btn-clear" style="padding: 4px; color: #ff5b5b;" onclick="excluirTransacao('${t.id}')" title="Excluir TransaÃ§Ã£o">âŒ</button>
         </td>
       `;
       lista.appendChild(tr);
@@ -88,7 +88,7 @@ async function carregarFinanceiro() {
     atualizarCardsDashboard(totalEntradas, totalSaidas);
   }
 
-  // 3. O Saldo Atual (Ele não é do mês, ele é o acumulado histórico geral da escola/conta)
+  // 3. O Saldo Atual (Ele nÃ£o Ã© do mÃªs, ele Ã© o acumulado histÃ³rico geral da escola/conta)
   calcularSaldoAcumuladoGeral(contaSelecionada);
 }
 
@@ -118,7 +118,7 @@ function atualizarCardsDashboard(entradas, saidas) {
   document.getElementById('totalSaidas').innerText = `R$ ${saidas.toLocaleString('pt-BR', {minimumFractionDigits: 2})}`;
 }
 
-// ====== DICIONÁRIOS (Gerenciar Contas e Categorias) ======
+// ====== DICIONÃRIOS (Gerenciar Contas e Categorias) ======
 async function carregarDicionariosFinanceiros() {
   const [resContas, resCategorias] = await Promise.all([
     clienteSupabase.from('financeiro_contas').select('*').eq('escola_id', escolaAtual),
@@ -130,14 +130,14 @@ async function carregarDicionariosFinanceiros() {
 
   // Popula o Filtro de Contas na tela principal
   const filtroConta = document.getElementById('filtroConta');
-  const valorAtualFiltro = filtroConta.value; // Pra não perder o que estava selecionado num F5
-  filtroConta.innerHTML = '<option value="">Visão Geral (Todas as Contas)</option>';
+  const valorAtualFiltro = filtroConta.value; // Pra nÃ£o perder o que estava selecionado num F5
+  filtroConta.innerHTML = '<option value="">VisÃ£o Geral (Todas as Contas)</option>';
   contasFinanceiras.forEach(c => {
     filtroConta.innerHTML += `<option value="${c.id}">${c.nome}</option>`;
   });
   filtroConta.value = valorAtualFiltro;
 
-  // Popula as opçoes no Modal de Novo Lançamento
+  // Popula as opÃ§oes no Modal de Novo LanÃ§amento
   const selConta = document.getElementById('contaTransacao');
   const selCat = document.getElementById('categoriaTransacao');
   
@@ -151,10 +151,10 @@ async function carregarDicionariosFinanceiros() {
   }
 }
 
-// ====== MODAIS DA NOVA TRANSAÇÃO ======
+// ====== MODAIS DA NOVA TRANSAÃ‡ÃƒO ======
 function abrirModalTransacao() {
   if (contasFinanceiras.length === 0 || categoriasFinanceiras.length === 0) {
-    alert("Crie pelo menos 1 Conta (Ex: Conta PDDE) e 1 Categoria (Ex: Manutenção) no topo da tela antes de lançar algo!");
+    alert("Crie pelo menos 1 Conta (Ex: Conta PDDE) e 1 Categoria (Ex: ManutenÃ§Ã£o) no topo da tela antes de lanÃ§ar algo!");
     return;
   }
   document.getElementById('descTransacao').value = '';
@@ -166,7 +166,7 @@ function abrirModalTransacao() {
   document.getElementById('tipoTransacao').addEventListener('change', function() {
     document.getElementById('valorTransacao').style.color = this.value === 'Receita' ? '#4ade80' : '#ff5b5b';
   });
-  document.getElementById('valorTransacao').style.color = '#ff5b5b'; // Padrão é despesa
+  document.getElementById('valorTransacao').style.color = '#ff5b5b'; // PadrÃ£o Ã© despesa
   
   document.getElementById('modalTransacao').style.display = 'flex';
 }
@@ -190,14 +190,14 @@ async function salvarTransacao() {
     return;
   }
   
-  // Regra de Ouro: Despesa é OBRIGATÓRIO ter foto da Nota Fiscal
+  // Regra de Ouro: Despesa Ã© OBRIGATÃ“RIO ter foto da Nota Fiscal
   if (!arquivo && tipo === 'Despesa') {
-    alert("Auditoria: O anexo do comprovante / Nota Fiscal é obrigatório para Despesas!");
+    alert("Auditoria: O anexo do comprovante / Nota Fiscal Ã© obrigatÃ³rio para Despesas!");
     return;
   }
 
   btn.disabled = true;
-  btn.innerText = 'Salvando e anexando arquivo... ⏳';
+  btn.innerText = 'Salvando e anexando arquivo... â³';
 
   try {
     let urlComprovante = null;
@@ -221,7 +221,7 @@ async function salvarTransacao() {
       urlComprovante = publicUrlData.publicUrl;
     }
 
-    // 2. Grava a matemática no Livro Caixa
+    // 2. Grava a matemÃ¡tica no Livro Caixa
     const { error } = await clienteSupabase.from('financeiro_transacoes').insert([{
       escola_id: escolaAtual,
       conta_id: conta_id,
@@ -243,12 +243,12 @@ async function salvarTransacao() {
     alert('Erro no Caixa: ' + (err.message || err));
   } finally {
     btn.disabled = false;
-    btn.innerText = 'Salvar Lançamento';
+    btn.innerText = 'Salvar LanÃ§amento';
   }
 }
 
 async function excluirTransacao(id) {
-  if (!confirm("⚠️ Tem certeza que deseja excluir esta transação do caixa? (O comprovante não será apagado do servidor).")) return;
+  if (!confirm("âš ï¸ Tem certeza que deseja excluir esta transaÃ§Ã£o do caixa? (O comprovante nÃ£o serÃ¡ apagado do servidor).")) return;
   const { error } = await clienteSupabase.from('financeiro_transacoes').delete().eq('id', id);
   if (!error) await carregarFinanceiro();
 }
@@ -259,7 +259,7 @@ let tipoConfigAtual = 'contas';
 function abrirModalConfigFin(tipo) {
   if (escolaAtual == null || escolaAtual === '') return alert("Selecione a escola primeiro.");
   tipoConfigAtual = tipo;
-  document.getElementById('tituloConfigFin').innerText = tipo === 'contas' ? 'Contas Bancárias / Verbas' : 'Categorias de Gastos';
+  document.getElementById('tituloConfigFin').innerText = tipo === 'contas' ? 'Contas BancÃ¡rias / Verbas' : 'Categorias de Gastos';
   document.getElementById('inputNovoConfigFin').value = '';
   document.getElementById('modalConfigFin').style.display = 'flex';
   renderizarListaConfigFin();
@@ -271,7 +271,7 @@ function renderizarListaConfigFin() {
   
   lista.innerHTML = '';
   if (dados.length === 0) {
-    lista.innerHTML = '<div style="color:#888; text-align:center; padding: 10px;">Ainda não há nenhum cadastro.</div>';
+    lista.innerHTML = '<div style="color:#888; text-align:center; padding: 10px;">Ainda nÃ£o hÃ¡ nenhum cadastro.</div>';
     return;
   }
 
@@ -303,9 +303,10 @@ async function excluirConfigFin(id) {
   const tabela = tipoConfigAtual === 'contas' ? 'financeiro_contas' : 'financeiro_categorias';
   const { error } = await clienteSupabase.from(tabela).delete().eq('id', id);
   if (error) {
-    alert("Bloqueado: Você não pode excluir este item pois já existem gastos amarrados a ele no Extrato.");
+    alert("Bloqueado: VocÃª nÃ£o pode excluir este item pois jÃ¡ existem gastos amarrados a ele no Extrato.");
   } else {
     await carregarDicionariosFinanceiros();
     renderizarListaConfigFin();
   }
 }
+
