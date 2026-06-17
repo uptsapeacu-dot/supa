@@ -176,408 +176,60 @@
       </div>
 
       <!-- HOME -->
-      <section id="home">
-        <div class="page-header">
-          <h1>Escolas</h1>
-          <button class="btn-add" id="btnAddEscola" onclick="abrirModalEscola()" title="Adicionar escola" aria-label="Adicionar escola" style="display: none;">+</button>
-        </div>
-        <div class="lista-escolas" id="listaEscolas"></div>
-      </section>
+      <section id="home"></section>
 
       <!-- ESCOLA -->
-      <section id="escola" style="display:none">
-        <div class="page-header">
-          <h1 id="tituloEscola">Escola</h1>
-          <div style="display:flex; gap:8px;">
-            <button class="btn-clear btn-modo-edicao-somente" id="btnEditarEscola" onclick="abrirModalEditarEscola()" style="display: none; background: #3ea6ff; color: #050505; font-weight: bold;">Editar Escola</button>
-            <button class="btn-clear btn-modo-edicao-somente btn-danger-action" id="btnExcluirEscola" onclick="excluirEscola()" style="display: none; background: #ff5b5b; color: #120000; font-weight: bold;">Excluir Escola</button>
-            <button class="btn-clear" onclick="voltarParaEscolas()">Voltar</button>
-          </div>
-        </div>
-        <div class="home-grid" id="modulosDaEscola"></div>
-      </section>
+      <section id="escola" style="display:none"></section>
 
       <!-- MURAL -->
-      <section id="mural" style="display:none">
-        <div class="page-header">
-          <h1 id="tituloMural">Mural</h1>
-          <button class="btn-clear" onclick="voltarParaEscola()">Voltar à Escola</button>
-        </div>
-        <div class="permissions-layout mural-layout">
-          <!-- Left: Notices -->
-          <div class="mural-left">
-            <div class="permissions-box" id="formNovoAviso" style="display: none; margin-bottom: 20px;">
-              <h2>Criar Novo Comunicado</h2>
-              <textarea id="textoNovoAviso" rows="4" placeholder="Escreva o comunicado aqui..." style="width:100%; padding:12px; border-radius:10px; background:#121212; border:1px solid #3f3f3f; color:#f1f1f1; resize:none; font-family:inherit; margin-bottom:12px; outline:none; font-size:14px;"></textarea>
-              <div style="display:flex; justify-content:space-between; align-items:center;">
-                <label class="btn-clear" style="cursor:pointer; display:inline-block; padding:10px 14px; background:#222; border:1px solid #333;">
-                  📎 Anexar Arquivo
-                  <input type="file" id="anexoNovoAviso" style="display:none;" onchange="alert('Upload de arquivos será configurado no ambiente de produção!')" />
-                </label>
-                <button class="btn-login" onclick="publicarAviso()" style="margin-top:0; width:auto; padding:10px 20px;">Publicar</button>
-              </div>
-            </div>
-            <div class="lista-alunos" id="listaAvisos"></div>
-          </div>
-          <!-- Right: Birthday Calendar -->
-          <div class="mural-right">
-            <div class="permissions-box">
-              <h2 style="margin-top:0;">Calendário de Aniversários</h2>
-              <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <button class="btn-clear" onclick="mudarMesCalendario(-1)" style="padding: 6px 12px;">◀</button>
-                <h3 id="calendarMonthYear" style="margin:0; color:#fff; font-size:16px;">Janeiro 2026</h3>
-                <button class="btn-clear" onclick="mudarMesCalendario(1)" style="padding: 6px 12px;">▶</button>
-              </div>
-              <div class="calendar-grid-weekdays" style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-weight:bold; font-size:12px; color:#aaa; margin-bottom:8px;">
-                <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
-              </div>
-              <div class="calendar-grid-days" id="calendarDays" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; text-align:center; font-size:14px;"></div>
-              <div style="margin-top:20px; border-top:1px solid #2a2a2a; padding-top:15px;">
-                <h4 style="margin: 0 0 10px; color: #fff; font-size:14px;">Aniversariantes do Mês:</h4>
-                <div class="lista-alunos" id="listaAniversariantesMes" style="gap:6px; max-height: 180px; overflow-y: auto;"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <section id="mural" style="display:none"></section>
 
-          <!-- TURMAS -->
-      <section id="turmas" style="display:none">
-        <!-- O arquivo turmas-lista.html será injetado aqui -->
-      </section>
+      <!-- TURMAS -->
+      <section id="turmas" style="display:none"></section>
 
       <!-- FUNCIONÁRIOS -->
-      <section id="funcionarios" style="display:none">
-  <!-- O arquivo funcionarios será injetado aqui -->
-        
-      </section>
+      <section id="funcionarios" style="display:none"></section>
 
       <!-- MATRÍCULAS -->
-      <section id="matriculas" style="display:none">
-        <div class="page-header">
-          <h1>Matrículas</h1>
-          <button class="btn-clear" onclick="voltarParaEscola()">Voltar</button>
-        </div>
-        <div class="placeholder-page">Área de matrículas será desenvolvida depois.</div>
-      </section>
+      <section id="matriculas" style="display:none"></section>
 
       <!-- ALUNOS -->
-      <section id="alunos" style="display:none">
-        <div class="page-header">
-          <h1>Alunos</h1>
-          <div style="display:flex; gap:8px; align-items:center;">
-            <button class="btn-add" id="btnAddAluno" onclick="abrirModalAluno()" title="Adicionar aluno" aria-label="Adicionar aluno" style="display: none;">+</button>
-            <button class="btn-clear" onclick="voltarParaEscola()">Voltar</button>
-          </div>
-        </div>
-        <div class="tools-row">
-          <input type="search" id="buscaAluno" placeholder="Buscar aluno por nome, telefone, email, endereço ou série" oninput="renderizarAlunos()" />
-          <select id="filtroSerie" onchange="renderizarAlunos()">
-            <option value="">Todas as séries</option>
-          </select>
-          <button class="btn-clear" onclick="limparFiltros()">Limpar filtros</button>
-        </div>
-        <div class="lista-alunos" id="listaAlunos"></div>
-      </section>
+      <section id="alunos" style="display:none"></section>
 
       <!-- PERMISSÕES -->
-      <section id="permissoes" style="display:none">
-        <div class="page-header">
-          <h1>Permissões</h1>
-        </div>
-        <div class="permissions-layout">
-          <!-- Formulário -->
-          <div class="permissions-box" id="boxFormPermissao">
-            <h2>Atribuir acesso</h2>
-            <input type="text" id="buscaFuncionarioSelect" placeholder="Pesquisar funcionário..." oninput="filtrarSelectFuncionario()" style="margin-bottom: 8px;" />
-            <select id="funcionarioPermissao" style="margin-bottom: 12px;"></select>
-            <select id="orgaoPermissao" style="margin-bottom: 12px;"></select>
-            <select id="nivelPermissao" style="margin-bottom: 24px;" onchange="atualizarCamposPermissao()"></select>
-            <div class="checks-permissoes" id="checksPermissoes" style="display: none; margin-bottom: 16px;">
-              <label><input type="checkbox" id="permMural"> Mural</label>
-              <label><input type="checkbox" id="permTurmas"> Turmas</label>
-              <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-              <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-              <label><input type="checkbox" id="permAlunos"> Alunos</label>
-            </div>
-            <button class="btn-login" type="button" onclick="salvarPermissao()" id="btnSalvarPermissao">Salvar permissão</button>
-            <button class="btn-clear" type="button" onclick="cancelarEdicaoPermissao()" id="btnCancelarPermissao" style="display: none; width: 100%; margin-top: 8px;">Cancelar edição</button>
-          </div>
-          <!-- Lista -->
-          <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
-            <h2>Acessos cadastrados</h2>
-            <div style="display: grid; grid-template-columns: 1fr 160px 220px auto; gap: 12px; margin-bottom: 18px; align-items: center;">
-              <input type="search" id="buscaPermissao" placeholder="Buscar funcionário..." oninput="renderizarPermissoes()" />
-              <select id="filtroNivelPermissao" onchange="renderizarPermissoes()">
-                <option value="">Todos os Níveis</option>
-                <option value="2">Nível 2</option>
-                <option value="3">Nível 3</option>
-                <option value="4">Nível 4</option>
-              </select>
-              <select id="filtroOrgaoPermissao" onchange="renderizarPermissoes()">
-                <option value="">Todos os Órgãos</option>
-              </select>
-              <button class="btn-clear" onclick="limparFiltrosPermissao()">Limpar</button>
-            </div>
-            <div class="lista-alunos" id="listaPermissoes"></div>
-          </div>
-        </div>
-      </section>
+      <section id="permissoes" style="display:none"></section>
+
       <!-- FINANCEIRO -->
-      <section id="financeiro" style="display:none">
-        
-      </section>
+      <section id="financeiro" style="display:none"></section>
+
       <!-- PERFIL -->
-      <section id="perfil" style="display:none">
-        <h1>Perfil</h1>
-        <div class="placeholder-page">Ficha de funcionários a ser desenvolvida posteriormente.</div>
-      </section>
+      <section id="perfil" style="display:none"></section>
 
       <!-- RELATÓRIOS -->
-      <section id="relatorios" style="display:none">
-        <!-- O arquivo relatorios.html será injetado aqui -->
-      </section>
+      <section id="relatorios" style="display:none"></section>
 
       <!-- DIRETRIZES -->
-      <section id="diretrizes" style="display:none">
-        <!-- O arquivo diretrizes.html será injetado aqui -->
-      </section>
+      <section id="diretrizes" style="display:none"></section>
 
     </main>
 
   </div>
 
-  <!-- MODAL ESCOLA -->
-  <div class="modal" id="modalEscola">
-    <div class="modal-box">
-      <div class="modal-topo">
-        <h2 id="tituloModalEscola">Nova Escola</h2>
-        <button class="fechar" onclick="fecharModalEscola()" aria-label="Fechar modal">×</button>
-      </div>
-      <input type="text" id="nomeEscola" placeholder="Nome da escola *" />
-      <div id="previewLogoEscola" style="display:none; margin: 12px 0; text-align: center;">
-        <img id="imgPreviewLogo" src="" alt="Preview da logo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #3ea6ff;" />
-      </div>
-      <label for="logoEscola" id="labelLogoEscola" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; margin-top: 12px; border-radius: 10px; border: 1px dashed #3f3f3f; background: #121212; color: #aaa; font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#3ea6ff'; this.style.color='#3ea6ff';" onmouseout="this.style.borderColor='#3f3f3f'; this.style.color='#aaa';">
-        📷 Selecionar Logo da Escola *
-      </label>
-      <input type="file" id="logoEscola" accept="image/*" style="display: none;" onchange="previewLogo(this)" />
-      <span id="msgLogoObrigatoria" style="display:none; color:#ff5b5b; font-size:12px; margin-top:4px;">⚠️ A logo é obrigatória para cadastrar uma escola.</span>
-      <button class="btn-login" id="btnSalvarEscola" onclick="salvarEscola()" style="margin-top: 20px;">Salvar escola</button>
-    </div>
-  </div>
-
-    <!-- MODAL CONFIRMAÇÃO DE SENHA -->
-  <div class="modal" id="modalConfirmacaoSenha">
-    <div class="modal-box" style="max-width: 400px;">
-      <div class="modal-topo">
-        <h2>Ativar Modo Edição</h2>
-        <button class="fechar" onclick="cancelarModoEdicao()" aria-label="Fechar modal">×</button>
-      </div>
-      <p style="font-size: 14px; color: #aaa; margin: 0 0 16px; line-height: 1.4;">Para alternar para o modo de edição, confirme sua senha de login.</p>
-      
-      <!-- 👇 OLHA A MÁGICA DO ENTER AQUI NESSA LINHA 👇 -->
-      <input type="password" id="senhaConfirmacao" placeholder="Senha do usuário" onkeypress="if(event.key === 'Enter') confirmarSenhaModoEdicao()" />
-      
-      <button class="btn-login" id="btnConfirmarSenha" onclick="confirmarSenhaModoEdicao()">Confirmar</button>
-    </div>
-  </div>
-
-  <!-- MODAL ANIVERSARIANTE -->
-  <div class="modal" id="modalAniversariante">
-    <div class="modal-box" style="max-width: 400px; text-align: center;">
-      <div class="modal-topo">
-        <h2 style="margin: 0; font-size: 20px;">Aniversariante! 🎉</h2>
-        <button class="fechar" onclick="fecharModalAniversariante()" aria-label="Fechar modal">×</button>
-      </div>
-            <img id="fotoAniversariante" src="" alt="Foto" style="width: 110px; height: 110px; border-radius: 50%; object-fit: cover; margin: 0 auto 10px auto; display: block; border: 4px solid #3ea6ff;" />
-
-      
-      <h3 id="nomeAniversariante" style="margin: 10px 0 5px; color: #fff; font-size: 18px;">Nome do Funcionário</h3>
-      <p id="orgaoAniversariante" style="margin: 0 0 10px; color: #aaa; font-size: 14px;">Órgão: Escola</p>
-      <p id="dataAniversariante" style="margin: 0 0 10px; color: #3ea6ff; font-weight: bold; font-size: 15px;">Dia 15</p>
-    </div>
-  </div>
-
-  <!-- MODAL FUNCIONÁRIO -->
-  <div class="modal" id="modalFuncionario">
-    <div class="modal-box" style="max-width: 560px; max-height: 90vh; overflow-y: auto;">
-      <div class="modal-topo" style="position: sticky; top: 0; background: #181818; z-index: 10; padding-bottom: 12px; border-bottom: 1px solid #2a2a2a;">
-        <h2 id="tituloModalFuncionario">Novo Funcionário</h2>
-        <button class="fechar" onclick="fecharModalFuncionario()" aria-label="Fechar modal">×</button>
-      </div>
-
-      <div class="form-section-title" style="margin-top: 16px;">Dados Pessoais</div>
-      <div class="form-grid-2">
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Nome Completo *</label>
-          <input type="text" id="nomeFuncionario" placeholder="Nome completo" style="margin:0;" />
-        </div>
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">CPF</label>
-          <input type="text" id="cpfFuncionario" placeholder="000.000.000-00" style="margin:0;" />
-        </div>
-      </div>
-      <div class="form-grid-2">
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Email *</label>
-          <input type="email" id="emailFuncionario" placeholder="email@exemplo.com" style="margin:0;" />
-        </div>
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Telefone</label>
-          <input type="text" id="telefoneFuncionario" placeholder="(00) 00000-0000" style="margin:0;" />
-        </div>
-      </div>
-      <div class="form-grid-2">
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Data de Nascimento</label>
-          <input type="date" id="nascimentoFuncionario" style="margin:0;" />
-        </div>
-        <div>
-          <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Status</label>
-          <select id="statusFuncionario" style="margin:0;">
-            <option value="ativo">✅ Ativo</option>
-            <option value="afastado">⚠️ Afastado</option>
-            <option value="desligado">🔴 Desligado</option>
-          </select>
-        </div>
-      </div>
-
-      <div class="form-section-title">Formação e Endereço</div>
-      <div>
-        <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Formação Acadêmica</label>
-        <input type="text" id="formacaoFuncionario" placeholder="Ex: Licenciatura em Pedagogia, Ensino Médio..." style="margin:0 0 12px 0;" />
-      </div>
-      <div>
-        <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Endereço</label>
-        <input type="text" id="enderecoFuncionario" placeholder="Rua, número, bairro, cidade" style="margin:0 0 12px 0;" />
-      </div>
-
-      <div class="form-section-title">Cargo e Vínculo</div>
-      <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Cargo / Função</label>
-      <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 12px;">
-        <select id="cargoFuncionario" style="flex: 1; margin: 0;"></select>
-        <button type="button" id="btnNovoCargo" onclick="adicionarNovoCargo()" style="display:none; padding: 12px 16px; border-radius: 10px; background: #3ea6ff; color: #000; font-weight: bold; cursor: pointer; border: none; font-size: 18px; line-height: 1;" title="Cadastrar novo cargo no sistema">+</button>
-      </div>
-
-      <div id="statusObservacaoBox" style="display:none;">
-        <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Motivo / Observação da mudança de status</label>
-        <input type="text" id="statusObservacao" placeholder="Ex: Licença médica, aposentadoria..." style="margin:0 0 12px 0;" />
-      </div>
-
-      <div class="form-section-title">Foto 3x4</div>
-      <input type="file" id="fotoFuncionario" accept="image/*" style="width: 100%; padding: 8px; font-size: 13px; border-radius: 8px; border: 1px solid #3f3f3f; background: #121212; color: #fff; margin-bottom: 16px;" />
-
-      <button class="btn-login" id="btnSalvarFuncionario" onclick="salvarFuncionario()">Salvar</button>
-    </div>
-  </div>
-
-  <!-- MODAL MOVIMENTAÇÕES -->
-  <div class="modal" id="modalMovimentacoes">
-    <div class="modal-box" style="max-width: 680px; max-height: 88vh; overflow-y: auto;">
-      <div class="modal-topo" style="position: sticky; top: 0; background: #181818; z-index: 10; padding-bottom: 12px; border-bottom: 1px solid #2a2a2a;">
-        <div>
-          <h2 style="margin:0; font-size: 18px;">Histórico de Movimentações</h2>
-          <p id="nomeMovimentacoesModal" style="margin:4px 0 0; font-size: 13px; color: #aaa;"></p>
-        </div>
-        <div style="display:flex; gap: 8px; align-items:center;">
-          <button onclick="imprimirHistoricoMovimentacoes()" title="Imprimir histórico" style="width:40px; height:40px; border-radius:50%; background:#3ea6ff; color:#050505; font-size:16px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">
-            <i data-lucide="printer" style="width:16px;height:16px;"></i>
-          </button>
-          <button class="fechar" onclick="fecharModalMovimentacoes()" aria-label="Fechar">×</button>
-        </div>
-      </div>
-      <div id="conteudoMovimentacoes" style="padding-top: 16px;">
-        <div class="empty-state">Carregando...</div>
-      </div>
-    </div>
-  </div>
-
-  
   <!-- Os modais pesados vão ser carregados dinamicamente aqui -->
+  <div id="container-modal-escola"></div>
+  <div id="container-modal-confirmacao-senha"></div>
+  <div id="container-modal-aniversariante"></div>
+  <div id="container-modal-funcionario"></div>
+  <div id="container-modal-movimentacoes"></div>
+  <div id="container-modal-frequencia"></div>
+  <div id="container-modal-sucesso"></div>
+  
   <div id="container-modal-aluno"></div>
   <div id="container-ficha-impressao"></div>
   <div id="container-boletim-impressao"></div>
 
-  
-  <!-- MODAL FREQUÊNCIA -->
-  <div class="modal" id="modalFrequencia">
-    <div class="modal-box" style="max-width:700px; max-height:90vh; overflow-y:auto;">
-      <div class="modal-topo" style="position:sticky;top:0;background:#181818;z-index:10;padding-bottom:12px;border-bottom:1px solid #2a2a2a;">
-        <div>
-          <h2 id="tituloFrequencia" style="margin:0;font-size:18px;">📅 Frequência</h2>
-        </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="date" id="dataFrequencia" onchange="carregarFrequenciaDoDia()" style="margin:0;padding:8px 12px;width:auto;" />
-          <button class="fechar" onclick="fecharModalFrequencia()" aria-label="Fechar">×</button>
-        </div>
-      </div>
-      <div id="avisoPermissaoFrequencia" class="aviso-permissao-freq" style="display:none;margin-top:16px;"></div>
-      <div id="listaFrequencia" style="display:flex;flex-direction:column;gap:8px;padding-top:16px;"></div>
-      <button class="btn-login" id="btnSalvarFrequencia" onclick="salvarFrequencia()" style="margin-top:20px;display:none;">💾 Salvar Frequência</button>
-    </div>
-  </div>
-
-  <!-- MODAL SUCESSO -->
-  <div class="modal" id="modalSucesso" style="z-index: 9999;">
-    <div class="modal-box" style="max-width: 350px; text-align: center; border-color: #22c55e;">
-      <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
-      <h2 style="margin: 0 0 8px; color: #fff; font-size: 20px;">Sucesso!</h2>
-      <p id="msgModalSucesso" style="color: #aaa; font-size: 14px; margin: 0 0 24px; line-height: 1.4;">Alterações salvas com sucesso</p>
-      <button class="btn-login" style="background: #22c55e; color: #000;" onclick="document.getElementById('modalSucesso').style.display='none'">OK</button>
-    </div>
-  </div>
-
   <!-- SCRIPTS -->
-  <script>
-    const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
-    const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
-    const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)
-
-    let escolas = []
-    let escolaAtual = null
-    let funcionarioAtual = null
-    let acessosAtual = []
-    let funcionarios = []
-    let orgaos = []
-    let acessosSistema = []
-    let modoEdicaoAtivo = false
-    let escolaEditando = null
-    let vinculoEditando = null
-    let funcionarioEditandoId = null
-    let muralFuncionarios = []
-    let calendarMes = new Date().getMonth()
-    let calendarAno = new Date().getFullYear()
-    const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
-    const modulosEscola = [
-      { id: 'mural',        nome: 'Mural',        icone: 'pin',            permissao: 'pode_mural'        },
-      { id: 'turmas',       nome: 'Turmas',       icone: 'book-open',      permissao: 'pode_turmas'       },
-      { id: 'funcionarios', nome: 'Funcionários', icone: 'users',          permissao: 'pode_funcionarios' },
-      { id: 'matriculas',   nome: 'Matrículas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
-      { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       }
-    ]
-    let alunos = []
-    let alunoEditando = null
-
-    document.addEventListener('keydown', function(event) {
-      const loginVisivel = document.getElementById('loginBox').style.display !== 'none'
-      if (event.key === 'Enter' && loginVisivel) fazerLogin()
-      if (event.key === 'Escape') {
-        fecharModalAluno()
-        fecharModalEscola()
-        fecharModalFuncionario()
-        fecharModalAniversariante()
-        fecharModalMovimentacoes()
-        cancelarModoEdicao()
-        fecharSidebarMobile()
-        // Fecha o hub de turma se estiver aberto
-        const hubOverlay = document.getElementById('hubTurmaOverlay')
-        if (hubOverlay && hubOverlay.classList.contains('aberto')) {
-          hubOverlay.classList.remove('aberto')
-        }
-      }
-    })
-  </script>
+  <script src="js/estado-global.js"></script>
 
   <script src="js/utils.js"></script>
   <script src="js/auth.js"></script>
@@ -600,14 +252,28 @@
     // Função para carregar os HTMLs pesados em paralelo e de forma resiliente
     async function carregarComponentes() {
       const components = [
-        { url: 'modal-aluno.html', target: 'container-modal-aluno' },
-        { url: 'ficha-impressao.html', target: 'container-ficha-impressao' },
+        { url: 'htmls/home.html', target: 'home' },
+        { url: 'htmls/escola.html', target: 'escola' },
+        { url: 'htmls/mural.html', target: 'mural' },
+        { url: 'htmls/matriculas.html', target: 'matriculas' },
+        { url: 'htmls/alunos.html', target: 'alunos' },
+        { url: 'htmls/permissoes.html', target: 'permissoes' },
+        { url: 'htmls/perfil.html', target: 'perfil' },
         { url: 'htmls/turmas-lista.html', target: 'turmas' },
         { url: 'htmls/funcionarios-lista.html', target: 'funcionarios' },
         { url: 'htmls/financeiro.html', target: 'financeiro' },
-        { url: 'htmls/boletim-impressao.html', target: 'container-boletim-impressao' },
         { url: 'htmls/diretrizes.html', target: 'diretrizes' },
-        { url: 'htmls/relatorios.html', target: 'relatorios' }
+        { url: 'htmls/relatorios.html', target: 'relatorios' },
+        { url: 'htmls/ficha-impressao.html', target: 'container-ficha-impressao' },
+        { url: 'htmls/boletim-impressao.html', target: 'container-boletim-impressao' },
+        { url: 'htmls/modais/modal-aluno.html', target: 'container-modal-aluno' },
+        { url: 'htmls/modais/modal-escola.html', target: 'container-modal-escola' },
+        { url: 'htmls/modais/modal-confirmacao-senha.html', target: 'container-modal-confirmacao-senha' },
+        { url: 'htmls/modais/modal-aniversariante.html', target: 'container-modal-aniversariante' },
+        { url: 'htmls/modais/modal-funcionario.html', target: 'container-modal-funcionario' },
+        { url: 'htmls/modais/modal-movimentacoes.html', target: 'container-modal-movimentacoes' },
+        { url: 'htmls/modais/modal-frequencia.html', target: 'container-modal-frequencia' },
+        { url: 'htmls/modais/modal-sucesso.html', target: 'container-modal-sucesso' }
       ];
 
       await Promise.allSettled(components.map(async (comp) => {

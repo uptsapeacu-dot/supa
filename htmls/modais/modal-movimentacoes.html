@@ -1,0 +1,19 @@
+  <div class="modal" id="modalMovimentacoes">
+    <div class="modal-box" style="max-width: 680px; max-height: 88vh; overflow-y: auto;">
+      <div class="modal-topo" style="position: sticky; top: 0; background: #181818; z-index: 10; padding-bottom: 12px; border-bottom: 1px solid #2a2a2a;">
+        <div>
+          <h2 style="margin:0; font-size: 18px;">Histórico de Movimentações</h2>
+          <p id="nomeMovimentacoesModal" style="margin:4px 0 0; font-size: 13px; color: #aaa;"></p>
+        </div>
+        <div style="display:flex; gap: 8px; align-items:center;">
+          <button onclick="imprimirHistoricoMovimentacoes()" title="Imprimir histórico" style="width:40px; height:40px; border-radius:50%; background:#3ea6ff; color:#050505; font-size:16px; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer;">
+            <i data-lucide="printer" style="width:16px;height:16px;"></i>
+          </button>
+          <button class="fechar" onclick="fecharModalMovimentacoes()" aria-label="Fechar">×</button>
+        </div>
+      </div>
+      <div id="conteudoMovimentacoes" style="padding-top: 16px;">
+        <div class="empty-state">Carregando...</div>
+      </div>
+    </div>
+  </div>

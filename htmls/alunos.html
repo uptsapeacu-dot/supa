@@ -1,0 +1,15 @@
+        <div class="page-header">
+          <h1>Alunos</h1>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button class="btn-add" id="btnAddAluno" onclick="abrirModalAluno()" title="Adicionar aluno" aria-label="Adicionar aluno" style="display: none;">+</button>
+            <button class="btn-clear" onclick="voltarParaEscola()">Voltar</button>
+          </div>
+        </div>
+        <div class="tools-row">
+          <input type="search" id="buscaAluno" placeholder="Buscar aluno por nome, telefone, email, endereço ou série" oninput="renderizarAlunos()" />
+          <select id="filtroSerie" onchange="renderizarAlunos()">
+            <option value="">Todas as séries</option>
+          </select>
+          <button class="btn-clear" onclick="limparFiltros()">Limpar filtros</button>
+        </div>
+        <div class="lista-alunos" id="listaAlunos"></div>

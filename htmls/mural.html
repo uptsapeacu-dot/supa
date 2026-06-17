@@ -1,0 +1,40 @@
+        <div class="page-header">
+          <h1 id="tituloMural">Mural</h1>
+          <button class="btn-clear" onclick="voltarParaEscola()">Voltar à Escola</button>
+        </div>
+        <div class="permissions-layout mural-layout">
+          <!-- Left: Notices -->
+          <div class="mural-left">
+            <div class="permissions-box" id="formNovoAviso" style="display: none; margin-bottom: 20px;">
+              <h2>Criar Novo Comunicado</h2>
+              <textarea id="textoNovoAviso" rows="4" placeholder="Escreva o comunicado aqui..." style="width:100%; padding:12px; border-radius:10px; background:#121212; border:1px solid #3f3f3f; color:#f1f1f1; resize:none; font-family:inherit; margin-bottom:12px; outline:none; font-size:14px;"></textarea>
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <label class="btn-clear" style="cursor:pointer; display:inline-block; padding:10px 14px; background:#222; border:1px solid #333;">
+                  📎 Anexar Arquivo
+                  <input type="file" id="anexoNovoAviso" style="display:none;" onchange="alert('Upload de arquivos será configurado no ambiente de produção!')" />
+                </label>
+                <button class="btn-login" onclick="publicarAviso()" style="margin-top:0; width:auto; padding:10px 20px;">Publicar</button>
+              </div>
+            </div>
+            <div class="lista-alunos" id="listaAvisos"></div>
+          </div>
+          <!-- Right: Birthday Calendar -->
+          <div class="mural-right">
+            <div class="permissions-box">
+              <h2 style="margin-top:0;">Calendário de Aniversários</h2>
+              <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <button class="btn-clear" onclick="mudarMesCalendario(-1)" style="padding: 6px 12px;">◀</button>
+                <h3 id="calendarMonthYear" style="margin:0; color:#fff; font-size:16px;">Janeiro 2026</h3>
+                <button class="btn-clear" onclick="mudarMesCalendario(1)" style="padding: 6px 12px;">▶</button>
+              </div>
+              <div class="calendar-grid-weekdays" style="display:grid; grid-template-columns: repeat(7, 1fr); text-align:center; font-weight:bold; font-size:12px; color:#aaa; margin-bottom:8px;">
+                <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
+              </div>
+              <div class="calendar-grid-days" id="calendarDays" style="display:grid; grid-template-columns: repeat(7, 1fr); gap:6px; text-align:center; font-size:14px;"></div>
+              <div style="margin-top:20px; border-top:1px solid #2a2a2a; padding-top:15px;">
+                <h4 style="margin: 0 0 10px; color: #fff; font-size:14px;">Aniversariantes do Mês:</h4>
+                <div class="lista-alunos" id="listaAniversariantesMes" style="gap:6px; max-height: 180px; overflow-y: auto;"></div>
+              </div>
+            </div>
+          </div>
+        </div>

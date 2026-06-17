@@ -1,0 +1,18 @@
+  <div class="modal" id="modalEscola">
+    <div class="modal-box">
+      <div class="modal-topo">
+        <h2 id="tituloModalEscola">Nova Escola</h2>
+        <button class="fechar" onclick="fecharModalEscola()" aria-label="Fechar modal">×</button>
+      </div>
+      <input type="text" id="nomeEscola" placeholder="Nome da escola *" />
+      <div id="previewLogoEscola" style="display:none; margin: 12px 0; text-align: center;">
+        <img id="imgPreviewLogo" src="" alt="Preview da logo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #3ea6ff;" />
+      </div>
+      <label for="logoEscola" id="labelLogoEscola" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; margin-top: 12px; border-radius: 10px; border: 1px dashed #3f3f3f; background: #121212; color: #aaa; font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#3ea6ff'; this.style.color='#3ea6ff';" onmouseout="this.style.borderColor='#3f3f3f'; this.style.color='#aaa';">
+        📷 Selecionar Logo da Escola *
+      </label>
+      <input type="file" id="logoEscola" accept="image/*" style="display: none;" onchange="previewLogo(this)" />
+      <span id="msgLogoObrigatoria" style="display:none; color:#ff5b5b; font-size:12px; margin-top:4px;">⚠️ A logo é obrigatória para cadastrar uma escola.</span>
+      <button class="btn-login" id="btnSalvarEscola" onclick="salvarEscola()" style="margin-top: 20px;">Salvar escola</button>
+    </div>
+  </div>
