@@ -1,5 +1,5 @@
-﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a ImpressÃ£o em Massa
-let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionÃ¡rio para impressÃ£o do histÃ³rico
+﻿﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
+let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionário para impressão do histórico
 
 // ====== GESTÃƒO DINÃ‚MICA DE CARGOS ======
 async function carregarCargos() {
@@ -26,12 +26,12 @@ async function carregarCargos() {
 
 
 async function adicionarNovoCargo() {
-  const novoCargo = prompt("Digite o nome do novo cargo (Ex: PsicÃ³logo Escolar):");
+  const novoCargo = prompt("Digite o nome do novo cargo (Ex: Psicólogo Escolar):");
   if (!novoCargo || novoCargo.trim() === "") return;
   const nomeLimpo = novoCargo.trim();
   const { data, error } = await clienteSupabase.from('cargos').insert([{ nome: nomeLimpo }]).select().single();
   if (error) {
-    alert(error.code === '23505' ? 'Esse cargo jÃ¡ existe!' : 'Erro: ' + error.message);
+    alert(error.code === '23505' ? 'Esse cargo já existe!' : 'Erro: ' + error.message);
     return;
   }
   await carregarCargos();
@@ -46,7 +46,7 @@ async function carregarFuncionariosDaTela() {
   const lista = document.getElementById('listaFuncionarios')
   if (!lista) return;
 
-  lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Carregando funcionÃ¡rios...</div>'
+  lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Carregando funcionários...</div>'
 
   let orgaosPermitidos = []
 
@@ -66,7 +66,7 @@ async function carregarFuncionariosDaTela() {
   }
 
   if (!orgaosPermitidos.length) {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionÃ¡rio encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário encontrado.</div>'
     funcionariosAtuaisNaTela = [];
     return
   }
@@ -89,19 +89,19 @@ async function carregarFuncionariosDaTela() {
   const { data, error } = await query;
 
   if (error || !data || !data.length) {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionÃ¡rio encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário encontrado.</div>'
     funcionariosAtuaisNaTela = [];
     return
   }
 
-  // Filtra por status localmente se necessÃ¡rio
+  // Filtra por status localmente se necessário
   let dadosFiltrados = data;
   if (statusSelecionado !== '') {
     dadosFiltrados = data.filter(v => v.funcionarios && v.funcionarios.status === statusSelecionado);
   }
 
   if (!dadosFiltrados.length) {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionÃ¡rio com esse status encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário com esse status encontrado.</div>'
     funcionariosAtuaisNaTela = [];
     return
   }
@@ -171,17 +171,17 @@ async function carregarFuncionariosDaTela() {
     actionsDiv.style.flexShrink = '0'
     actionsDiv.style.flexWrap = 'wrap'
 
-    // BotÃ£o M (MovimentaÃ§Ãµes) â€” sempre visÃ­vel para quem tem permissÃ£o
+    // Botão M (Movimentações) â€” sempre visível para quem tem permissão
     if (temPermissaoGeral) {
       const btnMov = document.createElement('button')
       btnMov.className = 'btn-editar btn-movimentacoes'
-      btnMov.title = 'HistÃ³rico de movimentaÃ§Ãµes'
+      btnMov.title = 'Histórico de movimentações'
       btnMov.innerHTML = 'M'
       btnMov.onclick = function() { abrirModalMovimentacoes(funcionario.id, nomeFunc) }
       actionsDiv.appendChild(btnMov)
     }
 
-    // BotÃ£o Imprimir Ficha
+    // Botão Imprimir Ficha
     if (temPermissaoGeral) {
       const btnPrint = document.createElement('button')
       btnPrint.className = 'btn-editar'
@@ -221,9 +221,9 @@ async function carregarFuncionariosDaTela() {
     const details = document.createElement('div')
     details.className = 'func-details'
     details.innerHTML = `
-      <div><strong>Ã“rgÃ£o:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
+      <div><strong>Ã“rgão:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
       <div><strong>Nascimento:</strong> ${formatarDataBR(funcionario.data_nascimento)}</div>
-      ${funcionario.formacao_academica ? `<div><strong>FormaÃ§Ã£o:</strong> ${funcionario.formacao_academica}</div>` : ''}
+      ${funcionario.formacao_academica ? `<div><strong>Formação:</strong> ${funcionario.formacao_academica}</div>` : ''}
     `
 
     item.appendChild(header)
@@ -241,7 +241,7 @@ async function abrirModalFuncionario() {
   vinculoEditando = null
   funcionarioEditandoId = null
 
-  document.getElementById('tituloModalFuncionario').innerText = 'Novo FuncionÃ¡rio'
+  document.getElementById('tituloModalFuncionario').innerText = 'Novo Funcionário'
   document.getElementById('nomeFuncionario').value = ''
   document.getElementById('emailFuncionario').value = ''
   document.getElementById('telefoneFuncionario').value = ''
@@ -258,7 +258,7 @@ async function abrirModalFuncionario() {
   document.getElementById('emailFuncionario').disabled = false
   document.getElementById('btnNovoCargo').style.display = isSecretaria() ? 'block' : 'none';
 
-  // Mostra caixa de observaÃ§Ã£o ao mudar status
+  // Mostra caixa de observação ao mudar status
   document.getElementById('statusFuncionario').onchange = function() {
     const v = this.value;
     document.getElementById('statusObservacaoBox').style.display = (v === 'afastado' || v === 'desligado') ? 'block' : 'none';
@@ -279,7 +279,7 @@ async function editarFuncionario(vinculo) {
 
   const statusAtual = vinculo.funcionarios.status || 'ativo'
 
-  document.getElementById('tituloModalFuncionario').innerText = 'Editar FuncionÃ¡rio'
+  document.getElementById('tituloModalFuncionario').innerText = 'Editar Funcionário'
   document.getElementById('nomeFuncionario').value = vinculo.funcionarios.nome || ''
   document.getElementById('emailFuncionario').value = vinculo.funcionarios.email || ''
   document.getElementById('telefoneFuncionario').value = vinculo.funcionarios.telefone || ''
@@ -300,7 +300,7 @@ async function editarFuncionario(vinculo) {
   document.getElementById('emailFuncionario').disabled = true
   document.getElementById('btnNovoCargo').style.display = isSecretaria() ? 'block' : 'none';
 
-  // Mostra caixa de observaÃ§Ã£o ao mudar status
+  // Mostra caixa de observação ao mudar status
   document.getElementById('statusFuncionario').onchange = function() {
     const v = this.value;
     document.getElementById('statusObservacaoBox').style.display = (v === 'afastado' || v === 'desligado') ? 'block' : 'none';
@@ -324,7 +324,7 @@ async function salvarFuncionario() {
   var obsStatus = document.getElementById('statusObservacao').value.trim()
 
   if (!nome || !email) {
-    alert('Nome e Email sÃ£o obrigatÃ³rios')
+    alert('Nome e Email são obrigatórios')
     return
   }
 
@@ -339,7 +339,7 @@ async function salvarFuncionario() {
   }
 
   if (!orgaoId && !isSecretaria()) {
-    alert('Ã“rgÃ£o da escola nÃ£o encontrado.')
+    alert('Ã“rgão da escola não encontrado.')
     return
   }
 
@@ -349,7 +349,7 @@ async function salvarFuncionario() {
       orgaos = orgaosBuscados || []
     }
     if (orgaos.length > 0) orgaoId = orgaos[0].id
-    else { alert('Nenhum Ã³rgÃ£o disponÃ­vel. Cadastre uma escola primeiro.'); return }
+    else { alert('Nenhum órgão disponível. Cadastre uma escola primeiro.'); return }
   }
 
   btn.disabled = true
@@ -389,7 +389,7 @@ async function salvarFuncionario() {
     var funcionarioId = funcionarioEditandoId
 
     if (funcionarioEditandoId) {
-      // Verificar se mudou o status para registrar histÃ³rico
+      // Verificar se mudou o status para registrar histórico
       const { data: funcAntes } = await clienteSupabase.from('funcionarios').select('status').eq('id', funcionarioEditandoId).single()
       const statusAnterior = funcAntes ? funcAntes.status : 'ativo'
 
@@ -399,7 +399,7 @@ async function salvarFuncionario() {
       var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo }).eq('id', vinculoEditando)
       if (errVinc) throw errVinc
 
-      // Registrar histÃ³rico de status se mudou
+      // Registrar histórico de status se mudou
       if (statusAnterior !== novoStatus) {
         await clienteSupabase.from('historico_status_funcionarios').insert([{
           funcionario_id: funcionarioEditandoId,
@@ -432,7 +432,7 @@ async function salvarFuncionario() {
         if (errFunc2) throw errFunc2
         funcionarioId = novoFunc.id
 
-        // Registrar status inicial se nÃ£o for ativo
+        // Registrar status inicial se não for ativo
         if (novoStatus !== 'ativo') {
           await clienteSupabase.from('historico_status_funcionarios').insert([{
             funcionario_id: funcionarioId,
@@ -458,7 +458,7 @@ async function salvarFuncionario() {
     await carregarFuncionariosDaTela()
     
     // Exibe o modal de sucesso estilizado
-    document.getElementById('msgModalSucesso').innerText = 'AlteraÃ§Ãµes salvas com sucesso!'
+    document.getElementById('msgModalSucesso').innerText = 'Alterações salvas com sucesso!'
     document.getElementById('modalSucesso').style.display = 'flex'
     
   } catch (err) {
@@ -471,7 +471,7 @@ async function salvarFuncionario() {
 }
 
 async function removerVinculoFuncionario(vinculoId) {
-  if (!confirm('Deseja desvincular este funcionÃ¡rio da escola?')) return
+  if (!confirm('Deseja desvincular este funcionário da escola?')) return
   const { error } = await clienteSupabase.from('vinculos_funcionarios').update({ ativo: false }).eq('id', vinculoId)
   if (error) { alert('Erro ao desvincular'); return; }
   await carregarFuncionariosDaTela()
@@ -487,14 +487,14 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
 
   if (window.lucide) lucide.createIcons()
 
-  // Buscar histÃ³rico de status
+  // Buscar histórico de status
   const { data: histStatus } = await clienteSupabase
     .from('historico_status_funcionarios')
     .select('*')
     .eq('funcionario_id', funcionarioId)
     .order('data_registro', { ascending: false })
 
-  // Buscar histÃ³rico de vÃ­nculos (lotaÃ§Ã£o)
+  // Buscar histórico de vínculos (lotação)
   const { data: histVinculos } = await clienteSupabase
     .from('vinculos_funcionarios')
     .select('*, orgaos(nome)')
@@ -505,16 +505,16 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
 
   let html = ''
 
-  // SeÃ§Ã£o de HistÃ³rico de LotaÃ§Ã£o
-  html += `<div class="form-section-title">ðŸ“‹ HistÃ³rico de LotaÃ§Ã£o</div>`
+  // Seção de Histórico de Lotação
+  html += `<div class="form-section-title">ðŸ“‹ Histórico de Lotação</div>`
   if (!histVinculos || histVinculos.length === 0) {
-    html += `<div class="empty-state" style="margin-bottom:16px;">Nenhum registro de lotaÃ§Ã£o encontrado.</div>`
+    html += `<div class="empty-state" style="margin-bottom:16px;">Nenhum registro de lotação encontrado.</div>`
   } else {
     html += `<div class="timeline-movimentacao">`
     histVinculos.forEach(v => {
-      const orgaoNome = v.orgaos ? v.orgaos.nome : 'Ã“rgÃ£o nÃ£o encontrado'
+      const orgaoNome = v.orgaos ? v.orgaos.nome : 'Ã“rgão não encontrado'
       const dataIni = formatarDataBR(v.data_inicio)
-      const dataFim = v.data_fim ? formatarDataBR(v.data_fim) : 'atÃ© o momento'
+      const dataFim = v.data_fim ? formatarDataBR(v.data_fim) : 'até o momento'
       const ativo = v.ativo
       html += `
         <div class="timeline-item">
@@ -530,10 +530,10 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
     html += `</div>`
   }
 
-  // SeÃ§Ã£o de HistÃ³rico de Status
-  html += `<div class="form-section-title" style="margin-top:24px;">ðŸ”„ HistÃ³rico de Status</div>`
+  // Seção de Histórico de Status
+  html += `<div class="form-section-title" style="margin-top:24px;">ðŸ”„ Histórico de Status</div>`
   if (!histStatus || histStatus.length === 0) {
-    html += `<div class="empty-state">Nenhuma mudanÃ§a de status registrada.</div>`
+    html += `<div class="empty-state">Nenhuma mudança de status registrada.</div>`
   } else {
     html += `<div class="timeline-movimentacao">`
     const statusLabels = { ativo: 'âœ… Ativo', afastado: 'âš ï¸ Afastado', desligado: 'ðŸ”´ Desligado' }
@@ -566,13 +566,13 @@ function fecharModalMovimentacoes() {
 
 function imprimirHistoricoMovimentacoes() {
   const conteudo = document.getElementById('conteudoMovimentacoes')
-  const nome = funcionarioMovimentacaoAtual ? funcionarioMovimentacaoAtual.nome : 'FuncionÃ¡rio'
+  const nome = funcionarioMovimentacaoAtual ? funcionarioMovimentacaoAtual.nome : 'Funcionário'
   const dataImpressao = new Date().toLocaleString('pt-BR')
 
   const htmlPrint = `
     <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
       <div style="text-align:center; margin-bottom:24px; border-bottom:2px solid #000; padding-bottom:16px;">
-        <h2 style="margin:0 0 4px;">HistÃ³rico de MovimentaÃ§Ãµes</h2>
+        <h2 style="margin:0 0 4px;">Histórico de Movimentações</h2>
         <p style="margin:0; font-size:14px; color:#555;">${nome}</p>
       </div>
       ${conteudo.innerHTML
@@ -607,11 +607,11 @@ function gerarHTMLFicha(func) {
   const logosPrefeitura = `
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
       <div style="display:flex; align-items:center; gap:10px;">
-        <img src="img/brasaoSapeaÃ§u.png" alt="BrasÃ£o" style="height:64px; object-fit:contain;" onerror="this.style.display='none'">
+        <img src="img/brasaoSapeaçu.png" alt="Brasão" style="height:64px; object-fit:contain;" onerror="this.style.display='none'">
         <div style="text-align:left; line-height:1.3;">
           <div style="font-size:11px; color:#555; text-transform:uppercase; letter-spacing:.5px;">Prefeitura Municipal de</div>
-          <div style="font-size:16px; font-weight:bold; color:#1a1a1a;">SapeaÃ§u</div>
-          <div style="font-size:11px; color:#555;">Secretaria Municipal de EducaÃ§Ã£o</div>
+          <div style="font-size:16px; font-weight:bold; color:#1a1a1a;">Sapeaçu</div>
+          <div style="font-size:11px; color:#555;">Secretaria Municipal de Educação</div>
         </div>
       </div>
       <div style="text-align:right; font-size:10px; color:#888; line-height:1.5;">
@@ -641,8 +641,8 @@ function gerarHTMLFicha(func) {
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
             <div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px;">
-              <div style="font-size:10px; color:#888; text-transform:uppercase; margin-bottom:2px;">Cargo / FunÃ§Ã£o</div>
-              <div style="font-size:14px; font-weight:600; color:#222;">${func.cargo || 'NÃ£o informado'}</div>
+              <div style="font-size:10px; color:#888; text-transform:uppercase; margin-bottom:2px;">Cargo / Função</div>
+              <div style="font-size:14px; font-weight:600; color:#222;">${func.cargo || 'Não informado'}</div>
             </div>
             <div style="background:#fafafa; border:1px solid #e5e7eb; border-radius:6px; padding:8px 12px;">
               <div style="font-size:10px; color:#888; text-transform:uppercase; margin-bottom:2px;">Status</div>
@@ -655,13 +655,13 @@ function gerarHTMLFicha(func) {
       <!-- Grade de Dados -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:1px; background:#e5e7eb; border:1px solid #e5e7eb; border-radius:8px; overflow:hidden; margin-bottom:20px;">
         ${[
-          ['CPF', func.funcionarios.cpf || 'NÃ£o informado'],
-          ['Telefone', func.funcionarios.telefone || 'NÃ£o informado'],
-          ['E-mail', func.funcionarios.email || 'NÃ£o informado'],
+          ['CPF', func.funcionarios.cpf || 'Não informado'],
+          ['Telefone', func.funcionarios.telefone || 'Não informado'],
+          ['E-mail', func.funcionarios.email || 'Não informado'],
           ['Data de Nascimento', formatarDataBR(func.funcionarios.data_nascimento)],
-          ['Ã“rgÃ£o / LotaÃ§Ã£o', orgao || 'NÃ£o informado'],
-          ['FormaÃ§Ã£o AcadÃªmica', func.funcionarios.formacao_academica || 'NÃ£o informado'],
-          ['EndereÃ§o', func.funcionarios.endereco || 'NÃ£o informado', true]
+          ['Ã“rgão / Lotação', orgao || 'Não informado'],
+          ['Formação Acadêmica', func.funcionarios.formacao_academica || 'Não informado'],
+          ['Endereço', func.funcionarios.endereco || 'Não informado', true]
         ].map(([label, valor, fullWidth]) => `
           <div style="${fullWidth ? 'grid-column:span 2;' : ''} background:#fff; padding:10px 14px;">
             <div style="font-size:10px; color:#888; text-transform:uppercase; letter-spacing:.3px; margin-bottom:2px;">${label}</div>
@@ -670,13 +670,13 @@ function gerarHTMLFicha(func) {
         `).join('')}
       </div>
       
-      <!-- RodapÃ© com assinaturas -->
+      <!-- Rodapé com assinaturas -->
       <div style="display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:40px; padding-top:16px; border-top:1px dashed #aaa;">
         <div style="text-align:center;">
           <div style="border-top:1px solid #000; padding-top:8px; font-size:12px; color:#555;">Assinatura do Servidor</div>
         </div>
         <div style="text-align:center;">
-          <div style="border-top:1px solid #000; padding-top:8px; font-size:12px; color:#555;">Secretaria de EducaÃ§Ã£o</div>
+          <div style="border-top:1px solid #000; padding-top:8px; font-size:12px; color:#555;">Secretaria de Educação</div>
         </div>
       </div>
       <p style="text-align:right; font-size:10px; color:#aaa; margin-top:12px;">
@@ -691,7 +691,7 @@ function abrirJanelaImpressao(htmlConteudo) {
   printWindow.document.write(`
     <html>
       <head>
-        <title>ImpressÃ£o de Fichas</title>
+        <title>Impressão de Fichas</title>
         <style>
           @media print {
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; margin: 0; padding: 0; }
@@ -720,7 +720,7 @@ function imprimirFichaUnica(vinculoId) {
 
 function imprimirTodosFuncionarios() {
   if (funcionariosAtuaisNaTela.length === 0) {
-    alert("Nenhum funcionÃ¡rio na lista para imprimir.");
+    alert("Nenhum funcionário na lista para imprimir.");
     return;
   }
   let htmlDossieCompleto = '';

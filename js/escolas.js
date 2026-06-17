@@ -1,4 +1,4 @@
-﻿async function carregarEscolas() {
+﻿﻿async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {
@@ -175,7 +175,7 @@ function renderizarModulosDaEscola() {
   })
 
   if (modulosPermitidos.length === 0) {
-    lista.innerHTML = '<div class="empty-state">VocÃª nÃ£o tem acesso aos mÃ³dulos desta escola.</div>'
+    lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>'
     return
   }
 
@@ -248,7 +248,7 @@ async function excluirEscola() {
 async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
   if (redirecionar === undefined) redirecionar = false
 
-  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vÃ­nculos e dados associados serÃ£o removidos.')) return
+  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
 
   try {
     var { data: listOrgaos, error: errOrgaos } = await clienteSupabase.from('orgaos').select('id').eq('escola_id', escolaId)
@@ -283,10 +283,10 @@ async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
     if (errEscDel) throw errEscDel
 
     if (!deletedEscola || deletedEscola.length === 0) {
-      throw new Error('A exclusÃ£o foi bloqueada pelas polÃ­ticas de seguranÃ§a (RLS).')
+      throw new Error('A exclusão foi bloqueada pelas políticas de segurança (RLS).')
     }
 
-    alert('Escola ' + nomeEscola + ' excluÃ­da com sucesso!')
+    alert('Escola ' + nomeEscola + ' excluída com sucesso!')
     if (redirecionar) limparEscolaAtual()
 
     await carregarEscolas()

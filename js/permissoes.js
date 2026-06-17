@@ -3,7 +3,7 @@ let permissaoEditando = null;
 async function carregarTelaPermissoes() {
   if (!podeVerPermissoes()) {
     document.getElementById('listaPermissoes').innerHTML =
-      '<div class="empty-state">VocÃª nÃ£o tem permissÃ£o para gerenciar acessos.</div>'
+      '<div class="empty-state">Você não tem permissão para gerenciar acessos.</div>'
     return
   }
 
@@ -73,7 +73,7 @@ async function carregarAcessosSistema() {
   acessosSistema = acessos
 }
 
-// NOVA FUNÃ‡ÃƒO: Filtrar o select de atribuiÃ§Ã£o
+// NOVA FUNÃ‡ÃƒO: Filtrar o select de atribuição
 function filtrarSelectFuncionario() {
   const buscaInput = document.getElementById('buscaFuncionarioSelect')
   const busca = buscaInput ? buscaInput.value.toLowerCase().trim() : ''
@@ -81,7 +81,7 @@ function filtrarSelectFuncionario() {
   
   if (!selectFuncionario) return
 
-  selectFuncionario.innerHTML = '<option value="">Selecione o FuncionÃ¡rio</option>'
+  selectFuncionario.innerHTML = '<option value="">Selecione o Funcionário</option>'
 
   funcionarios.forEach(function(funcionario) {
     const nome = (funcionario.nome || '').toLowerCase()
@@ -103,7 +103,7 @@ function preencherSelectsPermissoes() {
   filtrarSelectFuncionario() // Preenche com busca
   
   if (selectOrgao) {
-    selectOrgao.innerHTML = '<option value="">Selecione o Ã“rgÃ£o</option>'
+    selectOrgao.innerHTML = '<option value="">Selecione o Ã“rgão</option>'
     orgaos.forEach(function(orgao) {
       const option = document.createElement('option')
       option.value = orgao.id
@@ -114,14 +114,14 @@ function preencherSelectsPermissoes() {
 
   if (selectNivel) {
     selectNivel.innerHTML = ''
-    if (isSecretaria()) selectNivel.innerHTML += '<option value="2">NÃ­vel 2 - Diretor Escolar</option>'
-    selectNivel.innerHTML += '<option value="3">NÃ­vel 3 - SecretÃ¡rio Escolar</option>'
+    if (isSecretaria()) selectNivel.innerHTML += '<option value="2">Nível 2 - Diretor Escolar</option>'
+    selectNivel.innerHTML += '<option value="3">Nível 3 - Secretário Escolar</option>'
     selectNivel.innerHTML += '<option value="4">Nível 4 - Professor</option>'
   }
 
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')
   if (selectFiltroOrgao) {
-    selectFiltroOrgao.innerHTML = '<option value="">Todos os Ã“rgÃ£os</option>'
+    selectFiltroOrgao.innerHTML = '<option value="">Todos os Ã“rgãos</option>'
     orgaos.forEach(function(orgao) {
       const option = document.createElement('option')
       option.value = orgao.id
@@ -140,7 +140,7 @@ function atualizarCamposPermissao() {
   }
 }
 
-// NOVA FUNÃ‡ÃƒO: Carregar dados para ediÃ§Ã£o
+// NOVA FUNÃ‡ÃƒO: Carregar dados para edição
 function editarPermissao(id) {
   const acesso = acessosSistema.find(function(a) { return a.id === id })
   if (!acesso) return
@@ -174,13 +174,13 @@ function editarPermissao(id) {
     }
   }
 
-  document.getElementById('btnSalvarPermissao').textContent = 'Atualizar permissÃ£o'
+  document.getElementById('btnSalvarPermissao').textContent = 'Atualizar permissão'
   
   const btnCancelar = document.getElementById('btnCancelarPermissao')
   if (btnCancelar) btnCancelar.style.display = 'block'
 }
 
-// NOVA FUNÃ‡ÃƒO: Cancelar ediÃ§Ã£o
+// NOVA FUNÃ‡ÃƒO: Cancelar edição
 function cancelarEdicaoPermissao() {
   permissaoEditando = null
   
@@ -194,7 +194,7 @@ function cancelarEdicaoPermissao() {
   
   atualizarCamposPermissao()
   
-  document.getElementById('btnSalvarPermissao').textContent = 'Salvar permissÃ£o'
+  document.getElementById('btnSalvarPermissao').textContent = 'Salvar permissão'
   
   const btnCancelar = document.getElementById('btnCancelarPermissao')
   if (btnCancelar) btnCancelar.style.display = 'none'
@@ -206,22 +206,22 @@ async function salvarPermissao() {
   const nivel = Number(document.getElementById('nivelPermissao').value)
 
   if (!funcionarioId || (!orgaoId && nivel !== 4)) {
-    alert('Selecione funcionÃ¡rio e Ã³rgÃ£o')
+    alert('Selecione funcionário e órgão')
     return
   }
 
   if (!isSecretaria() && nivel === 2) {
-    alert('Diretores sÃ³ podem atribuir nÃ­veis 3 e 4')
+    alert('Diretores só podem atribuir níveis 3 e 4')
     return
   }
 
-  // PrevenÃ§Ã£o manual contra duplicaÃ§Ã£o no momento de INSERIR
+  // Prevenção manual contra duplicação no momento de INSERIR
   if (!permissaoEditando) {
     const duplicado = acessosSistema.find(function(a) {
       return a.funcionario_id === funcionarioId && a.orgao_id === orgaoId
     })
     if (duplicado) {
-      alert('Este funcionÃ¡rio jÃ¡ possui acesso neste Ã³rgÃ£o. Clique em "Editar" na lista ao invÃ©s de salvar um novo.')
+      alert('Este funcionário já possui acesso neste órgão. Clique em "Editar" na lista ao invés de salvar um novo.')
       return
     }
   }
@@ -277,9 +277,9 @@ async function salvarPermissao() {
 
     if (error) {
       console.log(error)
-      alert('Erro ao atualizar permissÃ£o')
+      alert('Erro ao atualizar permissão')
     } else {
-      alert('PermissÃ£o atualizada com sucesso!')
+      alert('Permissão atualizada com sucesso!')
     }
   } else {
     // Faz o INSERT se for um acesso completamente novo
@@ -289,9 +289,9 @@ async function salvarPermissao() {
 
     if (error) {
       console.log(error)
-      alert('Erro ao salvar nova permissÃ£o')
+      alert('Erro ao salvar nova permissão')
     } else {
-      alert('PermissÃ£o concedida com sucesso!')
+      alert('Permissão concedida com sucesso!')
     }
   }
 
@@ -342,8 +342,8 @@ function renderizarPermissoes() {
     item.innerHTML =
       '<strong>' + textoOuVazio(acesso.funcionarios && (acesso.funcionarios.nome || acesso.funcionarios.email)) + '</strong>' +
       '<div class="aluno-info">' +
-      'Ã“rgÃ£o: ' + textoOuVazio(acesso.orgaos && acesso.orgaos.nome) + '<br>' +
-      'NÃ­vel: ' + acesso.nivel +
+      'Órgão: ' + textoOuVazio(acesso.orgaos && acesso.orgaos.nome) + '<br>' +
+      'Nível: ' + acesso.nivel +
       '</div>'
       
     if (modoEdicaoAtivo && podeVerPermissoes()) {

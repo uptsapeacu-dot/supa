@@ -1,4 +1,4 @@
-﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
+﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -6,7 +6,7 @@ async function carregarRelatoriosGlobais() {
   const containerCenso = document.getElementById('conteudo-censo');
 
   if (!containerDesempenho || !containerFreq || !containerCenso) {
-    console.error('Elementos de relatÃ³rio nÃ£o encontrados no DOM.');
+    console.error('Elementos de relatório não encontrados no DOM.');
     return;
   }
 
@@ -19,12 +19,12 @@ async function carregarRelatoriosGlobais() {
     const { data: escolas, error } = await clienteSupabase.from('escolas').select('id, nome');
     if (error || !escolas) throw new Error('Falha ao carregar escolas');
 
-  // VariÃ¡veis globais para impressÃ£o
+  // Variáveis globais para impressão
   window.htmlImpressaoDesempenho = '';
   window.htmlImpressaoFrequencia = '';
   window.htmlImpressaoCenso = '';
 
-  // 1. DESEMPENHO (MÃ©dia por escola)
+  // 1. DESEMPENHO (Média por escola)
   const { data: notas } = await clienteSupabase.from('notas_alunos')
     .select('media, alunos!inner(escola_id)')
     .not('media', 'is', null);
@@ -45,9 +45,9 @@ async function carregarRelatoriosGlobais() {
   const dadosMedias = [];
   
   let tabelaDesempenhoPrint = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">RelatÃ³rio AnalÃ­tico de Desempenho - Rede Municipal</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Desempenho - Rede Municipal</h3>
     <table class="boletim-tabela">
-      <thead><tr><th class="text-left">Unidade Escolar</th><th>Notas Registradas</th><th>MÃ©dia Geral</th></tr></thead>
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Notas Registradas</th><th>Média Geral</th></tr></thead>
       <tbody>
   `;
 
@@ -63,7 +63,7 @@ async function carregarRelatoriosGlobais() {
 
   containerDesempenho.innerHTML = `
     <div style="background:#222; padding:20px; border-radius:12px; margin-bottom:20px;">
-      <h3 style="margin-top:0;">TermÃ´metro de Desempenho (MÃ©dia Geral)</h3>
+      <h3 style="margin-top:0;">TermÃ´metro de Desempenho (Média Geral)</h3>
       <canvas id="chartDesempenhoRede" style="max-height: 350px;"></canvas>
     </div>
   `;
@@ -76,7 +76,7 @@ async function carregarRelatoriosGlobais() {
         data: {
           labels: labelsEscolas,
           datasets: [{
-            label: 'MÃ©dia Escolar',
+            label: 'Média Escolar',
             data: dadosMedias,
             backgroundColor: '#3ea6ff',
             borderRadius: 6
@@ -122,9 +122,9 @@ async function carregarRelatoriosGlobais() {
   let htmlFreq = '<h3 style="margin-top:0;">Radar de Faltas (Ãšltimos 30 Dias)</h3><div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:16px;">';
   
   let tabelaFreqPrint = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">RelatÃ³rio AnalÃ­tico de FrequÃªncia (30 dias) - Rede Municipal</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Frequência (30 dias) - Rede Municipal</h3>
     <table class="boletim-tabela">
-      <thead><tr><th class="text-left">Unidade Escolar</th><th>PresenÃ§as</th><th>Faltas</th><th>Total Reg.</th><th>% EvasÃ£o/Falta</th></tr></thead>
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Presenças</th><th>Faltas</th><th>Total Reg.</th><th>% Evasão/Falta</th></tr></thead>
       <tbody>
   `;
 
@@ -136,7 +136,7 @@ async function carregarRelatoriosGlobais() {
       <div style="background:#222; padding:16px; border-radius:12px; border-left: 4px solid ${corAlert}">
         <div style="font-size:14px; color:#aaa; font-weight:bold; margin-bottom:8px;">${e.nome}</div>
         <div style="font-size:28px; font-weight:bold; color:${corAlert};">${pctFaltas}%</div>
-        <div style="font-size:12px; color:#666; margin-top:4px;">De faltas em ${d.total} presenÃ§as registradas</div>
+        <div style="font-size:12px; color:#666; margin-top:4px;">De faltas em ${d.total} presenças registradas</div>
       </div>
     `;
     tabelaFreqPrint += `<tr><td class="text-left">${e.nome}</td><td>${d.presencas}</td><td>${d.faltas}</td><td>${d.total}</td><td><strong style="color:${corAlert}">${pctFaltas}%</strong></td></tr>`;
@@ -147,7 +147,7 @@ async function carregarRelatoriosGlobais() {
   tabelaFreqPrint += '</tbody></table>';
   window.htmlImpressaoFrequencia = tabelaFreqPrint;
 
-  // 3. CENSO E LOGÃSTICA
+  // 3. CENSO E LOGÍSTICA
   const { data: alunos } = await clienteSupabase.from('alunos').select('id, escola_id, dados_matricula');
   
   let usaTransporte = 0;
@@ -172,9 +172,9 @@ async function carregarRelatoriosGlobais() {
   }
   
   let tabelaCensoPrint = `
-    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">RelatÃ³rio LogÃ­stico e de InclusÃ£o - Rede Municipal</h3>
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Logístico e de Inclusão - Rede Municipal</h3>
     <table class="boletim-tabela">
-      <thead><tr><th class="text-left">Unidade Escolar</th><th>Necessitam Transporte</th><th>Zona Rural</th><th>AtenÃ§Ã£o Especial/SaÃºde</th></tr></thead>
+      <thead><tr><th class="text-left">Unidade Escolar</th><th>Necessitam Transporte</th><th>Zona Rural</th><th>Atenção Especial/Saúde</th></tr></thead>
       <tbody>
   `;
   escolas.forEach(e => {
@@ -185,12 +185,12 @@ async function carregarRelatoriosGlobais() {
   window.htmlImpressaoCenso = tabelaCensoPrint;
 
   containerCenso.innerHTML = `
-    <h3 style="margin-top:0;">LogÃ­stica e InclusÃ£o da Rede</h3>
+    <h3 style="margin-top:0;">Logística e Inclusão da Rede</h3>
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:16px;">
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
         <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="bus" style="width:36px; height:36px; color:#3ea6ff;"></i></div>
         <div style="font-size:32px; font-weight:bold;">${usaTransporte}</div>
-        <div style="font-size:14px; color:#aaa; margin-top:4px;">UsuÃ¡rios de Transporte</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Usuários de Transporte</div>
       </div>
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
         <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="tractor" style="width:36px; height:36px; color:#eab308;"></i></div>
@@ -200,7 +200,7 @@ async function carregarRelatoriosGlobais() {
       <div style="background:#222; padding:24px; border-radius:12px; text-align:center;">
         <div style="display:flex; justify-content:center; margin-bottom:12px;"><i data-lucide="stethoscope" style="width:36px; height:36px; color:#ef4444;"></i></div>
         <div style="font-size:32px; font-weight:bold; color:#ef4444;">${alergiasCount}</div>
-        <div style="font-size:14px; color:#aaa; margin-top:4px;">AtenÃ§Ã£o Especial/SaÃºde</div>
+        <div style="font-size:14px; color:#aaa; margin-top:4px;">Atenção Especial/Saúde</div>
       </div>
     </div>
   `;
@@ -210,7 +210,7 @@ async function carregarRelatoriosGlobais() {
   }, 50);
   } catch (err) {
     console.error('Erro em carregarRelatoriosGlobais:', err);
-    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexÃ£o. NÃ£o foi possÃ­vel carregar os dados globais da rede.</div>';
+    const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados globais da rede.</div>';
     containerDesempenho.innerHTML = msgErro;
     containerFreq.innerHTML = msgErro;
     containerCenso.innerHTML = msgErro;

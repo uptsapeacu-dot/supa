@@ -1,4 +1,4 @@
-﻿function aplicarVisibilidadeSidebar() {
+﻿﻿function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
 
   const menus = {
@@ -25,13 +25,13 @@
   }
 
   if (menus.home) menus.home.style.display = 'flex'
-  // O botÃ£o perfil foi removido daqui para nÃ£o aparecer para NÃ­veis 1, 2 e 3
+  // O botão perfil foi removido daqui para não aparecer para Níveis 1, 2 e 3
 
   modulosEscola.forEach(function(modulo) {
     const menu = menus[modulo.id]
     if (!menu) return
 
-    // Quem for nÃ­vel 1 nÃ£o deve ver 'turmas' nem 'matriculas' no sidebar
+    // Quem for nível 1 não deve ver 'turmas' nem 'matriculas' no sidebar
     if (isSecretaria() && (modulo.id === 'turmas' || modulo.id === 'matriculas')) {
       menu.style.display = 'none'
       return
@@ -50,7 +50,7 @@
     menus.permissoes.style.display = 'flex'
   }
 
-  // RelatÃ³rios: visÃ­vel para nÃ­vel 1, 2 e 3 com pode_turmas
+  // Relatórios: visível para nível 1, 2 e 3 com pode_turmas
   const podeVerRelatorios = isSecretaria() || isGestorEscolar() || acessosAtual.some(function(a) {
     return a.nivel === 3 && a.pode_turmas === true && a.ativo
   })

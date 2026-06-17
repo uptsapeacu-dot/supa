@@ -1,4 +1,4 @@
-async function fazerLogin() {
+﻿async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')
@@ -17,7 +17,7 @@ async function fazerLogin() {
   })
 
   if (error) {
-    alert('Login invÃ¡lido')
+    alert('Login inválido')
     btnLogin.disabled = false
     btnLogin.innerText = 'Entrar'
     return
@@ -151,7 +151,7 @@ async function confirmarSenhaModoEdicao() {
   btn.innerText = 'Confirmar'
 
   if (error) {
-    alert('Senha incorreta! NÃ£o foi possÃ­vel ativar o modo de ediÃ§Ã£o.')
+    alert('Senha incorreta! Não foi possível ativar o modo de edição.')
     document.querySelectorAll('.btn-modo-edicao').forEach(function(toggle) { toggle.checked = false })
     return
   }
@@ -165,10 +165,10 @@ async function confirmarSenhaModoEdicao() {
 function atualizarInterfaceModo() {
   document.querySelectorAll('.mode-text').forEach(function(textLabel) {
     if (modoEdicaoAtivo) {
-      textLabel.textContent = 'Modo EdiÃ§Ã£o'
+      textLabel.textContent = 'Modo Edição'
       textLabel.classList.add('active')
     } else {
-      textLabel.textContent = 'Modo VisualizaÃ§Ã£o'
+      textLabel.textContent = 'Modo Visualização'
       textLabel.classList.remove('active')
     }
   })
@@ -244,10 +244,10 @@ async function verificarECriarOrgaosFaltantes() {
         return { nome: e.nome, tipo: 'escola', escola_id: e.id, ativo: true }
       })
       const { error } = await clienteSupabase.from('orgaos').insert(novosOrgaos)
-      if (error) console.error('Erro ao auto-criar Ã³rgÃ£os para escolas:', error)
+      if (error) console.error('Erro ao auto-criar órgãos para escolas:', error)
     }
   } catch (err) {
-    console.error('Falha no auto-recovery de Ã³rgÃ£os escolares:', err)
+    console.error('Falha no auto-recovery de órgãos escolares:', err)
   }
 }
 

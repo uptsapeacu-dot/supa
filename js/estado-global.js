@@ -1,4 +1,4 @@
-const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
+﻿const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
 const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
 const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
 const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)
@@ -45,12 +45,12 @@ function podeVerFrequencia() {
 }
 
 // ====== FUNÃ‡Ã•ES GERAIS / UTILITÃ RIOS ====== false
-const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
+const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro']
 const modulosEscola = [
   { id: 'mural',        nome: 'Mural',        icone: 'pin',            permissao: 'pode_mural'        },
   { id: 'turmas',       nome: 'Turmas',       icone: 'book-open',      permissao: 'pode_turmas'       },
-  { id: 'funcionarios', nome: 'FuncionÃ¡rios', icone: 'users',          permissao: 'pode_funcionarios' },
-  { id: 'matriculas',   nome: 'MatrÃ­culas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
+  { id: 'funcionarios', nome: 'Funcionários', icone: 'users',          permissao: 'pode_funcionarios' },
+  { id: 'matriculas',   nome: 'Matrículas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
   { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       }
 ]
 let alunos = []

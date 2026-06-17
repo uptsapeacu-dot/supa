@@ -1,8 +1,8 @@
-﻿async function carregarDadosMural() {
+﻿﻿async function carregarDadosMural() {
   carregarAvisos()
   muralFuncionarios = []
   let orgaosPermitidos = []
-  // Resolve os Ã³rgÃ£os da escola selecionada OU carrega todos permitidos globalmente
+  // Resolve os órgãos da escola selecionada OU carrega todos permitidos globalmente
   if (escolaAtual != null && escolaAtual !== '') {
     const orgaoEscola = orgaos.find(function(orgao) { return orgao.escola_id === escolaAtual })
     if (orgaoEscola) {
@@ -133,8 +133,8 @@ function abrirModalAniversariante(aniversariantes) {
   if (!aniversariantes || aniversariantes.length === 0) return
   const f = aniversariantes[0]
   document.getElementById('nomeAniversariante').textContent = f.nome
-  document.getElementById('orgaoAniversariante').textContent = 'Ã“rgÃ£o: ' + f.orgao
-  document.getElementById('dataAniversariante').textContent = 'AniversÃ¡rio dia ' + f.anivDia + ' de ' + nomesMeses[f.anivMes]
+  document.getElementById('orgaoAniversariante').textContent = 'Ã“rgão: ' + f.orgao
+  document.getElementById('dataAniversariante').textContent = 'Aniversário dia ' + f.anivDia + ' de ' + nomesMeses[f.anivMes]
   document.getElementById('modalAniversariante').style.display = 'flex'
 }
 
@@ -187,7 +187,7 @@ function carregarAvisos() {
     left.appendChild(autor)
     left.appendChild(meta)
     header.appendChild(left)
-    // O botÃ£o excluir avisa sÃ³ aparece se houver uma escola selecionada e tiver ediÃ§Ã£o ativa
+    // O botão excluir avisa só aparece se houver uma escola selecionada e tiver edição ativa
     if (temPermissaoEdicao && escolaAtual) {
       const btnDel = document.createElement('button')
       btnDel.className = 'btn-editar'
@@ -225,7 +225,7 @@ function publicarAviso() {
     id: 'aviso_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
     texto: texto,
     data: new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }),
-    autor: funcionarioAtual ? (funcionarioAtual.nome || funcionarioAtual.email) : 'UsuÃ¡rio'
+    autor: funcionarioAtual ? (funcionarioAtual.nome || funcionarioAtual.email) : 'Usuário'
   }
 
   avisos.unshift(novo)

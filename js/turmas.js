@@ -1,4 +1,4 @@
-let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
+﻿let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
 let turmaEditandoId = null;
 
 // Estado do hub de turma
@@ -17,7 +17,7 @@ async function carregarTurmasDaTela() {
   if (!lista) return;
 
   if (escolaAtual == null || escolaAtual === '') {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Selecione uma escola no menu "InÃ­cio" primeiro.</div>';
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Selecione uma escola no menu "Início" primeiro.</div>';
     return;
   }
 
@@ -137,7 +137,7 @@ async function carregarTurmasDaTela() {
     details.className = 'turma-details';
     details.innerHTML = `
       <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
-        <span><strong><i data-lucide="graduation-cap" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> LotaÃ§Ã£o:</strong> ${capacidadeText}</span>
+        <span><strong><i data-lucide="graduation-cap" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Lotação:</strong> ${capacidadeText}</span>
       </div>
       <div><strong><i data-lucide="users" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> Corpo Docente:</strong> ${textoProfessores}</div>
     `;
@@ -177,7 +177,7 @@ async function abrirHubTurma(turma) {
 
   document.getElementById('hubTurmaOverlay').classList.add('aberto');
 
-  // Data padrÃ£o para frequÃªncia
+  // Data padrão para frequência
   const hoje = new Date().toISOString().split('T')[0];
   const dataInput = document.getElementById('dataFrequenciaHub');
   if (dataInput) dataInput.value = hoje;
@@ -196,12 +196,12 @@ function fecharHubTurma(event) {
 
 async function abrirAbaTurma(aba) {
   hubAbaAtiva = aba;
-  // Troca botÃµes de aba
+  // Troca botões de aba
   document.querySelectorAll('.hub-aba-btn').forEach(btn => btn.classList.remove('ativa'));
   const btnAtivo = document.getElementById('aba-' + aba);
   if (btnAtivo) btnAtivo.classList.add('ativa');
 
-  // Esconde todos os conteÃºdos
+  // Esconde todos os conteúdos
   ['materias', 'alunos', 'frequencia', 'notas'].forEach(a => {
     const el = document.getElementById('conteudo-' + a);
     if (el) el.style.display = 'none';
@@ -221,7 +221,7 @@ async function abrirAbaTurma(aba) {
 async function carregarMateriasTurma() {
   const lista = document.getElementById('listaMateriasTurma');
   if (!lista) return;
-  lista.innerHTML = '<div class="hub-empty">Carregando matÃ©rias...</div>';
+  lista.innerHTML = '<div class="hub-empty">Carregando matérias...</div>';
 
   const temPermissao = isSecretaria() || acessosAtual.some(a =>
     (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo
@@ -241,7 +241,7 @@ async function carregarMateriasTurma() {
     .order('nome', { ascending: true });
 
   if (error || !data || data.length === 0) {
-    lista.innerHTML = '<div class="hub-empty">Nenhuma matÃ©ria cadastrada nesta turma.</div>';
+    lista.innerHTML = '<div class="hub-empty">Nenhuma matéria cadastrada nesta turma.</div>';
     return;
   }
 
@@ -260,7 +260,7 @@ async function carregarMateriasTurma() {
       btnDel.className = 'btn-editar';
       btnDel.style.cssText = 'background:#ff5b5b;color:#120000;padding:5px 8px;';
       btnDel.innerHTML = '<i data-lucide="trash-2" style="width:14px;height:14px;"></i>';
-      btnDel.title = 'Remover matÃ©ria';
+      btnDel.title = 'Remover matéria';
       btnDel.onclick = () => excluirMateria(mat.id);
       div.appendChild(btnDel);
     }
@@ -311,7 +311,7 @@ function cancelarFormMateria() {
 
 async function salvarMateria() {
   const nome = document.getElementById('inputNomeMateria').value.trim();
-  if (!nome) { alert('Digite o nome da matÃ©ria.'); return; }
+  if (!nome) { alert('Digite o nome da matéria.'); return; }
   const vinculoId = document.getElementById('selectProfMateria').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -320,14 +320,14 @@ async function salvarMateria() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matÃ©ria: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
 
   cancelarFormMateria();
   await carregarMateriasTurma();
 }
 
 async function excluirMateria(id) {
-  if (!confirm('Remover esta matÃ©ria? As notas vinculadas a ela tambÃ©m serÃ£o removidas.')) return;
+  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
   await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', id);
   await carregarMateriasTurma();
 }
@@ -430,7 +430,7 @@ function selecionarDataCalendarioHub(dia, mes, ano) {
 }
 
 function renderizarCalendarioFrequenciaHub() {
-  const nomesMeses = ['Janeiro', 'Fevereiro', 'MarÃ§o', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
   document.getElementById('labelMesAnoCalendarioFrequenciaHub').innerText = `${nomesMeses[mesVisivelFreqHub]} ${anoVisivelFreqHub}`;
   
   const grid = document.getElementById('gridDiasCalendarioFrequenciaHub');
@@ -570,13 +570,13 @@ async function salvarFrequenciaHub() {
   btn.disabled = true; btn.innerText = 'Salvando...';
 
   const { error } = await clienteSupabase.from('frequencia').upsert(registros, { onConflict: 'aluno_id,turma_id,data' });
-  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar FrequÃªncia';
+  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Frequência';
 
-  if (error) { alert('Erro ao salvar frequÃªncia: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar frequência: ' + error.message); return; }
 
   const modal = document.getElementById('modalSucesso');
   const msg = document.getElementById('msgModalSucesso');
-  if (modal && msg) { msg.innerText = 'FrequÃªncia salva com sucesso!'; modal.style.display = 'flex'; }
+  if (modal && msg) { msg.innerText = 'Frequência salva com sucesso!'; modal.style.display = 'flex'; }
 }
 
 // ====== ABA: NOTAS ======
@@ -603,7 +603,7 @@ async function carregarNotasHub() {
   const btnSalvar = document.getElementById('btnSalvarNotasHub');
   if (btnSalvar) btnSalvar.style.display = podeEditar ? 'block' : 'none';
 
-  // Carrega matÃ©rias
+  // Carrega matérias
   let queryMaterias = clienteSupabase
     .from('materias_turmas')
     .select('id, nome, vinculo_id')
@@ -629,7 +629,7 @@ async function carregarNotasHub() {
   hubMateriasList = materias || [];
 
   if (!hubMateriasList.length) {
-    lista.innerHTML = '<div class="hub-empty">Cadastre matÃ©rias na aba MatÃ©rias primeiro.</div>';
+    lista.innerHTML = '<div class="hub-empty">Cadastre matérias na aba Matérias primeiro.</div>';
     return;
   }
 
@@ -664,7 +664,7 @@ async function carregarNotasHub() {
     bloco.className = 'notas-materia-bloco';
     bloco.id = 'bloco-materia-' + mat.id;
 
-    // Header da matÃ©ria
+    // Header da matéria
     const header = document.createElement('div');
     header.className = 'notas-materia-header';
     header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher â–¾</span>`;
@@ -706,7 +706,7 @@ async function carregarNotasHub() {
 function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
   const unidadeAntiga = hubMateriaUnidadeAtiva[materiaId] || 1;
   hubMateriaUnidadeAtiva[materiaId] = unidade;
-  // Atualiza botÃµes
+  // Atualiza botões
   [1, 2, 3].forEach(u => {
     const btn = document.getElementById(`unidade-btn-${materiaId}-${u}`);
     if (btn) {
@@ -740,7 +740,7 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
     const mediaClass = media === null ? 'nota-pendente' : (media >= 5 ? 'nota-aprovado' : 'nota-reprovado');
     const mediaLabel = media === null ? 'â€”' : (media >= 5 ? `${mediaStr} âœ…` : `${mediaStr} âŒ`);
 
-    // Calcula MÃ©dia Final (mÃ©dia das mÃ©dias de todas as 3 unidades)
+    // Calcula Média Final (média das médias de todas as 3 unidades)
     const mU1 = hubNotasCache[materiaId]?.[1]?.[aluno.id]?.media;
     const mU2 = hubNotasCache[materiaId]?.[2]?.[aluno.id]?.media;
     const mU3 = hubNotasCache[materiaId]?.[3]?.[aluno.id]?.media;
@@ -785,8 +785,8 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           <th>Nota 1</th>
           <th>Nota 2</th>
           <th>Nota 3</th>
-          <th>MÃ©dia ${unidade}Âª Unid.</th>
-          <th>MÃ©dia Final</th>
+          <th>Média ${unidade}Âª Unid.</th>
+          <th>Média Final</th>
           <th></th>
         </tr>
       </thead>
@@ -812,13 +812,13 @@ function recalcularMediaDOM(materiaId, unidade, alunoId) {
     el.textContent = `${media.toFixed(1)} âŒ`; el.className = 'nota-media nota-reprovado';
   }
 
-  // Atualiza cache da mÃ©dia desta unidade para refletir no cÃ¡lculo da MÃ©dia Final
+  // Atualiza cache da média desta unidade para refletir no cálculo da Média Final
   if (!hubNotasCache[materiaId]) hubNotasCache[materiaId] = {};
   if (!hubNotasCache[materiaId][unidade]) hubNotasCache[materiaId][unidade] = {};
   if (!hubNotasCache[materiaId][unidade][alunoId]) hubNotasCache[materiaId][unidade][alunoId] = {};
   hubNotasCache[materiaId][unidade][alunoId].media = media;
 
-  // Atualiza cÃ©lula de MÃ©dia Final
+  // Atualiza célula de Média Final
   recalcularMediaFinalDOM(materiaId, alunoId);
 }
 
@@ -842,7 +842,7 @@ function recalcularMediaFinalDOM(materiaId, alunoId) {
 }
 
 function coletarNotasDoDOM(materiaId, unidade) {
-  // LÃª inputs do DOM e atualiza cache
+  // Lê inputs do DOM e atualiza cache
   if (!hubNotasCache[materiaId]) hubNotasCache[materiaId] = {};
   if (!hubNotasCache[materiaId][unidade]) hubNotasCache[materiaId][unidade] = {};
 
@@ -855,7 +855,7 @@ function coletarNotasDoDOM(materiaId, unidade) {
     const v2 = v2el && v2el.value !== '' ? parseFloat(v2el.value) : null;
     const v3 = v3el && v3el.value !== '' ? parseFloat(v3el.value) : null;
     
-    // Calcula a mÃ©dia para manter no cache
+    // Calcula a média para manter no cache
     const vals = [v1, v2, v3].filter(v => v !== null && !isNaN(v));
     const media = vals.length > 0 ? parseFloat((vals.reduce((s, v) => s + v, 0) / vals.length).toFixed(1)) : null;
 
@@ -919,7 +919,7 @@ async function carregarListaDeProfessoresNoSelect() {
   const select = document.getElementById('selectProfessorTurma');
   select.innerHTML = '<option value="">Carregando professores...</option>';
   
-  // Busca o Ã³rgÃ£o correspondente Ã  escola atual
+  // Busca o órgão correspondente Ã  escola atual
   const { data: orgaoData } = await clienteSupabase
     .from('orgaos')
     .select('id')
@@ -938,7 +938,7 @@ async function carregarListaDeProfessoresNoSelect() {
   }
 
   if (!orgaoId) {
-    select.innerHTML = '<option value="">Nenhum Ã³rgÃ£o encontrado para esta escola</option>';
+    select.innerHTML = '<option value="">Nenhum órgão encontrado para esta escola</option>';
     return;
   }
 
@@ -968,7 +968,7 @@ function adicionarProfessorNaTag() {
   if (!vinculoId) return;
   const nomeProf = select.options[select.selectedIndex].getAttribute('data-nome');
   if (professoresSelecionados.find(p => p.id === vinculoId)) {
-    alert('Esse professor jÃ¡ estÃ¡ na lista!'); return;
+    alert('Esse professor já está na lista!'); return;
   }
   professoresSelecionados.push({ id: vinculoId, nome: nomeProf });
   renderizarTagsProfessores();
@@ -1002,7 +1002,7 @@ async function abrirModalTurma() {
   document.getElementById('turnoTurma').value = 'Matutino';
   document.getElementById('capacidadeTurma').value = 30;
   
-  // Oculta matÃ©rias em novas turmas
+  // Oculta matérias em novas turmas
   const secaoMat = document.getElementById('secaoMateriasModalTurma');
   if (secaoMat) secaoMat.style.display = 'none';
 
@@ -1027,7 +1027,7 @@ async function editarTurma(turma) {
     });
   }
 
-  // Exibe e carrega as matÃ©rias da turma no modal
+  // Exibe e carrega as matérias da turma no modal
   const secaoMat = document.getElementById('secaoMateriasModalTurma');
   if (secaoMat) {
     secaoMat.style.display = 'block';
@@ -1047,7 +1047,7 @@ async function salvarTurma() {
   const turno = document.getElementById('turnoTurma').value;
   const capacidade = parseInt(document.getElementById('capacidadeTurma').value) || 30;
 
-  if (!nome || !ano || !turno) { alert('Nome, Ano Letivo e Turno sÃ£o obrigatÃ³rios.'); return; }
+  if (!nome || !ano || !turno) { alert('Nome, Ano Letivo e Turno são obrigatórios.'); return; }
 
   btn.disabled = true; btn.innerText = 'Salvando...';
 
@@ -1120,7 +1120,7 @@ async function carregarListaDeProfessoresNoSelectModalMateria() {
   }
 
   if (!orgaoId) {
-    select.innerHTML = '<option value="">Nenhum Ã³rgÃ£o encontrado</option>';
+    select.innerHTML = '<option value="">Nenhum órgão encontrado</option>';
     return;
   }
 
@@ -1147,7 +1147,7 @@ async function carregarListaDeProfessoresNoSelectModalMateria() {
 async function carregarMateriasNoModalTurma() {
   const lista = document.getElementById('listaMateriasModalTurma');
   if (!lista || !turmaEditandoId) return;
-  lista.innerHTML = '<div style="color: #aaa; font-size:13px; text-align:center; padding:10px;">Carregando matÃ©rias...</div>';
+  lista.innerHTML = '<div style="color: #aaa; font-size:13px; text-align:center; padding:10px;">Carregando matérias...</div>';
 
   const { data, error } = await clienteSupabase
     .from('materias_turmas')
@@ -1157,7 +1157,7 @@ async function carregarMateriasNoModalTurma() {
     .order('nome', { ascending: true });
 
   if (error || !data || data.length === 0) {
-    lista.innerHTML = '<div style="color: #666; font-size:13px; text-align:center; padding:10px;">Nenhuma matÃ©ria vinculada a esta turma ainda.</div>';
+    lista.innerHTML = '<div style="color: #666; font-size:13px; text-align:center; padding:10px;">Nenhuma matéria vinculada a esta turma ainda.</div>';
     return;
   }
 
@@ -1172,7 +1172,7 @@ async function carregarMateriasNoModalTurma() {
         <span style="font-weight:500; color:#fff; font-size:13.5px;">${mat.nome}</span>
         <span style="font-size:11.5px; color:#aaa;"><i data-lucide="user" style="width:14px;height:14px;display:inline-block;vertical-align:text-bottom;margin-right:4px;"></i>${nomeProf}</span>
       </div>
-      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir MatÃ©ria" onclick="excluirMateriaPeloModal('${mat.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
+      <button class="btn-editar" style="background:#ff5b5b; color:#120000; padding:4px 6px; width:28px; height:28px;" title="Excluir Matéria" onclick="excluirMateriaPeloModal('${mat.id}')"><i data-lucide="trash-2" style="width:14px;height:14px;"></i></button>
     `;
     lista.appendChild(div);
   });
@@ -1181,7 +1181,7 @@ async function carregarMateriasNoModalTurma() {
 
 async function salvarMateriaPeloModal() {
   const nome = document.getElementById('nomeMateriaModal').value.trim();
-  if (!nome) { alert('Digite o nome da matÃ©ria.'); return; }
+  if (!nome) { alert('Digite o nome da matéria.'); return; }
   const vinculoId = document.getElementById('selectProfMateriaModal').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -1190,25 +1190,25 @@ async function salvarMateriaPeloModal() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matÃ©ria: ' + error.message); return; }
+  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
 
   document.getElementById('nomeMateriaModal').value = '';
   document.getElementById('selectProfMateriaModal').value = '';
   await carregarMateriasNoModalTurma();
   
-  // Se o hub de turmas estiver aberto, atualiza a aba de matÃ©rias tambÃ©m
+  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
   if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
     await carregarMateriasTurma();
   }
 }
 
 async function excluirMateriaPeloModal(materiaId) {
-  if (!confirm('Remover esta matÃ©ria? As notas vinculadas a ela tambÃ©m serÃ£o removidas.')) return;
+  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
   const { error } = await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', materiaId);
-  if (error) { alert('Erro ao excluir matÃ©ria: ' + error.message); return; }
+  if (error) { alert('Erro ao excluir matéria: ' + error.message); return; }
   await carregarMateriasNoModalTurma();
   
-  // Se o hub de turmas estiver aberto, atualiza a aba de matÃ©rias tambÃ©m
+  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
   if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
     await carregarMateriasTurma();
   }
@@ -1217,12 +1217,12 @@ async function excluirMateriaPeloModal(materiaId) {
 // ====== IMPRESSÃƒO DO BOLETIM INDIVIDUAL ======
 
 async function imprimirBoletimAluno(alunoId, alunoNome) {
-  // Coleta os dados do DOM atual para garantir que o cache estÃ¡ atualizado
+  // Coleta os dados do DOM atual para garantir que o cache está atualizado
   hubMateriasList.forEach(mat => {
     [1, 2, 3].forEach(u => coletarNotasDoDOM(mat.id, u));
   });
 
-  // Preenche o cabeÃ§alho do boletim
+  // Preenche o cabeçalho do boletim
   const anoLetivo = new Date().getFullYear();
   const elEscola = document.getElementById('boletimEscola');
   const elTurma  = document.getElementById('boletimTurma');
@@ -1238,7 +1238,7 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
   // Monta a tabela do boletim
   const corpo = document.getElementById('boletimTabelaCorpo');
-  if (!corpo) { alert('Template do boletim nÃ£o encontrado.'); return; }
+  if (!corpo) { alert('Template do boletim não encontrado.'); return; }
   corpo.innerHTML = '';
 
   const fmt = v => (v !== null && v !== undefined && v !== '' && !isNaN(parseFloat(v))) ? parseFloat(v).toFixed(1) : 'â€”';
@@ -1271,7 +1271,7 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
 
   // Exibe o template e imprime
   const boletim = document.getElementById('boletimImpressao');
-  if (!boletim) { alert('Template do boletim nÃ£o encontrado.'); return; }
+  if (!boletim) { alert('Template do boletim não encontrado.'); return; }
   document.body.appendChild(boletim);
   boletim.style.display = 'block';
   document.body.classList.add('imprimindo-boletim');

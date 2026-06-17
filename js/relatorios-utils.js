@@ -1,8 +1,8 @@
-﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
-// [NOTA DE ARQUITETURA] MemÃ³ria Permanente: PrincÃ­pio da "AvaliaÃ§Ã£o HolÃ­stica"
-// Sempre que criar ou modificar uma tela ou rota (como RelatÃ³rios, Financeiro, Turmas), 
-// Ã© obrigatÃ³rio garantir que a transiÃ§Ã£o de contexto no cabeÃ§alho ou sidebar tambÃ©m a re-renderize.
-// Exemplo: NÃ£o se esqueÃ§a de checar a funÃ§Ã£o atualizarInterfaceModo em js/auth.js.
+﻿﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
+// [NOTA DE ARQUITETURA] Memória Permanente: Princípio da "Avaliação Holística"
+// Sempre que criar ou modificar uma tela ou rota (como Relatórios, Financeiro, Turmas), 
+// é obrigatório garantir que a transição de contexto no cabeçalho ou sidebar também a re-renderize.
+// Exemplo: Não se esqueça de checar a função atualizarInterfaceModo em js/auth.js.
 
 let graficoDesempenho = null;
 
@@ -10,7 +10,7 @@ function mudarAbaRelatorio(aba) {
   // Ocultar todas as abas
   document.querySelectorAll('.relatorio-aba').forEach(el => el.style.display = 'none');
   
-  // Remover classe ativa dos botÃµes
+  // Remover classe ativa dos botões
   document.querySelectorAll('.relatorios-tabs .tab-btn').forEach(btn => {
     btn.classList.remove('active');
     btn.style.color = '#aaa';
@@ -21,7 +21,7 @@ function mudarAbaRelatorio(aba) {
   const abaEl = document.getElementById('relatorio-' + aba);
   if (abaEl) abaEl.style.display = 'block';
 
-  // Ativar o botÃ£o
+  // Ativar o botão
   const btnEl = document.getElementById('tab-' + aba);
   if (btnEl) {
     btnEl.classList.add('active');
@@ -40,14 +40,14 @@ async function carregarRelatorios() {
   mudarAbaRelatorio('desempenho');
 
   if (escolaAtual == null || escolaAtual === '') {
-    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">VisÃ£o Geral da Rede</span>';
+    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Visão Geral da Rede</span>';
     if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosGlobais();
   } else {
     const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
     const nomeDaEscola = escolaObj ? escolaObj.nome : 'Escola';
     
-    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">RelatÃ³rios: ' + nomeDaEscola + '</span>';
+    document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Relatórios: ' + nomeDaEscola + '</span>';
     if (window.lucide) window.lucide.createIcons();
     await carregarRelatoriosEscola();
   }
@@ -58,7 +58,7 @@ function imprimirRelatorio() {
   const container = document.getElementById('relatorioImpressaoProfissional');
   if (!container) return;
 
-  // Descobrir qual aba estÃ¡ ativa
+  // Descobrir qual aba está ativa
   let abaAtiva = 'desempenho';
   if (document.getElementById('tab-frequencia') && document.getElementById('tab-frequencia').classList.contains('active')) {
     abaAtiva = 'frequencia';
@@ -66,7 +66,7 @@ function imprimirRelatorio() {
     abaAtiva = 'censo';
   }
 
-  // Pegar o conteÃºdo HTML correspondente gerado no backend
+  // Pegar o conteúdo HTML correspondente gerado no backend
   let conteudoDetalhado = '';
   if (abaAtiva === 'desempenho') conteudoDetalhado = window.htmlImpressaoDesempenho || '<p>Sem dados.</p>';
   else if (abaAtiva === 'frequencia') conteudoDetalhado = window.htmlImpressaoFrequencia || '<p>Sem dados.</p>';
@@ -74,21 +74,21 @@ function imprimirRelatorio() {
 
   document.getElementById('printRelatorioConteudo').innerHTML = conteudoDetalhado;
 
-  // Atualiza os cabeÃ§alhos do ofÃ­cio
+  // Atualiza os cabeçalhos do ofício
   const escolaObj = escolas ? escolas.find(e => e.id === escolaAtual) : null;
   const nomeDaEscola = escolaObj ? escolaObj.nome : 'Rede Municipal';
   
-  document.getElementById('printRelatorioTitulo').innerText = 'RelatÃ³rio AnalÃ­tico de ' + (abaAtiva === 'desempenho' ? 'Desempenho' : (abaAtiva === 'frequencia' ? 'FrequÃªncia e EvasÃ£o' : 'Censo e LogÃ­stica'));
+  document.getElementById('printRelatorioTitulo').innerText = 'Relatório Analítico de ' + (abaAtiva === 'desempenho' ? 'Desempenho' : (abaAtiva === 'frequencia' ? 'Frequência e Evasão' : 'Censo e Logística'));
   document.getElementById('printRelatorioSubtitulo').innerText = nomeDaEscola;
 
-  // Injeta a autorizaÃ§Ã£o temporÃ¡ria no body
+  // Injeta a autorização temporária no body
   document.body.classList.add('imprimindo-relatorio');
 
   const tituloOriginal = document.title;
   document.title = "Relatorio_" + (escolaAtual ? nomeDaEscola.replace(/\s+/g, '_') : 'Geral_Rede_Municipal') + "_" + abaAtiva;
 
   window.onafterprint = function() {
-    // Remove a autorizaÃ§Ã£o apÃ³s impressÃ£o
+    // Remove a autorização após impressão
     document.body.classList.remove('imprimindo-relatorio');
     document.title = tituloOriginal;
     window.onafterprint = null;

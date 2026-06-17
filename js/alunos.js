@@ -1,4 +1,4 @@
-﻿// ==========================================
+﻿﻿// ==========================================
 // HELPERS DE CHECKBOX
 // ==========================================
 function coletarCheckboxes(grupo) {
@@ -57,7 +57,7 @@ function atualizarFiltroSeries() {
   const valorAtual = filtroSerie.value
   const series = [...new Set(alunos.map(function(a) { return a.serie }).filter(Boolean))].sort()
 
-  filtroSerie.innerHTML = '<option value="">Todas as sÃ©ries</option>'
+  filtroSerie.innerHTML = '<option value="">Todas as séries</option>'
   series.forEach(function(serie) {
     const opt = document.createElement('option')
     opt.value = serie
@@ -113,10 +113,10 @@ function renderizarAlunos() {
       infoHtml += '<strong>Email:</strong> ' + aluno.email.trim() + '<br>'
     }
     if (aluno.endereco && aluno.endereco.trim() !== '' && aluno.endereco.trim() !== '-') {
-      infoHtml += '<strong>EndereÃ§o:</strong> ' + aluno.endereco.trim() + '<br>'
+      infoHtml += '<strong>Endereço:</strong> ' + aluno.endereco.trim() + '<br>'
     }
     if (aluno.serie && aluno.serie.trim() !== '' && aluno.serie.trim() !== '-') {
-      infoHtml += '<strong>SÃ©rie:</strong> ' + aluno.serie.trim() + '<br>'
+      infoHtml += '<strong>Série:</strong> ' + aluno.serie.trim() + '<br>'
     }
     
     detalhes.innerHTML = infoHtml
@@ -166,7 +166,7 @@ function renderizarAlunos() {
 async function excluirAluno(alunoId) {
   if (!confirm('Deseja excluir este aluno?')) return
   var { error: errFreq } = await clienteSupabase.from('frequencia').delete().eq('aluno_id', alunoId)
-  if (errFreq) console.error('Erro ao excluir frequÃªncia:', errFreq)
+  if (errFreq) console.error('Erro ao excluir frequência:', errFreq)
   var { error } = await clienteSupabase.from('alunos').delete().eq('id', alunoId)
   if (error) { alert('Erro ao excluir aluno'); return }
   await carregarAlunos()
@@ -179,7 +179,7 @@ function limparFiltros() {
 }
 
 // ==========================================
-// SELETOR DE ESCOLA (nÃ­vel 1)
+// SELETOR DE ESCOLA (nível 1)
 // ==========================================
 function preencherSeletorEscolaAluno(escolaPreSelecionada) {
   const seletor = document.getElementById('seletorEscolaAluno')
@@ -268,19 +268,19 @@ function limparCamposModalAluno() {
     'tipoMatriculaAluno': '',
     'localizacaoAluno': 'Zona Urbana',
     'areaLocalizacaoAluno': 'Urbana',
-    'areaDiferenciadaAluno': 'NÃ£o estÃ¡ em Ã¡rea diferenciada',
-    'recursosEspeciaisAluno': 'NÃ£o',
-    'diabeteAluno': 'NÃ£o',
-    'convulsoesAluno': 'NÃ£o',
-    'asmaAluno': 'NÃ£o',
-    'infeccoesAluno': 'NÃ£o',
-    'restricaoExercicioAluno': 'NÃ£o',
-    'covidAluno': 'NÃ£o',
+    'areaDiferenciadaAluno': 'Não está em área diferenciada',
+    'recursosEspeciaisAluno': 'Não',
+    'diabeteAluno': 'Não',
+    'convulsoesAluno': 'Não',
+    'asmaAluno': 'Não',
+    'infeccoesAluno': 'Não',
+    'restricaoExercicioAluno': 'Não',
+    'covidAluno': 'Não',
     'situacaoVacinalAluno': '',
-    'alergiaMedAluno': 'NÃ£o',
-    'restricaoAlimentarAluno': 'NÃ£o',
-    'neeAluno': 'NÃ£o',
-    'deficienciaAluno': 'NÃ£o'
+    'alergiaMedAluno': 'Não',
+    'restricaoAlimentarAluno': 'Não',
+    'neeAluno': 'Não',
+    'deficienciaAluno': 'Não'
   }
   Object.keys(selects).forEach(function(id) {
     const el = document.getElementById(id)
@@ -308,7 +308,7 @@ async function editarAluno(aluno) {
 
   const dados = aluno.dados_matricula || {}
 
-  // IdentificaÃ§Ã£o
+  // Identificação
   document.getElementById('censoAluno').value = dados.censo || ''
   document.getElementById('cpfAluno').value = dados.cpf || ''
   document.getElementById('estadoCivilAluno').value = dados.estado_civil || ''
@@ -324,13 +324,13 @@ async function editarAluno(aluno) {
   document.getElementById('cidadeNascAluno').value = dados.cidade_nasc || ''
   document.getElementById('ufNascAluno').value = dados.uf_nasc || ''
 
-  // FiliaÃ§Ã£o
+  // Filiação
   document.getElementById('maeAluno').value = dados.mae || ''
   document.getElementById('telMaeAluno').value = dados.tel_mae || ''
   document.getElementById('paiAluno').value = dados.pai || ''
   document.getElementById('telPaiAluno').value = dados.tel_pai || ''
 
-  // MatrÃ­cula
+  // Matrícula
   document.getElementById('tipoMatriculaAluno').value = dados.tipo_matricula || ''
   document.getElementById('dataMatriculaAluno').value = dados.data_matricula || ''
   document.getElementById('localizacaoAluno').value = dados.localizacao || 'Zona Urbana'
@@ -342,7 +342,7 @@ async function editarAluno(aluno) {
   document.getElementById('rotaTransporteAluno').value = dados.rota || ''
   document.getElementById('restricoesSaudeAluno').value = dados.restricoes || ''
 
-  // EndereÃ§o (pÃ¡g 2)
+  // Endereço (pág 2)
   document.getElementById('ruaAluno').value = dados.rua || ''
   document.getElementById('numeroAluno').value = dados.numero || ''
   document.getElementById('cepAluno').value = dados.cep || ''
@@ -350,31 +350,31 @@ async function editarAluno(aluno) {
   document.getElementById('cidadeEndAluno').value = dados.cidade_end || ''
   document.getElementById('ufEndAluno').value = dados.uf_end || ''
   document.getElementById('areaLocalizacaoAluno').value = dados.area_localizacao || 'Urbana'
-  document.getElementById('areaDiferenciadaAluno').value = dados.area_diferenciada || 'NÃ£o estÃ¡ em Ã¡rea diferenciada'
+  document.getElementById('areaDiferenciadaAluno').value = dados.area_diferenciada || 'Não está em área diferenciada'
 
   // Recursos
-  document.getElementById('recursosEspeciaisAluno').value = dados.recursos_especiais || 'NÃ£o'
+  document.getElementById('recursosEspeciaisAluno').value = dados.recursos_especiais || 'Não'
   definirCheckboxes('recursos', dados.recursos_tipos)
 
-  // SaÃºde
-  document.getElementById('diabeteAluno').value = dados.diabete || 'NÃ£o'
-  document.getElementById('convulsoesAluno').value = dados.convulsoes || 'NÃ£o'
-  document.getElementById('asmaAluno').value = dados.asma || 'NÃ£o'
-  document.getElementById('infeccoesAluno').value = dados.infeccoes || 'NÃ£o'
-  document.getElementById('restricaoExercicioAluno').value = dados.restricao_exercicio || 'NÃ£o'
-  document.getElementById('covidAluno').value = dados.covid || 'NÃ£o'
+  // Saúde
+  document.getElementById('diabeteAluno').value = dados.diabete || 'Não'
+  document.getElementById('convulsoesAluno').value = dados.convulsoes || 'Não'
+  document.getElementById('asmaAluno').value = dados.asma || 'Não'
+  document.getElementById('infeccoesAluno').value = dados.infeccoes || 'Não'
+  document.getElementById('restricaoExercicioAluno').value = dados.restricao_exercicio || 'Não'
+  document.getElementById('covidAluno').value = dados.covid || 'Não'
   document.getElementById('covidQuandoAluno').value = dados.covid_quando || ''
   document.getElementById('situacaoVacinalAluno').value = dados.situacao_vacinal || ''
-  document.getElementById('alergiaMedAluno').value = dados.alergia_med || 'NÃ£o'
+  document.getElementById('alergiaMedAluno').value = dados.alergia_med || 'Não'
   document.getElementById('alergiaMedQuaisAluno').value = dados.alergia_med_quais || ''
   document.getElementById('motivoNaoVacinacaoAluno').value = dados.motivo_nao_vac || ''
-  document.getElementById('restricaoAlimentarAluno').value = dados.restricao_alimentar || 'NÃ£o'
+  document.getElementById('restricaoAlimentarAluno').value = dados.restricao_alimentar || 'Não'
   document.getElementById('restricaoAlimentarQuaisAluno').value = dados.restricao_alim_quais || ''
 
-  // NEE e DeficiÃªncia
-  document.getElementById('neeAluno').value = dados.nee || 'NÃ£o'
+  // NEE e Deficiência
+  document.getElementById('neeAluno').value = dados.nee || 'Não'
   definirCheckboxes('nee', dados.nee_tipos)
-  document.getElementById('deficienciaAluno').value = dados.deficiencia || 'NÃ£o'
+  document.getElementById('deficienciaAluno').value = dados.deficiencia || 'Não'
   definirCheckboxes('deficiencia', dados.deficiencia_tipos)
 
   preencherSeletorEscolaAluno(aluno.escola_id)
@@ -400,7 +400,7 @@ async function salvarAluno() {
   if (!nome) { alert('Digite o nome do aluno'); return }
 
   const pacoteDeDados = {
-    // IdentificaÃ§Ã£o
+    // Identificação
     censo: document.getElementById('censoAluno').value.trim(),
     cpf: document.getElementById('cpfAluno').value.trim(),
     estado_civil: document.getElementById('estadoCivilAluno').value,
@@ -414,12 +414,12 @@ async function salvarAluno() {
     nacionalidade: document.getElementById('nacionalidadeAluno').value.trim(),
     cidade_nasc: document.getElementById('cidadeNascAluno').value.trim(),
     uf_nasc: document.getElementById('ufNascAluno').value.trim(),
-    // FiliaÃ§Ã£o
+    // Filiação
     mae: document.getElementById('maeAluno').value.trim(),
     tel_mae: document.getElementById('telMaeAluno').value.trim(),
     pai: document.getElementById('paiAluno').value.trim(),
     tel_pai: document.getElementById('telPaiAluno').value.trim(),
-    // MatrÃ­cula
+    // Matrícula
     tipo_matricula: document.getElementById('tipoMatriculaAluno').value,
     data_matricula: document.getElementById('dataMatriculaAluno').value,
     localizacao: document.getElementById('localizacaoAluno').value,
@@ -429,7 +429,7 @@ async function salvarAluno() {
     transporte: document.getElementById('transporteAluno').checked,
     rota: document.getElementById('rotaTransporteAluno').value.trim(),
     restricoes: document.getElementById('restricoesSaudeAluno').value.trim(),
-    // EndereÃ§o (pÃ¡g 2)
+    // Endereço (pág 2)
     rua: document.getElementById('ruaAluno').value.trim(),
     numero: document.getElementById('numeroAluno').value.trim(),
     cep: document.getElementById('cepAluno').value.trim(),
@@ -441,7 +441,7 @@ async function salvarAluno() {
     // Recursos
     recursos_especiais: document.getElementById('recursosEspeciaisAluno').value,
     recursos_tipos: coletarCheckboxes('recursos'),
-    // SaÃºde
+    // Saúde
     diabete: document.getElementById('diabeteAluno').value,
     convulsoes: document.getElementById('convulsoesAluno').value,
     asma: document.getElementById('asmaAluno').value,
@@ -455,7 +455,7 @@ async function salvarAluno() {
     motivo_nao_vac: document.getElementById('motivoNaoVacinacaoAluno').value.trim(),
     restricao_alimentar: document.getElementById('restricaoAlimentarAluno').value,
     restricao_alim_quais: document.getElementById('restricaoAlimentarQuaisAluno').value.trim(),
-    // NEE e DeficiÃªncia
+    // NEE e Deficiência
     nee: document.getElementById('neeAluno').value,
     nee_tipos: coletarCheckboxes('nee'),
     deficiencia: document.getElementById('deficienciaAluno').value,
@@ -508,9 +508,9 @@ function imprimirFicha(aluno) {
     if (el) el.innerText = valor || '-'
   }
 
-  // FunÃ§Ã£o mÃ¡gica: Se for "NÃ£o" ele devolve "NÃ£o". Se for "Sim" ele junta as respostas (Ex: "Sim. Autismo, Baixa VisÃ£o")
+  // Função mágica: Se for "Não" ele devolve "Não". Se for "Sim" ele junta as respostas (Ex: "Sim. Autismo, Baixa Visão")
   function formatarResposta(simNao, detalhes, arrOpcoes) {
-    if (simNao !== 'Sim' && simNao !== true) return 'NÃ£o'
+    if (simNao !== 'Sim' && simNao !== true) return 'Não'
     let complementos = []
     if (detalhes && detalhes.trim() !== '') complementos.push(detalhes)
     if (arrOpcoes && arrOpcoes.length > 0) complementos.push(arrOpcoes.join(', '))
@@ -542,9 +542,9 @@ function imprimirFicha(aluno) {
   set('printNasc', formatarDataBR(aluno.data_nascimento))
   set('printInep', dados.censo)
   set('printCpf', dados.cpf)
-  set('printEstadoCivil', dados.estado_civil || 'NÃ£o declarado')
-  set('printCorRaca', dados.cor_raca || 'NÃ£o declarado')
-  set('printSexo', dados.sexo || 'NÃ£o declarado')
+  set('printEstadoCivil', dados.estado_civil || 'Não declarado')
+  set('printCorRaca', dados.cor_raca || 'Não declarado')
+  set('printSexo', dados.sexo || 'Não declarado')
   set('printTelAluno', aluno.telefone)
 
   // --- DOCUMENTOS ---
@@ -568,7 +568,7 @@ function imprimirFicha(aluno) {
   set('printTurma', dados.turma)
 
   // --- TRANSPORTE ---
-  set('printTransporte', dados.transporte ? 'Sim' : 'NÃ£o')
+  set('printTransporte', dados.transporte ? 'Sim' : 'Não')
   set('printRota', dados.transporte && dados.rota ? dados.rota : '-')
 
   // --- ENDEREÃ‡O ---
@@ -606,25 +606,25 @@ function imprimirFicha(aluno) {
    // --- PREPARAÃ‡ÃƒO FINAL PARA IMPRESSÃƒO ---
   const ficha = document.getElementById('fichaImpressao');
   document.body.appendChild(ficha);
-  document.body.classList.add('imprimindo-ficha'); // Garante autorizaÃ§Ã£o exclusiva
+  document.body.classList.add('imprimindo-ficha'); // Garante autorização exclusiva
   ficha.style.display = 'block';
 
   // TRUQUE DO NOME DO ARQUIVO: Salva o nome original do site
   const tituloOriginal = document.title;
   
-  // Cria o nome do PDF trocando os espaÃ§os do nome do aluno por underline
+  // Cria o nome do PDF trocando os espaços do nome do aluno por underline
   const nomeLimpo = (aluno.nome || 'aluno').replace(/\s+/g, '_');
   document.title = "ficha_de_inscricao_" + nomeLimpo;
 
-  // O que acontece quando a janela de impressÃ£o FECHAR:
+  // O que acontece quando a janela de impressão FECHAR:
   window.onafterprint = function() {
     ficha.style.display = 'none';
-    document.body.classList.remove('imprimindo-ficha'); // Remove autorizaÃ§Ã£o
+    document.body.classList.remove('imprimindo-ficha'); // Remove autorização
     document.title = tituloOriginal; // Devolve o nome original para a aba do navegador
     window.onafterprint = null;
   };
 
-  // DÃ¡ 300 milissegundos para o navegador aplicar a mudanÃ§a de nome antes de abrir o PDF
+  // Dá 300 milissegundos para o navegador aplicar a mudança de nome antes de abrir o PDF
   setTimeout(function() {
     window.print();
   }, 300); 
