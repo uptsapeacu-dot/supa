@@ -1,0 +1,95 @@
+/* =============================================
+   RELATÓRIOS — ESTILOS DE IMPRESSÃO
+   ============================================= */
+
+@media print {
+  body.imprimindo-relatorio .login-container,
+  body.imprimindo-relatorio .modal,
+  body.imprimindo-relatorio .overlay,
+  body.imprimindo-relatorio #sidebar,
+  body.imprimindo-relatorio .topbar-mobile,
+  body.imprimindo-relatorio .global-header {
+    display: none !important;
+  }
+
+  body.imprimindo-relatorio #app,
+  body.imprimindo-relatorio #conteudo,
+  body.imprimindo-relatorio #relatorios {
+    background: white !important;
+  }
+
+  body.imprimindo-relatorio #app {
+    display: block !important;
+  }
+
+  body.imprimindo-relatorio #conteudo {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+  }
+
+  body.imprimindo-relatorio #conteudo > section:not(#relatorios) {
+    display: none !important;
+  }
+
+  body.imprimindo-relatorio #relatorios {
+    display: block !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  body.imprimindo-relatorio #relatorios > .page-header,
+  body.imprimindo-relatorio #relatorios > .relatorios-tabs,
+  body.imprimindo-relatorio #relatorioImpressaoContainer {
+    display: none !important;
+  }
+
+  body.imprimindo-relatorio #relatorioImpressaoProfissional {
+    display: flex !important; /* Mostra o container profissional de impressão */
+    flex-direction: column;
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 10mm;
+    box-sizing: border-box;
+    background: white;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+  }
+
+  body.imprimindo-relatorio #printRelatorioConteudo {
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10px;
+    margin-bottom: 20px;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela th,
+  body.imprimindo-relatorio .boletim-tabela td {
+    border: 1px solid #000;
+    padding: 4px;
+    text-align: center;
+  }
+
+  body.imprimindo-relatorio .boletim-tabela th {
+    background-color: #000 !important;
+    color: #fff !important;
+    font-weight: bold;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  body.imprimindo-relatorio .text-left {
+    text-align: left !important;
+  }
+
+  body.imprimindo-relatorio * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+}

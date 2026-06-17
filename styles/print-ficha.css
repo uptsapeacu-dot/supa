@@ -1,0 +1,113 @@
+/* =============================================
+   FICHA PRINCIPAL — ESTILOS DE IMPRESSÃO
+   ============================================= */
+
+/* Oculta a ficha quando não estiver imprimindo */
+#fichaImpressao {
+  display: none;
+}
+
+@media print {
+  body.imprimindo-ficha #fichaImpressao {
+    display: flex !important; /* Transforma a ficha numa caixa flexível */
+    flex-direction: column;   /* Empilha tudo de cima para baixo */
+    min-height: 100vh;        /* Garante que a caixa tenha 100% da altura da folha A4 */
+    position: relative; 
+    width: 100%;
+    padding: 8mm; 
+    box-sizing: border-box;
+    background: white;
+    color: black;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 9px;
+  }
+  /* Cabeçalho com Logos */
+  .print-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .print-header img { height: 85px; }
+  .print-title { text-align: center; flex: 1; }
+  .print-title h1 { font-size: 14px; margin: 0; text-transform: uppercase; font-weight: bold; }
+  .print-title h2 { font-size: 11px; margin: 2px 0 0 0; font-weight: normal; }
+
+  /* Caixas Pretas Principais */
+  .print-section {
+    border: 1px solid #000;
+    margin-bottom: 3px;
+    page-break-inside: avoid;
+  }
+
+  .print-section-title {
+    background-color: #000 !important;
+    color: #fff !important;
+    font-weight: bold;
+    font-size: 9px;
+    padding: 2px 4px;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* LINHAS DA GRADE (A CLASSE QUE FAZ FICAR LADO A LADO!) */
+  .print-row {
+    display: flex; 
+    border-top: 1px solid #000;
+  }
+  .print-row:first-child { border-top: none; }
+
+  /* COLUNAS DA GRADE */
+  .print-col, .print-escola-col {
+    border-right: 1px solid #000;
+    padding: 2px 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .print-col:last-child, .print-escola-col:last-child {
+    border-right: none;
+  }
+
+  /* TEXTOS DENTRO DAS CAIXAS */
+  .print-label {
+    font-size: 8px;
+    font-weight: bold;
+    margin-bottom: 1px;
+    color: #000;
+  }
+  .print-value {
+    font-size: 9px;
+    min-height: 12px;
+  }
+
+  /* CHECKBOXES E GRUPOS */
+  .print-checkgroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    font-size: 8px;
+    margin-top: 1px;
+  }
+  .print-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* ASSINATURAS FINAIS */
+  .print-signatures {
+    display: flex;
+    justify-content: space-between;
+    margin-top: auto; /* O SEGREDO MÁGICO: Empurra a assinatura pro limite de baixo! */
+    padding: 0 30px 10mm 30px; /* Dá 1 centímetro de margem embaixo para não colar no corte da folha */
+    page-break-inside: avoid;
+  }
+  .signature-line {
+    border-top: 1px solid #000;
+    width: 40%;
+    text-align: center;
+    font-size: 9px;
+    padding-top: 4px;
+  }
+}

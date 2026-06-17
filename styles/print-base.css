@@ -1,0 +1,17 @@
+/* Este CSS SÓ funciona na hora de imprimir (Ctrl+P) */
+@media print {
+  /* Tira as margens do papel para o navegador NÃO imprimir o link do Github e a data */
+  @page {
+    size: A4 portrait;
+    margin: 0mm; 
+  }
+
+  @page boletim {
+    size: A4 landscape;
+    margin: 0mm;
+  }
+  
+  /* Esconde o sistema normal */
+  body { background: white !important; }
+  #app, .login-container, .modal, .overlay { display: none !important; }
+}
