@@ -104,6 +104,10 @@ function mostrarTela(tela) {
     telaAtual.style.display = 'block'
   }
 
+  if (tela === 'perfil' && typeof carregarDadosPerfil === 'function') {
+    carregarDadosPerfil();
+  }
+
   document.querySelectorAll('.menu button').forEach(function(botao) {
     botao.classList.remove('active')
   })
