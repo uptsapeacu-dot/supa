@@ -4,9 +4,31 @@
         <div>
           <h2 id="tituloFrequencia" style="margin:0;font-size:18px;">📅 Frequência</h2>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;">
-          <input type="date" id="dataFrequencia" onchange="carregarFrequenciaDoDia()" style="margin:0;padding:8px 12px;width:auto;" />
+        <div style="display:flex;gap:8px;align-items:center;position:relative;">
+          <input type="hidden" id="dataFrequencia" />
+          <div class="date-navigator" style="display:flex; align-items:center; background:#222; border-radius:8px; border:1px solid #3f3f3f;">
+            <button class="btn-clear" onclick="mudarDiaFrequencia(-1)" style="padding:6px 12px; border-right:1px solid #3f3f3f; border-radius:8px 0 0 8px;">◀</button>
+            <div id="btnCalendarioFrequencia" onclick="toggleCalendarioFrequencia()" style="padding:6px 16px; cursor:pointer; font-weight:bold; font-size:14px; min-width:140px; text-align:center; color:#3ea6ff; user-select:none;"></div>
+            <button class="btn-clear" onclick="mudarDiaFrequencia(1)" style="padding:6px 12px; border-left:1px solid #3f3f3f; border-radius:0 8px 8px 0;">▶</button>
+          </div>
           <button class="fechar" onclick="fecharModalFrequencia()" aria-label="Fechar">×</button>
+          
+          <!-- Pop-up do Calendário -->
+          <div id="calendarioFrequenciaPopup" style="display:none; position:absolute; top:45px; right:40px; background:#1e1e1e; border:1px solid #3f3f3f; border-radius:12px; padding:12px; box-shadow:0 8px 24px rgba(0,0,0,0.8); z-index:100; width:260px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <button class="btn-clear" onclick="mudarMesCalendarioFrequencia(-1)" style="padding:4px 8px;">◀</button>
+              <div id="labelMesAnoCalendarioFrequencia" style="font-weight:bold; font-size:14px; color:#fff;"></div>
+              <button class="btn-clear" onclick="mudarMesCalendarioFrequencia(1)" style="padding:4px 8px;">▶</button>
+            </div>
+            <div style="display:grid; grid-template-columns:repeat(7,1fr); text-align:center; font-size:12px; color:#aaa; margin-bottom:6px; font-weight:bold;">
+              <div>D</div><div>S</div><div>T</div><div>Q</div><div>Q</div><div>S</div><div>S</div>
+            </div>
+            <div id="gridDiasCalendarioFrequencia" style="display:grid; grid-template-columns:repeat(7,1fr); gap:4px; text-align:center; font-size:13px;">
+            </div>
+            <div style="margin-top:12px; text-align:center; border-top:1px solid #333; padding-top:8px;">
+              <button class="btn-clear" onclick="selecionarHojeCalendarioFrequencia()" style="color:#3ea6ff; font-size:12px; font-weight:bold;">Ir para Hoje</button>
+            </div>
+          </div>
         </div>
       </div>
       <div id="avisoPermissaoFrequencia" class="aviso-permissao-freq" style="display:none;margin-top:16px;"></div>

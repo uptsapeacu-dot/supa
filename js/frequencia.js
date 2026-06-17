@@ -1,10 +1,103 @@
-﻿// ====== FREQUÃŠNCIA ======
-// VariÃ¡veis de controle do mÃ³dulo
+// ====== FREQUÊNCIA ======
+// Variáveis de controle do módulo
 let turmaFrequenciaAtual = null;
 let turmaFrequenciaNome = '';
 let alunosDaTurmaFrequencia = [];
 
-// Verifica se usuÃ¡rio pode SUBMETER frequÃªncia (nÃ­vel 1, 2 ou nÃ­vel 3 com permissÃ£o de turmas)
+// Variáveis do calendário de frequência
+let dataFrequenciaAtual = new Date();
+let mesVisivelFreq = dataFrequenciaAtual.getMonth();
+let anoVisivelFreq = dataFrequenciaAtual.getFullYear();
+
+// Funções de formatação e calendário
+function formatarDataPorExtenso(data) {
+  const nomesMesesAbr = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+  return `${data.getDate()} de ${nomesMesesAbr[data.getMonth()]}, ${data.getFullYear()}`;
+}
+
+function atualizarLabelDataFrequencia() {
+  const btn = document.getElementById('btnCalendarioFrequencia');
+  if (btn) btn.innerText = formatarDataPorExtenso(dataFrequenciaAtual);
+  // Atualiza input hidden
+  const input = document.getElementById('dataFrequencia');
+  if (input) {
+    const ano = dataFrequenciaAtual.getFullYear();
+    const mes = String(dataFrequenciaAtual.getMonth() + 1).padStart(2, '0');
+    const dia = String(dataFrequenciaAtual.getDate()).padStart(2, '0');
+    input.value = `${ano}-${mes}-${dia}`;
+  }
+}
+
+function mudarDiaFrequencia(offset) {
+  dataFrequenciaAtual.setDate(dataFrequenciaAtual.getDate() + offset);
+  atualizarLabelDataFrequencia();
+  carregarFrequenciaDoDia();
+}
+
+function toggleCalendarioFrequencia() {
+  const popup = document.getElementById('calendarioFrequenciaPopup');
+  if (popup.style.display === 'none') {
+    popup.style.display = 'block';
+    mesVisivelFreq = dataFrequenciaAtual.getMonth();
+    anoVisivelFreq = dataFrequenciaAtual.getFullYear();
+    renderizarCalendarioFrequencia();
+  } else {
+    popup.style.display = 'none';
+  }
+}
+
+function mudarMesCalendarioFrequencia(offset) {
+  mesVisivelFreq += offset;
+  if (mesVisivelFreq > 11) { mesVisivelFreq = 0; anoVisivelFreq++; }
+  else if (mesVisivelFreq < 0) { mesVisivelFreq = 11; anoVisivelFreq--; }
+  renderizarCalendarioFrequencia();
+}
+
+function selecionarHojeCalendarioFrequencia() {
+  dataFrequenciaAtual = new Date();
+  atualizarLabelDataFrequencia();
+  document.getElementById('calendarioFrequenciaPopup').style.display = 'none';
+  carregarFrequenciaDoDia();
+}
+
+function selecionarDataCalendario(dia, mes, ano) {
+  dataFrequenciaAtual = new Date(ano, mes, dia);
+  atualizarLabelDataFrequencia();
+  document.getElementById('calendarioFrequenciaPopup').style.display = 'none';
+  carregarFrequenciaDoDia();
+}
+
+function renderizarCalendarioFrequencia() {
+  const nomesMeses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  document.getElementById('labelMesAnoCalendarioFrequencia').innerText = `${nomesMeses[mesVisivelFreq]} ${anoVisivelFreq}`;
+  
+  const grid = document.getElementById('gridDiasCalendarioFrequencia');
+  grid.innerHTML = '';
+  
+  const primeiroDia = new Date(anoVisivelFreq, mesVisivelFreq, 1).getDay();
+  const diasNoMes = new Date(anoVisivelFreq, mesVisivelFreq + 1, 0).getDate();
+  
+  for (let i = 0; i < primeiroDia; i++) {
+    grid.innerHTML += `<div></div>`;
+  }
+  
+  const diaSelecionado = dataFrequenciaAtual.getDate();
+  const mesSelecionado = dataFrequenciaAtual.getMonth();
+  const anoSelecionado = dataFrequenciaAtual.getFullYear();
+  
+  for (let dia = 1; dia <= diasNoMes; dia++) {
+    const isSelecionado = dia === diaSelecionado && mesVisivelFreq === mesSelecionado && anoVisivelFreq === anoSelecionado;
+    const estilo = isSelecionado 
+      ? 'background:#3ea6ff; color:#000; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:0 auto; cursor:pointer; font-weight:bold;' 
+      : 'width:28px; height:28px; display:flex; align-items:center; justify-content:center; margin:0 auto; cursor:pointer; border-radius:50%; transition:background 0.2s;';
+      
+    const onhover = isSelecionado ? '' : `onmouseover="this.style.background='#333'" onmouseout="this.style.background='transparent'"`;
+      
+    grid.innerHTML += `<div style="${estilo}" ${onhover} onclick="selecionarDataCalendario(${dia}, ${mesVisivelFreq}, ${anoVisivelFreq})">${dia}</div>`;
+  }
+}
+
+// Verifica se usuário pode SUBMETER frequência (nível 1, 2 ou nível 3 com permissão de turmas)
 function podeLancarFrequencia() {
   if (!modoEdicaoAtivo) return false;
   if (usuarioNivel1() || usuarioNivel2()) return true;
@@ -13,7 +106,7 @@ function podeLancarFrequencia() {
   });
 }
 
-// Verifica se pode VER frequÃªncia (nÃ­veis 1, 2 e 3 com permissÃ£o)
+// Verifica se pode VER frequência (níveis 1, 2 e 3 com permissão)
 function podeVerFrequencia() {
   if (usuarioNivel1() || usuarioNivel2()) return true;
   return acessosAtual.some(function(acesso) {
@@ -21,17 +114,17 @@ function podeVerFrequencia() {
   });
 }
 
-// Abre a tela de frequÃªncia de uma turma
+// Abre a tela de frequência de uma turma
 async function abrirFrequenciaTurma(turmaId, turmaNome) {
   turmaFrequenciaAtual = turmaId;
   turmaFrequenciaNome = turmaNome;
 
-  document.getElementById('tituloFrequencia').innerText = 'ðŸ“… FrequÃªncia â€” ' + turmaNome;
+  document.getElementById('tituloFrequencia').innerText = '📅 Frequência — ' + turmaNome;
   document.getElementById('modalFrequencia').style.display = 'flex';
 
-  // Define a data de hoje como padrÃ£o
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('dataFrequencia').value = hoje;
+  // Define a data atual globalmente
+  dataFrequenciaAtual = new Date();
+  atualizarLabelDataFrequencia();
 
   if (window.lucide) lucide.createIcons();
 
@@ -40,6 +133,7 @@ async function abrirFrequenciaTurma(turmaId, turmaNome) {
 
 function fecharModalFrequencia() {
   document.getElementById('modalFrequencia').style.display = 'none';
+  document.getElementById('calendarioFrequenciaPopup').style.display = 'none';
   turmaFrequenciaAtual = null;
   alunosDaTurmaFrequencia = [];
 }
