@@ -381,7 +381,6 @@ async function carregarAlunosDaTurmaHub() {
     div.innerHTML = `
       <div class="hub-aluno-avatar">${iniciais}</div>
       <span class="hub-aluno-nome">${aluno.nome}</span>
-      <span class="hub-aluno-serie">${aluno.serie || ''}</span>
     `;
     lista.appendChild(div);
   });
