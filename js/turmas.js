@@ -718,6 +718,10 @@ async function carregarNotasHub() {
     bloco.appendChild(corpoBloco);
     lista.appendChild(bloco);
   });
+
+  if (window.lucide) {
+    setTimeout(() => lucide.createIcons(), 10);
+  }
 }
 
 function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
@@ -736,6 +740,9 @@ function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
     // Salva valores editados da unidade antiga antes de trocar a tabela
     coletarNotasDoDOM(materiaId, unidadeAntiga);
     container.innerHTML = renderizarTabelaNotas(materiaId, unidade, alunos || hubAlunosDaTurma, podeEditar);
+    if (window.lucide) {
+      setTimeout(() => lucide.createIcons(), 10);
+    }
   }
 }
 
