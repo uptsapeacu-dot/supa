@@ -747,6 +747,7 @@ function trocarUnidade(materiaId, unidade, alunos, podeEditar) {
 }
 
 function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
+  const mostrarBoletim = isSecretaria() || (typeof isGestorEscolar === 'function' && isGestorEscolar()) || acessosAtual.some(a => (a.nivel === 2 || a.nivel === 3) && a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo);
   const cache = (hubNotasCache[materiaId] || {})[unidade] || {};
 
   let linhas = '';
@@ -796,8 +797,8 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           oninput="recalcularMediaDOM('${materiaId}',${unidade},${aluno.id})" /></td>
         <td><span class="nota-media ${mediaClass}" id="media-${materiaId}-${unidade}-${aluno.id}">${mediaLabel}</span></td>
         <td><span class="nota-media ${mediaFinalClass}" id="media-final-${materiaId}-${aluno.id}">${mediaFinalLabel}</span></td>
-        <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button" style="display:flex;align-items:center;gap:6px;"
-          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')"><i data-lucide="printer" style="width:16px;height:16px;"></i> Boletim</button></td>
+        <td>${mostrarBoletim ? `<button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button" style="display:flex;align-items:center;gap:6px;"
+          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')"><i data-lucide="printer" style="width:16px;height:16px;"></i> Boletim</button>` : ''}</td>
       </tr>`;
   });
 
