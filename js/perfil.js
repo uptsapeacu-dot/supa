@@ -1,4 +1,4 @@
-﻿function carregarDadosPerfil() {
+function carregarDadosPerfil() {
   if (!funcionarioAtual) return;
 
   const nomeEl = document.getElementById('perfilNome');
@@ -7,9 +7,20 @@
   const telefoneEl = document.getElementById('perfilTelefone');
   const avatarEl = document.getElementById('perfilAvatar');
 
+  let cargoFinal = 'Funcionário';
+  if (acessosAtual && acessosAtual.length > 0) {
+    const niveis = {
+      1: 'Secretaria',
+      2: 'Gestor Escolar',
+      3: 'Coordenador',
+      4: 'Professor'
+    };
+    cargoFinal = niveis[acessosAtual[0].nivel] || cargoFinal;
+  }
+
   if (nomeEl) nomeEl.textContent = funcionarioAtual.nome || '-';
   if (emailEl) emailEl.textContent = funcionarioAtual.email || '-';
-  if (cargoEl) cargoEl.textContent = funcionarioAtual.cargo || 'Funcionário';
+  if (cargoEl) cargoEl.textContent = cargoFinal;
   if (telefoneEl) telefoneEl.textContent = funcionarioAtual.telefone || '-';
 
   if (funcionarioAtual.foto_url && avatarEl) {
@@ -43,6 +54,7 @@ function mostrarAlertaPerfil(mensagem, tipo = 'erro') {
 }
 
 async function atualizarSenhaPerfil() {
+  const senhaAtual = document.getElementById('senhaAtualPerfil') ? document.getElementById('senhaAtualPerfil').value : '';
   const novaSenha = document.getElementById('novaSenhaPerfil').value;
   const confirmaSenha = document.getElementById('confirmaSenhaPerfil').value;
   const btnSalvar = document.getElementById('btnSalvarSenha');
@@ -50,13 +62,13 @@ async function atualizarSenhaPerfil() {
 
   if (alertBox) alertBox.style.display = 'none';
 
-  if (!novaSenha || !confirmaSenha) {
-    mostrarAlertaPerfil('Por favor, preencha a nova senha e a confirmação.');
+  if (!senhaAtual || !novaSenha || !confirmaSenha) {
+    mostrarAlertaPerfil('Por favor, preencha a senha atual, a nova senha e a confirmação.');
     return;
   }
 
   if (novaSenha.length < 6) {
-    mostrarAlertaPerfil('A senha deve ter no mínimo 6 caracteres.');
+    mostrarAlertaPerfil('A nova senha deve ter no mínimo 6 caracteres.');
     return;
   }
 
@@ -70,6 +82,19 @@ async function atualizarSenhaPerfil() {
   if (window.lucide) lucide.createIcons();
 
   try {
+    const { error: signInError } = await clienteSupabase.auth.signInWithPassword({
+      email: funcionarioAtual.email,
+      password: senhaAtual
+    });
+
+    if (signInError) {
+      mostrarAlertaPerfil('A senha atual está incorreta. Tente novamente.');
+      btnSalvar.disabled = false;
+      btnSalvar.innerHTML = '<i data-lucide="save" style="width: 18px; height: 18px;"></i> Atualizar Senha';
+      if (window.lucide) lucide.createIcons();
+      return;
+    }
+
     const { error } = await clienteSupabase.auth.updateUser({
       password: novaSenha
     });
@@ -78,6 +103,7 @@ async function atualizarSenhaPerfil() {
       console.error('Erro ao atualizar senha:', error);
       mostrarAlertaPerfil('Ocorreu um erro ao tentar atualizar sua senha: ' + error.message);
     } else {
+      if (document.getElementById('senhaAtualPerfil')) document.getElementById('senhaAtualPerfil').value = '';
       document.getElementById('novaSenhaPerfil').value = '';
       document.getElementById('confirmaSenhaPerfil').value = '';
       

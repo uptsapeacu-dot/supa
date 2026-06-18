@@ -47,31 +47,42 @@
 
   <!-- ALTERAR SENHA -->
   <div class="form-grid" style="background: #1f1f1f; padding: 24px; border-radius: 8px; border: 1px solid #333;">
-    <h2 style="grid-column: 1 / -1; margin-top: 0; margin-bottom: 16px; border-bottom: 1px solid #333; padding-bottom: 12px; font-size: 18px; color: #fff; display: flex; align-items: center; gap: 8px;">
-      <i data-lucide="lock"></i> Alterar Senha de Acesso
+    <h2 style="grid-column: 1 / -1; margin-top: 0; margin-bottom: 0; padding-bottom: 0; font-size: 18px; color: #fff; display: flex; align-items: center; justify-content: space-between; cursor: pointer;" onclick="const c = document.getElementById('senha-content'); const i = this.querySelector('.toggle-icon'); if (c.style.display === 'none') { c.style.display = 'grid'; i.style.transform = 'rotate(180deg)'; this.style.borderBottom = '1px solid #333'; this.style.paddingBottom = '12px'; this.style.marginBottom = '16px'; } else { c.style.display = 'none'; i.style.transform = 'rotate(0deg)'; this.style.borderBottom = 'none'; this.style.paddingBottom = '0'; this.style.marginBottom = '0'; }">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="lock"></i> Alterar Senha de Acesso
+      </div>
+      <i data-lucide="chevron-down" class="toggle-icon" style="transition: transform 0.3s; width: 20px; height: 20px;"></i>
     </h2>
 
-    <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
-      <div id="perfilAlert" style="display: none; padding: 12px; border-radius: 4px; margin-bottom: 16px; font-size: 14px; align-items: center; gap: 8px;">
-        <i id="perfilAlertIcon" data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
-        <span id="perfilAlertText"></span>
+    <div id="senha-content" style="display: none; grid-column: 1 / -1; grid-template-columns: 1fr; gap: 16px;">
+      
+      <div class="form-group" style="grid-column: 1 / -1; margin-bottom: 0;">
+        <div id="perfilAlert" style="display: none; padding: 12px; border-radius: 4px; font-size: 14px; align-items: center; gap: 8px;">
+          <i id="perfilAlertIcon" data-lucide="alert-circle" style="width: 18px; height: 18px;"></i>
+          <span id="perfilAlertText"></span>
+        </div>
       </div>
-    </div>
 
-    <div class="form-group">
-      <label for="novaSenhaPerfil">Nova Senha</label>
-      <input type="password" id="novaSenhaPerfil" placeholder="Mínimo 6 caracteres" />
-    </div>
+      <div class="form-group" style="grid-column: 1 / -1;">
+        <label for="senhaAtualPerfil">Senha Atual</label>
+        <input type="password" id="senhaAtualPerfil" placeholder="Digite sua senha atual" />
+      </div>
 
-    <div class="form-group">
-      <label for="confirmaSenhaPerfil">Confirmar Nova Senha</label>
-      <input type="password" id="confirmaSenhaPerfil" placeholder="Digite a nova senha novamente" />
-    </div>
+      <div class="form-group">
+        <label for="novaSenhaPerfil">Nova Senha</label>
+        <input type="password" id="novaSenhaPerfil" placeholder="Mínimo 6 caracteres" />
+      </div>
 
-    <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 16px;">
-      <button class="btn-salvar" id="btnSalvarSenha" onclick="atualizarSenhaPerfil()" style="display: flex; align-items: center; gap: 6px;">
-        <i data-lucide="save" style="width: 18px; height: 18px;"></i> Atualizar Senha
-      </button>
+      <div class="form-group">
+        <label for="confirmaSenhaPerfil">Confirmar Nova Senha</label>
+        <input type="password" id="confirmaSenhaPerfil" placeholder="Digite a nova senha novamente" />
+      </div>
+
+      <div style="grid-column: 1 / -1; display: flex; justify-content: flex-end; margin-top: 16px;">
+        <button class="btn-salvar" id="btnSalvarSenha" onclick="atualizarSenhaPerfil()" style="display: flex; align-items: center; gap: 6px; padding: 8px 16px; background: #2563eb; color: #fff; border: none; border-radius: 4px; cursor: pointer;">
+          <i data-lucide="save" style="width: 18px; height: 18px;"></i> Atualizar Senha
+        </button>
+      </div>
     </div>
   </div>
 

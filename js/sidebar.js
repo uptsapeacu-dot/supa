@@ -1,11 +1,11 @@
-﻿function aplicarVisibilidadeSidebar() {
+function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
 
   const menus = {
     home: document.getElementById('menu-home'),
     mural: document.getElementById('menu-mural'),
     turmas: document.getElementById('menu-turmas'),
-    frequencia: document.getElementById('menu-frequencia-sidebar'),
+
     funcionarios: document.getElementById('menu-funcionarios'),
     matriculas: document.getElementById('menu-matriculas'),
     alunos: document.getElementById('menu-alunos'),
@@ -23,7 +23,7 @@
   if (nivel === PERFIS.PROFESSOR) {
     if (menus.home) menus.home.style.display = 'flex'
     if (menus.turmas) menus.turmas.style.display = 'flex'
-    if (menus.frequencia) menus.frequencia.style.display = 'flex'
+
     if (menus.perfil) menus.perfil.style.display = 'flex'
     return
   }
@@ -49,10 +49,7 @@
 
     menu.style.display = podeVer ? 'flex' : 'none'
     
-    // Mostra Frequência também se puder ver turmas (Coordenador, etc)
-    if (modulo.id === 'turmas' && menus.frequencia) {
-        menus.frequencia.style.display = podeVer ? 'flex' : 'none'
-    }
+
   })
 
   if (menus.permissoes && podeVerPermissoes()) {
