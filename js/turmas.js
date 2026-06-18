@@ -189,9 +189,11 @@ function fecharHubTurma(event) {
   if (event && event.target !== document.getElementById('hubTurmaOverlay')) return;
   if (event && event.target === document.getElementById('hubTurmaOverlay')) {
     document.getElementById('hubTurmaOverlay').classList.remove('aberto');
+    if (typeof restaurarHubTurmaModoNormal === 'function') restaurarHubTurmaModoNormal();
     return;
   }
   document.getElementById('hubTurmaOverlay').classList.remove('aberto');
+  if (typeof restaurarHubTurmaModoNormal === 'function') restaurarHubTurmaModoNormal();
 }
 
 async function abrirAbaTurma(aba) {
@@ -1290,4 +1292,132 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
   setTimeout(function() { window.print(); }, 300);
 }
 
+// ====== FREQUÊNCIA GLOBAL (Acesso pelo Sidebar) ======
 
+async function abrirFrequenciaGlobal() {
+  if (!escolaAtual) {
+    alert('Selecione uma escola no menu "Início" primeiro.');
+    return;
+  }
+
+  // Buscar turmas permitidas para o usuário na escola atual
+  let turmasPermitidas = null;
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(function(a) { return a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo });
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(function(v) { return v.id });
+      if (vinculoIds.length > 0) {
+        const { data: mats } = await clienteSupabase.from('materias_turmas').select('turma_id').in('vinculo_id', vinculoIds).eq('ativo', true);
+        const { data: tps } = await clienteSupabase.from('turmas_professores').select('turma_id').in('vinculo_id', vinculoIds);
+        const ids = new Set();
+        (mats || []).forEach(function(m) { if (m.turma_id) ids.add(m.turma_id) });
+        (tps || []).forEach(function(t) { if (t.turma_id) ids.add(t.turma_id) });
+        turmasPermitidas = Array.from(ids);
+      } else {
+        turmasPermitidas = [];
+      }
+    }
+  }
+
+  let query = clienteSupabase.from('turmas').select('id, nome, turno, ano_letivo').eq('escola_id', escolaAtual).eq('ativo', true).order('ano_letivo', { ascending: false }).order('nome', { ascending: true });
+  if (turmasPermitidas !== null) {
+      if (turmasPermitidas.length === 0) {
+         alert('Você não tem nenhuma turma vinculada nesta escola.');
+         return;
+      }
+      query = query.in('id', turmasPermitidas);
+  }
+
+  const { data: turmas } = await query;
+  if (!turmas || turmas.length === 0) {
+    alert('Nenhuma turma encontrada.');
+    return;
+  }
+
+  // Prepara o modal para o modo Frequência Global
+  document.getElementById('hubTurmaNome').style.display = 'none';
+  document.getElementById('hubTurmaInfo').style.display = 'none';
+  
+  const select = document.getElementById('selectTurmaHubGlobo');
+  if (select) {
+    select.style.display = 'block';
+    select.innerHTML = '<option value="">-- Selecione uma Turma --</option>';
+    
+    // Guardamos as informações extras num dataset ou map para mudar o Info
+    window.turmasHubGloboCache = {};
+    turmas.forEach(t => {
+        window.turmasHubGloboCache[t.id] = t;
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = `${t.nome} (${t.ano_letivo})`;
+        select.appendChild(opt);
+    });
+  }
+
+  // Esconde os outros botões de abas para focar só em frequência
+  if (document.getElementById('aba-materias')) document.getElementById('aba-materias').style.display = 'none';
+  if (document.getElementById('aba-alunos')) document.getElementById('aba-alunos').style.display = 'none';
+  if (document.getElementById('aba-notas')) document.getElementById('aba-notas').style.display = 'none';
+  
+  // Reseta estado atual
+  hubTurmaId = null;
+  document.getElementById('listaFrequenciaHub').innerHTML = '<div class="hub-empty" style="padding-top: 20px;">Por favor, selecione uma turma acima para carregar a frequência.</div>';
+  document.getElementById('btnSalvarFrequenciaHub').style.display = 'none'; // SÓ FICA VISÍVEL QUANDO SELECIONA A TURMA!
+  document.getElementById('hubTurmaOverlay').classList.add('aberto');
+
+  // Força abrir a aba de frequência
+  await abrirAbaTurma('frequencia');
+  
+  // Tira a tag 'ativa' de todos os menus e bota no da frequência
+  document.querySelectorAll('.menu button').forEach(function(botao) {
+    botao.classList.remove('active')
+  })
+  const itemMenu = document.getElementById('menu-frequencia-sidebar');
+  if (itemMenu) itemMenu.classList.add('active');
+  if(typeof fecharSidebarMobile === 'function') fecharSidebarMobile()
+}
+
+async function mudarTurmaHubGlobo(idDaTurma) {
+  if (!idDaTurma) {
+      hubTurmaId = null;
+      document.getElementById('listaFrequenciaHub').innerHTML = '<div class="hub-empty" style="padding-top: 20px;">Por favor, selecione uma turma acima para carregar a frequência.</div>';
+      document.getElementById('btnSalvarFrequenciaHub').style.display = 'none';
+      return;
+  }
+  
+  const turma = window.turmasHubGloboCache[idDaTurma];
+  hubTurmaId = turma.id;
+  hubTurmaNomeAtual = turma.nome;
+  
+  const escolaObj = (typeof escolas !== 'undefined' && escolas) ? escolas.find(e => e.id === escolaAtual) : null;
+  hubEscolaNome = escolaObj ? escolaObj.nome : '';
+  hubTurmaInfo = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
+  
+  // Se existir o span de info, exibe ele ao selecionar
+  const infoEl = document.getElementById('hubTurmaInfo');
+  if (infoEl) {
+      infoEl.innerText = hubTurmaInfo;
+      infoEl.style.display = 'block';
+  }
+  
+  await inicializarFrequenciaHub(); // Isso já exibe o botão salvar se a turma estiver carregada
+}
+
+function restaurarHubTurmaModoNormal() {
+  const nomeEl = document.getElementById('hubTurmaNome');
+  const infoEl = document.getElementById('hubTurmaInfo');
+  const selectEl = document.getElementById('selectTurmaHubGlobo');
+  
+  if (nomeEl) nomeEl.style.display = 'block';
+  if (infoEl) infoEl.style.display = 'block';
+  if (selectEl) selectEl.style.display = 'none';
+  
+  if (document.getElementById('aba-materias')) document.getElementById('aba-materias').style.display = 'inline-block';
+  if (document.getElementById('aba-alunos')) document.getElementById('aba-alunos').style.display = 'inline-block';
+  if (document.getElementById('aba-notas')) document.getElementById('aba-notas').style.display = 'inline-block';
+  
+  // Tira a class active do sidebar frequencia
+  const itemMenu = document.getElementById('menu-frequencia-sidebar');
+  if (itemMenu) itemMenu.classList.remove('active');
+}
