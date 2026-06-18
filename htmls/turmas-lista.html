@@ -121,15 +121,15 @@
         </div>
         <div id="avisoPermissaoFreqHub" class="aviso-permissao-freq" style="display:none;margin-bottom:12px;"></div>
         <div id="listaFrequenciaHub" style="display:flex;flex-direction:column;gap:8px;"></div>
-        <button class="btn-login" id="btnSalvarFrequenciaHub" onclick="salvarFrequenciaHub()" style="margin-top:20px;display:none;">💾 Salvar Frequência</button>
+        <button class="btn-login" id="btnSalvarFrequenciaHub" onclick="salvarFrequenciaHub()" style="margin-top:20px;display:none;align-items:center;justify-content:center;gap:6px;"><i data-lucide="save" style="width:18px;height:18px;"></i> Salvar Frequência</button>
       </div>
 
       <!-- ABA: NOTAS -->
       <div id="conteudo-notas" style="display:none;">
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:16px;flex-wrap:wrap;">
           <span style="font-size:13px;color:#aaa;">Clique no cabeçalho da matéria para expandir e lançar notas por unidade.</span>
-          <button class="btn-clear" onclick="carregarNotasHub()" style="margin-left:auto;">🔄 Atualizar</button>
-          <button class="btn-login" id="btnSalvarNotasHub" onclick="salvarNotasHub()" style="display:none;width:auto;padding:8px 20px;margin:0;">💾 Salvar Notas</button>
+          <button class="btn-clear" onclick="carregarNotasHub()" style="margin-left:auto;display:flex;align-items:center;gap:4px;"><i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Atualizar</button>
+          <button class="btn-login" id="btnSalvarNotasHub" onclick="salvarNotasHub()" style="display:none;width:auto;padding:8px 20px;margin:0;align-items:center;gap:6px;"><i data-lucide="save" style="width:18px;height:18px;"></i> Salvar Notas</button>
         </div>
         <div id="listaNotesTurmaHub">
           <div class="hub-empty">Carregando notas...</div>

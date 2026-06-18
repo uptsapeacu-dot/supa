@@ -584,10 +584,10 @@ async function salvarFrequenciaHub() {
   });
 
   const btn = document.getElementById('btnSalvarFrequenciaHub');
-  btn.disabled = true; btn.innerText = 'Salvando...';
+  btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="spin" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:6px;"></i> Salvando...'; if(window.lucide) lucide.createIcons();
 
   const { error } = await clienteSupabase.from('frequencia').upsert(registros, { onConflict: 'aluno_id,turma_id,data' });
-  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Frequência';
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:6px;"></i> Salvar Frequência'; if(window.lucide) lucide.createIcons();
 
   if (error) { alert('Erro ao salvar frequência: ' + error.message); return; }
 
@@ -789,8 +789,8 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
           oninput="recalcularMediaDOM('${materiaId}',${unidade},${aluno.id})" /></td>
         <td><span class="nota-media ${mediaClass}" id="media-${materiaId}-${unidade}-${aluno.id}">${mediaLabel}</span></td>
         <td><span class="nota-media ${mediaFinalClass}" id="media-final-${materiaId}-${aluno.id}">${mediaFinalLabel}</span></td>
-        <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button"
-          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">🖨️ Boletim</button></td>
+        <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button" style="display:flex;align-items:center;gap:6px;"
+          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')"><i data-lucide="printer" style="width:16px;height:16px;"></i> Boletim</button></td>
       </tr>`;
   });
 
@@ -826,7 +826,7 @@ function recalcularMediaDOM(materiaId, unidade, alunoId) {
   } else if (media >= 5) {
     el.textContent = `${media.toFixed(1)} âœ…`; el.className = 'nota-media nota-aprovado';
   } else {
-    el.textContent = `${media.toFixed(1)} âŒ`; el.className = 'nota-media nota-reprovado';
+    el.textContent = `${media.toFixed(1)} â Œ`; el.className = 'nota-media nota-reprovado';
   }
 
   // Atualiza cache da média desta unidade para refletir no cálculo da Média Final
@@ -854,7 +854,7 @@ function recalcularMediaFinalDOM(materiaId, alunoId) {
   } else if (mediaFinal >= 5) {
     elFinal.textContent = `${mediaFinal.toFixed(1)} âœ…`; elFinal.className = 'nota-media nota-aprovado';
   } else {
-    elFinal.textContent = `${mediaFinal.toFixed(1)} âŒ`; elFinal.className = 'nota-media nota-reprovado';
+    elFinal.textContent = `${mediaFinal.toFixed(1)} â Œ`; elFinal.className = 'nota-media nota-reprovado';
   }
 }
 
@@ -887,7 +887,7 @@ function coletarNotasDoDOM(materiaId, unidade) {
 
 async function salvarNotasHub() {
   const btn = document.getElementById('btnSalvarNotasHub');
-  btn.disabled = true; btn.innerText = 'Salvando...';
+  btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="spin" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:6px;"></i> Salvando...'; if(window.lucide) lucide.createIcons();
 
   // Coleta todos os valores do DOM antes de salvar
   hubMateriasList.forEach(mat => {
@@ -918,10 +918,10 @@ async function salvarNotasHub() {
     });
   });
 
-  if (upserts.length === 0) { btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Notas'; return; }
+  if (upserts.length === 0) { btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:6px;"></i> Salvar Notas'; if(window.lucide) lucide.createIcons(); return; }
 
   const { error } = await clienteSupabase.from('notas_alunos').upsert(upserts, { onConflict: 'aluno_id,materia_id,unidade' });
-  btn.disabled = false; btn.innerText = 'ðŸ’¾ Salvar Notas';
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="width:18px;height:18px;vertical-align:text-bottom;margin-right:6px;"></i> Salvar Notas'; if(window.lucide) lucide.createIcons();
 
   if (error) { alert('Erro ao salvar notas: ' + error.message); return; }
 
