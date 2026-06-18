@@ -1,4 +1,4 @@
-function carregarDadosPerfil() {
+﻿function carregarDadosPerfil() {
   if (!funcionarioAtual) return;
 
   const nomeEl = document.getElementById('perfilNome');

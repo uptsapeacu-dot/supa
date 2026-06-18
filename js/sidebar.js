@@ -1,4 +1,4 @@
-function aplicarVisibilidadeSidebar() {
+﻿function aplicarVisibilidadeSidebar() {
   const nivel = nivelMaisAlto()
 
   const menus = {

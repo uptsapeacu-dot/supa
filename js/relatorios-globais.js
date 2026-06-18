@@ -1,4 +1,4 @@
-﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
+﻿﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');

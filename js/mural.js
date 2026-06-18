@@ -1,4 +1,4 @@
-﻿﻿async function carregarDadosMural() {
+﻿﻿﻿async function carregarDadosMural() {
   carregarAvisos()
   muralFuncionarios = []
   let orgaosPermitidos = []

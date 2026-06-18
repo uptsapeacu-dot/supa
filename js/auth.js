@@ -1,4 +1,4 @@
-﻿async function fazerLogin() {
+﻿﻿async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')

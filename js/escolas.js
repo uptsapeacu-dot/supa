@@ -1,4 +1,4 @@
-﻿async function carregarEscolas() {
+﻿﻿async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {

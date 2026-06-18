@@ -1,4 +1,4 @@
-﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
+﻿﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
 let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionário para impressão do histórico
 
 // ====== GESTÃƒO DINÃ‚MICA DE CARGOS ======

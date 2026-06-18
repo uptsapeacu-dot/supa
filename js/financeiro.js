@@ -1,4 +1,4 @@
-﻿﻿let contasFinanceiras = [];
+﻿﻿﻿let contasFinanceiras = [];
 let categoriasFinanceiras = [];
 let mesFiltroAtual = new Date().toISOString().slice(0, 7); // Guarda o 'YYYY-MM'
 

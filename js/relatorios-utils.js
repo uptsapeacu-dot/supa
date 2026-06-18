@@ -1,4 +1,4 @@
-﻿﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
+﻿﻿﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
 // [NOTA DE ARQUITETURA] Memória Permanente: Princípio da "Avaliação Holística"
 // Sempre que criar ou modificar uma tela ou rota (como Relatórios, Financeiro, Turmas), 
 // é obrigatório garantir que a transição de contexto no cabeçalho ou sidebar também a re-renderize.

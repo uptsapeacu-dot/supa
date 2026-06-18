@@ -1,4 +1,4 @@
-﻿﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
+﻿﻿﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');

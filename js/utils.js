@@ -1,4 +1,4 @@
-﻿function textoOuVazio(valor) {
+﻿﻿function textoOuVazio(valor) {
   return valor && String(valor).trim() ? valor : '-'
 }
 

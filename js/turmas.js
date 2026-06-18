@@ -170,7 +170,7 @@ async function abrirHubTurma(turma) {
     const badgeEscola = document.querySelector('.header-escola-nome');
     hubEscolaNome = badgeEscola ? badgeEscola.innerText : '';
   }
-  hubTurmaInfo = `${turma.turno} â€¢ Ano letivo ${turma.ano_letivo}`;
+  hubTurmaInfo = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
 
   document.getElementById('hubTurmaNome').innerText = turma.nome;
   document.getElementById('hubTurmaInfo').innerText = hubTurmaInfo;
@@ -218,7 +218,7 @@ async function abrirAbaTurma(aba) {
   if (aba === 'notas')      await carregarNotasHub();
 }
 
-// ====== ABA: MATÃ‰RIAS ======
+// ====== ABA: MATÉRIAS ======
 
 async function carregarMateriasTurma() {
   const lista = document.getElementById('listaMateriasTurma');
@@ -235,12 +235,27 @@ async function carregarMateriasTurma() {
   const formEl = document.getElementById('formMateria');
   if (formEl) formEl.style.display = 'none';
 
-  const { data, error } = await clienteSupabase
+  let queryMaterias = clienteSupabase
     .from('materias_turmas')
     .select('*, vinculos_funcionarios(funcionarios(nome))')
     .eq('turma_id', hubTurmaId)
     .eq('ativo', true)
     .order('nome', { ascending: true });
+
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(function(a) { return a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo });
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(function(v) { return v.id });
+      if (vinculoIds.length > 0) {
+        queryMaterias = queryMaterias.in('vinculo_id', vinculoIds);
+      } else {
+        queryMaterias = queryMaterias.in('vinculo_id', []);
+      }
+    }
+  }
+
+  const { data, error } = await queryMaterias;
 
   if (error || !data || data.length === 0) {
     lista.innerHTML = '<div class="hub-empty">Nenhuma matéria cadastrada nesta turma.</div>';
@@ -249,7 +264,7 @@ async function carregarMateriasTurma() {
 
   lista.innerHTML = '';
   data.forEach(mat => {
-    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || 'â€”';
+    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || '—';
     const div = document.createElement('div');
     div.className = 'materia-item';
     div.innerHTML = `
@@ -372,7 +387,7 @@ async function carregarAlunosDaTurmaHub() {
   });
 }
 
-// ====== ABA: FREQUÃŠNCIA (wrapper para o sistema existente) ======
+// ====== ABA: FREQUÊNCIA (wrapper para o sistema existente) ======
 
 let dataFrequenciaHubObj = new Date();
 let mesVisivelFreqHub = dataFrequenciaHubObj.getMonth();
@@ -669,7 +684,7 @@ async function carregarNotasHub() {
     // Header da matéria
     const header = document.createElement('div');
     header.className = 'notas-materia-header';
-    header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher â–¾</span>`;
+    header.innerHTML = `<span style="display:flex;align-items:center;gap:6px;"><i data-lucide="book-open" style="width:16px;height:16px;"></i> ${mat.nome}</span><span style="color:#555;font-size:12px;">clique para expandir/recolher ▾</span>`;
 
     const corpoBlocoId = 'corpo-materia-' + mat.id;
     header.onclick = () => {
@@ -687,7 +702,7 @@ async function carregarNotasHub() {
       const btn = document.createElement('button');
       btn.className = 'notas-unidade-btn' + (hubMateriaUnidadeAtiva[mat.id] === u ? ' ativa' : '');
       btn.id = `unidade-btn-${mat.id}-${u}`;
-      btn.textContent = `${u}Âª Unidade`;
+      btn.textContent = `${u}ª Unidade`;
       btn.onclick = () => trocarUnidade(mat.id, u, alunos, podeEditar);
       tabsDiv.appendChild(btn);
     });
@@ -738,9 +753,9 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
     const vals = [m1, m2, m3].filter(v => v !== null);
     if (vals.length > 0) media = vals.reduce((s, v) => s + v, 0) / vals.length;
 
-    const mediaStr = media !== null ? media.toFixed(1) : 'â€”';
+    const mediaStr = media !== null ? media.toFixed(1) : '—';
     const mediaClass = media === null ? 'nota-pendente' : (media >= 5 ? 'nota-aprovado' : 'nota-reprovado');
-    const mediaLabel = media === null ? 'â€”' : (media >= 5 ? `${mediaStr} âœ…` : `${mediaStr} âŒ`);
+    const mediaLabel = media === null ? '—' : (media >= 5 ? `${mediaStr} ✅` : `${mediaStr} ❌`);
 
     // Calcula Média Final (média das médias de todas as 3 unidades)
     const mU1 = hubNotasCache[materiaId]?.[1]?.[aluno.id]?.media;
@@ -748,9 +763,9 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
     const mU3 = hubNotasCache[materiaId]?.[3]?.[aluno.id]?.media;
     const mFinals = [mU1, mU2, mU3].filter(m => m !== null && m !== undefined && m !== '' && !isNaN(parseFloat(m)));
     const mediaFinal = mFinals.length > 0 ? mFinals.reduce((s, v) => s + parseFloat(v), 0) / mFinals.length : null;
-    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : 'â€”';
+    const mediaFinalStr = mediaFinal !== null ? mediaFinal.toFixed(1) : '—';
     const mediaFinalClass = mediaFinal === null ? 'nota-pendente' : (mediaFinal >= 5 ? 'nota-aprovado' : 'nota-reprovado');
-    const mediaFinalLabel = mediaFinal === null ? 'â€”' : (mediaFinal >= 5 ? `${mediaFinalStr} âœ…` : `${mediaFinalStr} âŒ`);
+    const mediaFinalLabel = mediaFinal === null ? '—' : (mediaFinal >= 5 ? `${mediaFinalStr} ✅` : `${mediaFinalStr} ❌`);
 
     const nomeEscapado = (aluno.nome || '').replace(/'/g, "\\'").replace(/"/g, '&quot;');
 
@@ -775,7 +790,7 @@ function renderizarTabelaNotas(materiaId, unidade, alunos, podeEditar) {
         <td><span class="nota-media ${mediaClass}" id="media-${materiaId}-${unidade}-${aluno.id}">${mediaLabel}</span></td>
         <td><span class="nota-media ${mediaFinalClass}" id="media-final-${materiaId}-${aluno.id}">${mediaFinalLabel}</span></td>
         <td><button class="btn-imprimir-boletim" title="Imprimir Boletim do Aluno" type="button"
-          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">ðŸ–¨ï¸ Boletim</button></td>
+          onclick="imprimirBoletimAluno(${aluno.id}, '${nomeEscapado}')">🖨️ Boletim</button></td>
       </tr>`;
   });
 

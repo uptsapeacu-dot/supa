@@ -1,4 +1,4 @@
-let permissaoEditando = null;
+﻿let permissaoEditando = null;
 
 async function carregarTelaPermissoes() {
   if (!podeVerPermissoes()) {
