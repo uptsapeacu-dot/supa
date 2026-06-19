@@ -1,4 +1,4 @@
-﻿﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
+﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -6,7 +6,7 @@ async function carregarRelatoriosGlobais() {
   const containerCenso = document.getElementById('conteudo-censo');
 
   if (!containerDesempenho || !containerFreq || !containerCenso) {
-    console.error('Elementos de relatório não encontrados no DOM.');
+    console.error('Elementos de relatório não encontrados não DOM.');
     return;
   }
 
@@ -63,7 +63,7 @@ async function carregarRelatoriosGlobais() {
 
   containerDesempenho.innerHTML = `
     <div style="background:#222; padding:20px; border-radius:12px; margin-bottom:20px;">
-      <h3 style="margin-top:0;">TermÃ´metro de Desempenho (Média Geral)</h3>
+      <h3 style="margin-top:0;">Termômetro de Desempenho (Média Geral)</h3>
       <canvas id="chartDesempenhoRede" style="max-height: 350px;"></canvas>
     </div>
   `;
