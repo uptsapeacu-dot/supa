@@ -328,14 +328,55 @@
         <div id="miniPerfilContatosList"></div>
       </div>
 
-      <!-- Ocorrências (Futuro) -->
+      <!-- Ocorrências -->
       <div class="mini-perfil-secao">
         <div style="display:flex; justify-content:space-between; align-items:center;">
           <h4><i data-lucide="clipboard-list"></i> Últimas Ocorrências</h4>
-          <button class="btn-add-ocorrencia" onclick="alert('Módulo de Ocorrências será ativado em breve!')">+ Registrar</button>
+          <button class="btn-add-ocorrencia" onclick="abrirModalNovaOcorrencia()">+ Registrar</button>
         </div>
-        <div class="ocorrencias-vazio">Nenhuma ocorrência disciplinar recente.</div>
+        <div id="miniPerfilOcorrenciasList">
+          <div class="ocorrencias-vazio">Nenhuma ocorrência disciplinar recente.</div>
+        </div>
       </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL: NOVA OCORRÊNCIA -->
+<div class="modal-overlay" id="modalNovaOcorrencia" style="display:none; z-index:10001;">
+  <div class="modal-content" style="max-width: 400px;">
+    <div class="modal-header">
+      <h2 style="font-size: 18px; margin:0;"><i data-lucide="clipboard-list"></i> Registrar Ocorrência</h2>
+      <button class="btn-close" onclick="fecharModalNovaOcorrencia()"><i data-lucide="x"></i></button>
+    </div>
+    <div class="modal-body">
+      <form id="formNovaOcorrencia" onsubmit="salvarOcorrencia(event)">
+        <div class="form-group">
+          <label>Tipo de Ocorrência</label>
+          <select id="ocorrenciaTipo" class="form-control" required>
+            <option value="">Selecione...</option>
+            <option value="Comportamental">Comportamental / Disciplinar</option>
+            <option value="Atraso/Fardamento">Atraso / Falta de Fardamento</option>
+            <option value="Acadêmica">Acadêmica / Tarefas</option>
+            <option value="Saúde">Saúde / Acidente leve</option>
+            <option value="Positiva">Atitude Positiva (Elogio)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Gravidade</label>
+          <select id="ocorrenciaGravidade" class="form-control" required>
+            <option value="Baixa">Baixa</option>
+            <option value="Média">Média</option>
+            <option value="Alta">Alta</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Descrição do Fato</label>
+          <textarea id="ocorrenciaDescricao" class="form-control" rows="4" placeholder="Descreva o que aconteceu..." required></textarea>
+        </div>
+        <button type="submit" class="btn-login" style="width:100%; padding:14px; font-size:16px;">Salvar Registro</button>
+      </form>
     </div>
   </div>
 </div>

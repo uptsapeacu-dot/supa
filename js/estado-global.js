@@ -1,4 +1,4 @@
-﻿﻿const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
+﻿const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
 const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
 const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
 const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)
@@ -51,7 +51,8 @@ const modulosEscola = [
   { id: 'turmas',       nome: 'Turmas',       icone: 'book-open',      permissao: 'pode_turmas'       },
   { id: 'funcionarios', nome: 'Funcionários', icone: 'users',          permissao: 'pode_funcionarios' },
   { id: 'matriculas',   nome: 'Matrículas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
-  { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       }
+  { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       },
+  { id: 'ocorrencias',  nome: 'Ocorrências',  icone: 'alert-triangle', permissao: 'pode_ocorrencias'  }
 ]
 let alunos = []
 let alunoEditando = null

@@ -1,0 +1,42 @@
+<div id="telaOcorrencias" class="view-section" style="display:none;">
+  <div class="content-header">
+    <div style="flex:1;">
+      <h2 style="margin:0 0 4px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="alert-triangle" style="color: #ff9800;"></i> Gestão de Ocorrências
+      </h2>
+      <p style="margin:0; color:#aaa; font-size:14px;">Monitoramento disciplinar e pedagógico da escola</p>
+    </div>
+    <div style="display:flex; gap: 10px;">
+      <input type="date" id="filtroDataOcorrencia" class="form-control" style="width: auto; padding: 10px;" onchange="carregarOcorrenciasGlobais()" title="Filtrar por data" />
+      <select id="filtroGravidadeOcorrencia" class="form-control" style="width: auto; padding: 10px;" onchange="carregarOcorrenciasGlobais()">
+        <option value="">Todas as Gravidades</option>
+        <option value="Baixa">Baixa</option>
+        <option value="Média">Média</option>
+        <option value="Alta">Alta</option>
+      </select>
+      <button class="btn-clear" onclick="carregarOcorrenciasGlobais()" title="Atualizar"><i data-lucide="refresh-cw"></i></button>
+    </div>
+  </div>
+
+  <div class="card" style="padding:0; overflow:hidden;">
+    <div class="table-container" style="max-height: 70vh; overflow-y: auto;">
+      <table class="table" id="tabelaOcorrenciasGlobais">
+        <thead style="position: sticky; top: 0; z-index: 10;">
+          <tr>
+            <th>Data</th>
+            <th>Aluno</th>
+            <th>Turma</th>
+            <th>Tipo / Gravidade</th>
+            <th>Descrição</th>
+            <th>Registro por</th>
+            <th>Status (Pais)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Preenchido via JS -->
+          <tr><td colspan="7" style="text-align:center; padding:20px;">Carregando ocorrências...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

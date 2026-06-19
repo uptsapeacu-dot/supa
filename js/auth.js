@@ -1,4 +1,4 @@
-﻿﻿async function fazerLogin() {
+﻿async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')
@@ -277,6 +277,7 @@ function podeAcessarModulo(moduloId, escolaId) {
   const acesso = acessosAtual.find(function(item) { return item.orgaos && item.orgaos.escola_id === escolaId && item.ativo })
   if (!acesso) return false
   if (acesso.nivel === PERFIS.GESTOR) return true
+  if (moduloId === 'ocorrencias' && acesso.nivel <= 3) return true
   if (acesso.nivel === 4) return false
   return acesso[modulo.permissao] === true
 }

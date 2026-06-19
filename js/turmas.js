@@ -1861,6 +1861,7 @@ function filtrarAlunosHub(termo, containerId) {
 // ============================================
 
 async function abrirMiniPerfil(alunoId) {
+  alunoOcorrenciaAtual = alunoId;
   document.getElementById('miniPerfilAlunoOverlay').style.display = 'flex';
   document.getElementById('miniPerfilNome').innerText = 'Carregando...';
   document.getElementById('miniPerfilSerie').innerText = '';
@@ -1925,9 +1926,107 @@ async function abrirMiniPerfil(alunoId) {
     document.getElementById('miniPerfilMedia').style.color = '#fff';
   }
 
+  // Buscar Ocorrências recentes do Aluno
+  carregarOcorrenciasMiniPerfil(alunoId);
+
   if (window.lucide) { lucide.createIcons(); }
 }
 
 function fecharMiniPerfil() {
   document.getElementById('miniPerfilAlunoOverlay').style.display = 'none';
+}
+
+// ============================================
+// GESTÃO DE OCORRÊNCIAS (MODAL)
+// ============================================
+let alunoOcorrenciaAtual = null;
+
+function abrirModalNovaOcorrencia() {
+  if (!alunoOcorrenciaAtual) return;
+  document.getElementById('formNovaOcorrencia').reset();
+  document.getElementById('modalNovaOcorrencia').style.display = 'flex';
+}
+
+function fecharModalNovaOcorrencia() {
+  document.getElementById('modalNovaOcorrencia').style.display = 'none';
+}
+
+async function salvarOcorrencia(event) {
+  event.preventDefault();
+  if (!alunoOcorrenciaAtual || !hubTurmaId || !funcionarioAtual) {
+    alert('Erro: Faltam dados do aluno ou da turma para registrar a ocorrência.');
+    return;
+  }
+
+  const btn = event.target.querySelector('button[type="submit"]');
+  btn.innerText = 'Salvando...';
+  btn.disabled = true;
+
+  const tipo = document.getElementById('ocorrenciaTipo').value;
+  const gravidade = document.getElementById('ocorrenciaGravidade').value;
+  const descricao = document.getElementById('ocorrenciaDescricao').value;
+
+  const { data, error } = await clienteSupabase.from('ocorrencias').insert([{
+    aluno_id: alunoOcorrenciaAtual,
+    turma_id: hubTurmaId,
+    registrado_por: funcionarioAtual.id,
+    tipo: tipo,
+    gravidade: gravidade,
+    descricao: descricao,
+    notificado: false
+  }]);
+
+  btn.innerText = 'Salvar Registro';
+  btn.disabled = false;
+
+  if (error) {
+    alert('Erro ao registrar ocorrência: ' + error.message);
+    return;
+  }
+
+  alert('Ocorrência registrada com sucesso!');
+  fecharModalNovaOcorrencia();
+  
+  // Recarregar a lista no Mini-Perfil
+  carregarOcorrenciasMiniPerfil(alunoOcorrenciaAtual);
+}
+
+async function carregarOcorrenciasMiniPerfil(alunoId) {
+  const container = document.getElementById('miniPerfilOcorrenciasList');
+  container.innerHTML = '<div class="ocorrencias-vazio">Buscando...</div>';
+
+  const { data, error } = await clienteSupabase
+    .from('ocorrencias')
+    .select('*, funcionarios(nome)')
+    .eq('aluno_id', alunoId)
+    .order('data_ocorrencia', { ascending: false })
+    .limit(3);
+
+  if (error || !data || data.length === 0) {
+    container.innerHTML = '<div class="ocorrencias-vazio">Nenhuma ocorrência disciplinar recente.</div>';
+    return;
+  }
+
+  let html = '';
+  data.forEach(o => {
+    const dataObj = new Date(o.data_ocorrencia);
+    const dataStr = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.getHours() + ':' + String(dataObj.getMinutes()).padStart(2, '0');
+    
+    let cor = '#fff';
+    if (o.gravidade === 'Alta') cor = '#ff5252';
+    else if (o.gravidade === 'Média') cor = '#ff9800';
+    else if (o.gravidade === 'Positiva') cor = '#4caf50';
+
+    html += `
+      <div style="background:#121212; border:1px solid #333; border-radius:8px; padding:10px; margin-bottom:8px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:6px;">
+          <span style="font-size:11px; color:#aaa;">${dataStr} - Por: ${o.funcionarios ? o.funcionarios.nome.split(' ')[0] : 'Sistema'}</span>
+          <span style="font-size:11px; color:${cor}; border:1px solid ${cor}; padding:2px 4px; border-radius:4px;">${o.tipo}</span>
+        </div>
+        <p style="margin:0; font-size:13px; color:#ddd; line-height:1.4;">${o.descricao}</p>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
 }
