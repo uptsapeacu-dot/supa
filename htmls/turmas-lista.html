@@ -285,3 +285,57 @@
     </button>
   </div>
 </div>
+
+<!-- ============================================
+     MINI-PERFIL DO ALUNO (OVERLAY)
+     ============================================ -->
+<div class="mini-perfil-overlay" id="miniPerfilAlunoOverlay" style="display:none;">
+  <div class="mini-perfil-card">
+    <div class="mini-perfil-header">
+      <button class="btn-clear mini-perfil-close" onclick="fecharMiniPerfil()"><i data-lucide="x"></i></button>
+      <div class="mini-perfil-avatar" id="miniPerfilAvatar">?</div>
+      <h3 id="miniPerfilNome" class="mini-perfil-nome">Carregando...</h3>
+      <p id="miniPerfilSerie" class="mini-perfil-serie"></p>
+    </div>
+
+    <div class="mini-perfil-body">
+      <!-- Alerta de Saúde (Invisível por padrão) -->
+      <div id="miniPerfilAlertaSaude" class="alerta-medico" style="display:none;">
+        <i data-lucide="alert-triangle"></i>
+        <div>
+          <strong>Atenção Médica / PCD:</strong>
+          <span id="miniPerfilSaudeTexto"></span>
+        </div>
+      </div>
+
+      <!-- Termômetro Acadêmico -->
+      <div class="termometro-container">
+        <div class="termometro-box">
+          <i data-lucide="percent" style="color: #3ea6ff;"></i>
+          <span class="termometro-label">Frequência</span>
+          <strong class="termometro-valor" id="miniPerfilFrequencia">--%</strong>
+        </div>
+        <div class="termometro-box">
+          <i data-lucide="trending-up" style="color: #4caf50;"></i>
+          <span class="termometro-label">Média Global</span>
+          <strong class="termometro-valor" id="miniPerfilMedia">--</strong>
+        </div>
+      </div>
+
+      <!-- Contatos -->
+      <div class="mini-perfil-secao">
+        <h4><i data-lucide="phone"></i> Contatos Rápidos</h4>
+        <div id="miniPerfilContatosList"></div>
+      </div>
+
+      <!-- Ocorrências (Futuro) -->
+      <div class="mini-perfil-secao">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4><i data-lucide="clipboard-list"></i> Últimas Ocorrências</h4>
+          <button class="btn-add-ocorrencia" onclick="alert('Módulo de Ocorrências será ativado em breve!')">+ Registrar</button>
+        </div>
+        <div class="ocorrencias-vazio">Nenhuma ocorrência disciplinar recente.</div>
+      </div>
+    </div>
+  </div>
+</div>

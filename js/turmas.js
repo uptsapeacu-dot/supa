@@ -382,6 +382,8 @@ async function carregarAlunosDaTurmaHub() {
 
     const div = document.createElement('div');
     div.className = 'hub-aluno-item';
+    div.style.cursor = 'pointer';
+    div.setAttribute('onclick', `abrirMiniPerfil(${aluno.id})`);
     div.innerHTML = `
       <div class="hub-aluno-avatar">${iniciais}</div>
       <span class="hub-aluno-nome">${aluno.nome}</span>
@@ -1558,7 +1560,7 @@ async function carregarAlunosMobile() {
   data.forEach(aluno => {
     const iniciais = aluno.nome ? aluno.nome.trim().split(' ').filter(Boolean).reduce((a, p, i, arr) => i === 0 || i === arr.length - 1 ? a + p[0] : a, '').toUpperCase() : '?';
     lista.innerHTML += `
-      <div style="display:flex; align-items:center; background: #1e1e1e; border: 1px solid #333; padding: 12px; border-radius: 12px; margin-bottom: 8px; gap: 12px;">
+      <div onclick="abrirMiniPerfil(${aluno.id})" style="cursor:pointer; display:flex; align-items:center; background: #1e1e1e; border: 1px solid #333; padding: 12px; border-radius: 12px; margin-bottom: 8px; gap: 12px;">
         <div style="width:40px;height:40px;background:#3ea6ff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;">${iniciais}</div>
         <div style="font-size:15px; color:#fff; font-weight:500;">${aluno.nome}</div>
       </div>
@@ -1852,4 +1854,80 @@ function filtrarAlunosHub(termo, containerId) {
       item.style.display = 'none';
     }
   }
+}
+
+// ============================================
+// MINI-PERFIL DO ALUNO (OVERLAY)
+// ============================================
+
+async function abrirMiniPerfil(alunoId) {
+  document.getElementById('miniPerfilAlunoOverlay').style.display = 'flex';
+  document.getElementById('miniPerfilNome').innerText = 'Carregando...';
+  document.getElementById('miniPerfilSerie').innerText = '';
+  document.getElementById('miniPerfilAvatar').innerText = '?';
+  document.getElementById('miniPerfilAlertaSaude').style.display = 'none';
+  document.getElementById('miniPerfilFrequencia').innerText = '--%';
+  document.getElementById('miniPerfilMedia').innerText = '--';
+  document.getElementById('miniPerfilContatosList').innerHTML = '<div class="contato-item"><div class="info"><div class="nome">Buscando contatos...</div></div></div>';
+
+  const { data: aluno, error } = await clienteSupabase.from('alunos').select('*').eq('id', alunoId).single();
+  if (error || !aluno) {
+    document.getElementById('miniPerfilNome').innerText = 'Erro ao carregar';
+    return;
+  }
+
+  const iniciais = aluno.nome ? aluno.nome.trim().split(' ').filter(Boolean).reduce((a, p, i, arr) => i === 0 || i === arr.length - 1 ? a + p[0] : a, '').toUpperCase() : '?';
+  document.getElementById('miniPerfilAvatar').innerText = iniciais;
+  document.getElementById('miniPerfilNome').innerText = aluno.nome;
+  document.getElementById('miniPerfilSerie').innerText = aluno.serie || '';
+
+  // Alerta de Saúde
+  if (aluno.saude && Array.isArray(aluno.saude) && aluno.saude.length > 0) {
+    const limpos = aluno.saude.filter(s => s && s.trim().length > 0);
+    if (limpos.length > 0) {
+      document.getElementById('miniPerfilSaudeTexto').innerText = limpos.join(' • ');
+      document.getElementById('miniPerfilAlertaSaude').style.display = 'flex';
+    }
+  }
+
+  // Contatos
+  let contatosHtml = '';
+  if (aluno.filiacao_1) contatosHtml += `<div class="contato-item"><i data-lucide="user" style="color:#aaa;width:18px;height:18px;"></i><div class="info"><div class="nome">${aluno.filiacao_1}</div><div class="tipo">Filiação 1</div></div></div>`;
+  if (aluno.filiacao_2) contatosHtml += `<div class="contato-item"><i data-lucide="user" style="color:#aaa;width:18px;height:18px;"></i><div class="info"><div class="nome">${aluno.filiacao_2}</div><div class="tipo">Filiação 2</div></div></div>`;
+  if (aluno.telefone && aluno.telefone.length > 4) contatosHtml += `<div class="contato-item"><i data-lucide="smartphone" style="color:#4caf50;width:18px;height:18px;"></i><div class="info"><div class="nome">${aluno.telefone}</div><div class="tipo">Telefone de Contato</div></div><a href="https://wa.me/55${aluno.telefone.replace(/\D/g, '')}" target="_blank" class="btn-clear" style="padding:6px;"><i data-lucide="message-circle" style="color:#25D366;"></i></a></div>`;
+  
+  if (!contatosHtml) contatosHtml = '<div class="ocorrencias-vazio">Nenhum contato cadastrado.</div>';
+  document.getElementById('miniPerfilContatosList').innerHTML = contatosHtml;
+
+  // Buscar Frequência (da turma atual)
+  const { data: freqs } = await clienteSupabase.from('frequencia').select('presente').eq('aluno_id', alunoId).eq('turma_id', hubTurmaId);
+  if (freqs && freqs.length > 0) {
+    const presencas = freqs.filter(f => f.presente).length;
+    const pct = Math.round((presencas / freqs.length) * 100);
+    const elFreq = document.getElementById('miniPerfilFrequencia');
+    elFreq.innerText = pct + '%';
+    elFreq.style.color = pct < 75 ? '#ff5252' : '#fff';
+  } else {
+    document.getElementById('miniPerfilFrequencia').innerText = 'S/R';
+    document.getElementById('miniPerfilFrequencia').style.color = '#fff';
+  }
+
+  // Buscar Notas (da turma atual)
+  const { data: notas } = await clienteSupabase.from('notas_alunos').select('media').eq('aluno_id', alunoId).eq('turma_id', hubTurmaId).not('media', 'is', null);
+  if (notas && notas.length > 0) {
+    const soma = notas.reduce((acc, curr) => acc + (curr.media || 0), 0);
+    const mediaGeral = (soma / notas.length).toFixed(1);
+    const elMedia = document.getElementById('miniPerfilMedia');
+    elMedia.innerText = mediaGeral;
+    elMedia.style.color = mediaGeral < 5 ? '#ff5252' : '#fff';
+  } else {
+    document.getElementById('miniPerfilMedia').innerText = 'S/R';
+    document.getElementById('miniPerfilMedia').style.color = '#fff';
+  }
+
+  if (window.lucide) { lucide.createIcons(); }
+}
+
+function fecharMiniPerfil() {
+  document.getElementById('miniPerfilAlunoOverlay').style.display = 'none';
 }

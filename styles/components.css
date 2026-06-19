@@ -782,3 +782,109 @@ h1 {
   color: #f44336;
   border-color: #f44336;
 }
+
+/* =============================================
+   MINI-PERFIL DO ALUNO
+   ============================================= */
+.mini-perfil-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.mini-perfil-card {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+  position: relative;
+}
+
+.mini-perfil-header {
+  padding: 24px 16px 16px;
+  text-align: center;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
+  border-bottom: 1px solid #333;
+  position: relative;
+}
+
+.mini-perfil-close {
+  position: absolute;
+  top: 12px; right: 12px;
+  padding: 8px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 50%;
+}
+
+.mini-perfil-avatar {
+  width: 72px; height: 72px;
+  background: #3ea6ff;
+  color: #000;
+  border-radius: 50%;
+  margin: 0 auto 12px;
+  display: flex;
+  align-items: center; justify-content: center;
+  font-size: 28px; font-weight: bold;
+}
+
+.mini-perfil-nome { margin: 0 0 4px; font-size: 18px; color: #fff; }
+.mini-perfil-serie { margin: 0; font-size: 13px; color: #aaa; }
+
+.mini-perfil-body { padding: 16px; }
+
+.alerta-medico {
+  background: rgba(244, 67, 54, 0.15);
+  border: 1px solid rgba(244, 67, 54, 0.4);
+  color: #ff8a80;
+  padding: 12px;
+  border-radius: 8px;
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 16px;
+}
+.alerta-medico i { flex-shrink: 0; }
+.alerta-medico strong { display: block; margin-bottom: 4px; color: #ff5252; }
+
+.termometro-container {
+  display: flex; gap: 12px; margin-bottom: 20px;
+}
+.termometro-box {
+  flex: 1;
+  background: #121212; border: 1px solid #333;
+  border-radius: 12px; padding: 12px;
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.termometro-label { font-size: 11px; color: #aaa; text-transform: uppercase; letter-spacing: 0.5px; }
+.termometro-valor { font-size: 22px; color: #fff; }
+
+.mini-perfil-secao {
+  margin-bottom: 20px;
+}
+.mini-perfil-secao h4 {
+  margin: 0 0 12px; font-size: 14px; color: #fff;
+  display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #333; padding-bottom: 8px;
+}
+
+.contato-item {
+  background: #121212; padding: 10px 12px; border-radius: 8px; border: 1px solid #2a2a2a;
+  margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+}
+.contato-item .info { flex: 1; }
+.contato-item .nome { color: #fff; font-size: 14px; font-weight: 500; }
+.contato-item .tipo { color: #888; font-size: 11px; text-transform: uppercase; }
+
+.btn-add-ocorrencia {
+  background: rgba(62, 166, 255, 0.1); color: #3ea6ff; border: 1px solid rgba(62, 166, 255, 0.3);
+  padding: 6px 10px; border-radius: 6px; font-size: 12px; cursor: pointer;
+}
+.btn-add-ocorrencia:hover { background: rgba(62, 166, 255, 0.2); }
+.ocorrencias-vazio { text-align: center; color: #777; font-size: 13px; padding: 16px; background: #121212; border-radius: 8px; border: 1px dashed #333; }
