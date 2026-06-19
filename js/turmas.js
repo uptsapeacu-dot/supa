@@ -1984,7 +1984,18 @@ async function salvarOcorrencia(event) {
     return;
   }
 
-  alert('Ocorrência registrada com sucesso!');
+  // Notificação customizada
+  const notif = document.createElement('div');
+  notif.style.cssText = 'position:fixed; bottom:20px; right:20px; background:#4caf50; color:#fff; padding:12px 24px; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.5); z-index:99999; font-weight:bold; display:flex; align-items:center; gap:8px; opacity:1; transition:opacity 0.5s;';
+  notif.innerHTML = '<i data-lucide="check-circle"></i> Ocorrência salva com sucesso!';
+  document.body.appendChild(notif);
+  if (window.lucide) lucide.createIcons();
+  
+  setTimeout(() => {
+    notif.style.opacity = '0';
+    setTimeout(() => notif.remove(), 500);
+  }, 3000);
+
   fecharModalNovaOcorrencia();
   
   // Recarregar a lista no Mini-Perfil
