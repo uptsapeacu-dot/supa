@@ -91,7 +91,8 @@ function mostrarTela(tela) {
     'relatorios',
     'perfil',
     'diretrizes',
-    'financeiro'
+    'financeiro',
+    'ocorrencias'
   ]
 
   telas.forEach(function(id) {
@@ -127,6 +128,8 @@ function mostrarTela(tela) {
 
   if (tela === 'alunos') {
     carregarAlunos()
+  } else if (tela === 'ocorrencias' && typeof carregarOcorrenciasGlobais === 'function') {
+    carregarOcorrenciasGlobais()
   }
   if (tela === 'turmas') {
     carregarTurmasDaTela()

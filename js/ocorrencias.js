@@ -120,11 +120,4 @@ async function toggleOcorrenciaNotificado(ocorrenciaId, novoStatus) {
   renderizarTabelaOcorrenciasGlobais();
 }
 
-// Interceptar abertura de tela para carregar ocorrencias
-const originalMostrarTelaOcorrencias = window.mostrarTela;
-window.mostrarTela = function(tela) {
-  if (originalMostrarTelaOcorrencias) originalMostrarTelaOcorrencias(tela);
-  if (tela === 'ocorrencias') {
-    carregarOcorrenciasGlobais();
-  }
-}
+
