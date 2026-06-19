@@ -157,6 +157,10 @@ async function carregarTurmasDaTela() {
 // ====== HUB DE TURMA ======
 
 async function abrirHubTurma(turma) {
+  if (window.innerWidth <= 768) {
+    return abrirHubTurmaMobile(turma);
+  }
+
   hubTurmaId = turma.id;
   hubTurmaNomeAtual = turma.nome;
   hubMateriaEditandoId = null;
@@ -1304,10 +1308,20 @@ async function imprimirBoletimAluno(alunoId, alunoNome) {
   const nomeLimpo = (alunoNome || 'aluno').replace(/\s+/g, '_');
   document.title = 'boletim_' + nomeLimpo;
 
-  window.onafterprint = function() {
+  const cleanupImpressao = function() {
     boletim.style.display = 'none';
     document.body.classList.remove('imprimindo-boletim');
     document.title = tituloOriginal;
+    window.removeEventListener('focus', cleanupImpressao);
+    window.removeEventListener('touchstart', cleanupImpressao);
+    window.removeEventListener('mousemove', cleanupImpressao);
+  };
+
+  window.onafterprint = function() {
+    window.addEventListener('focus', cleanupImpressao);
+    window.addEventListener('touchstart', cleanupImpressao, { once: true });
+    window.addEventListener('mousemove', cleanupImpressao, { once: true });
+    setTimeout(cleanupImpressao, 10000);
     window.onafterprint = null;
   };
 
@@ -1442,4 +1456,377 @@ function restaurarHubTurmaModoNormal() {
   // Tira a class active do sidebar frequencia
   const itemMenu = document.getElementById('menu-frequencia-sidebar');
   if (itemMenu) itemMenu.classList.remove('active');
+}
+
+// ============================================
+// HUB DE TURMA MOBILE (OPÇÃO 3)
+// ============================================
+
+let hubAbaMobileAtiva = 'materias';
+
+async function abrirHubTurmaMobile(turma) {
+  hubTurmaId = turma.id;
+  hubTurmaNomeAtual = turma.nome;
+  
+  document.getElementById('hubTurmaNomeMobile').innerText = turma.nome;
+  document.getElementById('hubTurmaInfoMobile').innerText = `${turma.turno} • Ano letivo ${turma.ano_letivo}`;
+
+  document.getElementById('hubTurmaMobileOverlay').style.display = 'flex';
+
+  const hoje = new Date().toISOString().split('T')[0];
+  const dataInput = document.getElementById('dataFrequenciaHubMobile');
+  if (dataInput) dataInput.value = hoje;
+  
+  dataFrequenciaHubObj = new Date();
+  
+  await abrirAbaTurmaMobile('materias');
+}
+
+function fecharHubTurmaMobile() {
+  document.getElementById('hubTurmaMobileOverlay').style.display = 'none';
+}
+
+async function abrirAbaTurmaMobile(aba) {
+  hubAbaMobileAtiva = aba;
+  
+  document.querySelectorAll('.hub-mobile-bottom-nav .nav-item').forEach(btn => btn.classList.remove('ativa'));
+  const btnAtivo = document.getElementById('nav-mobile-' + aba);
+  if (btnAtivo) btnAtivo.classList.add('ativa');
+
+  ['materias', 'alunos', 'frequencia', 'notas'].forEach(a => {
+    const el = document.getElementById('conteudo-' + a + '-mobile');
+    if (el) el.style.display = 'none';
+  });
+
+  const conteudo = document.getElementById('conteudo-' + aba + '-mobile');
+  if (conteudo) conteudo.style.display = 'block';
+
+  if (aba === 'materias')   await carregarMateriasMobile();
+  if (aba === 'alunos')     await carregarAlunosMobile();
+  if (aba === 'frequencia') await inicializarFrequenciaMobile();
+  if (aba === 'notas')      await carregarNotasMobile();
+}
+
+async function carregarMateriasMobile() {
+  const lista = document.getElementById('listaMateriasTurmaMobile');
+  if (!lista) return;
+  lista.innerHTML = '<div class="hub-empty">Carregando matérias...</div>';
+
+  let queryMaterias = clienteSupabase.from('materias_turmas').select('*, vinculos_funcionarios(funcionarios(nome))').eq('turma_id', hubTurmaId).eq('ativo', true).order('nome', { ascending: true });
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo);
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(v => v.id);
+      queryMaterias = vinculoIds.length > 0 ? queryMaterias.in('vinculo_id', vinculoIds) : queryMaterias.in('vinculo_id', []);
+    }
+  }
+
+  const { data, error } = await queryMaterias;
+  if (error || !data || data.length === 0) {
+    lista.innerHTML = '<div class="hub-empty">Nenhuma matéria encontrada.</div>';
+    return;
+  }
+
+  lista.innerHTML = '';
+  data.forEach(mat => {
+    const nomeProf = mat.vinculos_funcionarios?.funcionarios?.nome || '—';
+    lista.innerHTML += `
+      <div style="background: #1e1e1e; border: 1px solid #333; padding: 12px; border-radius: 12px; margin-bottom: 8px;">
+        <div style="font-weight:bold; font-size:16px; color:#fff; margin-bottom:4px;">${mat.nome}</div>
+        <div style="color:#aaa; font-size:13px;"><i data-lucide="user" style="width:14px;height:14px;"></i> ${nomeProf}</div>
+      </div>
+    `;
+  });
+  if (window.lucide) { lucide.createIcons(); }
+}
+
+async function carregarAlunosMobile() {
+  const lista = document.getElementById('listaAlunosTurmaMobile');
+  if (!lista) return;
+  lista.innerHTML = '<div class="hub-empty">Carregando alunos...</div>';
+
+  const { data, error } = await clienteSupabase.from('alunos').select('id, nome, serie').eq('turma_id', hubTurmaId).order('nome', { ascending: true });
+  hubAlunosDaTurma = data || [];
+
+  if (error || !data || data.length === 0) {
+    lista.innerHTML = '<div class="hub-empty">Nenhum aluno.</div>';
+    return;
+  }
+
+  lista.innerHTML = '';
+  data.forEach(aluno => {
+    const iniciais = aluno.nome ? aluno.nome.trim().split(' ').filter(Boolean).reduce((a, p, i, arr) => i === 0 || i === arr.length - 1 ? a + p[0] : a, '').toUpperCase() : '?';
+    lista.innerHTML += `
+      <div style="display:flex; align-items:center; background: #1e1e1e; border: 1px solid #333; padding: 12px; border-radius: 12px; margin-bottom: 8px; gap: 12px;">
+        <div style="width:40px;height:40px;background:#3ea6ff;color:#000;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:bold;flex-shrink:0;">${iniciais}</div>
+        <div style="font-size:15px; color:#fff; font-weight:500;">${aluno.nome}</div>
+      </div>
+    `;
+  });
+}
+
+function atualizarLabelDataFrequenciaMobile() {
+  const label = document.getElementById('labelDataFrequenciaMobile');
+  if (label) label.innerText = typeof formatarDataPorExtenso === 'function' ? formatarDataPorExtenso(dataFrequenciaHubObj).replace(/de \d{4}/, '') : dataFrequenciaHubObj.toLocaleDateString('pt-BR');
+  const input = document.getElementById('dataFrequenciaHubMobile');
+  if (input) {
+    const tzoffset = (new Date()).getTimezoneOffset() * 60000;
+    const dataLocal = new Date(dataFrequenciaHubObj.getTime() - tzoffset).toISOString().split('T')[0];
+    input.value = dataLocal;
+  }
+}
+
+function mudarDiaFrequenciaHubMobile(dias) {
+  dataFrequenciaHubObj.setDate(dataFrequenciaHubObj.getDate() + dias);
+  atualizarLabelDataFrequenciaMobile();
+  carregarFrequenciaMobile();
+}
+
+async function inicializarFrequenciaMobile() {
+  atualizarLabelDataFrequenciaMobile();
+  await carregarFrequenciaMobile();
+}
+
+async function carregarFrequenciaMobile() {
+  const lista = document.getElementById('listaFrequenciaMobile');
+  if (!lista) return;
+  lista.innerHTML = '<div class="hub-empty">Carregando chamada...</div>';
+
+  const data = document.getElementById('dataFrequenciaHubMobile').value;
+  if (!data) return;
+
+  const alunos = hubAlunosDaTurma;
+  if (!alunos || alunos.length === 0) {
+    lista.innerHTML = '<div class="hub-empty">Nenhum aluno.</div>';
+    return;
+  }
+
+  const { data: freqs } = await clienteSupabase.from('frequencia').select('aluno_id, presente').eq('turma_id', hubTurmaId).eq('data', data);
+  const mapa = {};
+  (freqs || []).forEach(f => { mapa[f.aluno_id] = f.presente; });
+
+  let temPermissao = isSecretaria() || acessosAtual.some(a => (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo);
+  let podeLancar = modoEdicaoAtivo && temPermissao;
+  if (!podeLancar) {
+    const acessoProf = acessosAtual.find(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo && a.nivel === PERFIS.PROFESSOR);
+    if (acessoProf) podeLancar = true;
+  }
+
+  document.getElementById('btnSalvarFrequenciaHubMobile').style.display = podeLancar ? 'flex' : 'none';
+
+  lista.innerHTML = '';
+  alunos.forEach(aluno => {
+    const presente = aluno.id in mapa ? mapa[aluno.id] : true;
+    const iniciais = aluno.nome ? aluno.nome.trim().split(' ').filter(Boolean).reduce((a, p, i, arr) => i === 0 || i === arr.length - 1 ? a + p[0] : a, '').toUpperCase() : '?';
+
+    lista.innerHTML += `
+      <div class="freq-item-mobile">
+        <div class="freq-avatar">${iniciais}</div>
+        <div class="freq-nome">${aluno.nome}</div>
+        <div class="freq-toggle-group">
+          <button class="freq-btn ${presente ? 'presente-ativo' : ''}" id="fmobile-presente-${aluno.id}" onclick="${podeLancar ? `marcarFreqMobile(${aluno.id}, true)` : ''}" ${podeLancar ? '' : 'disabled'}><i data-lucide="check-circle"></i></button>
+          <button class="freq-btn ${!presente ? 'falta-ativo' : ''}" id="fmobile-falta-${aluno.id}" onclick="${podeLancar ? `marcarFreqMobile(${aluno.id}, false)` : ''}" ${podeLancar ? '' : 'disabled'}><i data-lucide="x-circle"></i></button>
+        </div>
+      </div>
+    `;
+  });
+
+  if (window.lucide) { lucide.createIcons(); }
+}
+
+function marcarFreqMobile(alunoId, presente) {
+  const btnP = document.getElementById('fmobile-presente-' + alunoId);
+  const btnF = document.getElementById('fmobile-falta-' + alunoId);
+  if (!btnP || !btnF) return;
+  if (presente) {
+    btnP.classList.add('presente-ativo'); btnF.classList.remove('falta-ativo');
+  } else {
+    btnF.classList.add('falta-ativo'); btnP.classList.remove('presente-ativo');
+  }
+}
+
+async function salvarFrequenciaHubMobile() {
+  const data = document.getElementById('dataFrequenciaHubMobile').value;
+  if (!data || !hubTurmaId) return;
+
+  const itens = document.querySelectorAll('[id^="fmobile-presente-"]');
+  if (itens.length === 0) return;
+
+  const registros = [];
+  itens.forEach(btn => {
+    const alunoId = btn.id.replace('fmobile-presente-', '');
+    const presente = btn.classList.contains('presente-ativo');
+    registros.push({ aluno_id: parseInt(alunoId), turma_id: hubTurmaId, data, presente, registrado_por: funcionarioAtual ? funcionarioAtual.id : null });
+  });
+
+  const btn = document.getElementById('btnSalvarFrequenciaHubMobile');
+  btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="spin" style="margin-right:6px;width:18px;height:18px;"></i> Salvando...'; if(window.lucide) lucide.createIcons();
+
+  const { error } = await clienteSupabase.from('frequencia').upsert(registros, { onConflict: 'aluno_id,turma_id,data' });
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="margin-right:6px;width:18px;height:18px;"></i> Salvar Presenças'; if(window.lucide) lucide.createIcons();
+
+  if (error) { alert('Erro ao salvar frequência: ' + error.message); return; }
+  alert('Presenças salvas com sucesso!');
+}
+
+async function carregarNotasMobile() {
+  const lista = document.getElementById('listaNotasTurmaMobile');
+  if (!lista) return;
+  lista.innerHTML = '<div class="hub-empty">Carregando notas...</div>';
+  hubNotasCache = {};
+
+  let temPermissao = isSecretaria() || acessosAtual.some(a => (a.nivel === 2 || (a.nivel === 3 && a.pode_turmas)) && a.ativo);
+  let podeEditar = modoEdicaoAtivo && temPermissao;
+  if (!podeEditar) {
+    const acessoProf = acessosAtual.find(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo && a.nivel === PERFIS.PROFESSOR);
+    if (acessoProf) podeEditar = true;
+  }
+
+  document.getElementById('btnSalvarNotasHubMobile').style.display = podeEditar ? 'flex' : 'none';
+
+  let queryMaterias = clienteSupabase.from('materias_turmas').select('id, nome, vinculo_id').eq('turma_id', hubTurmaId).eq('ativo', true).order('nome', { ascending: true });
+  if (!isSecretaria() && !isGestorEscolar()) {
+    const acesso = acessosAtual.find(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.ativo);
+    if (acesso && acesso.nivel === PERFIS.PROFESSOR) {
+      const { data: vinculos } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioAtual.id).eq('orgao_id', acesso.orgao_id).eq('ativo', true);
+      const vinculoIds = (vinculos || []).map(v => v.id);
+      queryMaterias = vinculoIds.length > 0 ? queryMaterias.in('vinculo_id', vinculoIds) : queryMaterias.in('vinculo_id', []);
+    }
+  }
+
+  const { data: materias } = await queryMaterias;
+  hubMateriasList = materias || [];
+
+  if (!hubMateriasList.length) {
+    lista.innerHTML = '<div class="hub-empty">Cadastre matérias primeiro.</div>';
+    return;
+  }
+
+  const { data: alunos } = await clienteSupabase.from('alunos').select('id, nome').eq('turma_id', hubTurmaId).order('nome', { ascending: true });
+  if (!alunos || !alunos.length) {
+    lista.innerHTML = '<div class="hub-empty">Nenhum aluno.</div>';
+    return;
+  }
+
+  const { data: notasExistentes } = await clienteSupabase.from('notas_alunos').select('*').eq('turma_id', hubTurmaId);
+  (notasExistentes || []).forEach(n => {
+    if (!hubNotasCache[n.materia_id]) hubNotasCache[n.materia_id] = {};
+    if (!hubNotasCache[n.materia_id][n.unidade]) hubNotasCache[n.materia_id][n.unidade] = {};
+    hubNotasCache[n.materia_id][n.unidade][n.aluno_id] = { nota1: n.nota1, nota2: n.nota2, nota3: n.nota3, media: n.media };
+  });
+
+  // Para o mobile, simplificamos: mostramos uma unidade por vez, combinando matérias e alunos.
+  // Vamos definir a unidade 1 como padrão se não existir
+  trocarUnidadeMobile(1, alunos, podeEditar);
+}
+
+function trocarUnidadeMobile(unidade, alunosParams, podeEditarParam) {
+  // Coletar dados da DOM antes de trocar (se possível) - para mobile é mais simples salvar direto ou usar cache
+  const alunos = alunosParams || hubAlunosDaTurma;
+  const podeEditar = document.getElementById('btnSalvarNotasHubMobile').style.display !== 'none';
+  
+  [1, 2, 3].forEach(u => {
+    const btns = document.querySelectorAll('.mobile-unidade-btn');
+    if (btns[u-1]) {
+      btns[u-1].classList.toggle('ativa', u === unidade);
+    }
+  });
+
+  const lista = document.getElementById('listaNotasTurmaMobile');
+  if (!lista) return;
+  lista.innerHTML = '';
+
+  hubMateriasList.forEach(mat => {
+    let cards = '';
+    alunos.forEach(aluno => {
+      const cache = (hubNotasCache[mat.id] || {})[unidade] || {};
+      const n = cache[aluno.id] || { nota1: '', nota2: '', nota3: '', media: null };
+      
+      cards += `
+        <div class="nota-card-mobile">
+          <div class="aluno-nome">${aluno.nome}</div>
+          <div class="notas-grid">
+            <div class="nota-input-wrap">
+              <label>Nota 1</label>
+              <input type="number" id="notamob1-${mat.id}-${unidade}-${aluno.id}" value="${n.nota1 !== null && n.nota1 !== '' ? n.nota1 : ''}" ${podeEditar ? '' : 'disabled'} />
+            </div>
+            <div class="nota-input-wrap">
+              <label>Nota 2</label>
+              <input type="number" id="notamob2-${mat.id}-${unidade}-${aluno.id}" value="${n.nota2 !== null && n.nota2 !== '' ? n.nota2 : ''}" ${podeEditar ? '' : 'disabled'} />
+            </div>
+            <div class="nota-input-wrap">
+              <label>Nota 3</label>
+              <input type="number" id="notamob3-${mat.id}-${unidade}-${aluno.id}" value="${n.nota3 !== null && n.nota3 !== '' ? n.nota3 : ''}" ${podeEditar ? '' : 'disabled'} />
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    lista.innerHTML += `
+      <div style="margin-bottom: 24px;">
+        <h3 style="color:#3ea6ff; font-size:16px; margin-bottom: 12px;"><i data-lucide="book-open" style="width:16px;height:16px;display:inline-block;vertical-align:text-bottom;"></i> ${mat.nome}</h3>
+        ${cards}
+      </div>
+    `;
+  });
+  
+  // Guardamos a unidade atual no dataset do botão de salvar para referência
+  document.getElementById('btnSalvarNotasHubMobile').dataset.unidade = unidade;
+  
+  if (window.lucide) { lucide.createIcons(); }
+}
+
+async function salvarNotasHubMobile() {
+  const btn = document.getElementById('btnSalvarNotasHubMobile');
+  const unidade = parseInt(btn.dataset.unidade || '1');
+  
+  const registros = [];
+  const inputs = document.querySelectorAll('input[id^="notamob1-"]');
+  
+  inputs.forEach(input1 => {
+    const parts = input1.id.split('-'); // notamob1 - mat.id - unidade - aluno.id
+    const matId = parts[1];
+    const alId = parts[3];
+    
+    const v1 = parseFloat(input1.value);
+    const v2 = parseFloat(document.getElementById(`notamob2-${matId}-${unidade}-${alId}`).value);
+    const v3 = parseFloat(document.getElementById(`notamob3-${matId}-${unidade}-${alId}`).value);
+    
+    const hasV1 = !isNaN(v1); const hasV2 = !isNaN(v2); const hasV3 = !isNaN(v3);
+    
+    if (hasV1 || hasV2 || hasV3) {
+      const vals = [];
+      if(hasV1) vals.push(v1); if(hasV2) vals.push(v2); if(hasV3) vals.push(v3);
+      const media = vals.length > 0 ? vals.reduce((s, v) => s + v, 0) / vals.length : null;
+      
+      registros.push({
+        aluno_id: parseInt(alId),
+        turma_id: hubTurmaId,
+        materia_id: parseInt(matId),
+        unidade: unidade,
+        nota1: hasV1 ? v1 : null,
+        nota2: hasV2 ? v2 : null,
+        nota3: hasV3 ? v3 : null,
+        media: media,
+        registrado_por: funcionarioAtual ? funcionarioAtual.id : null
+      });
+      
+      if (!hubNotasCache[matId]) hubNotasCache[matId] = {};
+      if (!hubNotasCache[matId][unidade]) hubNotasCache[matId][unidade] = {};
+      hubNotasCache[matId][unidade][alId] = { nota1: hasV1?v1:null, nota2: hasV2?v2:null, nota3: hasV3?v3:null, media };
+    }
+  });
+
+  if (registros.length === 0) return;
+
+  btn.disabled = true; btn.innerHTML = '<i data-lucide="loader" class="spin" style="margin-right:6px;width:18px;height:18px;"></i> Salvando...'; if(window.lucide) lucide.createIcons();
+
+  const { error } = await clienteSupabase.from('notas_alunos').upsert(registros, { onConflict: 'aluno_id,turma_id,materia_id,unidade' });
+
+  btn.disabled = false; btn.innerHTML = '<i data-lucide="save" style="margin-right:6px;width:18px;height:18px;"></i> Salvar Notas'; if(window.lucide) lucide.createIcons();
+
+  if (error) { alert('Erro ao salvar notas: ' + error.message); return; }
+  alert('Notas salvas com sucesso!');
 }

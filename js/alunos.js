@@ -1,4 +1,4 @@
-﻿﻿﻿// ==========================================
+﻿﻿// ==========================================
 // HELPERS DE CHECKBOX
 // ==========================================
 function coletarCheckboxes(grupo) {
@@ -616,11 +616,25 @@ function imprimirFicha(aluno) {
   const nomeLimpo = (aluno.nome || 'aluno').replace(/\s+/g, '_');
   document.title = "ficha_de_inscricao_" + nomeLimpo;
 
-  // O que acontece quando a janela de impressão FECHAR:
-  window.onafterprint = function() {
+  // Limpa a impressão quando o usuário voltar a interagir com o navegador
+  const cleanupImpressao = function() {
     ficha.style.display = 'none';
-    document.body.classList.remove('imprimindo-ficha'); // Remove autorização
-    document.title = tituloOriginal; // Devolve o nome original para a aba do navegador
+    document.body.classList.remove('imprimindo-ficha');
+    document.title = tituloOriginal;
+    window.removeEventListener('focus', cleanupImpressao);
+    window.removeEventListener('touchstart', cleanupImpressao);
+    window.removeEventListener('mousemove', cleanupImpressao);
+  };
+
+  // Previne que o onafterprint remova imediatamente no celular
+  window.onafterprint = function() {
+    // No celular, o evento pode disparar muito cedo. Adicionamos os listeners de interação.
+    window.addEventListener('focus', cleanupImpressao);
+    window.addEventListener('touchstart', cleanupImpressao, { once: true });
+    window.addEventListener('mousemove', cleanupImpressao, { once: true });
+    
+    // Fallback de tempo razoável (10 segundos) para garantir limpeza se nada acontecer
+    setTimeout(cleanupImpressao, 10000);
     window.onafterprint = null;
   };
 

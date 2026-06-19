@@ -208,3 +208,67 @@
     <button class="btn-login" id="btnSalvarTurma" onclick="salvarTurma()">Salvar Turma</button>
   </div>
 </div>
+
+<!-- ============================================
+     HUB DE TURMA MOBILE (100% tela)
+     ============================================ -->
+<div class="hub-mobile-overlay" id="hubTurmaMobileOverlay" style="display:none;">
+  <div class="hub-mobile-header">
+    <button class="btn-clear" onclick="fecharHubTurmaMobile()" style="padding: 8px; margin-right: 8px;"><i data-lucide="arrow-left"></i></button>
+    <div style="flex:1;">
+      <h2 id="hubTurmaNomeMobile" style="margin:0; font-size: 18px;">Turma</h2>
+      <p id="hubTurmaInfoMobile" style="margin:0; font-size: 12px; color: #aaa;"></p>
+    </div>
+  </div>
+
+  <div class="hub-mobile-body">
+    <!-- ABA: MATÉRIAS MOBILE -->
+    <div id="conteudo-materias-mobile" class="hub-mobile-aba-conteudo" style="display:none;">
+      <div id="listaMateriasTurmaMobile"></div>
+    </div>
+
+    <!-- ABA: ALUNOS MOBILE -->
+    <div id="conteudo-alunos-mobile" class="hub-mobile-aba-conteudo" style="display:none;">
+      <div id="listaAlunosTurmaMobile"></div>
+    </div>
+
+    <!-- ABA: FREQUÊNCIA MOBILE -->
+    <div id="conteudo-frequencia-mobile" class="hub-mobile-aba-conteudo" style="display:none;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 16px; background: #222; border-radius: 8px; padding: 4px;">
+        <button class="btn-clear" onclick="mudarDiaFrequenciaHubMobile(-1)" style="padding: 10px;"><i data-lucide="chevron-left"></i></button>
+        <div id="labelDataFrequenciaMobile" style="font-weight:bold; font-size:14px; color: #3ea6ff;"></div>
+        <button class="btn-clear" onclick="mudarDiaFrequenciaHubMobile(1)" style="padding: 10px;"><i data-lucide="chevron-right"></i></button>
+      </div>
+      <input type="hidden" id="dataFrequenciaHubMobile" />
+      <div id="avisoPermissaoFreqMobile" class="aviso-permissao-freq" style="display:none;margin-bottom:12px;"></div>
+      <div id="listaFrequenciaMobile"></div>
+      <button class="btn-login" id="btnSalvarFrequenciaHubMobile" onclick="salvarFrequenciaHubMobile()" style="margin-top:20px; width:100%; display:none; padding:16px; font-size: 16px;"><i data-lucide="save" style="margin-right: 6px; width: 18px; height: 18px;"></i> Salvar Presenças</button>
+    </div>
+
+    <!-- ABA: NOTAS MOBILE -->
+    <div id="conteudo-notas-mobile" class="hub-mobile-aba-conteudo" style="display:none;">
+      <div style="display:flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 8px;" id="tabsUnidadesMobile">
+        <button class="mobile-unidade-btn ativa" onclick="trocarUnidadeMobile(1)">1ª Unid</button>
+        <button class="mobile-unidade-btn" onclick="trocarUnidadeMobile(2)">2ª Unid</button>
+        <button class="mobile-unidade-btn" onclick="trocarUnidadeMobile(3)">3ª Unid</button>
+      </div>
+      <div id="listaNotasTurmaMobile"></div>
+      <button class="btn-login" id="btnSalvarNotasHubMobile" onclick="salvarNotasHubMobile()" style="margin-top:20px; width:100%; display:none; padding:16px; font-size: 16px;"><i data-lucide="save" style="margin-right: 6px; width: 18px; height: 18px;"></i> Salvar Notas</button>
+    </div>
+  </div>
+
+  <div class="hub-mobile-bottom-nav">
+    <button class="nav-item ativa" id="nav-mobile-materias" onclick="abrirAbaTurmaMobile('materias')">
+      <i data-lucide="book-open"></i><span>Matérias</span>
+    </button>
+    <button class="nav-item" id="nav-mobile-alunos" onclick="abrirAbaTurmaMobile('alunos')">
+      <i data-lucide="users"></i><span>Alunos</span>
+    </button>
+    <button class="nav-item" id="nav-mobile-frequencia" onclick="abrirAbaTurmaMobile('frequencia')">
+      <i data-lucide="calendar"></i><span>Chamada</span>
+    </button>
+    <button class="nav-item" id="nav-mobile-notas" onclick="abrirAbaTurmaMobile('notas')">
+      <i data-lucide="bar-chart-2"></i><span>Notas</span>
+    </button>
+  </div>
+</div>

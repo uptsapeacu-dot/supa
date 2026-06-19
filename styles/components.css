@@ -575,3 +575,210 @@ h1 {
 @media (max-width: 760px) {
   .form-check-grid { grid-template-columns: 1fr; }
 }
+
+/* =============================================
+   HUB DE TURMA MOBILE
+   ============================================= */
+.hub-mobile-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #0f0f0f;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+}
+
+.hub-mobile-header {
+  padding: 16px;
+  background: rgba(30, 30, 30, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid #333;
+  display: flex;
+  align-items: center;
+}
+
+.hub-mobile-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 80px; /* space for bottom nav */
+}
+
+.hub-mobile-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 64px;
+  background: rgba(20, 20, 20, 0.95);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid #333;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.hub-mobile-bottom-nav .nav-item {
+  background: none;
+  border: none;
+  color: #777;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  gap: 4px;
+  cursor: pointer;
+  padding: 8px;
+  transition: 0.2s ease;
+  width: 25%;
+}
+
+.hub-mobile-bottom-nav .nav-item i {
+  width: 20px;
+  height: 20px;
+}
+
+.hub-mobile-bottom-nav .nav-item.ativa {
+  color: #3ea6ff;
+}
+
+/* Cards de Notas Mobile */
+.nota-card-mobile {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 12px;
+}
+
+.nota-card-mobile .aluno-nome {
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.nota-card-mobile .notas-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.nota-card-mobile .nota-input-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nota-card-mobile .nota-input-wrap label {
+  font-size: 11px;
+  color: #aaa;
+}
+
+.nota-card-mobile input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  border-radius: 6px;
+  background: #121212;
+  border: 1px solid #444;
+  color: #fff;
+  text-align: center;
+  font-size: 14px;
+}
+
+/* Tabs Mobile (1ª, 2ª, 3ª Unidade) */
+.mobile-unidade-btn {
+  background: #222;
+  color: #aaa;
+  border: 1px solid #333;
+  border-radius: 20px;
+  padding: 8px 16px;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.mobile-unidade-btn.ativa {
+  background: #3ea6ff;
+  color: #000;
+  border-color: #3ea6ff;
+}
+
+/* Lista de Chamada Mobile */
+.freq-item-mobile {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  gap: 12px;
+}
+
+.freq-item-mobile .freq-avatar {
+  width: 36px;
+  height: 36px;
+  background: #3ea6ff;
+  color: #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.freq-item-mobile .freq-nome {
+  flex: 1;
+  font-size: 15px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.freq-item-mobile .freq-toggle-group {
+  display: flex;
+  gap: 6px;
+}
+
+.freq-item-mobile .freq-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #121212;
+  color: #aaa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.freq-item-mobile .freq-btn i {
+  width: 20px;
+  height: 20px;
+}
+
+.freq-item-mobile .freq-btn.presente-ativo {
+  background: rgba(46, 125, 50, 0.2);
+  color: #4caf50;
+  border-color: #4caf50;
+}
+
+.freq-item-mobile .freq-btn.falta-ativo {
+  background: rgba(211, 47, 47, 0.2);
+  color: #f44336;
+  border-color: #f44336;
+}

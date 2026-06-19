@@ -1,4 +1,4 @@
-﻿﻿﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
+﻿﻿// ====== RELATÃ“RIOS (UTILIDADES COMPARTILHADAS) ======
 // [NOTA DE ARQUITETURA] Memória Permanente: Princípio da "Avaliação Holística"
 // Sempre que criar ou modificar uma tela ou rota (como Relatórios, Financeiro, Turmas), 
 // é obrigatório garantir que a transição de contexto no cabeçalho ou sidebar também a re-renderize.
@@ -87,10 +87,19 @@ function imprimirRelatorio() {
   const tituloOriginal = document.title;
   document.title = "Relatorio_" + (escolaAtual ? nomeDaEscola.replace(/\s+/g, '_') : 'Geral_Rede_Municipal') + "_" + abaAtiva;
 
-  window.onafterprint = function() {
-    // Remove a autorização após impressão
+  const cleanupImpressao = function() {
     document.body.classList.remove('imprimindo-relatorio');
     document.title = tituloOriginal;
+    window.removeEventListener('focus', cleanupImpressao);
+    window.removeEventListener('touchstart', cleanupImpressao);
+    window.removeEventListener('mousemove', cleanupImpressao);
+  };
+
+  window.onafterprint = function() {
+    window.addEventListener('focus', cleanupImpressao);
+    window.addEventListener('touchstart', cleanupImpressao, { once: true });
+    window.addEventListener('mousemove', cleanupImpressao, { once: true });
+    setTimeout(cleanupImpressao, 10000);
     window.onafterprint = null;
   };
 
