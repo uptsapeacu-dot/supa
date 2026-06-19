@@ -1479,7 +1479,7 @@ async function abrirHubTurmaMobile(turma) {
   
   dataFrequenciaHubObj = new Date();
   
-  await abrirAbaTurmaMobile('materias');
+  await abrirAbaTurmaMobile('alunos');
 }
 
 function fecharHubTurmaMobile() {
@@ -1829,4 +1829,27 @@ async function salvarNotasHubMobile() {
 
   if (error) { alert('Erro ao salvar notas: ' + error.message); return; }
   alert('Notas salvas com sucesso!');
+}
+
+function filtrarAlunosHub(termo, containerId) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const termoLower = termo.toLowerCase().trim();
+  
+  const items = container.children;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    // Skip empty state messages
+    if (item.classList.contains('hub-empty')) continue;
+    
+    // Find name depending on mobile or desktop structure
+    // Desktop: name is usually in a div inside item, or item itself contains it
+    // Mobile: name is in .freq-nome or .aluno-nome or simply text content
+    const texto = item.innerText || item.textContent;
+    if (texto.toLowerCase().includes(termoLower)) {
+      item.style.display = '';
+    } else {
+      item.style.display = 'none';
+    }
+  }
 }

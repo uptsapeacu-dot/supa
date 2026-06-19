@@ -86,6 +86,9 @@
 
       <!-- ABA: ALUNOS -->
       <div id="conteudo-alunos" style="display:none;">
+        <div style="margin-bottom: 12px; display: flex; gap: 8px;">
+          <input type="text" id="buscaAlunosHub" placeholder="Buscar aluno..." style="flex:1; padding: 8px 12px; border-radius: 8px; border: 1px solid #333; background: #121212; color: #fff;" onkeyup="filtrarAlunosHub(this.value, 'listaAlunosTurmaHub')" />
+        </div>
         <div id="listaAlunosTurmaHub">
           <div class="hub-empty">Carregando alunos...</div>
         </div>
@@ -219,6 +222,13 @@
       <h2 id="hubTurmaNomeMobile" style="margin:0; font-size: 18px;">Turma</h2>
       <p id="hubTurmaInfoMobile" style="margin:0; font-size: 12px; color: #aaa;"></p>
     </div>
+    <div style="display:flex; flex-direction:column; align-items:center; transform: scale(0.85); transform-origin: right center;">
+      <span class="mode-text" style="font-size: 10px; margin-bottom: 2px; color: #aaa;">Editar</span>
+      <label class="switch" style="margin:0;">
+        <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
+        <span class="slider"></span>
+      </label>
+    </div>
   </div>
 
   <div class="hub-mobile-body">
@@ -229,6 +239,9 @@
 
     <!-- ABA: ALUNOS MOBILE -->
     <div id="conteudo-alunos-mobile" class="hub-mobile-aba-conteudo" style="display:none;">
+      <div style="margin-bottom: 12px; display: flex; gap: 8px;">
+        <input type="text" id="buscaAlunosHubMobile" placeholder="Buscar aluno..." style="flex:1; padding: 12px; border-radius: 12px; border: 1px solid #333; background: #1e1e1e; color: #fff; font-size: 15px;" onkeyup="filtrarAlunosHub(this.value, 'listaAlunosTurmaMobile')" />
+      </div>
       <div id="listaAlunosTurmaMobile"></div>
     </div>
 

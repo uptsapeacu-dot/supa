@@ -1,4 +1,4 @@
-﻿﻿async function carregarEscolas() {
+﻿async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {
@@ -188,8 +188,13 @@ function renderizarModulosDaEscola() {
   })
 
   if (modulosPermitidos.length === 0) {
-    lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>'
-    return
+    const isProfessor = acessosAtual.some(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
+    if (isProfessor) {
+      abrirModuloEscola(escolaAtual, 'turmas');
+      return;
+    }
+    lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>';
+    return;
   }
 
   modulosPermitidos.forEach(function(modulo) {
