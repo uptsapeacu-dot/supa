@@ -1,4 +1,4 @@
-﻿async function carregarEscolas() {
+async function carregarEscolas() {
   const lista = document.getElementById('listaEscolas')
 
   if (lista) {
@@ -176,7 +176,16 @@ function abrirEscola(escolaId) {
 
   atualizarInterfaceModo()
   renderizarModulosDaEscola()
-  mostrarTela('escola')
+
+  const acessoEscola = acessosAtual.find(function(a) { return a.orgao_id === escolaId && a.ativo })
+  const ehProfessor = acessoEscola && acessoEscola.nivel === 4 && !isSecretaria()
+
+  if (ehProfessor) {
+    mostrarTela('turmas')
+    if (typeof carregarTurmasDaTela === 'function') carregarTurmasDaTela()
+  } else {
+    mostrarTela('escola')
+  }
 }
 
 function renderizarModulosDaEscola() {

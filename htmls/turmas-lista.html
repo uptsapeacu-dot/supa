@@ -354,7 +354,7 @@
       <form id="formNovaOcorrencia" onsubmit="salvarOcorrencia(event)">
         <div style="margin-bottom: 15px;">
           <label style="display:block; margin-bottom:5px; color:#ccc;">Tipo de Ocorrência</label>
-          <select id="ocorrenciaTipo" class="form-control" style="width: 100%; padding: 10px;" required>
+          <select id="ocorrenciaTipo" class="form-control" style="width: 100%; padding: 10px;" onchange="toggleGravidadeOcorrencia()" required>
             <option value="">Selecione...</option>
             <option value="Comportamental">Comportamental / Disciplinar</option>
             <option value="Atraso/Fardamento">Atraso / Falta de Fardamento</option>
@@ -363,7 +363,7 @@
             <option value="Positiva">Atitude Positiva (Elogio)</option>
           </select>
         </div>
-        <div style="margin-bottom: 15px;">
+        <div id="containerGravidadeOcorrencia" style="margin-bottom: 15px;">
           <label style="display:block; margin-bottom:5px; color:#ccc;">Gravidade</label>
           <select id="ocorrenciaGravidade" class="form-control" style="width: 100%; padding: 10px;" required>
             <option value="Baixa">Baixa</option>

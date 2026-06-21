@@ -1951,6 +1951,18 @@ function fecharModalNovaOcorrencia() {
   document.getElementById('modalNovaOcorrencia').style.display = 'none';
 }
 
+function toggleGravidadeOcorrencia() {
+  const tipo = document.getElementById('ocorrenciaTipo').value;
+  const container = document.getElementById('containerGravidadeOcorrencia');
+  const select = document.getElementById('ocorrenciaGravidade');
+  if (tipo === 'Positiva') {
+    container.style.display = 'none';
+    select.value = 'Baixa';
+  } else {
+    container.style.display = 'block';
+  }
+}
+
 async function salvarOcorrencia(event) {
   event.preventDefault();
   if (!alunoOcorrenciaAtual || !hubTurmaId || !funcionarioAtual) {
@@ -1963,7 +1975,12 @@ async function salvarOcorrencia(event) {
   btn.disabled = true;
 
   const tipo = document.getElementById('ocorrenciaTipo').value;
-  const gravidade = document.getElementById('ocorrenciaGravidade').value;
+  let gravidade = document.getElementById('ocorrenciaGravidade').value;
+  
+  if (tipo === 'Positiva') {
+    gravidade = 'Baixa';
+  }
+
   const descricao = document.getElementById('ocorrenciaDescricao').value;
 
   const { data, error } = await clienteSupabase.from('ocorrencias').insert([{
