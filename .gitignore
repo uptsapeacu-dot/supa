@@ -1,0 +1,13 @@
+# Arquivo de configuração com as chaves do Supabase — NUNCA commitar
+config.js
+
+# Dependências Node (caso seja adicionado futuramente)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Sistema operacional
+.DS_Store
+Thumbs.db

@@ -1,6 +1,6 @@
-﻿const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
-const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
-const supabaseKey = 'sb_publishable_QqQ80GSvg3MhddrqpYsjmg_uMlJsKDH'
+const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
+const supabaseUrl = APP_CONFIG.supabaseUrl
+const supabaseKey = APP_CONFIG.supabaseKey
 const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)
 
 let escolas = []
