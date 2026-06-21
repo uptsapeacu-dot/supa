@@ -1,4 +1,4 @@
-﻿﻿﻿async function carregarDadosMural() {
+﻿﻿async function carregarDadosMural() {
   carregarAvisos()
   muralFuncionarios = []
   let orgaosPermitidos = []
@@ -132,8 +132,19 @@ function renderizarCalendario() {
 function abrirModalAniversariante(aniversariantes) {
   if (!aniversariantes || aniversariantes.length === 0) return
   const f = aniversariantes[0]
+  
+  const containerFoto = document.getElementById('fotoContainerAniversariante')
+  if (containerFoto) {
+    if (f.foto_url) {
+      containerFoto.innerHTML = '<img src="' + f.foto_url + '" style="width: 100%; height: 100%; object-fit: cover;" />'
+    } else {
+      containerFoto.innerHTML = '<i data-lucide="party-popper" style="width: 50px; height: 50px; color: #a855f7;"></i>'
+      if (window.lucide) lucide.createIcons()
+    }
+  }
+
   document.getElementById('nomeAniversariante').textContent = f.nome
-  document.getElementById('orgaoAniversariante').textContent = 'Ã“rgão: ' + f.orgao
+  document.getElementById('orgaoAniversariante').textContent = 'Órgão: ' + f.orgao
   document.getElementById('dataAniversariante').textContent = 'Aniversário dia ' + f.anivDia + ' de ' + nomesMeses[f.anivMes]
   document.getElementById('modalAniversariante').style.display = 'flex'
 }
