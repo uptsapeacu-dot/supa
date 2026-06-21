@@ -15,8 +15,43 @@ async function adminRenderizarUsuarios() {
 
   conteudo.innerHTML =
     '<div class="admin-panel">' +
-      '<div class="admin-panel-header">' +
+      '<div class="admin-panel-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">' +
         '<div class="admin-panel-title"><i data-lucide="users"></i> Todos os Funcionarios (' + lista.length + ')</div>' +
+        '<button class="admin-btn admin-btn-success" onclick="adminToggleCriarUser()"><i data-lucide="user-plus"></i> Novo Funcionário</button>' +
+      '</div>' +
+
+      // Formulario escondido de criacao de usuario
+      '<div id="adminFormCriarUser" style="display:none; background:#0a0a0a; border:1px solid #22c55e; border-radius:10px; padding:18px; margin-bottom:20px; box-shadow:0 4px 12px rgba(34,197,94,0.1);">' +
+        '<h3 style="margin:0 0 14px 0; color:#fff; font-size:15px; display:flex; align-items:center; gap:8px;"><i data-lucide="shield-check" style="color:#22c55e; width:18px; height:18px;"></i> Criar Conta Segura</h3>' +
+        '<p style="font-size:12px; color:#888; margin:0 0 14px 0;">O funcionário receberá a senha provisória e será forçado a criar uma definitiva no primeiro acesso.</p>' +
+        '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:14px;">' +
+          '<div>' +
+            '<label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Nome Completo</label>' +
+            '<input type="text" id="nuNome" placeholder="Ex: Maria Silva" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--admin-border2); background:#1a1a1a; color:#fff;">' +
+          '</div>' +
+          '<div>' +
+            '<label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">E-mail (Login)</label>' +
+            '<input type="email" id="nuEmail" placeholder="Ex: maria@escola.com" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--admin-border2); background:#1a1a1a; color:#fff;">' +
+          '</div>' +
+          '<div>' +
+            '<label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Telefone (Opcional)</label>' +
+            '<input type="text" id="nuTelefone" placeholder="(XX) 99999-9999" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--admin-border2); background:#1a1a1a; color:#fff;">' +
+          '</div>' +
+          '<div>' +
+            '<label style="display:block; font-size:12px; color:#aaa; margin-bottom:4px;">Senha Provisória</label>' +
+            '<input type="text" id="nuSenhaProv" placeholder="Mínimo 6 caracteres" style="width:100%; padding:8px; border-radius:6px; border:1px solid var(--admin-border2); background:#1a1a1a; color:#fff;">' +
+          '</div>' +
+        '</div>' +
+        '<div style="background:#1f1f1f; padding:12px; border-radius:8px; border:1px dashed #444; margin-bottom:14px; display:flex; gap:12px; align-items:center;">' +
+          '<div style="flex:1;">' +
+            '<label style="display:block; font-size:12px; color:#eab308; margin-bottom:4px; font-weight:bold;">Sua Senha de Admin (Autorização)</label>' +
+            '<input type="password" id="nuSenhaAdmin" placeholder="Digite SUA senha para confirmar" style="width:100%; padding:8px; border-radius:6px; border:1px solid #444; background:#000; color:#fff;">' +
+          '</div>' +
+          '<button id="btnCriarUsuarioConfirmar" class="admin-btn admin-btn-success" style="align-self:flex-end; white-space:nowrap; padding:9px 16px;" onclick="adminExecutarCriacaoConta()">' +
+            '<i data-lucide="check"></i> Confirmar Criação' +
+          '</button>' +
+        '</div>' +
+        '<div id="nuFeedback" style="display:none; font-size:13px; padding:8px; border-radius:6px;"></div>' +
       '</div>' +
 
       '<div class="admin-filter-bar">' +
@@ -34,9 +69,119 @@ async function adminRenderizarUsuarios() {
       '</div>' +
     '</div>'
 
-  // Guarda a lista completa para filtragem client-side
+    // Guarda a lista completa para filtragem client-side
   window._adminUsuariosCompleto = lista
 }
+
+// Lógica do Modal/Formulário de Criar Usuário
+function adminToggleCriarUser() {
+  const form = document.getElementById('adminFormCriarUser')
+  if (form) form.style.display = form.style.display === 'none' ? 'block' : 'none'
+}
+
+function adminShowFeedback(msg, tipo) {
+  const f = document.getElementById('nuFeedback')
+  if (!f) return
+  f.style.display = 'block'
+  f.style.backgroundColor = tipo === 'erro' ? '#ef444420' : '#22c55e20'
+  f.style.borderLeft = tipo === 'erro' ? '3px solid #ef4444' : '3px solid #22c55e'
+  f.style.color = tipo === 'erro' ? '#fca5a5' : '#86efac'
+  f.innerHTML = msg
+}
+
+async function adminExecutarCriacaoConta() {
+  const nome = document.getElementById('nuNome').value.trim()
+  const email = document.getElementById('nuEmail').value.trim()
+  const telefone = document.getElementById('nuTelefone').value.trim()
+  const senhaProv = document.getElementById('nuSenhaProv').value
+  const senhaAdmin = document.getElementById('nuSenhaAdmin').value
+  const btn = document.getElementById('btnCriarUsuarioConfirmar')
+
+  if (!nome || !email || !senhaProv || !senhaAdmin) {
+    adminShowFeedback('Preencha Nome, E-mail, Senha Provisória e sua Senha de Admin.', 'erro')
+    return
+  }
+  if (senhaProv.length < 6) {
+    adminShowFeedback('A senha provisória deve ter no mínimo 6 caracteres.', 'erro')
+    return
+  }
+
+  btn.disabled = true
+  btn.innerHTML = '<i data-lucide="loader-circle"></i> Criando...'
+  if (window.lucide) lucide.createIcons()
+
+  try {
+    // 1. Testa a senha do Admin para garantir que podemos reautenticar depois
+    const { error: errTest } = await clienteSupabase.auth.signInWithPassword({
+      email: funcionarioAtual.email,
+      password: senhaAdmin
+    })
+
+    if (errTest) {
+      adminShowFeedback('Sua senha de Admin está incorreta. Criação cancelada por segurança.', 'erro')
+      btn.disabled = false
+      btn.innerHTML = '<i data-lucide="check"></i> Confirmar Criação'
+      if (window.lucide) lucide.createIcons()
+      return
+    }
+
+    // 2. Cria o novo usuário no Auth
+    const { data: newUser, error: errSignUp } = await clienteSupabase.auth.signUp({
+      email: email,
+      password: senhaProv
+    })
+
+    if (errSignUp) {
+      // Tenta reautenticar só por garantia
+      await clienteSupabase.auth.signInWithPassword({ email: funcionarioAtual.email, password: senhaAdmin })
+      adminShowFeedback('Erro ao criar no Auth: ' + errSignUp.message, 'erro')
+      btn.disabled = false
+      btn.innerHTML = '<i data-lucide="check"></i> Confirmar Criação'
+      if (window.lucide) lucide.createIcons()
+      return
+    }
+
+    const authId = newUser.user.id
+
+    // 3. Reautentica imediatamente o Super Admin (restaura a sessão)
+    await clienteSupabase.auth.signInWithPassword({
+      email: funcionarioAtual.email,
+      password: senhaAdmin
+    })
+
+    // 4. Insere na tabela funcionarios (como o Admin já voltou, ele tem RLS para inserir)
+    const { error: errFunc } = await clienteSupabase.from('funcionarios').insert([{
+      auth_user_id: authId,
+      nome: nome,
+      email: email,
+      telefone: telefone || null,
+      primeiro_acesso: true
+    }])
+
+    if (errFunc) {
+      adminShowFeedback('Conta criada no Auth, mas falhou ao salvar perfil: ' + errFunc.message, 'erro')
+    } else {
+      adminShowFeedback('<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;"></i> Funcionário criado com sucesso! Ele já pode acessar.', 'sucesso')
+      document.getElementById('nuNome').value = ''
+      document.getElementById('nuEmail').value = ''
+      document.getElementById('nuTelefone').value = ''
+      document.getElementById('nuSenhaProv').value = ''
+      document.getElementById('nuSenhaAdmin').value = ''
+      
+      // Atualiza a lista
+      await registrarAuditoria('criar_funcionario_admin', 'funcionarios', authId, null, { email: email, nome: nome })
+      setTimeout(adminRenderizarUsuarios, 2000)
+    }
+
+  } catch (e) {
+    adminShowFeedback('Erro inesperado: ' + e.message, 'erro')
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i data-lucide="check"></i> Confirmar Criação'
+    if (window.lucide) lucide.createIcons()
+  }
+}
+
 
 function adminRenderizarCardsUsuarios(lista) {
   if (!lista.length) {
