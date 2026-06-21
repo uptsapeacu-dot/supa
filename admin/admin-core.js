@@ -199,43 +199,135 @@ function adminTabelaLogs(logs, completo) {
 }
 
 // --------------------------------------------------
-// CONFIGURACOES DO SISTEMA
+// CONFIGURACOES DO SISTEMA (Funcional)
 // --------------------------------------------------
-function adminRenderizarConfiguracoes() {
+async function adminRenderizarConfiguracoes() {
   const conteudo = document.getElementById('adminConteudo')
+  conteudo.innerHTML = '<div class="admin-panel"><div class="admin-panel-title"><i data-lucide="loader-circle"></i> Carregando configuracoes...</div></div>'
+
+  const { data: config } = await clienteSupabase
+    .from('configuracoes_sistema')
+    .select('*')
+    .eq('id', 1)
+    .maybeSingle()
+
+  const anoAtual = config ? config.ano_letivo : new Date().getFullYear()
+  const msgManutencao = config ? (config.mensagem_manutencao || '') : ''
+
   conteudo.innerHTML =
     '<div class="admin-panel">' +
-      '<div class="admin-panel-title" style="margin-bottom:18px;"><i data-lucide="settings-2"></i> Configuracoes do Sistema</div>' +
+      '<div class="admin-panel-title" style="margin-bottom:20px;"><i data-lucide="settings-2"></i> Configurações Globais do Sistema</div>' +
 
-      '<div class="admin-alert admin-alert-info"><i data-lucide="info"></i>Configuracoes adicionais como nome do municipio, ano letivo ativo e mensagem de manutencao serao implementadas aqui.</div>' +
+      '<div style="display:grid;gap:18px;">' +
 
-      '<div style="display:grid; gap:14px; margin-top:10px;">' +
+        // Ano letivo
         '<div class="admin-panel" style="margin:0;">' +
-          '<div class="admin-panel-title" style="margin-bottom:12px;"><i data-lucide="calendar"></i> Ano Letivo Ativo</div>' +
-          '<div style="display:flex; gap:10px; align-items:center;">' +
-            '<input id="adminAnoLetivo" type="number" value="' + new Date().getFullYear() + '" style="width:120px; background:#0d0d0d; border:1px solid var(--admin-border2); color:white; border-radius:8px; padding:8px 12px; font-size:14px;">' +
-            '<button class="admin-btn admin-btn-primary" onclick="adminSalvarAnoLetivo()"><i data-lucide="save"></i> Salvar</button>' +
+          '<div class="admin-panel-title" style="margin-bottom:14px;"><i data-lucide="calendar"></i> Ano Letivo Ativo</div>' +
+          '<p style="color:var(--admin-muted);font-size:13px;margin:0 0 12px;">Define o ano letivo exibido em turmas, matrículas e relatórios de todo o sistema escolar.</p>' +
+          '<div style="display:flex;gap:10px;align-items:center;">' +
+            '<input id="cfgAnoLetivo" type="number" value="' + anoAtual + '" min="2020" max="2099" style="width:120px;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px 12px;font-size:16px;font-weight:700;">' +
+            '<button class="admin-btn admin-btn-primary" onclick="adminSalvarConfig()"><i data-lucide="save"></i> Salvar</button>' +
           '</div>' +
+          '<div id="cfgAnoFeedback" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
 
+        // Mensagem de manutenção
         '<div class="admin-panel" style="margin:0;">' +
-          '<div class="admin-panel-title" style="margin-bottom:12px;"><i data-lucide="megaphone"></i> Mensagem de Manutencao</div>' +
-          '<textarea id="adminMsgManutencao" placeholder="Deixe vazio para nao exibir nenhuma mensagem..." style="width:100%; background:#0d0d0d; border:1px solid var(--admin-border2); color:white; border-radius:8px; padding:10px; font-size:13px; min-height:80px; resize:vertical;"></textarea>' +
-          '<button class="admin-btn admin-btn-primary" style="margin-top:10px;" onclick="adminSalvarMsgManutencao()"><i data-lucide="save"></i> Publicar Mensagem</button>' +
+          '<div class="admin-panel-title" style="margin-bottom:14px;"><i data-lucide="megaphone"></i> Mensagem de Manutenção</div>' +
+          '<p style="color:var(--admin-muted);font-size:13px;margin:0 0 12px;">Se preenchida, exibe um banner de alerta laranja no topo do painel escolar para todos os professores e secretaria. Deixe em branco para desativar.</p>' +
+          '<textarea id="cfgMsgManutencao" placeholder="Ex: O sistema estará em manutenção hoje das 18h às 20h. Salve seus trabalhos." style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:10px;font-size:13px;min-height:90px;resize:vertical;box-sizing:border-box;">' + msgManutencao + '</textarea>' +
+          '<div style="display:flex;gap:10px;margin-top:10px;">' +
+            '<button class="admin-btn admin-btn-primary" onclick="adminSalvarConfig()"><i data-lucide="save"></i> Publicar</button>' +
+            (msgManutencao ? '<button class="admin-btn admin-btn-danger" onclick="adminLimparMsgManutencao()"><i data-lucide="x-circle"></i> Remover Aviso</button>' : '') +
+          '</div>' +
+          '<div id="cfgMsgFeedback" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
+
+        // IPs bloqueados
+        '<div class="admin-panel" style="margin:0;">' +
+          '<div class="admin-panel-title" style="margin-bottom:14px;"><i data-lucide="shield-ban"></i> IPs Bloqueados</div>' +
+          '<div id="cfgIpsBloqueados"><div style="color:var(--admin-muted);font-size:13px;">Carregando...</div></div>' +
+        '</div>' +
+
       '</div>' +
     '</div>'
+
+  await adminCarregarIpsBloqueados()
 }
 
-function adminSalvarAnoLetivo() {
-  const ano = document.getElementById('adminAnoLetivo').value
-  alert('Ano letivo ' + ano + ' definido. (Implementar tabela de configuracoes no banco se necessario)')
+async function adminSalvarConfig() {
+  const ano = parseInt(document.getElementById('cfgAnoLetivo').value)
+  const msg = document.getElementById('cfgMsgManutencao').value.trim()
+
+  const { error } = await clienteSupabase
+    .from('configuracoes_sistema')
+    .update({ ano_letivo: ano, mensagem_manutencao: msg || null, updated_at: new Date().toISOString() })
+    .eq('id', 1)
+
+  if (error) {
+    alert('Erro ao salvar: ' + error.message)
+    return
+  }
+
+  await registrarAuditoria('alterar_configuracoes', 'configuracoes_sistema', null, null, { ano_letivo: ano, mensagem_manutencao: msg })
+  adminRenderizarConfiguracoes()
 }
 
-function adminSalvarMsgManutencao() {
-  const msg = document.getElementById('adminMsgManutencao').value
-  alert(msg ? 'Mensagem publicada: "' + msg + '"' : 'Mensagem de manutencao removida.')
+async function adminLimparMsgManutencao() {
+  const { error } = await clienteSupabase
+    .from('configuracoes_sistema')
+    .update({ mensagem_manutencao: null, updated_at: new Date().toISOString() })
+    .eq('id', 1)
+
+  if (error) { alert('Erro: ' + error.message); return }
+  adminRenderizarConfiguracoes()
 }
+
+async function adminCarregarIpsBloqueados() {
+  const agora = new Date().toISOString()
+  const { data: ips } = await clienteSupabase
+    .from('blocked_ips')
+    .select('*')
+    .gt('blocked_until', agora)
+    .order('created_at', { ascending: false })
+
+  const container = document.getElementById('cfgIpsBloqueados')
+  if (!container) return
+
+  const lista = ips || []
+
+  if (!lista.length) {
+    container.innerHTML = '<div class="admin-alert admin-alert-info"><i data-lucide="check-circle"></i> Nenhum IP bloqueado no momento.</div>'
+    if (window.lucide) window.lucide.createIcons()
+    return
+  }
+
+  container.innerHTML =
+    '<div class="admin-table-wrap"><table class="admin-table">' +
+      '<thead><tr><th>IP</th><th>Motivo</th><th>Bloqueado até</th><th>Ação</th></tr></thead>' +
+      '<tbody>' +
+      lista.map(function(item) {
+        const ate = new Date(item.blocked_until).toLocaleString('pt-BR')
+        return '<tr>' +
+          '<td style="font-family:monospace;">' + item.ip_address + '</td>' +
+          '<td style="font-size:12px;color:var(--admin-muted);">' + (item.reason || '—') + '</td>' +
+          '<td style="font-size:12px;white-space:nowrap;">' + ate + '</td>' +
+          '<td><button class="admin-btn admin-btn-success" onclick="adminDesbloquearIP(\'' + item.id + '\')"><i data-lucide="shield-off"></i> Desbloquear</button></td>' +
+        '</tr>'
+      }).join('') +
+      '</tbody></table></div>'
+  if (window.lucide) window.lucide.createIcons()
+}
+
+async function adminDesbloquearIP(id) {
+  if (!confirm('Desbloquear este IP permanentemente?')) return
+  const { error } = await clienteSupabase.from('blocked_ips').delete().eq('id', id)
+  if (error) { alert('Erro: ' + error.message); return }
+  await registrarAuditoria('desbloquear_ip', 'blocked_ips', id, null, { desbloqueado_manualmente: true })
+  adminCarregarIpsBloqueados()
+}
+
+
 
 // --------------------------------------------------
 // LOGOUT DO ADMIN

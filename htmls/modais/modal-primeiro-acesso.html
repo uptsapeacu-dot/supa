@@ -1,0 +1,117 @@
+<!-- MODAL OBRIGATORIO DE PRIMEIRO ACESSO -->
+<!-- NAO possui botao de fechar — o usuario fica preso ate trocar a senha -->
+<div id="modalPrimeiroAcesso" class="modal" style="display:none; z-index: 9500;">
+  <div class="modal-box" style="max-width: 460px; border: 1px solid #a855f733; position: relative; overflow: hidden;">
+
+    <!-- Faixa de alerta no topo -->
+    <div style="background: linear-gradient(90deg, #7c3aed, #a855f7); margin: -24px -24px 20px -24px; padding: 14px 20px; display: flex; align-items: center; gap: 10px;">
+      <i data-lucide="shield-alert" style="width: 20px; height: 20px; color: #fff; flex-shrink: 0;"></i>
+      <div>
+        <div style="color: #fff; font-weight: 700; font-size: 14px;">Primeiro Acesso Detectado</div>
+        <div style="color: rgba(255,255,255,0.8); font-size: 12px;">Defina sua senha pessoal para continuar</div>
+      </div>
+    </div>
+
+    <p style="font-size: 13px; color: #888; margin: 0 0 20px; line-height: 1.6;">
+      Voc&ecirc; est&aacute; acessando com uma <strong style="color: #ccc;">senha provis&oacute;ria</strong> fornecida pela secretaria.
+      Por seguran&ccedil;a, &eacute; obrigat&oacute;rio que voc&ecirc; defina uma senha pessoal antes de usar o sistema.
+    </p>
+
+    <!-- Alert box de feedback -->
+    <div id="paAlertBox" style="display:none; padding: 10px 14px; border-radius: 8px; font-size: 13px; align-items: center; gap: 8px; margin-bottom: 16px;">
+      <i data-lucide="alert-circle" style="width: 15px; height: 15px; flex-shrink: 0;"></i>
+      <span id="paAlertText"></span>
+    </div>
+
+    <!-- Campo: Senha Provisoria -->
+    <div class="form-group" style="margin-bottom: 14px;">
+      <label style="font-size: 12px; color: #888; margin-bottom: 6px; display: block;">
+        Senha Provis&oacute;ria (fornecida pela secretaria)
+      </label>
+      <div style="position: relative; display: flex; align-items: center;">
+        <input
+          type="password"
+          id="paSenhaAtual"
+          placeholder="Digite a senha que recebeu"
+          style="padding-right: 42px; width: 100%;"
+          autocomplete="current-password"
+        />
+        <button
+          type="button"
+          id="paBtnOlhoAtual"
+          onclick="paToggleVisibilidade('paSenhaAtual', 'paBtnOlhoAtual')"
+          style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #666; display: flex; align-items: center; padding: 4px;"
+          title="Mostrar/ocultar senha"
+        >
+          <i data-lucide="eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Campo: Nova Senha -->
+    <div class="form-group" style="margin-bottom: 14px;">
+      <label style="font-size: 12px; color: #888; margin-bottom: 6px; display: block;">
+        Nova Senha <span style="color: #666;">(m&iacute;nimo 6 caracteres)</span>
+      </label>
+      <div style="position: relative; display: flex; align-items: center;">
+        <input
+          type="password"
+          id="paNovaSenha"
+          placeholder="Crie uma senha forte e pessoal"
+          style="padding-right: 42px; width: 100%;"
+          autocomplete="new-password"
+        />
+        <button
+          type="button"
+          id="paBtnOlhoNova"
+          onclick="paToggleVisibilidade('paNovaSenha', 'paBtnOlhoNova')"
+          style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #666; display: flex; align-items: center; padding: 4px;"
+          title="Mostrar/ocultar senha"
+        >
+          <i data-lucide="eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Campo: Confirmar Nova Senha -->
+    <div class="form-group" style="margin-bottom: 22px;">
+      <label style="font-size: 12px; color: #888; margin-bottom: 6px; display: block;">Confirmar Nova Senha</label>
+      <div style="position: relative; display: flex; align-items: center;">
+        <input
+          type="password"
+          id="paConfirmaSenha"
+          placeholder="Repita a nova senha"
+          style="padding-right: 42px; width: 100%;"
+          autocomplete="new-password"
+          onkeydown="if(event.key==='Enter') confirmarTrocaSenhaPrimeiroAcesso()"
+        />
+        <button
+          type="button"
+          id="paBtnOlhoConfirma"
+          onclick="paToggleVisibilidade('paConfirmaSenha', 'paBtnOlhoConfirma')"
+          style="position: absolute; right: 10px; background: none; border: none; cursor: pointer; color: #666; display: flex; align-items: center; padding: 4px;"
+          title="Mostrar/ocultar senha"
+        >
+          <i data-lucide="eye"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Botao -->
+    <button
+      id="paBtnConfirmar"
+      onclick="confirmarTrocaSenhaPrimeiroAcesso()"
+      style="width: 100%; padding: 12px; background: linear-gradient(135deg, #7c3aed, #a855f7); color: #fff; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: opacity 0.2s;"
+      onmouseover="this.style.opacity='0.9'"
+      onmouseout="this.style.opacity='1'"
+    >
+      <i data-lucide="check-circle"></i> Definir Minha Senha
+    </button>
+
+    <p style="text-align: center; font-size: 11px; color: #555; margin: 12px 0 0;">
+      <i data-lucide="lock" style="width: 11px; height: 11px; vertical-align: middle;"></i>
+      N&atilde;o &eacute; poss&iacute;vel ignorar esta etapa. Guarde sua nova senha com seguran&ccedil;a.
+    </p>
+
+  </div>
+</div>

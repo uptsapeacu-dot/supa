@@ -9,6 +9,31 @@ async function fazerLogin() {
   }
 
   btnLogin.disabled = true
+  btnLogin.innerText = 'Verificando...'
+
+  // Coleta IP antes de tudo para checagem de bloqueio
+  await coletarIPCliente()
+
+  // ====== CHECAGEM DE IP BLOQUEADO ======
+  if (_clienteIP) {
+    const agora = new Date().toISOString()
+    const { data: bloqueio } = await clienteSupabase
+      .from('blocked_ips')
+      .select('blocked_until, reason')
+      .eq('ip_address', _clienteIP)
+      .gt('blocked_until', agora)
+      .maybeSingle()
+
+    if (bloqueio) {
+      const ate = new Date(bloqueio.blocked_until).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
+      alert('Acesso temporariamente bloqueado por excesso de tentativas falhas.\nTente novamente ap\u00f3s ' + ate + '.')
+      btnLogin.disabled = false
+      btnLogin.innerText = 'Entrar'
+      return
+    }
+  }
+  // ======================================
+
   btnLogin.innerText = 'Entrando...'
 
   const { error } = await clienteSupabase.auth.signInWithPassword({
@@ -17,13 +42,38 @@ async function fazerLogin() {
   })
 
   if (error) {
-    // Tenta coletar IP mesmo em falha para registrar
-    await coletarIPCliente()
+    // Registra a falha
     await clienteSupabase.from('access_logs').insert([{
       email: email, evento: 'login_falha',
       ip_address: _clienteIP, user_agent: navigator.userAgent,
       detalhes: { motivo: error.message }
     }])
+
+    // ====== AUTO-BLOQUEIO: 5 falhas em 10 minutos ======
+    if (_clienteIP) {
+      const dez_min_atras = new Date(Date.now() - 10 * 60 * 1000).toISOString()
+      const { count } = await clienteSupabase
+        .from('access_logs')
+        .select('id', { count: 'exact', head: true })
+        .eq('ip_address', _clienteIP)
+        .eq('evento', 'login_falha')
+        .gte('created_at', dez_min_atras)
+
+      if (count >= 5) {
+        const bloqueado_ate = new Date(Date.now() + 60 * 60 * 1000).toISOString()
+        await clienteSupabase.from('blocked_ips').insert([{
+          ip_address: _clienteIP,
+          blocked_until: bloqueado_ate,
+          reason: 'Auto-bloqueio: ' + count + ' tentativas falhas em 10 minutos'
+        }])
+        alert('Muitas tentativas incorretas. Seu IP foi bloqueado por 1 hora por seguran\u00e7a.')
+        btnLogin.disabled = false
+        btnLogin.innerText = 'Entrar'
+        return
+      }
+    }
+    // ===================================================
+
     alert('Login inv\u00e1lido')
     btnLogin.disabled = false
     btnLogin.innerText = 'Entrar'
@@ -84,6 +134,61 @@ async function iniciarSistema() {
 
   mostrarTela('home')
   await carregarEscolas()
+
+  // ====== VERIFICACAO DE PRIMEIRO ACESSO ======
+  if (funcionarioAtual.primeiro_acesso) {
+    abrirModalPrimeiroAcesso()
+  }
+  // ============================================
+
+  // ====== BANNER DE MANUTENCAO ======
+  verificarBannerManutencao()
+  // ==================================
+}
+
+async function verificarBannerManutencao() {
+  try {
+    const { data: config } = await clienteSupabase
+      .from('configuracoes_sistema')
+      .select('mensagem_manutencao')
+      .eq('id', 1)
+      .maybeSingle()
+
+    // Remove banner anterior se existir
+    const bannerAntigo = document.getElementById('bannerManutencao')
+    if (bannerAntigo) bannerAntigo.remove()
+
+    if (!config || !config.mensagem_manutencao) return
+
+    const banner = document.createElement('div')
+    banner.id = 'bannerManutencao'
+    banner.style.cssText = [
+      'position: fixed',
+      'top: 0',
+      'left: 0',
+      'right: 0',
+      'background: linear-gradient(90deg, #b45309, #d97706)',
+      'color: #fff',
+      'padding: 10px 20px',
+      'font-size: 13px',
+      'font-weight: 500',
+      'display: flex',
+      'align-items: center',
+      'gap: 10px',
+      'z-index: 9999',
+      'box-shadow: 0 2px 8px rgba(0,0,0,0.4)'
+    ].join(';')
+
+    banner.innerHTML =
+      '<i data-lucide="triangle-alert" style="width:16px;height:16px;flex-shrink:0;"></i>' +
+      '<span>' + config.mensagem_manutencao + '</span>' +
+      '<button onclick="this.parentElement.remove()" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;">Fechar</button>'
+
+    document.body.prepend(banner)
+    if (window.lucide) lucide.createIcons()
+  } catch (e) {
+    // Banner e opcional, nao bloqueia o sistema
+  }
 }
 
 async function carregarFuncionarioAtual() {
