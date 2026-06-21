@@ -112,10 +112,11 @@ function renderizarViewFuncionario() {
 
   // Filtros
   if (busca) {
+    const buscaNorm = removerAcentosPerm(busca.toLowerCase())
     grupos = grupos.filter(function(g) {
-      const nome = ((g.funcionario && g.funcionario.nome) || '').toLowerCase()
-      const email = ((g.funcionario && g.funcionario.email) || '').toLowerCase()
-      return nome.includes(busca.toLowerCase()) || email.includes(busca.toLowerCase())
+      const nome = removerAcentosPerm(((g.funcionario && g.funcionario.nome) || '').toLowerCase())
+      const email = removerAcentosPerm(((g.funcionario && g.funcionario.email) || '').toLowerCase())
+      return nome.includes(buscaNorm) || email.includes(buscaNorm)
     })
   }
   if (filtroNivel) {
@@ -194,9 +195,10 @@ function renderizarViewEscola() {
   let grupos = Object.values(porOrgao)
 
   if (busca) {
+    const buscaNorm = removerAcentosPerm(busca.toLowerCase())
     grupos = grupos.filter(function(g) {
-      const nome = ((g.orgao && g.orgao.nome) || '').toLowerCase()
-      return nome.includes(busca.toLowerCase())
+      const nome = removerAcentosPerm(((g.orgao && g.orgao.nome) || '').toLowerCase())
+      return nome.includes(buscaNorm)
     })
   }
   if (filtroOrgao) {
@@ -377,16 +379,22 @@ async function alternarStatusAcesso(acessoId, novoStatus) {
 // =============================================
 // SELECTS DO FORMULARIO
 // =============================================
+
+function removerAcentosPerm(str) {
+  if (!str) return '';
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 function filtrarSelectFuncionario() {
   const buscaInput = document.getElementById('buscaFuncionarioSelect')
-  const busca = buscaInput ? buscaInput.value.toLowerCase().trim() : ''
+  const busca = buscaInput ? removerAcentosPerm(buscaInput.value.toLowerCase().trim()) : ''
   const selectFuncionario = document.getElementById('funcionarioPermissao')
   if (!selectFuncionario) return
 
   selectFuncionario.innerHTML = '<option value="">Selecione o Funcionario</option>'
   funcionarios.forEach(function(funcionario) {
-    const nome = (funcionario.nome || '').toLowerCase()
-    const email = (funcionario.email || '').toLowerCase()
+    const nome = removerAcentosPerm((funcionario.nome || '').toLowerCase())
+    const email = removerAcentosPerm((funcionario.email || '').toLowerCase())
     if (nome.includes(busca) || email.includes(busca)) {
       const option = document.createElement('option')
       option.value = funcionario.id
