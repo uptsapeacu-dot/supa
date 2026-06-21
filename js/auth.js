@@ -17,7 +17,14 @@ async function fazerLogin() {
   })
 
   if (error) {
-    alert('Login inválido')
+    // Tenta coletar IP mesmo em falha para registrar
+    await coletarIPCliente()
+    await clienteSupabase.from('access_logs').insert([{
+      email: email, evento: 'login_falha',
+      ip_address: _clienteIP, user_agent: navigator.userAgent,
+      detalhes: { motivo: error.message }
+    }])
+    alert('Login inv\u00e1lido')
     btnLogin.disabled = false
     btnLogin.innerText = 'Entrar'
     return
@@ -44,10 +51,24 @@ async function iniciarSistema() {
 
   if (!autorizado) {
     await clienteSupabase.auth.signOut()
-    alert('Acesso negado. Seu e-mail não pertence a nenhum funcionário cadastrado.')
+    alert('Acesso negado. Seu e-mail n\u00e3o pertence a nenhum funcion\u00e1rio cadastrado.')
     location.reload()
     return
   }
+
+  // Coleta o IP do cliente antes de qualquer desvio
+  await coletarIPCliente()
+
+  // ====== BIFURCACAO SUPERADMIN ======
+  if (funcionarioAtual.is_superadmin) {
+    // Registra o login do superadmin e carrega o painel exclusivo
+    await registrarLog('login', { tipo: 'superadmin' })
+    await carregarPainelSuperAdmin()
+    return  // NAO continua para o painel escolar
+  }
+  // ===================================
+
+  await registrarLog('login', { tipo: 'normal' })
 
   document.getElementById('loginBox').style.display = 'none'
   document.getElementById('app').style.display = 'block'
@@ -108,8 +129,60 @@ async function carregarFuncionarioAtual() {
 }
 
 async function logout() {
+  await registrarLog('logout', { tipo: funcionarioAtual && funcionarioAtual.is_superadmin ? 'superadmin' : 'normal' })
   await clienteSupabase.auth.signOut()
   location.reload()
+}
+
+// ============================================
+// SISTEMA GLOBAL DE LOGS
+// ============================================
+let _clienteIP = null
+
+async function coletarIPCliente() {
+  try {
+    const res = await fetch('https://api.ipify.org?format=json')
+    const data = await res.json()
+    _clienteIP = data.ip || null
+  } catch (e) {
+    _clienteIP = null
+  }
+}
+
+async function registrarLog(evento, detalhes) {
+  try {
+    const orgaoId = acessosAtual.length > 0 ? (acessosAtual[0].orgao_id || null) : null
+    await clienteSupabase.from('access_logs').insert([{
+      funcionario_id: funcionarioAtual ? funcionarioAtual.id : null,
+      email:          funcionarioAtual ? funcionarioAtual.email : null,
+      evento:         evento,
+      orgao_id:       orgaoId,
+      ip_address:     _clienteIP,
+      user_agent:     navigator.userAgent,
+      detalhes:       detalhes || null
+    }])
+  } catch (e) {
+    console.warn('Falha ao registrar log de acesso:', e)
+  }
+}
+
+async function registrarAuditoria(acao, tabela, registroId, dadosAntes, dadosDepois) {
+  try {
+    const orgaoId = acessosAtual.length > 0 ? (acessosAtual[0].orgao_id || null) : null
+    await clienteSupabase.from('audit_logs').insert([{
+      funcionario_id:  funcionarioAtual ? funcionarioAtual.id : null,
+      email_executor:  funcionarioAtual ? funcionarioAtual.email : null,
+      acao:            acao,
+      tabela_alvo:     tabela,
+      registro_id:     registroId || null,
+      dados_antes:     dadosAntes  || null,
+      dados_depois:    dadosDepois || null,
+      ip_address:      _clienteIP,
+      orgao_id:        orgaoId
+    }])
+  } catch (e) {
+    console.warn('Falha ao registrar auditoria:', e)
+  }
 }
 
 function tentarAtivarModoEdicao(checked) {
@@ -158,6 +231,7 @@ async function confirmarSenhaModoEdicao() {
   modoEdicaoAtivo = true
   document.getElementById('modalConfirmacaoSenha').style.display = 'none'
   document.querySelectorAll('.btn-modo-edicao').forEach(function(toggle) { toggle.checked = true })
+  registrarLog('modo_edicao_ativado', null)
   atualizarInterfaceModo()
 }
 

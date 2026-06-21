@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Root &mdash; Sapeaçu</title>
+</head>
+<body>
+
+<!-- CONTAINER RAIZ DO ADMIN -->
+<div id="adminApp" style="display:none;">
+
+  <!-- TOPBAR -->
+  <header class="admin-topbar">
+    <div class="admin-brand">
+      <i data-lucide="shield-check"></i>
+      Sapeaçu &mdash; Administra&ccedil;&atilde;o do Sistema
+      <span class="admin-root-badge">ROOT</span>
+    </div>
+    <div class="admin-topbar-user">
+      <i data-lucide="user-cog"></i>
+      <span>Logado como: <strong id="adminNomeUsuario"></strong></span>
+      <button class="admin-logout-btn" onclick="adminLogout()">
+        <i data-lucide="log-out"></i> Sair
+      </button>
+    </div>
+  </header>
+
+  <!-- NAVEGACAO -->
+  <nav class="admin-nav">
+    <button class="admin-nav-tab active" id="adminTab-dashboard" onclick="adminMostrarTela('dashboard')">
+      <i data-lucide="layout-dashboard"></i> Dashboard
+    </button>
+    <button class="admin-nav-tab" id="adminTab-usuarios" onclick="adminMostrarTela('usuarios')">
+      <i data-lucide="users"></i> Usu&aacute;rios
+    </button>
+    <button class="admin-nav-tab" id="adminTab-acessos" onclick="adminMostrarTela('acessos')">
+      <i data-lucide="key-round"></i> Acessos
+    </button>
+    <button class="admin-nav-tab" id="adminTab-logs" onclick="adminMostrarTela('logs')">
+      <i data-lucide="activity"></i> Logs de Acesso
+    </button>
+    <button class="admin-nav-tab" id="adminTab-auditoria" onclick="adminMostrarTela('auditoria')">
+      <i data-lucide="file-search"></i> Auditoria
+    </button>
+    <button class="admin-nav-tab" id="adminTab-dispositivos" onclick="adminMostrarTela('dispositivos')">
+      <i data-lucide="monitor-smartphone"></i> Dispositivos
+    </button>
+    <button class="admin-nav-tab" id="adminTab-banco" onclick="adminMostrarTela('banco')">
+      <i data-lucide="database"></i> Banco de Dados
+    </button>
+    <button class="admin-nav-tab" id="adminTab-relatorios" onclick="adminMostrarTela('relatorios')">
+      <i data-lucide="bar-chart-3"></i> Relat&oacute;rios
+    </button>
+    <button class="admin-nav-tab" id="adminTab-configuracoes" onclick="adminMostrarTela('configuracoes')">
+      <i data-lucide="settings-2"></i> Configura&ccedil;&otilde;es
+    </button>
+  </nav>
+
+  <!-- CONTEUDO DINAMICO -->
+  <main class="admin-content" id="adminConteudo">
+    <!-- Injetado dinamicamente pelo admin-core.js -->
+  </main>
+
+</div>
+
+<!-- CONTAINER DE IMPRESSAO DE AUDITORIA (fora do app) -->
+<div id="adminAuditoriaImpressao" style="display:none;"></div>
+
+</body>
+</html>

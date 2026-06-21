@@ -20,6 +20,7 @@
   <link rel="stylesheet" href="styles/print-ficha.css">
   <link rel="stylesheet" href="styles/print-boletim.css">
   <link rel="stylesheet" href="styles/print-relatorio.css">
+  <link rel="stylesheet" href="styles/admin.css">
   <link rel="icon" type="image/png" href="img/favSapeacu.png">
 
   <link rel="manifest" href="manifest.json">
@@ -304,5 +305,9 @@
     // Dispara a função assim que o site abre
     iniciarApp();
   </script>
+
+  <!-- ADMIN CORE: carregado aqui pois iniciarSistema() pode chamar carregarPainelSuperAdmin() -->
+  <script src="admin/admin-core.js"></script>
+
 </body>
 </html>
