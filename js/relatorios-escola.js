@@ -1,11 +1,12 @@
-﻿﻿﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
+﻿﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
   const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
+  const containerOcorrencias = document.getElementById('conteudo-ocorrencias');
 
-  if (!containerDesempenho || !containerFreq || !containerCenso) {
+  if (!containerDesempenho || !containerFreq || !containerCenso || !containerOcorrencias) {
     console.error('Elementos de relatório não encontrados no DOM.');
     return;
   }
@@ -13,11 +14,13 @@ async function carregarRelatoriosEscola() {
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
+  containerOcorrencias.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
 
   // Variáveis globais para impressão local
   window.htmlImpressaoDesempenho = '';
   window.htmlImpressaoFrequencia = '';
   window.htmlImpressaoCenso = '';
+  window.htmlImpressaoOcorrencias = '';
 
   try {
     // 1. DESEMPENHO (Boletim Vermelho)
@@ -153,13 +156,75 @@ async function carregarRelatoriosEscola() {
   
   window.htmlImpressaoCenso = tabelaCensoPrint;
   containerCenso.innerHTML = htmlCenso;
+  
+  // 4. OCORRÊNCIAS LOCAIS
+  await carregarRelatorioOcorrenciasLocal();
+  
   } catch (err) {
     console.error('Erro em carregarRelatoriosEscola:', err);
     const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados locais.</div>';
     containerDesempenho.innerHTML = msgErro;
     containerFreq.innerHTML = msgErro;
     containerCenso.innerHTML = msgErro;
+    containerOcorrencias.innerHTML = msgErro;
   }
+}
+
+async function carregarRelatorioOcorrenciasLocal() {
+  const container = document.getElementById('conteudo-ocorrencias');
+  if (!container) return;
+
+  const fData = document.getElementById('filtroDataRelOcorrencia');
+  const fGrav = document.getElementById('filtroGravidadeRelOcorrencia');
+
+  const filtroData = fData ? fData.value : '';
+  const filtroGravidade = fGrav ? fGrav.value : '';
+
+  // Primeiro obter as turmas da escola
+  const { data: turmas } = await clienteSupabase.from('turmas').select('id').eq('escola_id', escolaAtual);
+  if (!turmas || turmas.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhuma turma registrada nesta escola.</div>';
+    return;
+  }
+  
+  const turmaIds = turmas.map(t => t.id);
+
+  let query = clienteSupabase
+    .from('ocorrencias')
+    .select(\`
+      *,
+      alunos(nome),
+      turmas(nome),
+      funcionarios(nome)
+    \`)
+    .in('turma_id', turmaIds)
+    .order('data_ocorrencia', { ascending: false });
+
+  if (filtroGravidade) {
+    query = query.eq('gravidade', filtroGravidade);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data) {
+    container.innerHTML = \`<div class="empty-state" style="color:#ef4444;">Erro ao carregar ocorrências: \${error ? error.message : 'Dados não encontrados'}</div>\`;
+    return;
+  }
+
+  let dadosFiltrados = data;
+  if (filtroData) {
+    dadosFiltrados = dadosFiltrados.filter(o => o.data_ocorrencia && o.data_ocorrencia.startsWith(filtroData));
+  }
+
+  renderizarRelatorioOcorrenciasUI(dadosFiltrados, container, false);
+
+  // Restore filter values
+  setTimeout(() => {
+    const newFData = document.getElementById('filtroDataRelOcorrencia');
+    const newFGrav = document.getElementById('filtroGravidadeRelOcorrencia');
+    if (newFData) newFData.value = filtroData;
+    if (newFGrav) newFGrav.value = filtroGravidade;
+  }, 50);
 }
 
 // Lógica isolada de frequência por turma da escola - MATRIZ DE FREQUÃŠNCIA

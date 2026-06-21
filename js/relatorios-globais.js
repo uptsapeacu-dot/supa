@@ -1,18 +1,20 @@
-﻿﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
+﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
   const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
+  const containerOcorrencias = document.getElementById('conteudo-ocorrencias');
 
-  if (!containerDesempenho || !containerFreq || !containerCenso) {
-    console.error('Elementos de relatório não encontrados não DOM.');
+  if (!containerDesempenho || !containerFreq || !containerCenso || !containerOcorrencias) {
+    console.error('Elementos de relatório não encontrados no DOM.');
     return;
   }
 
   containerDesempenho.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
+  containerOcorrencias.innerHTML = '<div class="empty-state">Carregando dados da rede...</div>';
 
   try {
     // Buscar todas escolas
@@ -23,6 +25,7 @@ async function carregarRelatoriosGlobais() {
   window.htmlImpressaoDesempenho = '';
   window.htmlImpressaoFrequencia = '';
   window.htmlImpressaoCenso = '';
+  window.htmlImpressaoOcorrencias = '';
 
   // 1. DESEMPENHO (Média por escola)
   const { data: notas } = await clienteSupabase.from('notas_alunos')
@@ -208,12 +211,70 @@ async function carregarRelatoriosGlobais() {
   setTimeout(() => {
     if (window.lucide) window.lucide.createIcons();
   }, 50);
+
+  // 4. OCORRÊNCIAS GLOBAIS
+  await carregarRelatorioOcorrenciasGlobal();
+
   } catch (err) {
     console.error('Erro em carregarRelatoriosGlobais:', err);
     const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados globais da rede.</div>';
     containerDesempenho.innerHTML = msgErro;
     containerFreq.innerHTML = msgErro;
     containerCenso.innerHTML = msgErro;
+    containerOcorrencias.innerHTML = msgErro;
   }
 }
 
+async function carregarRelatorioOcorrenciasGlobal() {
+  const container = document.getElementById('conteudo-ocorrencias');
+  if (!container) return;
+
+  const fData = document.getElementById('filtroDataRelOcorrencia');
+  const fGrav = document.getElementById('filtroGravidadeRelOcorrencia');
+  const fEscola = document.getElementById('filtroEscolaRelOcorrencia');
+
+  const filtroData = fData ? fData.value : '';
+  const filtroGravidade = fGrav ? fGrav.value : '';
+  const filtroEscola = fEscola ? fEscola.value : '';
+
+  let query = clienteSupabase
+    .from('ocorrencias')
+    .select(`
+      *,
+      alunos(nome),
+      turmas!inner(nome, escola_id),
+      funcionarios(nome)
+    `)
+    .order('data_ocorrencia', { ascending: false });
+
+  if (filtroGravidade) {
+    query = query.eq('gravidade', filtroGravidade);
+  }
+  if (filtroEscola) {
+    query = query.eq('turmas.escola_id', filtroEscola);
+  }
+
+  const { data, error } = await query;
+
+  if (error || !data) {
+    container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Erro ao carregar ocorrências: ${error ? error.message : 'Dados não encontrados'}</div>`;
+    return;
+  }
+
+  let dadosFiltrados = data;
+  if (filtroData) {
+    dadosFiltrados = dadosFiltrados.filter(o => o.data_ocorrencia && o.data_ocorrencia.startsWith(filtroData));
+  }
+
+  renderizarRelatorioOcorrenciasUI(dadosFiltrados, container, true);
+
+  // Restore filter values after DOM update
+  setTimeout(() => {
+    const newFData = document.getElementById('filtroDataRelOcorrencia');
+    const newFGrav = document.getElementById('filtroGravidadeRelOcorrencia');
+    const newFEscola = document.getElementById('filtroEscolaRelOcorrencia');
+    if (newFData) newFData.value = filtroData;
+    if (newFGrav) newFGrav.value = filtroGravidade;
+    if (newFEscola) newFEscola.value = filtroEscola;
+  }, 50);
+}

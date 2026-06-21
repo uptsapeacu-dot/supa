@@ -9,6 +9,7 @@
   <button class="tab-btn active" onclick="mudarAbaRelatorio('desempenho')" id="tab-desempenho" style="background:none; border:none; color:#fff; padding:8px 16px; cursor:pointer; border-bottom: 2px solid #3ea6ff;">Desempenho Escolar</button>
   <button class="tab-btn" onclick="mudarAbaRelatorio('frequencia')" id="tab-frequencia" style="background:none; border:none; color:#aaa; padding:8px 16px; cursor:pointer; border-bottom: 2px solid transparent;">Frequência e Evasão</button>
   <button class="tab-btn" onclick="mudarAbaRelatorio('censo')" id="tab-censo" style="background:none; border:none; color:#aaa; padding:8px 16px; cursor:pointer; border-bottom: 2px solid transparent;">Censo e Logística</button>
+  <button class="tab-btn" onclick="mudarAbaRelatorio('ocorrencias')" id="tab-ocorrencias" style="background:none; border:none; color:#aaa; padding:8px 16px; cursor:pointer; border-bottom: 2px solid transparent;">Ocorrências</button>
 </div>
 
 <!-- CONTAINER DE IMPRESSÃO (Recebe classe no body via JS) -->
@@ -26,6 +27,11 @@
   <!-- Aba Censo -->
   <div id="relatorio-censo" class="relatorio-aba" style="display:none;">
     <div id="conteudo-censo"><div class="empty-state">Carregando relatórios de censo...</div></div>
+  </div>
+
+  <!-- Aba Ocorrências -->
+  <div id="relatorio-ocorrencias" class="relatorio-aba" style="display:none;">
+    <div id="conteudo-ocorrencias"><div class="empty-state">Carregando relatórios de ocorrências...</div></div>
   </div>
 </div>
 
