@@ -68,6 +68,8 @@ document.addEventListener('keydown', function(event) {
     if(typeof fecharModalMovimentacoes === 'function') fecharModalMovimentacoes()
     if(typeof cancelarModoEdicao === 'function') cancelarModoEdicao()
     if(typeof fecharSidebarMobile === 'function') fecharSidebarMobile()
+    if(typeof fecharModalDetalhesFuncionario === 'function') fecharModalDetalhesFuncionario()
+    if(typeof fecharModalEquipeEscola === 'function') fecharModalEquipeEscola()
     
     // Fecha o hub de turma se estiver aberto
     const hubOverlay = document.getElementById('hubTurmaOverlay')

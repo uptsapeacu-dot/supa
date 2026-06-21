@@ -1,40 +1,139 @@
         <div class="page-header">
-          <h1>Permissões</h1>
-        </div>
-        <div class="permissions-layout">
-          <!-- Formulário -->
-          <div class="permissions-box" id="boxFormPermissao">
-            <h2>Atribuir acesso</h2>
-            <input type="text" id="buscaFuncionarioSelect" placeholder="Pesquisar funcionário..." oninput="filtrarSelectFuncionario()" style="margin-bottom: 8px;" />
-            <select id="funcionarioPermissao" style="margin-bottom: 12px;"></select>
-            <select id="orgaoPermissao" style="margin-bottom: 12px;"></select>
-            <select id="nivelPermissao" style="margin-bottom: 24px;" onchange="atualizarCamposPermissao()"></select>
-            <div class="checks-permissoes" id="checksPermissoes" style="display: none; margin-bottom: 16px;">
-              <label><input type="checkbox" id="permMural"> Mural</label>
-              <label><input type="checkbox" id="permTurmas"> Turmas</label>
-              <label><input type="checkbox" id="permFuncionarios"> Funcionários</label>
-              <label><input type="checkbox" id="permMatriculas"> Matrículas</label>
-              <label><input type="checkbox" id="permAlunos"> Alunos</label>
-            </div>
-            <button class="btn-login" type="button" onclick="salvarPermissao()" id="btnSalvarPermissao">Salvar permissão</button>
-            <button class="btn-clear" type="button" onclick="cancelarEdicaoPermissao()" id="btnCancelarPermissao" style="display: none; width: 100%; margin-top: 8px;">Cancelar edição</button>
+          <h1>Permiss&otilde;es</h1>
+          <div id="permissoes-view-tabs" style="display:none;">
+            <button class="perm-view-tab active" id="tabViewFuncionario" onclick="alternarViewPermissoes('funcionario')">
+              <i data-lucide="users"></i> Por Funcion&aacute;rio
+            </button>
+            <button class="perm-view-tab" id="tabViewEscola" onclick="alternarViewPermissoes('escola')">
+              <i data-lucide="school"></i> Por Escola
+            </button>
           </div>
-          <!-- Lista -->
-          <div class="permissions-box" style="grid-column: span 2;" id="boxListaPermissoes">
-            <h2>Acessos cadastrados</h2>
-            <div style="display: grid; grid-template-columns: 1fr 160px 220px auto; gap: 12px; margin-bottom: 18px; align-items: center;">
-              <input type="search" id="buscaPermissao" placeholder="Buscar funcionário..." oninput="renderizarPermissoes()" />
-              <select id="filtroNivelPermissao" onchange="renderizarPermissoes()">
-                <option value="">Todos os Níveis</option>
-                <option value="2">Nível 2</option>
-                <option value="3">Nível 3</option>
-                <option value="4">Nível 4</option>
-              </select>
-              <select id="filtroOrgaoPermissao" onchange="renderizarPermissoes()">
-                <option value="">Todos os Órgãos</option>
-              </select>
-              <button class="btn-clear" onclick="limparFiltrosPermissao()">Limpar</button>
+        </div>
+
+        <!-- PAINEL DE ATRIBUICAO (so aparece no modo edicao) -->
+        <div class="permissions-box" id="boxFormPermissao" style="display:none; margin-bottom: 20px;">
+          <h2 id="formPermissaoTitulo">Atribuir acesso</h2>
+          <div class="perm-form-grid">
+            <div class="perm-form-col">
+              <label class="perm-label">Funcion&aacute;rio</label>
+              <input type="text" id="buscaFuncionarioSelect" placeholder="Pesquisar funcion&aacute;rio..." oninput="filtrarSelectFuncionario()" />
+              <select id="funcionarioPermissao"></select>
             </div>
-            <div class="lista-alunos" id="listaPermissoes"></div>
+            <div class="perm-form-col">
+              <label class="perm-label">Escola / &Oacute;rg&atilde;o</label>
+              <select id="orgaoPermissao"></select>
+            </div>
+            <div class="perm-form-col">
+              <label class="perm-label">N&iacute;vel de Acesso</label>
+              <select id="nivelPermissao" onchange="atualizarCamposPermissao()"></select>
+            </div>
+          </div>
+
+          <!-- MATRIZ VISUAL DE PERMISSOES (nivel 3) -->
+          <div id="checksPermissoes" style="display:none; margin-top: 16px;">
+            <label class="perm-label" style="margin-bottom: 10px; display:block;">M&oacute;dulos liberados para este Coordenador</label>
+            <div class="perm-matrix">
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="pin"></i></div>
+                <div class="perm-matrix-nome">Mural</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permMural">
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="book-open"></i></div>
+                <div class="perm-matrix-nome">Turmas</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permTurmas">
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="users"></i></div>
+                <div class="perm-matrix-nome">Funcion&aacute;rios</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permFuncionarios">
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="file-text"></i></div>
+                <div class="perm-matrix-nome">Matr&iacute;culas</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permMatriculas">
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="graduation-cap"></i></div>
+                <div class="perm-matrix-nome">Alunos</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permAlunos">
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+              <div class="perm-matrix-item">
+                <div class="perm-matrix-icon"><i data-lucide="alert-triangle"></i></div>
+                <div class="perm-matrix-nome">Ocorr&ecirc;ncias</div>
+                <label class="perm-toggle">
+                  <input type="checkbox" id="permOcorrencias" checked disabled>
+                  <span class="perm-toggle-slider"></span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="perm-form-actions">
+            <button class="btn-login" type="button" onclick="salvarPermissao()" id="btnSalvarPermissao">Salvar permiss&atilde;o</button>
+            <button class="btn-clear" type="button" onclick="cancelarEdicaoPermissao()" id="btnCancelarPermissao" style="display:none;">Cancelar edi&ccedil;&atilde;o</button>
+          </div>
+        </div>
+
+        <!-- LISTA PRINCIPAL -->
+        <div class="permissions-box" id="boxListaPermissoes" style="grid-column: span 2;">
+          <!-- BARRA DE FILTROS -->
+          <div class="perm-filter-bar">
+            <input type="search" id="buscaPermissao" placeholder="Buscar funcion&aacute;rio..." oninput="renderizarPermissoes()" />
+            <select id="filtroNivelPermissao" onchange="renderizarPermissoes()">
+              <option value="">Todos os N&iacute;veis</option>
+              <option value="2">N&iacute;vel 2 &mdash; Diretor</option>
+              <option value="3">N&iacute;vel 3 &mdash; Coordenador</option>
+              <option value="4">N&iacute;vel 4 &mdash; Professor</option>
+            </select>
+            <select id="filtroOrgaoPermissao" onchange="renderizarPermissoes()">
+              <option value="">Todas as Escolas</option>
+            </select>
+            <button class="btn-clear" onclick="limparFiltrosPermissao()">
+              <i data-lucide="x"></i> Limpar
+            </button>
+          </div>
+
+          <!-- LISTA INJETADA PELO JS -->
+          <div id="listaPermissoes"></div>
+        </div>
+
+        <!-- MODAL DE DETALHES DO FUNCIONARIO -->
+        <div class="modal" id="modalDetalhesFuncionario" style="display:none;">
+          <div class="modal-box" style="max-width: 620px;">
+            <div class="modal-topo">
+              <h2 id="modalPermFuncNome">Acessos do Funcion&aacute;rio</h2>
+              <button class="fechar" onclick="fecharModalDetalhesFuncionario()"><i data-lucide="x"></i></button>
+            </div>
+            <div id="modalPermFuncEmail" style="color:#888; font-size:13px; margin-bottom:18px;"></div>
+            <div id="listaVinculosFuncionario"></div>
+            <button class="btn-login" style="width:100%; margin-top:16px;" onclick="fecharModalDetalhesFuncionario()">Fechar</button>
+          </div>
+        </div>
+
+        <!-- MODAL DE EQUIPE DA ESCOLA -->
+        <div class="modal" id="modalEquipeEscola" style="display:none;">
+          <div class="modal-box" style="max-width: 620px;">
+            <div class="modal-topo">
+              <h2 id="modalPermEscolaNome">Equipe da Escola</h2>
+              <button class="fechar" onclick="fecharModalEquipeEscola()"><i data-lucide="x"></i></button>
+            </div>
+            <div id="listaEquipeEscola"></div>
+            <button class="btn-login" style="width:100%; margin-top:16px;" onclick="fecharModalEquipeEscola()">Fechar</button>
           </div>
         </div>

@@ -387,74 +387,247 @@ h1 {
 }
 
 /* =====================
-   PERMISSÕES
+   PERMISSOES - NOVO SISTEMA ROBUSTO
    ===================== */
-.permissions-layout {
-  display: grid;
-  grid-template-columns: 360px 1fr;
-  gap: 18px;
-  align-items: start;
-}
-
 .permissions-box {
   background: #181818;
   border: 1px solid #2a2a2a;
   border-radius: 14px;
-  padding: 18px;
+  padding: 20px;
 }
 
 .permissions-box h2 {
-  margin: 0 0 14px;
+  margin: 0 0 16px;
   font-size: 18px;
+  color: #fff;
 }
 
-.permissions-box select {
-  margin-top: 10px;
-}
-
-.checks-permissoes {
-  display: grid;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-.checks-permissoes label {
-  display: flex;
+/* ABAS DE VISAO */
+.perm-view-tab {
+  display: inline-flex;
   align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: 10px;
+  background: #1e1e1e;
+  border: 1px solid #2a2a2a;
+  color: #888;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-left: 6px;
+}
+.perm-view-tab i { width: 15px; height: 15px; }
+.perm-view-tab:hover { background: #2a2a2a; color: #ccc; }
+.perm-view-tab.active {
+  background: rgba(62,166,255,0.12);
+  border-color: rgba(62,166,255,0.4);
+  color: #3ea6ff;
+}
+
+/* FORMULARIO DE ATRIBUICAO */
+.perm-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 4px;
+}
+.perm-form-col { display: flex; flex-direction: column; gap: 6px; }
+.perm-label { font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: #666; font-weight: 600; }
+.perm-form-actions { display: flex; gap: 10px; margin-top: 18px; }
+
+/* MATRIZ VISUAL DE PERMISSOES */
+.perm-matrix {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  color: #ddd;
 }
-
-.checks-permissoes input {
-  width: auto;
-}
-
-.permissao-item {
+.perm-matrix-item {
   background: #121212;
   border: 1px solid #2a2a2a;
   border-radius: 12px;
   padding: 14px;
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.2s;
+}
+.perm-matrix-item:hover { border-color: #3a3a3a; }
+.perm-matrix-icon {
+  width: 34px; height: 34px;
+  background: #1e1e1e;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  color: #3ea6ff; flex-shrink: 0;
+}
+.perm-matrix-icon i { width: 16px; height: 16px; }
+.perm-matrix-nome { flex: 1; font-size: 13.5px; color: #ccc; font-weight: 500; }
+
+/* TOGGLE SWITCH */
+.perm-toggle { position: relative; display: inline-block; width: 38px; height: 22px; flex-shrink: 0; }
+.perm-toggle input { opacity: 0; width: 0; height: 0; }
+.perm-toggle-slider {
+  position: absolute; cursor: pointer;
+  inset: 0; background: #2a2a2a; border-radius: 22px;
+  transition: 0.2s; border: 1px solid #3a3a3a;
+}
+.perm-toggle-slider:before {
+  content: ""; position: absolute;
+  width: 14px; height: 14px; background: #666;
+  border-radius: 50%; left: 3px; top: 3px; transition: 0.2s;
+}
+.perm-toggle input:checked + .perm-toggle-slider { background: rgba(62,166,255,0.2); border-color: #3ea6ff; }
+.perm-toggle input:checked + .perm-toggle-slider:before { background: #3ea6ff; transform: translateX(16px); }
+.perm-toggle input:disabled + .perm-toggle-slider { opacity: 0.5; cursor: not-allowed; }
+
+/* BARRA DE FILTROS */
+.perm-filter-bar {
+  display: grid;
+  grid-template-columns: 1fr 180px 200px auto;
+  gap: 12px;
+  margin-bottom: 18px;
   align-items: center;
 }
 
-.permissao-actions {
+/* CARD DE FUNCIONARIO NA LISTA (VISAO POR PESSOA) */
+.perm-func-card {
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 16px 18px;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, transform 0.2s;
+  cursor: default;
 }
+.perm-func-card:hover { border-color: #3a3a3a; transform: translateY(-1px); }
+.perm-func-avatar {
+  width: 44px; height: 44px;
+  background: linear-gradient(135deg, #1a3a5c, #3ea6ff22);
+  border: 1px solid #2a4a6e;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 17px; color: #3ea6ff; flex-shrink: 0;
+}
+.perm-func-info { flex: 1; min-width: 0; }
+.perm-func-nome { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.perm-func-email { color: #666; font-size: 12.5px; }
+.perm-func-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.perm-func-tag {
+  background: #1e1e1e; border: 1px solid #2a2a2a;
+  border-radius: 20px; padding: 3px 10px;
+  font-size: 11.5px; color: #aaa;
+  display: flex; align-items: center; gap: 5px;
+}
+.perm-func-tag i { width: 11px; height: 11px; }
+.perm-func-actions { display: flex; gap: 8px; flex-shrink: 0; }
+
+/* CARD DE ESCOLA NA LISTA (VISAO POR ESCOLA) */
+.perm-escola-card {
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 10px;
+  transition: border-color 0.2s, transform 0.2s;
+}
+.perm-escola-card:hover { border-color: #3a3a3a; transform: translateY(-1px); }
+.perm-escola-icon {
+  width: 48px; height: 48px;
+  background: linear-gradient(135deg, #1c2e1c, #22c55e22);
+  border: 1px solid #2a4a2a;
+  border-radius: 12px;
+  display: flex; align-items: center; justify-content: center;
+  color: #22c55e; flex-shrink: 0;
+}
+.perm-escola-icon i { width: 22px; height: 22px; }
+.perm-escola-info { flex: 1; }
+.perm-escola-nome { color: #fff; font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+.perm-escola-contagem { color: #666; font-size: 12.5px; }
+
+/* CARD DE VINCULO NO MODAL */
+.perm-vinculo-card {
+  background: #121212;
+  border: 1px solid #2a2a2a;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+}
+.perm-vinculo-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+}
+.perm-vinculo-escola { flex: 1; font-size: 14px; font-weight: 600; color: #fff; }
+.perm-vinculo-nivel {
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+}
+.nivel-1 { background: rgba(168,85,247,0.15); color: #a855f7; border: 1px solid rgba(168,85,247,0.3); }
+.nivel-2 { background: rgba(251,146,60,0.15); color: #fb923c; border: 1px solid rgba(251,146,60,0.3); }
+.nivel-3 { background: rgba(34,197,94,0.15); color: #22c55e; border: 1px solid rgba(34,197,94,0.3); }
+.nivel-4 { background: rgba(62,166,255,0.15); color: #3ea6ff; border: 1px solid rgba(62,166,255,0.3); }
+.perm-vinculo-status-ativo { color: #22c55e; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.perm-vinculo-status-inativo { color: #ef4444; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+.perm-vinculo-modulos { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.perm-modulo-badge {
+  background: #1e1e1e; border: 1px solid #2a2a2a;
+  border-radius: 8px; padding: 3px 9px;
+  font-size: 11px; color: #888; display: flex; align-items: center; gap: 5px;
+}
+.perm-modulo-badge i { width: 11px; height: 11px; }
+.perm-modulo-badge.ativo { background: rgba(62,166,255,0.08); border-color: rgba(62,166,255,0.3); color: #3ea6ff; }
+.perm-vinculo-actions { display: flex; gap: 8px; margin-top: 12px; }
+
+/* BOTAO SUSPENDER */
+.btn-suspender {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(251,146,60,0.1);
+  color: #fb923c;
+  border: 1px solid rgba(251,146,60,0.3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-suspender:hover { background: rgba(251,146,60,0.2); }
+.btn-suspender i { width: 14px; height: 14px; }
+
+.btn-reativar {
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34,197,94,0.3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn-reativar:hover { background: rgba(34,197,94,0.2); }
+.btn-reativar i { width: 14px; height: 14px; }
 
 .btn-danger {
-  padding: 10px 14px;
-  border-radius: 10px;
-  background: #ff5b5b;
-  color: #120000;
-  font-weight: bold;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(239,68,68,0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239,68,68,0.3);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex; align-items: center; gap: 6px;
 }
-
-.btn-danger:hover {
-  background: #ff3333;
-}
+.btn-danger:hover { background: rgba(239,68,68,0.2); }
+.btn-danger i { width: 14px; height: 14px; }
 
 /* =====================
    CARDS DE ESCOLA (MODO EDIÇÃO)

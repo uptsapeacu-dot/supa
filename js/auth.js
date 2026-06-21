@@ -204,15 +204,14 @@ function atualizarInterfaceModo() {
   }
 
   const boxForm = document.getElementById('boxFormPermissao')
-  const boxLista = document.getElementById('boxListaPermissoes')
-  if (boxForm && boxLista) {
-    if (modoEdicaoAtivo && podeVerPermissoes()) {
-      boxForm.style.display = 'block'
-      boxLista.style.gridColumn = 'auto'
-    } else {
-      boxForm.style.display = 'none'
-      boxLista.style.gridColumn = 'span 2'
-    }
+  if (boxForm) {
+    boxForm.style.display = (modoEdicaoAtivo && podeVerPermissoes()) ? 'block' : 'none'
+  }
+
+  // Abas de visão só aparecem quando pode ver permissoes
+  const tabsEl = document.getElementById('permissoes-view-tabs')
+  if (tabsEl) {
+    tabsEl.style.display = podeVerPermissoes() ? 'flex' : 'none'
   }
 
   const telaAtual = document.querySelector('.menu button.active')
