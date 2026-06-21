@@ -42,6 +42,9 @@ async function carregarPainelSuperAdmin() {
     })
   }
 
+  // Sinaliza para o CSS que estamos no modo admin (esconde o #app escolar)
+  document.body.classList.add('modo-admin')
+
   // Exibe o painel
   document.getElementById('adminApp').style.display = 'flex'
   document.getElementById('loginBox').style.display = 'none'

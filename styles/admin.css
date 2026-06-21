@@ -19,8 +19,8 @@
   --admin-muted2:   #444;
 }
 
-/* RESET DO APP ESCOLAR */
-#app { display: none !important; }
+/* RESET DO APP ESCOLAR — só quando o painel admin estiver ativo */
+body.modo-admin #app { display: none !important; }
 
 /* CONTAINER RAIZ DO ADMIN */
 #adminApp {
