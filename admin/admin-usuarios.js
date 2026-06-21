@@ -149,14 +149,16 @@ async function adminExecutarCriacaoConta() {
       password: senhaAdmin
     })
 
-    // 4. Insere na tabela funcionarios (como o Admin já voltou, ele tem RLS para inserir)
-    const { error: errFunc } = await clienteSupabase.from('funcionarios').insert([{
+    // 4. Atualiza os dados na tabela funcionarios 
+    // (Usa upsert baseado no auth_user_id porque o banco possui um trigger automático 
+    // que insere a linha inicial no momento do signUp)
+    const { error: errFunc } = await clienteSupabase.from('funcionarios').upsert({
       auth_user_id: authId,
       nome: nome,
       email: email,
       telefone: telefone || null,
       primeiro_acesso: true
-    }])
+    }, { onConflict: 'auth_user_id' })
 
     if (errFunc) {
       adminShowFeedback('Conta criada no Auth, mas falhou ao salvar perfil: ' + errFunc.message, 'erro')
