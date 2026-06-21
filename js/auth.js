@@ -1,4 +1,4 @@
-﻿async function fazerLogin() {
+async function fazerLogin() {
   const email = document.getElementById('email').value.trim()
   const senha = document.getElementById('senha').value
   const btnLogin = document.getElementById('btnLogin')
@@ -40,10 +40,17 @@ async function verificarLogin() {
 }
 
 async function iniciarSistema() {
+  const autorizado = await carregarFuncionarioAtual()
+
+  if (!autorizado) {
+    await clienteSupabase.auth.signOut()
+    alert('Acesso negado. Seu e-mail não pertence a nenhum funcionário cadastrado.')
+    location.reload()
+    return
+  }
+
   document.getElementById('loginBox').style.display = 'none'
   document.getElementById('app').style.display = 'block'
-
-  await carregarFuncionarioAtual()
   aplicarVisibilidadeSidebar()
   
   await verificarECriarOrgaosFaltantes()
@@ -63,7 +70,7 @@ async function carregarFuncionarioAtual() {
     data: { user }
   } = await clienteSupabase.auth.getUser()
 
-  if (!user) return
+  if (!user) return false
 
   let { data: funcionario } = await clienteSupabase
     .from('funcionarios')
@@ -83,17 +90,7 @@ async function carregarFuncionarioAtual() {
       funcionario = funcByEmail
       funcionario.auth_user_id = user.id
     } else {
-      const resposta = await clienteSupabase
-        .from('funcionarios')
-        .insert([{
-          auth_user_id: user.id,
-          email: user.email,
-          nome: user.email
-        }])
-        .select()
-        .single()
-
-      funcionario = resposta.data
+      return false
     }
   }
 
@@ -106,6 +103,8 @@ async function carregarFuncionarioAtual() {
     .eq('ativo', true)
 
   acessosAtual = acessos || []
+
+  return true
 }
 
 async function logout() {
