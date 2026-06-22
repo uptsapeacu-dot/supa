@@ -1,0 +1,82 @@
+<div class="page-header">
+  <h1 id="tituloPainelChefe">Gestão de Equipe</h1>
+  <div class="header-actions" style="display:flex; gap:10px;">
+    <button class="btn-editar" onclick="carregarDadosPainelChefe(cargoAtualChefe)" title="Atualizar">
+      <i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>
+    </button>
+  </div>
+</div>
+
+<div class="content-tabs" style="display:flex; gap:10px; margin-bottom:20px;">
+  <button class="perm-view-tab active" id="tabChefeFuncionarios" onclick="mudarAbaChefe('funcionarios')">
+    <i data-lucide="users"></i> Operacionais
+  </button>
+  <button class="perm-view-tab" id="tabChefeEscalas" onclick="mudarAbaChefe('escalas')">
+    <i data-lucide="calendar-clock"></i> Escalas de Plantão
+  </button>
+  <button class="perm-view-tab" id="tabChefePontos" onclick="mudarAbaChefe('pontos')">
+    <i data-lucide="map-pin"></i> Pontos de Ronda (QR)
+  </button>
+  <button class="perm-view-tab" id="tabChefeRegistros" onclick="mudarAbaChefe('registros')">
+    <i data-lucide="clipboard-list"></i> Registros e Logs
+  </button>
+</div>
+
+<!-- CONTEUDOS DAS ABAS -->
+
+<div id="abaChefeFuncionarios">
+  <div class="permissions-box">
+    <h2 style="font-size:16px; margin-bottom:15px; color:#f1f5f9; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="shield-check" style="width:20px;height:20px;color:#3b82f6;"></i>
+      Lista de Integrantes da Equipe
+    </h2>
+    <div style="margin-bottom:15px; display:flex; gap:10px;">
+      <input type="search" id="buscaOperacional" placeholder="Buscar por nome ou CPF..." oninput="filtrarOperacionais()" style="flex:1;">
+    </div>
+    <div class="table-responsive">
+      <table class="table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="listaOperacionaisChefe">
+          <!-- Populado via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="abaChefeEscalas" style="display:none;">
+  <div class="permissions-box">
+    <h2>Escalas da Equipe</h2>
+    <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Aqui você define os horários de trabalho e as escolas alocadas para os operacionais.</p>
+    <div id="listaEscalasChefe">
+      <!-- Populado via JS -->
+    </div>
+  </div>
+</div>
+
+<div id="abaChefePontos" style="display:none;">
+  <div class="permissions-box">
+    <h2>Pontos Físicos de Ronda</h2>
+    <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Cadastre os locais onde haverá leitura de QR Code. Depois você poderá imprimir as etiquetas.</p>
+    <button class="btn-novo" style="margin-bottom:20px;" onclick="abrirModalNovoPonto()">Novo Ponto de Ronda</button>
+    <div id="listaPontosChefe">
+      <!-- Populado via JS -->
+    </div>
+  </div>
+</div>
+
+<div id="abaChefeRegistros" style="display:none;">
+  <div class="permissions-box">
+    <h2>Logs de Ronda e Ponto</h2>
+    <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Acompanhe o registro em tempo real das leituras de QR Code feitas pelos operacionais.</p>
+    <div id="listaRegistrosChefe">
+      <!-- Populado via JS -->
+    </div>
+  </div>
+</div>

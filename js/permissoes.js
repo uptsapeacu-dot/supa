@@ -488,6 +488,8 @@ function preencherSelectsPermissoes() {
     if (isSecretaria()) selectNivel.innerHTML += '<option value="2">Nivel 2 &mdash; Diretor</option>'
     selectNivel.innerHTML += '<option value="3">Nivel 3 &mdash; Coordenador</option>'
     selectNivel.innerHTML += '<option value="4">Nivel 4 &mdash; Professor</option>'
+    selectNivel.innerHTML += '<option value="5">Nivel 5 &mdash; Chefe de Equipe</option>'
+    selectNivel.innerHTML += '<option value="6">Nivel 6 &mdash; Operacional</option>'
   }
 
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')
@@ -508,6 +510,35 @@ function atualizarCamposPermissao() {
   const nivel = Number(nivelEl.value)
   const checks = document.getElementById('checksPermissoes')
   if (checks) checks.style.display = nivel === 3 ? 'block' : 'none'
+
+  const checksCargos = document.getElementById('checksABACCargos')
+  const containerCargos = document.getElementById('containerCargosChefe')
+  
+  if (checksCargos && containerCargos) {
+    checksCargos.style.display = nivel === 5 ? 'block' : 'none'
+    if (nivel === 5) {
+      // Puxa cargos unicos dos funcionarios
+      const cargosSet = new Set(funcionarios.map(function(f) { return f.cargo }).filter(Boolean))
+      const cargosUnicos = Array.from(cargosSet).sort()
+      
+      containerCargos.innerHTML = ''
+      cargosUnicos.forEach(function(cargo) {
+        const idSafe = 'chk_cargo_' + cargo.replace(/\s+/g, '')
+        const item = document.createElement('div')
+        item.className = 'perm-matrix-item'
+        item.innerHTML = `
+          <div class="perm-matrix-icon"><i data-lucide="shield"></i></div>
+          <div class="perm-matrix-nome">${cargo}</div>
+          <label class="perm-toggle">
+            <input type="checkbox" id="${idSafe}" value="${cargo}" class="chk-abac-cargo">
+            <span class="perm-toggle-slider"></span>
+          </label>
+        `
+        containerCargos.appendChild(item)
+      })
+      if (window.lucide) lucide.createIcons()
+    }
+  }
 }
 
 // =============================================
@@ -545,6 +576,17 @@ function editarPermissao(id) {
     if (el('permFuncionarios')) el('permFuncionarios').checked = !!acesso.pode_funcionarios
     if (el('permMatriculas')) el('permMatriculas').checked = !!acesso.pode_matriculas
     if (el('permAlunos')) el('permAlunos').checked = !!acesso.pode_alunos
+  }
+
+  if (acesso.nivel === 5 && acesso.cargos_gerenciados) {
+    setTimeout(function() {
+      const checkboxes = document.querySelectorAll('.chk-abac-cargo')
+      checkboxes.forEach(function(chk) {
+        if (acesso.cargos_gerenciados.includes(chk.value)) {
+          chk.checked = true
+        }
+      })
+    }, 100)
   }
 
   document.getElementById('formPermissaoTitulo').textContent = 'Editando acesso'
@@ -596,6 +638,7 @@ async function salvarPermissao() {
   }
 
   let podeMural = false, podeTurmas = false, podeFuncionarios = false, podeMatriculas = false, podeAlunos = false
+  let cargosGerenciados = []
 
   if (nivel === 2) {
     podeMural = podeTurmas = podeFuncionarios = podeMatriculas = podeAlunos = true
@@ -605,6 +648,15 @@ async function salvarPermissao() {
     podeFuncionarios = !!(document.getElementById('permFuncionarios') || {}).checked
     podeMatriculas = !!(document.getElementById('permMatriculas') || {}).checked
     podeAlunos = !!(document.getElementById('permAlunos') || {}).checked
+  } else if (nivel === 5) {
+    const checkBoxesCargos = document.querySelectorAll('.chk-abac-cargo')
+    checkBoxesCargos.forEach(function(chk) {
+      if (chk.checked) cargosGerenciados.push(chk.value)
+    })
+    if (cargosGerenciados.length === 0) {
+      toastPerm('Para o Chefe de Equipe, selecione ao menos um cargo gerenciado.', 'aviso')
+      return
+    }
   }
 
   const dados = {
@@ -617,6 +669,7 @@ async function salvarPermissao() {
     pode_matriculas: podeMatriculas,
     pode_alunos: podeAlunos,
     pode_permissoes: nivel === 2,
+    cargos_gerenciados: cargosGerenciados,
     ativo: true
   }
 

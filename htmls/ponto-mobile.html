@@ -1,0 +1,36 @@
+<div class="ponto-mobile-container" style="max-width: 600px; margin: 0 auto; text-align: center; padding: 20px;">
+  <h1 style="margin-bottom: 5px;">Ponto Eletrônico</h1>
+  <p style="color: #94a3b8; font-size: 14px; margin-bottom: 20px;" id="pontoMobileData"></p>
+
+  <div class="permissions-box" style="padding: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+    
+    <div id="statusGPSPonto" style="margin-bottom: 20px; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 8px;">
+      <i data-lucide="loader-2" class="spin-icon" style="color:#eab308; width: 18px; height: 18px;"></i>
+      <span style="color:#eab308;">Aguardando sinal de GPS...</span>
+    </div>
+
+    <!-- Botão principal de bater ponto -->
+    <button id="btnBaterPontoCamera" class="btn-login" style="width: 100%; max-width: 300px; height: 60px; font-size: 18px; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="iniciarLeituraQR()" disabled>
+      <i data-lucide="qr-code"></i> Ler QR Code do Local
+    </button>
+    <p style="color: #64748b; font-size: 12px; margin-top: 15px;">É necessário permitir o acesso à Câmera e ao GPS.</p>
+  </div>
+
+  <div class="permissions-box" style="margin-top: 20px; text-align: left;">
+    <h3 style="font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+      <i data-lucide="history" style="width: 18px; height: 18px;"></i> Últimos Registros
+    </h3>
+    <div id="listaUltimosPontos">
+      <div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro recente encontrado.</div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Leitor QR -->
+<div id="modalLeitorQR" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; flex-direction:column; align-items:center; justify-content:center;">
+  <div style="width: 100%; max-width: 400px; padding: 20px;">
+    <h3 style="color: white; text-align: center; margin-bottom: 20px;">Aponte para o QR Code</h3>
+    <div id="reader" style="width:100%; border-radius: 12px; overflow: hidden; background: black;"></div>
+    <button class="btn-clear" style="width: 100%; margin-top: 20px; background: #334155; color: white;" onclick="fecharLeitorQR()">Cancelar</button>
+  </div>
+</div>

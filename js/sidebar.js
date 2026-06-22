@@ -20,6 +20,38 @@ function aplicarVisibilidadeSidebar() {
     }
   })
 
+  const containerChefias = document.getElementById('menu-dinamico-chefias');
+  if (containerChefias) containerChefias.innerHTML = '';
+  const btnPonto = document.getElementById('menu-ponto-mobile');
+  if (btnPonto) btnPonto.style.display = 'none';
+
+  if (nivel === PERFIS.OPERACIONAL) {
+    if (btnPonto) btnPonto.style.display = 'flex'
+    if (menus.perfil) menus.perfil.style.display = 'flex'
+    return
+  }
+
+  if (nivel === PERFIS.CHEFE_EQUIPE) {
+    if (menus.perfil) menus.perfil.style.display = 'flex'
+    if (containerChefias) {
+      let cargosSet = new Set();
+      acessosAtual.forEach(function(acesso) {
+        if (acesso.nivel === PERFIS.CHEFE_EQUIPE && acesso.cargos_gerenciados) {
+          acesso.cargos_gerenciados.forEach(function(c) { cargosSet.add(c); });
+        }
+      });
+      cargosSet.forEach(function(cargo) {
+        const btn = document.createElement('button');
+        btn.onclick = function() { mostrarTelaPainelChefe(cargo); };
+        btn.title = 'Equipe: ' + cargo;
+        btn.id = 'menu-chefe-' + cargo.replace(/\s+/g, '-').toLowerCase();
+        btn.innerHTML = `<span class="menu-icon"><i data-lucide="shield"></i></span><span class="menu-text">Equipe ${cargo}</span>`;
+        containerChefias.appendChild(btn);
+      });
+    }
+    return
+  }
+
   if (nivel === PERFIS.PROFESSOR) {
     if (menus.home) menus.home.style.display = 'flex'
     if (menus.turmas) menus.turmas.style.display = 'flex'
@@ -92,7 +124,9 @@ function mostrarTela(tela) {
     'perfil',
     'diretrizes',
     'financeiro',
-    'ocorrencias'
+    'ocorrencias',
+    'painel-chefe',
+    'ponto-mobile'
   ]
 
   telas.forEach(function(id) {
@@ -146,6 +180,31 @@ function mostrarTela(tela) {
   if (tela === 'relatorios') {
     carregarRelatorios()
   }
+  if (tela === 'ponto-mobile' && typeof iniciarModuloPontoMobile === 'function') {
+    iniciarModuloPontoMobile();
+  }
   fecharSidebarMobile()
+}
+
+// Lógica especial para ABAC - Chefe de Equipe
+let cargoAtualChefe = null;
+function mostrarTelaPainelChefe(cargo) {
+  cargoAtualChefe = cargo;
+  mostrarTela('painel-chefe');
+  
+  // Atualiza título dinâmico na tela do chefe
+  const title = document.getElementById('tituloPainelChefe');
+  if (title) title.textContent = 'Gestão: Equipe de ' + cargo;
+
+  // Marca todos os botões de chefia como inativos, e ativa apenas este
+  document.querySelectorAll('#menu-dinamico-chefias button').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  const btnActive = document.getElementById('menu-chefe-' + cargo.replace(/\s+/g, '-').toLowerCase());
+  if (btnActive) btnActive.classList.add('active');
+
+  if (typeof carregarDadosPainelChefe === 'function') {
+    carregarDadosPainelChefe(cargo);
+  }
 }
 

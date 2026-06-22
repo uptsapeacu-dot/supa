@@ -1,4 +1,4 @@
-const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4 };
+const PERFIS = { SECRETARIA: 1, GESTOR: 2, COORDENADOR: 3, PROFESSOR: 4, CHEFE_EQUIPE: 5, OPERACIONAL: 6 };
 const supabaseUrl = 'https://mkgvobuacvuxcgedpfbf.supabase.co'
 const supabaseKey = 'sb_publishable_FEM_0eBh7GBo9XTcVUlb0A_FvcmCJTi'
 const clienteSupabase = window.supabase.createClient(supabaseUrl, supabaseKey)

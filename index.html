@@ -118,6 +118,11 @@
           <span class="menu-icon"><i data-lucide="wallet"></i></span>
           <span class="menu-text">Financeiro</span>
         </button>
+        <button id="menu-ponto-mobile" onclick="mostrarTela('ponto-mobile')" title="Ponto Eletrônico" style="display:none">
+          <span class="menu-icon"><i data-lucide="scan-line"></i></span>
+          <span class="menu-text">Bater Ponto</span>
+        </button>
+        <div id="menu-dinamico-chefias"></div>
         <button id="menu-perfil" onclick="mostrarTela('perfil')" title="Perfil" style="display:none">
           <span class="menu-icon"><i data-lucide="circle-user"></i></span>
           <span class="menu-text">Perfil</span>
@@ -201,6 +206,8 @@
 
       <!-- OCORRÊNCIAS -->
       <section id="ocorrencias" style="display:none"></section>
+      <section id="painel-chefe" style="display:none"></section>
+      <section id="ponto-mobile" style="display:none"></section>
 
       <!-- PERMISSÕES -->
       <section id="permissoes" style="display:none"></section>
@@ -254,6 +261,8 @@
   <script src="js/relatorios-escola.js"></script>
   <script src="js/ocorrencias.js"></script>
   <script src="js/mapa-funcionarios.js"></script>
+  <script src="js/painel-chefe.js"></script>
+  <script src="js/ponto-mobile.js"></script>
 
   <script>
     let promiseComponentes;
@@ -283,7 +292,9 @@
         { url: 'htmls/modais/modal-funcionario.html', target: 'container-modal-funcionario' },
         { url: 'htmls/modais/modal-movimentacoes.html', target: 'container-modal-movimentacoes' },
         { url: 'htmls/modais/modal-sucesso.html', target: 'container-modal-sucesso' },
-        { url: 'htmls/modais/modal-primeiro-acesso.html', target: 'container-modal-primeiro-acesso' }
+        { url: 'htmls/modais/modal-primeiro-acesso.html', target: 'container-modal-primeiro-acesso' },
+        { url: 'htmls/painel-chefe.html', target: 'painel-chefe' },
+        { url: 'htmls/ponto-mobile.html', target: 'ponto-mobile' }
       ];
 
       await Promise.allSettled(components.map(async (comp) => {
