@@ -154,9 +154,9 @@ async function carregarAlertasChefe() {
     // Como a especificação diz que o alerta é distância:
     html += `
       <tr style="background-color:rgba(245,158,11,0.05);">
-        <td style="color:#aaa;">\${dataStr}</td>
-        <td style="color:#fff; font-weight:bold;">\${nomeFunc}</td>
-        <td>\${nomePonto}</td>
+        <td style="color:#aaa;">${dataStr}</td>
+        <td style="color:#fff; font-weight:bold;">${nomeFunc}</td>
+        <td>${nomePonto}</td>
         <td style="color:#f59e0b; font-weight:bold;"><i data-lucide="map-pin-off" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fora do raio permitido</td>
       </tr>
     `;

@@ -98,7 +98,7 @@ async function adminCarregarEscolasSelect() {
   if (!sel) return;
   sel.innerHTML = '<option value="">Selecione a Escola...</option>';
   data.forEach(e => {
-    sel.innerHTML += `<option value="\${e.id}">\${e.nome}</option>`;
+    sel.innerHTML += `<option value="${e.id}">${e.nome}</option>`;
   });
 }
 
@@ -129,18 +129,18 @@ async function adminCarregarPontosRonda() {
 
     html += `
       <tr>
-        <td style="font-weight:bold; color:#fff;">\${p.nome}</td>
-        <td style="color:#aaa;">\${nomeEscola}</td>
-        <td style="color:#3ea6ff;">\${tol}m</td>
+        <td style="font-weight:bold; color:#fff;">${p.nome}</td>
+        <td style="color:#aaa;">${nomeEscola}</td>
+        <td style="color:#3ea6ff;">${tol}m</td>
         <td>
           <div style="display:flex; gap:8px;">
-            <button class="btn-clear" style="padding:4px; color:#3b82f6;" onclick="adminAbrirModalQR('\${p.id}', '\${p.nome}', '\${nomeEscola}')" title="Visualizar / Imprimir QR Code">
+            <button class="btn-clear" style="padding:4px; color:#3b82f6;" onclick="adminAbrirModalQR('${p.id}', '${p.nome}', '${nomeEscola}')" title="Visualizar / Imprimir QR Code">
               <i data-lucide="qr-code" style="width:18px;height:18px;"></i>
             </button>
-            <button class="btn-clear" style="padding:4px; color:#f59e0b;" onclick="adminRegerarIDPonto('\${p.id}')" title="Revogar QR antigo e Gerar Novo">
+            <button class="btn-clear" style="padding:4px; color:#f59e0b;" onclick="adminRegerarIDPonto('${p.id}')" title="Revogar QR antigo e Gerar Novo">
               <i data-lucide="refresh-cw" style="width:18px;height:18px;"></i>
             </button>
-            <button class="btn-clear" style="padding:4px; color:#ef4444;" onclick="adminDeletarPontoRonda('\${p.id}')" title="Excluir">
+            <button class="btn-clear" style="padding:4px; color:#ef4444;" onclick="adminDeletarPontoRonda('${p.id}')" title="Excluir">
               <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
             </button>
           </div>
@@ -228,12 +228,12 @@ async function adminCarregarLogsGlobaisRonda() {
 
     html += `
       <tr>
-        <td style="color:#aaa; font-size:12px;">\${dataStr}</td>
-        <td>\${nomeFunc}</td>
-        <td>\${nomePonto}</td>
-        <td><span style="color:\${corStatus}; border:1px solid \${corStatus}; padding:2px 6px; border-radius:4px; font-size:11px;">\${log.status}</span></td>
+        <td style="color:#aaa; font-size:12px;">${dataStr}</td>
+        <td>${nomeFunc}</td>
+        <td>${nomePonto}</td>
+        <td><span style="color:${corStatus}; border:1px solid ${corStatus}; padding:2px 6px; border-radius:4px; font-size:11px;">${log.status}</span></td>
         <td>
-          <button class="btn-clear" style="padding:4px; color:#ef4444;" onclick="adminDeletarLogRonda('\${log.id}')" title="Excluir Log">
+          <button class="btn-clear" style="padding:4px; color:#ef4444;" onclick="adminDeletarLogRonda('${log.id}')" title="Excluir Log">
             <i data-lucide="x" style="width:16px;height:16px;"></i>
           </button>
         </td>
@@ -270,22 +270,22 @@ function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
   // Usaremos uma API publica pra facilitar a injeção da logo se necessário, ou qrcode base
   // A string do QR será um JSON stringificado ou só o ID para segurança
   const qrData = JSON.stringify({ action: "sapeacu_ronda", id: idPonto });
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=\${encodeURIComponent(qrData)}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
 
   modal.innerHTML = `
     <div style="background:#fff; padding:30px; border-radius:12px; width:400px; text-align:center; color:#333; position:relative;">
       <button onclick="document.getElementById('modalAdminQR').style.display='none'" style="position:absolute; right:15px; top:15px; background:none; border:none; font-size:20px; cursor:pointer; color:#999;">&times;</button>
       
       <div id="printAreaQR">
-        <h2 style="font-family:Arial; font-size:20px; margin-bottom:5px;">\${nomeEscola}</h2>
-        <h3 style="font-family:Arial; font-size:16px; color:#555; margin-bottom:20px;">\${nomePonto}</h3>
+        <h2 style="font-family:Arial; font-size:20px; margin-bottom:5px;">${nomeEscola}</h2>
+        <h3 style="font-family:Arial; font-size:16px; color:#555; margin-bottom:20px;">${nomePonto}</h3>
         
         <div style="position:relative; display:inline-block; border:2px solid #000; padding:15px; border-radius:8px;">
-          <img src="\${qrUrl}" alt="QR Code Ponto" style="width:200px; height:200px;" />
+          <img src="${qrUrl}" alt="QR Code Ponto" style="width:200px; height:200px;" />
           <!-- A logo sobreposta ao centro -->
           <img src="img/logo-prefeitura.png" onerror="this.style.display='none'" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; background:#fff; padding:4px; border-radius:4px;" />
         </div>
-        <p style="font-family:monospace; font-size:10px; color:#999; margin-top:10px;">ID: \${idPonto}</p>
+        <p style="font-family:monospace; font-size:10px; color:#999; margin-top:10px;">ID: ${idPonto}</p>
         <p style="font-family:Arial; font-size:12px; font-weight:bold; color:#000; margin-top:10px;">Escaneie com o app Ponto Mobile da Prefeitura.</p>
       </div>
 
