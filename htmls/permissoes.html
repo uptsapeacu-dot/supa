@@ -16,8 +16,10 @@
           <div class="perm-form-grid">
             <div class="perm-form-col">
               <label class="perm-label">Funcion&aacute;rio</label>
-              <input type="text" id="buscaFuncionarioSelect" placeholder="Pesquisar funcion&aacute;rio..." oninput="filtrarSelectFuncionario()" />
-              <select id="funcionarioPermissao"></select>
+              <div id="buscaFuncionarioWrapper" style="position:relative;">
+                <input type="text" id="buscaFuncionarioSelect" placeholder="Digite para pesquisar funcionário..." autocomplete="off" style="width:100%;" />
+                <input type="hidden" id="funcionarioPermissaoHidden" />
+              </div>
             </div>
             <div class="perm-form-col">
               <label class="perm-label">Escola / &Oacute;rg&atilde;o</label>

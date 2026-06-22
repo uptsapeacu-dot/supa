@@ -1,6 +1,25 @@
 // ====== PERMISSOES - SISTEMA ROBUSTO ======
 let permissaoEditando = null;
 let viewAtualPermissoes = 'funcionario'; // 'funcionario' | 'escola'
+let _permFuncionarioSelecionadoId = null; // ID do funcionario selecionado pelo autocomplete
+
+function toastPerm(msg, tipo) {
+  let container = document.getElementById('permToastContainer')
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'permToastContainer'
+    container.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;'
+    document.body.appendChild(container)
+  }
+  const t = document.createElement('div')
+  const cor = tipo === 'sucesso' ? '#22c55e' : tipo === 'aviso' ? '#f59e0b' : '#ef4444'
+  const icone = tipo === 'sucesso' ? 'check-circle' : tipo === 'aviso' ? 'alert-triangle' : 'x-circle'
+  t.style.cssText = 'background:#1e293b;color:#f1f5f9;padding:12px 18px;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:14px;box-shadow:0 4px 24px #0006;border-left:4px solid ' + cor + ';min-width:260px;max-width:400px;animation:slideInRight .3s ease;'
+  t.innerHTML = '<i data-lucide="' + icone + '" style="width:18px;height:18px;color:' + cor + ';flex-shrink:0;"></i><span>' + msg + '</span>'
+  container.appendChild(t)
+  if (window.lucide) lucide.createIcons()
+  setTimeout(function() { t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(function(){t.remove()},400) }, 3500)
+}
 
 // =============================================
 // CARREGAMENTO INICIAL
@@ -367,7 +386,7 @@ async function alternarStatusAcesso(acessoId, novoStatus) {
     .eq('id', acessoId)
 
   if (error) {
-    alert('Erro ao ' + acao + ' acesso.')
+    toastPerm('Erro ao ' + acao + ' acesso.', 'erro')
     return
   }
 
@@ -385,23 +404,66 @@ function removerAcentosPerm(str) {
   return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
 }
 
-function filtrarSelectFuncionario() {
-  const buscaInput = document.getElementById('buscaFuncionarioSelect')
-  const busca = buscaInput ? removerAcentosPerm(buscaInput.value.toLowerCase().trim()) : ''
-  const selectFuncionario = document.getElementById('funcionarioPermissao')
-  if (!selectFuncionario) return
+// Autocomplete de funcionario
+function _permMontarAutocomplete() {
+  const wrapper = document.getElementById('buscaFuncionarioWrapper')
+  if (!wrapper) return
+  const input = document.getElementById('buscaFuncionarioSelect')
+  if (!input) return
 
-  selectFuncionario.innerHTML = '<option value="">Selecione o Funcionario</option>'
-  funcionarios.forEach(function(funcionario) {
-    const nome = removerAcentosPerm((funcionario.nome || '').toLowerCase())
-    const email = removerAcentosPerm((funcionario.email || '').toLowerCase())
-    if (nome.includes(busca) || email.includes(busca)) {
-      const option = document.createElement('option')
-      option.value = funcionario.id
-      option.textContent = funcionario.nome || funcionario.email
-      selectFuncionario.appendChild(option)
+  // Remove dropdown antigo se existir
+  let dropdown = document.getElementById('permFuncDropdown')
+  if (!dropdown) {
+    dropdown = document.createElement('div')
+    dropdown.id = 'permFuncDropdown'
+    dropdown.style.cssText = 'position:absolute;top:100%;left:0;right:0;background:#1e293b;border:1px solid #334155;border-radius:8px;max-height:200px;overflow-y:auto;z-index:500;display:none;'
+    wrapper.style.position = 'relative'
+    wrapper.appendChild(dropdown)
+  }
+
+  input.oninput = function() {
+    _permFuncionarioSelecionadoId = null
+    document.getElementById('funcionarioPermissaoHidden').value = ''
+    const busca = removerAcentosPerm(input.value.toLowerCase().trim())
+    dropdown.innerHTML = ''
+    if (!busca) { dropdown.style.display = 'none'; return }
+    const resultados = funcionarios.filter(function(f) {
+      return removerAcentosPerm((f.nome || '').toLowerCase()).includes(busca) ||
+             removerAcentosPerm((f.email || '').toLowerCase()).includes(busca)
+    })
+    if (!resultados.length) {
+      dropdown.innerHTML = '<div style="padding:10px 14px;color:#94a3b8;font-size:13px;">Nenhum funcionário encontrado</div>'
+    } else {
+      resultados.forEach(function(f) {
+        const item = document.createElement('div')
+        item.style.cssText = 'padding:10px 14px;cursor:pointer;font-size:14px;color:#f1f5f9;border-bottom:1px solid #334155;'
+        item.textContent = (f.nome || f.email) + (f.nome ? ' — ' + f.email : '')
+        item.onmouseenter = function() { item.style.background = '#334155' }
+        item.onmouseleave = function() { item.style.background = '' }
+        item.onclick = function() {
+          _permFuncionarioSelecionadoId = f.id
+          document.getElementById('funcionarioPermissaoHidden').value = f.id
+          input.value = f.nome || f.email
+          dropdown.style.display = 'none'
+        }
+        dropdown.appendChild(item)
+      })
     }
-  })
+    dropdown.style.display = 'block'
+  }
+
+  // Fecha dropdown ao clicar fora
+  document.addEventListener('click', function(e) {
+    if (!wrapper.contains(e.target)) dropdown.style.display = 'none'
+  }, { capture: true })
+}
+
+function filtrarSelectFuncionario() {
+  _permMontarAutocomplete()
+  // Mantém compatibilidade com o hidden field
+  const hidden = document.getElementById('funcionarioPermissaoHidden')
+  if (!hidden) return
+  if (_permFuncionarioSelecionadoId) hidden.value = _permFuncionarioSelecionadoId
 }
 
 function preencherSelectsPermissoes() {
@@ -461,10 +523,17 @@ function editarPermissao(id) {
   fecharModalEquipeEscola()
 
   const buscaInput = document.getElementById('buscaFuncionarioSelect')
+  const hiddenInput = document.getElementById('funcionarioPermissaoHidden')
   if (buscaInput) buscaInput.value = ''
+  if (hiddenInput) hiddenInput.value = ''
+  _permFuncionarioSelecionadoId = null
   filtrarSelectFuncionario()
 
-  document.getElementById('funcionarioPermissao').value = acesso.funcionario_id
+  // Preenche o campo de autocomplete com o nome do funcionario sendo editado
+  const funcEditando = funcionarios.find(function(f) { return String(f.id) === String(acesso.funcionario_id) })
+  if (funcEditando && buscaInput) buscaInput.value = funcEditando.nome || funcEditando.email
+  if (hiddenInput) hiddenInput.value = acesso.funcionario_id
+  _permFuncionarioSelecionadoId = acesso.funcionario_id
   document.getElementById('orgaoPermissao').value = acesso.orgao_id || ''
   document.getElementById('nivelPermissao').value = acesso.nivel
   atualizarCamposPermissao()
@@ -488,11 +557,12 @@ function editarPermissao(id) {
 
 function cancelarEdicaoPermissao() {
   permissaoEditando = null
+  _permFuncionarioSelecionadoId = null
   const buscaInput = document.getElementById('buscaFuncionarioSelect')
+  const hiddenInput = document.getElementById('funcionarioPermissaoHidden')
   if (buscaInput) buscaInput.value = ''
-  filtrarSelectFuncionario()
+  if (hiddenInput) hiddenInput.value = ''
 
-  document.getElementById('funcionarioPermissao').value = ''
   document.getElementById('orgaoPermissao').value = ''
   document.getElementById('nivelPermissao').value = ''
   atualizarCamposPermissao()
@@ -507,20 +577,20 @@ function cancelarEdicaoPermissao() {
 // SALVAR PERMISSAO
 // =============================================
 async function salvarPermissao() {
-  const funcionarioId = document.getElementById('funcionarioPermissao').value
+  const funcionarioId = document.getElementById('funcionarioPermissaoHidden').value
   const orgaoId = document.getElementById('orgaoPermissao').value
   const nivel = Number(document.getElementById('nivelPermissao').value)
 
-  if (!funcionarioId || !nivel) { alert('Selecione funcionario e nivel'); return }
-  if (!orgaoId && nivel !== 1) { alert('Selecione a escola/orgao'); return }
-  if (!isSecretaria() && nivel === 2) { alert('Diretores so podem atribuir niveis 3 e 4'); return }
+  if (!funcionarioId || !nivel) { toastPerm('Selecione um funcionário e um nível de acesso.', 'aviso'); return }
+  if (!orgaoId && nivel !== 1) { toastPerm('Selecione a escola / órgão.', 'aviso'); return }
+  if (!isSecretaria() && nivel === 2) { toastPerm('Somente a Secretaria pode atribuir o nível Diretor.', 'aviso'); return }
 
   if (!permissaoEditando) {
     const duplicado = acessosSistema.find(function(a) {
       return a.funcionario_id === funcionarioId && a.orgao_id === orgaoId
     })
     if (duplicado) {
-      alert('Este funcionario ja possui acesso neste orgao. Use a opcao Editar na lista.')
+      toastPerm('Este funcionário já possui acesso neste órgão. Use a opção Editar.', 'aviso')
       return
     }
   }
@@ -558,14 +628,14 @@ async function salvarPermissao() {
   if (permissaoEditando) {
     const res = await clienteSupabase.from('acessos_usuarios').update(dados).eq('id', permissaoEditando)
     error = res.error
-    if (!error) alert('Permissao atualizada com sucesso!')
+    if (!error) toastPerm('Permissão atualizada com sucesso! ✅', 'sucesso')
   } else {
     const res = await clienteSupabase.from('acessos_usuarios').insert([dados])
     error = res.error
-    if (!error) alert('Permissao concedida com sucesso!')
+    if (!error) toastPerm('Permissão concedida com sucesso! ✅', 'sucesso')
   }
 
-  if (error) { console.error(error); alert('Erro ao salvar permissao') }
+  if (error) { console.error(error); toastPerm('Erro ao salvar permissão: ' + (error.message || ''), 'erro') }
 
   btn.disabled = false
   cancelarEdicaoPermissao()

@@ -1,7 +1,7 @@
-let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
+﻿﻿﻿let funcionariosAtuaisNaTela = []; // Guarda a lista atual para a Impressão em Massa
 let funcionarioMovimentacaoAtual = null; // Guarda dados do funcionário para impressão do histórico
 
-// ====== GESTÃO DINÂMICA DE CARGOS ======
+// ====== GESTÃƒO DINÃ‚MICA DE CARGOS ======
 async function carregarCargos() {
   const { data, error } = await clienteSupabase.from('cargos').select('*').order('nome', { ascending: true });
   if (!error && data) {
@@ -115,7 +115,7 @@ async function carregarFuncionariosDaTela() {
   if (btnPrintTodos) btnPrintTodos.style.display = temPermissaoGeral ? 'block' : 'none';
 
   function pegarIniciais(nome) {
-    if (!nome) return '👤'
+    if (!nome) return 'ðŸ‘¤'
     const partes = nome.trim().split(' ')
     if (partes.length === 1) return partes[0].substring(0, 2).toUpperCase()
     return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase()
@@ -171,7 +171,7 @@ async function carregarFuncionariosDaTela() {
     actionsDiv.style.flexShrink = '0'
     actionsDiv.style.flexWrap = 'wrap'
 
-    // Botão M (Movimentações) — sempre visível para quem tem permissão
+    // Botão M (Movimentações) â€” sempre visível para quem tem permissão
     if (temPermissaoGeral) {
       const btnMov = document.createElement('button')
       btnMov.className = 'btn-editar btn-movimentacoes'
@@ -221,7 +221,7 @@ async function carregarFuncionariosDaTela() {
     const details = document.createElement('div')
     details.className = 'func-details'
     details.innerHTML = `
-      <div><strong>Órgão:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
+      <div><strong>Ã“rgão:</strong> ${textoOuVazio(vinculo.orgaos && vinculo.orgaos.nome)}</div>
       <div><strong>Nascimento:</strong> ${formatarDataBR(funcionario.data_nascimento)}</div>
       ${funcionario.formacao_academica ? `<div><strong>Formação:</strong> ${funcionario.formacao_academica}</div>` : ''}
     `
@@ -339,7 +339,7 @@ async function salvarFuncionario() {
   }
 
   if (!orgaoId && !isSecretaria()) {
-    alert('Órgão da escola não encontrado.')
+    alert('Ã“rgão da escola não encontrado.')
     return
   }
 
@@ -478,7 +478,7 @@ async function removerVinculoFuncionario(vinculoId) {
 }
 
 
-// ====== MODAL DE MOVIMENTAÇÕES ======
+// ====== MODAL DE MOVIMENTAÃ‡Ã•ES ======
 async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
   document.getElementById('nomeMovimentacoesModal').innerText = nomeFunc
   document.getElementById('conteudoMovimentacoes').innerHTML = '<div class="empty-state">Carregando...</div>'
@@ -506,13 +506,13 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
   let html = ''
 
   // Seção de Histórico de Lotação
-  html += `<div class="form-section-title">📋 Histórico de Lotação</div>`
+  html += `<div class="form-section-title">ðŸ“‹ Histórico de Lotação</div>`
   if (!histVinculos || histVinculos.length === 0) {
     html += `<div class="empty-state" style="margin-bottom:16px;">Nenhum registro de lotação encontrado.</div>`
   } else {
     html += `<div class="timeline-movimentacao">`
     histVinculos.forEach(v => {
-      const orgaoNome = v.orgaos ? v.orgaos.nome : 'Órgão não encontrado'
+      const orgaoNome = v.orgaos ? v.orgaos.nome : 'Ã“rgão não encontrado'
       const dataIni = formatarDataBR(v.data_inicio)
       const dataFim = v.data_fim ? formatarDataBR(v.data_fim) : 'até o momento'
       const ativo = v.ativo
@@ -522,7 +522,7 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
           <div class="timeline-conteudo">
             <strong>${orgaoNome}</strong>
             <span class="timeline-cargo">${v.cargo || 'Sem cargo definido'}</span>
-            <span class="timeline-data">${dataIni} → ${dataFim}</span>
+            <span class="timeline-data">${dataIni} â†’ ${dataFim}</span>
             ${ativo ? '<span class="func-badge" style="background:#22c55e22;color:#22c55e;font-size:11px;">Atual</span>' : ''}
           </div>
         </div>`
@@ -531,12 +531,12 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
   }
 
   // Seção de Histórico de Status
-  html += `<div class="form-section-title" style="margin-top:24px;">🔄 Histórico de Status</div>`
+  html += `<div class="form-section-title" style="margin-top:24px;">ðŸ”„ Histórico de Status</div>`
   if (!histStatus || histStatus.length === 0) {
     html += `<div class="empty-state">Nenhuma mudança de status registrada.</div>`
   } else {
     html += `<div class="timeline-movimentacao">`
-    const statusLabels = { ativo: '✅ Ativo', afastado: '⚠️ Afastado', desligado: '🔴 Desligado' }
+    const statusLabels = { ativo: 'âœ… Ativo', afastado: 'âš ï¸ Afastado', desligado: 'ðŸ”´ Desligado' }
     const statusCores = { ativo: '#22c55e', afastado: '#f59e0b', desligado: '#ef4444' }
     histStatus.forEach(h => {
       const dataReg = new Date(h.data_registro).toLocaleString('pt-BR')
@@ -547,7 +547,7 @@ async function abrirModalMovimentacoes(funcionarioId, nomeFunc) {
         <div class="timeline-item">
           <div class="timeline-dot" style="background:${cor};"></div>
           <div class="timeline-conteudo">
-            <strong>${anterior} → <span style="color:${cor}">${novo}</span></strong>
+            <strong>${anterior} â†’ <span style="color:${cor}">${novo}</span></strong>
             ${h.observacao ? `<span class="timeline-cargo">${h.observacao}</span>` : ''}
             <span class="timeline-data">${dataReg}</span>
           </div>
@@ -593,7 +593,7 @@ function imprimirHistoricoMovimentacoes() {
 }
 
 
-// ====== SISTEMA DE IMPRESSÃO DE FICHAS ======
+// ====== SISTEMA DE IMPRESSÃƒO DE FICHAS ======
 function gerarHTMLFicha(func) {
   const nome = func.funcionarios.nome || func.funcionarios.email;
   const orgao = func.orgaos ? func.orgaos.nome : '';
@@ -659,7 +659,7 @@ function gerarHTMLFicha(func) {
           ['Telefone', func.funcionarios.telefone || 'Não informado'],
           ['E-mail', func.funcionarios.email || 'Não informado'],
           ['Data de Nascimento', formatarDataBR(func.funcionarios.data_nascimento)],
-          ['Órgão / Lotação', orgao || 'Não informado'],
+          ['Ã“rgão / Lotação', orgao || 'Não informado'],
           ['Formação Acadêmica', func.funcionarios.formacao_academica || 'Não informado'],
           ['Endereço', func.funcionarios.endereco || 'Não informado', true]
         ].map(([label, valor, fullWidth]) => `
@@ -680,7 +680,7 @@ function gerarHTMLFicha(func) {
         </div>
       </div>
       <p style="text-align:right; font-size:10px; color:#aaa; margin-top:12px;">
-        Impresso pelo sistema em: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}
+        Impresso pelo sistema em: ${new Date().toLocaleDateString('pt-BR')} Ã s ${new Date().toLocaleTimeString('pt-BR')}
       </p>
     </div>
   `;
@@ -729,4 +729,5 @@ function imprimirTodosFuncionarios() {
   });
   abrirJanelaImpressao(htmlDossieCompleto);
 }
+
 

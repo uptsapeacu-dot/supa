@@ -1,6 +1,53 @@
 let professoresSelecionados = []; // Guarda os IDs dos professores adicionados na tag
 let turmaEditandoId = null;
 
+// ====== HELPERS DE NOTIFICAÇÃO VISUAL ======
+function mostrarToastTurma(msg, tipo) {
+  let container = document.getElementById('turmaToastContainer')
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'turmaToastContainer'
+    container.style.cssText = 'position:fixed;bottom:24px;right:24px;z-index:9999;display:flex;flex-direction:column;gap:10px;'
+    document.body.appendChild(container)
+  }
+  const t = document.createElement('div')
+  const cor = tipo === 'sucesso' ? '#22c55e' : tipo === 'aviso' ? '#f59e0b' : '#ef4444'
+  const icone = tipo === 'sucesso' ? 'check-circle' : tipo === 'aviso' ? 'alert-triangle' : 'x-circle'
+  t.style.cssText = 'background:#1e293b;color:#f1f5f9;padding:12px 18px;border-radius:12px;display:flex;align-items:center;gap:10px;font-size:14px;box-shadow:0 4px 24px #0006;border-left:4px solid ' + cor + ';min-width:260px;max-width:400px;'
+  t.innerHTML = '<i data-lucide="' + icone + '" style="width:18px;height:18px;color:' + cor + ';flex-shrink:0;"></i><span>' + msg + '</span>'
+  container.appendChild(t)
+  if (window.lucide) lucide.createIcons()
+  setTimeout(function() { t.style.opacity='0'; t.style.transition='opacity .4s'; setTimeout(function(){t.remove()},400) }, 3500)
+}
+
+function confirmarAcaoTurma(mensagem, callback) {
+  let overlay = document.getElementById('turmaConfirmOverlay')
+  if (!overlay) {
+    overlay = document.createElement('div')
+    overlay.id = 'turmaConfirmOverlay'
+    overlay.style.cssText = 'position:fixed;inset:0;background:#0008;z-index:10000;display:flex;align-items:center;justify-content:center;'
+    document.body.appendChild(overlay)
+  }
+  overlay.innerHTML = '<div style="background:#1e293b;border-radius:16px;padding:28px 32px;max-width:420px;width:90%;box-shadow:0 8px 40px #0008;border:1px solid #334155;">' +
+    '<div style="display:flex;align-items:center;gap:12px;margin-bottom:16px;">' +
+      '<i data-lucide="alert-triangle" style="width:24px;height:24px;color:#f59e0b;flex-shrink:0;"></i>' +
+      '<p style="margin:0;color:#f1f5f9;font-size:15px;line-height:1.5;">' + mensagem + '</p>' +
+    '</div>' +
+    '<div style="display:flex;gap:10px;justify-content:flex-end;">' +
+      '<button id="turmaConfirmCancelar" style="padding:8px 18px;border-radius:8px;border:1px solid #475569;background:transparent;color:#94a3b8;cursor:pointer;font-size:14px;">Cancelar</button>' +
+      '<button id="turmaConfirmOk" style="padding:8px 18px;border-radius:8px;border:none;background:#ef4444;color:#fff;cursor:pointer;font-size:14px;font-weight:600;">Remover</button>' +
+    '</div>' +
+  '</div>'
+  overlay.style.display = 'flex'
+  if (window.lucide) lucide.createIcons()
+  document.getElementById('turmaConfirmCancelar').onclick = function() { overlay.style.display = 'none' }
+  document.getElementById('turmaConfirmOk').onclick = function() {
+    overlay.style.display = 'none'
+    callback()
+  }
+}
+
+
 // Estado do hub de turma
 let hubTurmaId = null;
 let hubTurmaNomeAtual = '';
@@ -332,7 +379,11 @@ function cancelarFormMateria() {
 
 async function salvarMateria() {
   const nome = document.getElementById('inputNomeMateria').value.trim();
-  if (!nome) { alert('Digite o nome da matéria.'); return; }
+  if (!nome) {
+    mostrarToastTurma('Digite o nome da matéria antes de salvar.', 'aviso');
+    document.getElementById('inputNomeMateria').focus();
+    return;
+  }
   const vinculoId = document.getElementById('selectProfMateria').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -341,16 +392,17 @@ async function salvarMateria() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
+  if (error) { mostrarToastTurma('Erro ao salvar matéria: ' + error.message, 'erro'); return; }
 
   cancelarFormMateria();
   await carregarMateriasTurma();
 }
 
 async function excluirMateria(id) {
-  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
-  await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', id);
-  await carregarMateriasTurma();
+  confirmarAcaoTurma('Remover esta matéria? As notas vinculadas a ela também serão removidas.', async function() {
+    await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', id);
+    await carregarMateriasTurma();
+  });
 }
 
 // ====== ABA: ALUNOS ======
@@ -1211,7 +1263,11 @@ async function carregarMateriasNoModalTurma() {
 
 async function salvarMateriaPeloModal() {
   const nome = document.getElementById('nomeMateriaModal').value.trim();
-  if (!nome) { alert('Digite o nome da matéria.'); return; }
+  if (!nome) {
+    mostrarToastTurma('Digite o nome da matéria antes de salvar.', 'aviso');
+    document.getElementById('nomeMateriaModal').focus();
+    return;
+  }
   const vinculoId = document.getElementById('selectProfMateriaModal').value || null;
 
   const { error } = await clienteSupabase.from('materias_turmas').insert([{
@@ -1220,7 +1276,7 @@ async function salvarMateriaPeloModal() {
     vinculo_id: vinculoId || null
   }]);
 
-  if (error) { alert('Erro ao salvar matéria: ' + error.message); return; }
+  if (error) { mostrarToastTurma('Erro ao salvar matéria: ' + error.message, 'erro'); return; }
 
   document.getElementById('nomeMateriaModal').value = '';
   document.getElementById('selectProfMateriaModal').value = '';
@@ -1233,15 +1289,14 @@ async function salvarMateriaPeloModal() {
 }
 
 async function excluirMateriaPeloModal(materiaId) {
-  if (!confirm('Remover esta matéria? As notas vinculadas a ela também serão removidas.')) return;
-  const { error } = await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', materiaId);
-  if (error) { alert('Erro ao excluir matéria: ' + error.message); return; }
-  await carregarMateriasNoModalTurma();
-  
-  // Se o hub de turmas estiver aberto, atualiza a aba de matérias também
-  if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
-    await carregarMateriasTurma();
-  }
+  confirmarAcaoTurma('Remover esta matéria? As notas vinculadas a ela também serão removidas.', async function() {
+    const { error } = await clienteSupabase.from('materias_turmas').update({ ativo: false }).eq('id', materiaId);
+    if (error) { mostrarToastTurma('Erro ao excluir matéria: ' + error.message, 'erro'); return; }
+    await carregarMateriasNoModalTurma();
+    if (hubTurmaId === turmaEditandoId && hubAbaAtiva === 'materias') {
+      await carregarMateriasTurma();
+    }
+  });
 }
 
 // ====== IMPRESSÃƒO DO BOLETIM INDIVIDUAL ======
