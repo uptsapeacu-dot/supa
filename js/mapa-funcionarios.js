@@ -16,6 +16,31 @@ function _funcEnderecoInput(valor) {
   }, 1200);
 }
 
+// Helper para notificações visuais do mapa (padronizando com o sistema)
+function toastMapa(msg, tipo) {
+  let container = document.getElementById('mapToastContainer');
+  if (!container) {
+    container = document.createElement('div');
+    container.id = 'mapToastContainer';
+    container.style.cssText = 'position:fixed; top:20px; right:20px; z-index:10000; display:flex; flex-direction:column; gap:10px;';
+    document.body.appendChild(container);
+  }
+  let toast = document.createElement('div');
+  toast.innerText = msg;
+  let bg = '#333';
+  if (tipo === 'aviso') bg = '#f59e0b';
+  if (tipo === 'erro') bg = '#ef4444';
+  if (tipo === 'sucesso') bg = '#10b981';
+  toast.style.cssText = `background:${bg}; color:#fff; padding:12px 20px; border-radius:8px; font-weight:bold; font-size:14px; box-shadow:0 4px 12px rgba(0,0,0,0.5); opacity:0; transform:translateY(-20px); transition:all 0.3s ease;`;
+  container.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '1'; toast.style.transform = 'translateY(0)'; }, 10);
+  setTimeout(() => { 
+    toast.style.opacity = '0'; 
+    toast.style.transform = 'translateY(-20px)'; 
+    setTimeout(() => toast.remove(), 300);
+  }, 4000);
+}
+
 // Inicializa o mini-mapa dentro do modal do funcionário
 function iniciarMiniMapaFuncionario(lat, lng) {
   // Remove instância anterior se existir (evita erro "Map container is already initialized")
@@ -140,11 +165,11 @@ async function geocodificarEndereco(silencioso) {
       _atualizarCamposLatLng(lat, lng);
     } else {
       if (!silencioso) {
-        alert('Endereço não encontrado no mapa. Você pode arrastar o alfinete manualmente para a localização correta.');
+        toastMapa('Endereço não encontrado no mapa. Você pode arrastar o alfinete manualmente para corrigir.', 'aviso');
       }
     }
   } catch (e) {
-    if (!silencioso) alert('Erro ao buscar o endereço: ' + e.message);
+    if (!silencioso) toastMapa('Erro ao buscar o endereço: ' + e.message, 'erro');
   }
 }
 
