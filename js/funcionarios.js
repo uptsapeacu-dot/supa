@@ -97,11 +97,24 @@ async function carregarFuncionariosDaTela() {
   // Filtra por status localmente se necessário
   let dadosFiltrados = data;
   if (statusSelecionado !== '') {
-    dadosFiltrados = data.filter(v => v.funcionarios && v.funcionarios.status === statusSelecionado);
+    dadosFiltrados = dadosFiltrados.filter(function(v) { return v.funcionarios && v.funcionarios.status === statusSelecionado });
+  }
+
+  // Filtra por nome (campo de busca)
+  const buscaInput = document.getElementById('buscaFuncionario');
+  const buscaValor = buscaInput ? buscaInput.value.toLowerCase().trim() : '';
+  
+  if (buscaValor !== '') {
+    dadosFiltrados = dadosFiltrados.filter(function(v) {
+      const f = v.funcionarios || {};
+      const nome = (f.nome || '').toLowerCase();
+      const email = (f.email || '').toLowerCase();
+      return nome.includes(buscaValor) || email.includes(buscaValor);
+    });
   }
 
   if (!dadosFiltrados.length) {
-    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário com esse status encontrado.</div>'
+    lista.innerHTML = '<div class="empty-state" style="grid-column: 1 / -1;">Nenhum funcionário encontrado para esta busca/status.</div>'
     funcionariosAtuaisNaTela = [];
     return
   }

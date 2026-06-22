@@ -1,4 +1,4 @@
-﻿﻿// ==========================================
+﻿// ==========================================
 // HELPERS DE CHECKBOX
 // ==========================================
 function coletarCheckboxes(grupo) {
@@ -81,9 +81,9 @@ function renderizarAlunos() {
     const endereco = (aluno.endereco || '').toLowerCase()
     const serieAluno = (aluno.serie || '').toLowerCase()
 
-    const passouBusca = !busca || nome.startsWith(busca) || telefone.includes(busca) ||
+    const passouBusca = !busca || nome.includes(busca) || telefone.includes(busca) ||
       email.includes(busca) || endereco.includes(busca) || serieAluno.includes(busca)
-    const passouSerie = !busca && (!serie || aluno.serie === serie)
+    const passouSerie = !serie || aluno.serie === serie
     return passouBusca && passouSerie
   })
 
