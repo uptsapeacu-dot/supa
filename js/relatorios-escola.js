@@ -1,4 +1,4 @@
-﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
+// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -258,7 +258,7 @@ async function carregarRelatorioPresencaLocal() {
 
   const { data: logs, error } = await clienteSupabase
     .from('registros_ronda')
-    .select('*, funcionarios(nome, cargo)')
+    .select('*, funcionarios(nome)')
     .in('ponto_id', pontosIds)
     .order('horario', { ascending: false })
     .limit(100);
@@ -274,41 +274,38 @@ async function carregarRelatorioPresencaLocal() {
     return;
   }
 
-  let html = \`
+  let html = `
     <div class="table-responsive">
       <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
         <thead>
           <tr style="background:#333; text-align:left;">
             <th style="padding:12px;">Data / Hora</th>
             <th style="padding:12px;">Funcionário</th>
-            <th style="padding:12px;">Cargo</th>
             <th style="padding:12px;">Ponto (Local)</th>
             <th style="padding:12px;">Status</th>
           </tr>
         </thead>
         <tbody>
-  \`;
+  `;
 
-  let htmlPrint = \`
+  let htmlPrint = `
     <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Registros de Presença e Rondas</h3>
     <table class="boletim-tabela">
       <thead>
         <tr>
           <th class="text-left">Data / Hora</th>
           <th class="text-left">Funcionário</th>
-          <th class="text-left">Cargo</th>
           <th class="text-left">Ponto (Local)</th>
           <th class="text-left">Status</th>
         </tr>
       </thead>
       <tbody>
-  \`;
+  `;
 
   logs.forEach(log => {
     const dataObj = new Date(log.horario);
     const dataStr = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
-    const cargoFunc = log.funcionarios ? log.funcionarios.cargo : '-';
     
     // Identificar o nome do ponto
     const pontoObj = pontos.find(p => p.id === log.ponto_id);
@@ -316,25 +313,23 @@ async function carregarRelatorioPresencaLocal() {
 
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
 
-    html += \`
+    html += `
       <tr style="border-bottom:1px solid #333;">
-        <td style="padding:12px; color:#aaa;">\${dataStr}</td>
-        <td style="padding:12px; color:#fff; font-weight:500;">\${nomeFunc}</td>
-        <td style="padding:12px; color:#aaa;">\${cargoFunc}</td>
-        <td style="padding:12px; color:#aaa;">\${nomePonto}</td>
-        <td style="padding:12px;"><span style="background:\${corStatus}20; color:\${corStatus}; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">\${log.status || 'OK'}</span></td>
+        <td style="padding:12px; color:#aaa;">${dataStr}</td>
+        <td style="padding:12px; color:#fff; font-weight:500;">${nomeFunc}</td>
+        <td style="padding:12px; color:#aaa;">${nomePonto}</td>
+        <td style="padding:12px;"><span style="background:${corStatus}20; color:${corStatus}; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">${log.status || 'OK'}</span></td>
       </tr>
-    \`;
+    `;
 
-    htmlPrint += \`
+    htmlPrint += `
       <tr>
-        <td>\${dataStr}</td>
-        <td>\${nomeFunc}</td>
-        <td>\${cargoFunc}</td>
-        <td>\${nomePonto}</td>
-        <td style="font-weight:bold;">\${log.status || 'OK'}</td>
+        <td>${dataStr}</td>
+        <td>${nomeFunc}</td>
+        <td>${nomePonto}</td>
+        <td style="font-weight:bold;">${log.status || 'OK'}</td>
       </tr>
-    \`;
+    `;
   });
 
   html += '</tbody></table></div>';

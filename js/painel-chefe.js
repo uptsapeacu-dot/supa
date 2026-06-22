@@ -36,13 +36,12 @@ async function carregarDadosPainelChefe(cargo) {
   const tbody = document.getElementById('listaOperacionaisChefe');
   if (tbody) tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;">Carregando...</td></tr>';
   
-  // Buscar os funcionarios que possuem este cargo
+  // Buscar os funcionarios que possuem este cargo através dos vínculos
   const { data, error } = await clienteSupabase
-    .from('funcionarios')
-    .select('*')
+    .from('vinculos_funcionarios')
+    .select('*, funcionarios(*)')
     .eq('cargo', cargo)
-    .eq('ativo', true)
-    .order('nome');
+    .eq('ativo', true);
     
   if (error) {
     console.error(error);
@@ -50,7 +49,17 @@ async function carregarDadosPainelChefe(cargo) {
     return;
   }
   
-  _operacionaisChefeCache = data || [];
+  // Extrair os funcionários únicos dos vínculos
+  const funcionariosMap = {};
+  if (data) {
+    data.forEach(v => {
+      if (v.funcionarios && v.funcionarios.ativo !== false) {
+        funcionariosMap[v.funcionarios.id] = v.funcionarios;
+      }
+    });
+  }
+  
+  _operacionaisChefeCache = Object.values(funcionariosMap).sort((a, b) => a.nome.localeCompare(b.nome));
   renderizarOperacionaisChefe(_operacionaisChefeCache);
 }
 
