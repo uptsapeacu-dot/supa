@@ -86,7 +86,7 @@ function renderizarEscolas() {
 
       const editBtn = document.createElement('button')
       editBtn.className = 'card-action-btn'
-      editBtn.innerHTML = 'âœŽ'
+      editBtn.innerHTML = '<i data-lucide="edit-2" style="width:16px;height:16px;"></i>'
       editBtn.title = 'Editar escola'
       editBtn.onclick = function(e) {
         e.stopPropagation()
@@ -97,10 +97,10 @@ function renderizarEscolas() {
         if (escola.logo_url) {
           document.getElementById('imgPreviewLogo').src = escola.logo_url
           document.getElementById('previewLogoEscola').style.display = 'block'
-          document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Trocar Logo (opcional)'
+          document.getElementById('labelLogoEscola').innerHTML = '<i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Trocar Logo (opcional)'
         } else {
           document.getElementById('previewLogoEscola').style.display = 'none'
-          document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
+          document.getElementById('labelLogoEscola').innerHTML = '<i data-lucide="camera" style="width:16px;height:16px;vertical-align:middle;margin-right:4px;"></i> Selecionar Logo da Escola *'
         }
 
         document.getElementById('logoEscola').value = ''
@@ -111,7 +111,7 @@ function renderizarEscolas() {
 
       const deleteBtn = document.createElement('button')
       deleteBtn.className = 'card-action-btn btn-delete-card'
-      deleteBtn.innerHTML = 'ðŸ—‘ï¸'
+      deleteBtn.innerHTML = '<i data-lucide="trash-2" style="width:16px;height:16px;color:#ef4444;"></i>'
       deleteBtn.title = 'Excluir escola'
       deleteBtn.onclick = function(e) {
         e.stopPropagation()

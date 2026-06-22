@@ -50,6 +50,8 @@ async function adminRenderizarAcessos() {
         '</tbody>' +
       '</table></div>' +
     '</div>'
+
+  if (window.lucide) window.lucide.createIcons()
 }
 
 function adminRenderizarLinhasAcesso(lista) {
