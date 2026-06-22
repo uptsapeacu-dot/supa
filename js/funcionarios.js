@@ -25,19 +25,6 @@ async function carregarCargos() {
 }
 
 
-async function adicionarNovoCargo() {
-  const novoCargo = prompt("Digite o nome do novo cargo (Ex: Psicólogo Escolar):");
-  if (!novoCargo || novoCargo.trim() === "") return;
-  const nomeLimpo = novoCargo.trim();
-  const { data, error } = await clienteSupabase.from('cargos').insert([{ nome: nomeLimpo }]).select().single();
-  if (error) {
-    alert(error.code === '23505' ? 'Esse cargo já existe!' : 'Erro: ' + error.message);
-    return;
-  }
-  await carregarCargos();
-  document.getElementById('cargoFuncionario').value = data.nome;
-  alert('Novo cargo cadastrado com sucesso!');
-}
 
 
 // ====== CARREGAMENTO E TELA ======
@@ -269,8 +256,7 @@ async function abrirModalFuncionario() {
   document.getElementById('statusObservacaoBox').style.display = 'none'
 
   document.getElementById('emailFuncionario').disabled = false
-  document.getElementById('btnNovoCargo').style.display = isSecretaria() ? 'block' : 'none';
-
+  
   // Mostra caixa de observação ao mudar status
   document.getElementById('statusFuncionario').onchange = function() {
     const v = this.value;
@@ -318,8 +304,7 @@ async function editarFuncionario(vinculo) {
   document.getElementById('fotoFuncionario').value = ''
 
   document.getElementById('emailFuncionario').disabled = !!vinculo.funcionarios.auth_user_id
-  document.getElementById('btnNovoCargo').style.display = isSecretaria() ? 'block' : 'none';
-
+  
   // Mostra caixa de observação ao mudar status
   document.getElementById('statusFuncionario').onchange = function() {
     const v = this.value;

@@ -1,4 +1,4 @@
-# Regras Gerais de Projeto
+﻿# Regras Gerais de Projeto
 
 - Sempre utilizar a codificação de caracteres UTF-8 quando modificar, criar ou salvar qualquer arquivo (especialmente arquivos `.js`, `.html`, `.css` ou scripts `.ps1`). Em PowerShell, por exemplo, sempre especifique `[System.Text.Encoding]::UTF8` ao usar métodos de escrita ou de leitura do .NET, e force `-Encoding UTF8` caso use cmdlets. Isso evitará corrompimento de caracteres com acentos ou caracteres especiais em Windows (que pode ler como Windows-1252/ANSI).
 - Ao gerar e injetar conteúdo HTML dinamicamente através do JavaScript (via `.innerHTML`, `.insertAdjacentHTML` ou afins) que contenha ícones da biblioteca Lucide (tags como `<i data-lucide="..."></i>`), é obrigatório incluir a chamada `if (window.lucide) { lucide.createIcons(); }` logo em seguida, para garantir que o SVG seja renderizado corretamente no DOM.
@@ -10,4 +10,4 @@
 - **Módulo Operacional Mobile (Nível 6):** Nível estritamente destinado aos operacionais de rua/terreno (ex: vigias que vão bater ponto nas escolas). Este nível não vê nenhuma página administrativa no SPA. A renderização recai direto em `htmls/ponto-mobile.html`, bloqueando o uso das funções caso a API nativa do navegador (`navigator.geolocation`) seja negada.
 - **Módulo de Relatórios (Arquitetura de Grid):** Toda vez que um relatório novo for criado ou solicitado, ele DEVE ser adicionado na tela inicial de relatórios através da injeção de mais 1 "card" (grid) correspondente. Não utilize abas horizontais de navegação neste módulo, sempre crie um Card no Grid. O usuário clica no card para abrir o relatório em tela cheia (com a opção de Voltar ao Grid principal).
 
-- **Python Instalado:** O ambiente Windows possui Python instalado. Ferramentas, scripts auxiliares e processamentos massivos podem (e devem) ser acelerados através da execução de scripts em Python no terminal para agilizar a entrega de código.
+- **Ambiente de Automação Instalado:** O Windows agora possui nativamente **Python, Node.js e Git**. Você pode e deve usá-los intensivamente (como o `git grep` para buscas relâmpago ou scripts Python/Node no terminal) para acelerar processamentos pesados, buscas e a entrega de códigos no projeto.

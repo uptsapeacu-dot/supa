@@ -27,6 +27,7 @@ async function carregarPainelSuperAdmin() {
   const scripts = [
     'admin/admin-logs.js',
     'admin/admin-usuarios.js',
+    'admin/admin-cargos.js',
     'admin/admin-acessos.js',
     'admin/admin-banco.js',
     'admin/admin-relatorios.js',
@@ -84,6 +85,7 @@ function adminMostrarTela(tela) {
   switch (tela) {
     case 'dashboard':    adminRenderizarDashboard(); break
     case 'usuarios':     adminRenderizarUsuarios(); break
+    case 'cargos':       adminRenderizarCargos(); break
     case 'acessos':      adminRenderizarAcessos(); break
     case 'logs':         adminRenderizarLogs(); break
     case 'auditoria':    adminRenderizarAuditoria(); break
