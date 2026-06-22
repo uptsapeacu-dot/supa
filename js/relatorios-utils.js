@@ -7,32 +7,38 @@
 let graficoDesempenho = null;
 
 function mudarAbaRelatorio(aba) {
-  // Ocultar todas as abas
-  document.querySelectorAll('.relatorio-aba').forEach(el => el.style.display = 'none');
+  // Ocultar todas as abas de conteúdo
+  document.querySelectorAll('.relatorio-aba').forEach(function(el) { el.style.display = 'none'; });
   
-  // Remover classe ativa dos botões
-  document.querySelectorAll('.relatorios-tabs .tab-btn').forEach(btn => {
-    btn.classList.remove('active');
-    btn.style.color = '#aaa';
-    btn.style.borderBottom = '2px solid transparent';
-  });
+  // Ocultar o Grid de opções
+  const gridEl = document.getElementById('gridRelatoriosCards');
+  if (gridEl) gridEl.style.display = 'none';
+
+  // Exibir o botão Voltar
+  const btnVoltar = document.getElementById('btnVoltarGridRelatorios');
+  if (btnVoltar) btnVoltar.style.display = 'flex';
 
   // Mostrar a aba selecionada
   const abaEl = document.getElementById('relatorio-' + aba);
   if (abaEl) abaEl.style.display = 'block';
 
-  // Ativar o botão
-  const btnEl = document.getElementById('tab-' + aba);
-  if (btnEl) {
-    btnEl.classList.add('active');
-    btnEl.style.color = '#fff';
-    btnEl.style.borderBottom = '2px solid #3ea6ff';
-  }
-
   // Carregar mapa logístico somente quando a aba for aberta
   if (aba === 'mapas' && typeof carregarMapaFuncionarios === 'function') {
     setTimeout(function() { carregarMapaFuncionarios(); }, 100);
   }
+}
+
+function voltarGridRelatorios() {
+  // Ocultar todas as abas
+  document.querySelectorAll('.relatorio-aba').forEach(function(el) { el.style.display = 'none'; });
+  
+  // Ocultar botão Voltar
+  const btnVoltar = document.getElementById('btnVoltarGridRelatorios');
+  if (btnVoltar) btnVoltar.style.display = 'none';
+  
+  // Exibir o Grid principal
+  const gridEl = document.getElementById('gridRelatoriosCards');
+  if (gridEl) gridEl.style.display = 'grid';
 }
 
 async function carregarRelatorios() {
@@ -41,8 +47,8 @@ async function carregarRelatorios() {
     graficoDesempenho = null;
   }
 
-  // Resetar abas para desempenho
-  mudarAbaRelatorio('desempenho');
+  // Volta para a tela inicial (Grid)
+  voltarGridRelatorios();
 
   if (escolaAtual == null || escolaAtual === '') {
     document.getElementById('tituloRelatorio').innerHTML = '<i data-lucide="bar-chart-2" style="width:28px; height:28px; margin-right:8px; display:inline-block; vertical-align:middle;"></i><span style="vertical-align:middle;">Visão Geral da Rede</span>';

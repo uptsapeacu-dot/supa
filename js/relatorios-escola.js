@@ -1,12 +1,13 @@
-﻿﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
+﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
   const containerFreq = document.getElementById('relatorio-conteudo-frequencia');
   const containerCenso = document.getElementById('conteudo-censo');
   const containerOcorrencias = document.getElementById('conteudo-ocorrencias');
+  const containerPresenca = document.getElementById('conteudo-presenca');
 
-  if (!containerDesempenho || !containerFreq || !containerCenso || !containerOcorrencias) {
+  if (!containerDesempenho || !containerFreq || !containerCenso || !containerOcorrencias || !containerPresenca) {
     console.error('Elementos de relatório não encontrados no DOM.');
     return;
   }
@@ -15,12 +16,14 @@ async function carregarRelatoriosEscola() {
   containerFreq.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerCenso.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
   containerOcorrencias.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
+  containerPresenca.innerHTML = '<div class="empty-state">Carregando dados locais...</div>';
 
   // Variáveis globais para impressão local
   window.htmlImpressaoDesempenho = '';
   window.htmlImpressaoFrequencia = '';
   window.htmlImpressaoCenso = '';
   window.htmlImpressaoOcorrencias = '';
+  window.htmlImpressaoPresenca = '';
 
   try {
     // 1. DESEMPENHO (Boletim Vermelho)
@@ -160,6 +163,9 @@ async function carregarRelatoriosEscola() {
   // 4. OCORRÊNCIAS LOCAIS
   await carregarRelatorioOcorrenciasLocal();
   
+  // 5. PRESENÇA (Logs de Ronda e Ponto Mobile)
+  await carregarRelatorioPresencaLocal();
+  
   } catch (err) {
     console.error('Erro em carregarRelatoriosEscola:', err);
     const msgErro = '<div class="empty-state" style="color:#ef4444;">Erro de conexão. Não foi possível carregar os dados locais.</div>';
@@ -167,6 +173,7 @@ async function carregarRelatoriosEscola() {
     containerFreq.innerHTML = msgErro;
     containerCenso.innerHTML = msgErro;
     containerOcorrencias.innerHTML = msgErro;
+    containerPresenca.innerHTML = msgErro;
   }
 }
 
@@ -225,6 +232,116 @@ async function carregarRelatorioOcorrenciasLocal() {
     if (newFData) newFData.value = filtroData;
     if (newFGrav) newFGrav.value = filtroGravidade;
   }, 50);
+}
+
+// 5. Relatório de Presença e Rondas Mobile
+async function carregarRelatorioPresencaLocal() {
+  const container = document.getElementById('conteudo-presenca');
+  if (!container) return;
+
+  // Busca os registros de ronda para esta escola
+  // registros_ronda tem funcionario_id, horario, latitude, longitude, status e ponto_id
+  // mas como escolaAtual filtra pela escola, precisamos verificar como ligamos a escola ao registro.
+  // Vamos buscar via ponto de ronda:
+  const { data: pontos } = await clienteSupabase
+    .from('pontos_ronda')
+    .select('id, nome, localizacao')
+    .eq('escola_id', escolaAtual);
+
+  if (!pontos || pontos.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhum ponto de ronda ou presença cadastrado para esta unidade.</div>';
+    window.htmlImpressaoPresenca = '<p>Nenhum ponto de ronda ou presença cadastrado para esta unidade.</p>';
+    return;
+  }
+
+  const pontosIds = pontos.map(p => p.id);
+
+  const { data: logs, error } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*, funcionarios(nome, cargo)')
+    .in('ponto_id', pontosIds)
+    .order('horario', { ascending: false })
+    .limit(100);
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state" style="color:red;">Erro ao buscar registros de presença.</div>';
+    return;
+  }
+
+  if (!logs || logs.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhum registro de leitura de QR Code encontrado.</div>';
+    window.htmlImpressaoPresenca = '<p>Nenhum registro de leitura de QR Code encontrado.</p>';
+    return;
+  }
+
+  let html = \`
+    <div class="table-responsive">
+      <table class="tabela-padrao" style="width:100%; border-collapse:collapse; background:#222; border-radius:8px; overflow:hidden;">
+        <thead>
+          <tr style="background:#333; text-align:left;">
+            <th style="padding:12px;">Data / Hora</th>
+            <th style="padding:12px;">Funcionário</th>
+            <th style="padding:12px;">Cargo</th>
+            <th style="padding:12px;">Ponto (Local)</th>
+            <th style="padding:12px;">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+  \`;
+
+  let htmlPrint = \`
+    <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Registros de Presença e Rondas</h3>
+    <table class="boletim-tabela">
+      <thead>
+        <tr>
+          <th class="text-left">Data / Hora</th>
+          <th class="text-left">Funcionário</th>
+          <th class="text-left">Cargo</th>
+          <th class="text-left">Ponto (Local)</th>
+          <th class="text-left">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+  \`;
+
+  logs.forEach(log => {
+    const dataObj = new Date(log.horario);
+    const dataStr = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
+    const cargoFunc = log.funcionarios ? log.funcionarios.cargo : '-';
+    
+    // Identificar o nome do ponto
+    const pontoObj = pontos.find(p => p.id === log.ponto_id);
+    const nomePonto = pontoObj ? pontoObj.nome : 'Desconhecido';
+
+    const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
+
+    html += \`
+      <tr style="border-bottom:1px solid #333;">
+        <td style="padding:12px; color:#aaa;">\${dataStr}</td>
+        <td style="padding:12px; color:#fff; font-weight:500;">\${nomeFunc}</td>
+        <td style="padding:12px; color:#aaa;">\${cargoFunc}</td>
+        <td style="padding:12px; color:#aaa;">\${nomePonto}</td>
+        <td style="padding:12px;"><span style="background:\${corStatus}20; color:\${corStatus}; padding:4px 8px; border-radius:4px; font-size:12px; font-weight:600;">\${log.status || 'OK'}</span></td>
+      </tr>
+    \`;
+
+    htmlPrint += \`
+      <tr>
+        <td>\${dataStr}</td>
+        <td>\${nomeFunc}</td>
+        <td>\${cargoFunc}</td>
+        <td>\${nomePonto}</td>
+        <td style="font-weight:bold;">\${log.status || 'OK'}</td>
+      </tr>
+    \`;
+  });
+
+  html += '</tbody></table></div>';
+  htmlPrint += '</tbody></table>';
+
+  container.innerHTML = html;
+  window.htmlImpressaoPresenca = htmlPrint;
 }
 
 // Lógica isolada de frequência por turma da escola - MATRIZ DE FREQUÃŠNCIA
