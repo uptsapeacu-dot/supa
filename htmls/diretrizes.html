@@ -99,11 +99,12 @@
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
     </button>
     <div id="d6" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
-      <p style="margin-top:10px;">A atribuição de um <strong>Chefe de Equipe (Nível 5)</strong> funciona baseada no cargo que ele coordena:</p>
+      <p style="margin-top:10px;">A atribuição de um <strong>Chefe de Equipe (Nível 5)</strong> funciona baseada nas profissões que ele coordena (Controle de Acesso Baseado em Atributos - ABAC):</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
-        <li style="margin-bottom:6px;">A Secretaria, ao dar permissão de Nível 5 para um funcionário, deve marcar no painel quais profissões ele gerencia (Ex: Vigias, Garis).</li>
-        <li style="margin-bottom:6px;">No Menu Lateral do Chefe aparecerão apenas os botões referentes às equipes liberadas para ele gerenciar.</li>
-        <li style="margin-bottom:6px;">No <em>Painel do Chefe</em> ele poderá acompanhar as informações da equipe, definir as escalas e consultar os logs de rondas ou ponto eletrônico de sua respectiva equipe.</li>
+        <li style="margin-bottom:6px;"><strong>Centralização de Cargos:</strong> A lista de cargos do sistema é gerenciada exclusivamente pela equipe do <strong>Super Painel Administrativo</strong>. Apenas os Super Admins podem cadastrar, editar ou remover um cargo do banco de dados global.</li>
+        <li style="margin-bottom:6px;"><strong>Atribuição:</strong> Ao conceder permissão de Nível 5 para um funcionário no menu "Permissões", o gestor deverá marcar nas caixinhas de seleção quais profissões oficiais ele poderá gerenciar (ex: Vigias, Garis, Inspetores).</li>
+        <li style="margin-bottom:6px;">No <em>Painel do Chefe</em>, o sistema listará apenas os funcionários subordinados àquele chefe (ou seja, funcionários cujos vínculos na escola possuam os mesmos cargos que o chefe foi designado a controlar).</li>
+        <li style="margin-bottom:6px;">O Chefe poderá acompanhar as informações da equipe, definir as escalas e consultar os logs de rondas ou ponto eletrônico de sua respectiva equipe, sem ter acesso aos módulos globais de secretaria.</li>
       </ul>
     </div>
   </div>
