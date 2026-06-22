@@ -20,6 +20,9 @@
   <button class="perm-view-tab" id="tabChefeRegistros" onclick="mudarAbaChefe('registros')">
     <i data-lucide="clipboard-list"></i> Registros e Logs
   </button>
+  <button class="perm-view-tab" id="tabChefeAlertas" onclick="mudarAbaChefe('alertas')" style="color:#f59e0b;">
+    <i data-lucide="alert-triangle"></i> Alertas de Ponto
+  </button>
 </div>
 
 <!-- CONTEUDOS DAS ABAS -->
@@ -77,6 +80,30 @@
     <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Acompanhe o registro em tempo real das leituras de QR Code feitas pelos operacionais.</p>
     <div id="listaRegistrosChefe">
       <!-- Populado via JS -->
+    </div>
+  </div>
+</div>
+
+<div id="abaChefeAlertas" style="display:none;">
+  <div class="permissions-box" style="border: 1px solid #b45309; background-color: rgba(245, 158, 11, 0.05);">
+    <h2 style="color:#f59e0b; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="alert-triangle"></i> Alertas de Geofencing
+    </h2>
+    <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Registros de operacionais que bateram o ponto a uma distância maior que a tolerância permitida do local oficial.</p>
+    <div class="table-responsive">
+      <table class="table" style="width:100%;">
+        <thead>
+          <tr>
+            <th>Data/Hora</th>
+            <th>Operacional</th>
+            <th>Local Exigido</th>
+            <th>Distância Registrada</th>
+          </tr>
+        </thead>
+        <tbody id="listaAlertasChefe">
+          <tr><td colspan="4" style="text-align:center; color:#aaa;">Carregando alertas...</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>

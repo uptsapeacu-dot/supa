@@ -6,6 +6,7 @@ function mudarAbaChefe(aba) {
   document.getElementById('abaChefeEscalas').style.display = 'none';
   document.getElementById('abaChefePontos').style.display = 'none';
   document.getElementById('abaChefeRegistros').style.display = 'none';
+  document.getElementById('abaChefeAlertas').style.display = 'none';
   
   document.querySelectorAll('.content-tabs button').forEach(function(b) { b.classList.remove('active'); });
   
@@ -21,6 +22,10 @@ function mudarAbaChefe(aba) {
   } else if (aba === 'registros') {
     document.getElementById('abaChefeRegistros').style.display = 'block';
     document.getElementById('tabChefeRegistros').classList.add('active');
+  } else if (aba === 'alertas') {
+    document.getElementById('abaChefeAlertas').style.display = 'block';
+    document.getElementById('tabChefeAlertas').classList.add('active');
+    carregarAlertasChefe();
   }
 }
 
@@ -94,5 +99,60 @@ function filtrarOperacionais() {
 }
 
 function abrirModalNovoPonto() {
-  toastMapa('Modal de criação de Ponto de Ronda (em breve)', 'aviso');
+  toastMapa('Acesse o Painel Administrativo Root para gerenciar Pontos de Ronda.', 'aviso');
+}
+
+async function carregarAlertasChefe() {
+  const tbody = document.getElementById('listaAlertasChefe');
+  if (!tbody) return;
+  
+  // Pegar todos os operacionais do cargo atual para filtrar os registros apenas deles
+  if (_operacionaisChefeCache.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;">Sem operacionais na equipe.</td></tr>';
+    return;
+  }
+  
+  const idsEquipe = _operacionaisChefeCache.map(f => f.id);
+  
+  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;">Buscando alertas...</td></tr>';
+  
+  const { data, error } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*, funcionarios(nome), pontos_ronda(nome)')
+    .in('funcionario_id', idsEquipe)
+    .eq('status', 'ALERTA')
+    .order('horario', { ascending: false })
+    .limit(30);
+    
+  if (error) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Erro ao carregar alertas.</td></tr>';
+    return;
+  }
+  
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#22c55e;">Nenhum alerta recente encontrado.</td></tr>';
+    return;
+  }
+  
+  let html = '';
+  data.forEach(log => {
+    const d = new Date(log.horario);
+    const dataStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
+    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Inválido';
+    
+    // O sistema salvará uma msg tipo "Fora do raio (150m)" no status ou log, vamos extrair se houver, ou assumir.
+    // Como a especificação diz que o alerta é distância:
+    html += \`
+      <tr style="background-color:rgba(245,158,11,0.05);">
+        <td style="color:#aaa;">\${dataStr}</td>
+        <td style="color:#fff; font-weight:bold;">\${nomeFunc}</td>
+        <td>\${nomePonto}</td>
+        <td style="color:#f59e0b; font-weight:bold;"><i data-lucide="map-pin-off" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fora do raio permitido</td>
+      </tr>
+    \`;
+  });
+  
+  tbody.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
 }
