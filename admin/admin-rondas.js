@@ -1,4 +1,4 @@
-// ============================================
+﻿// ============================================
 // ADMIN-RONDAS.JS — Módulo de Controle Global de Rondas/GPS
 // ============================================
 
@@ -8,7 +8,7 @@ async function adminRenderizarRondas() {
   const conteudo = document.getElementById('adminConteudo');
   if (!conteudo) return;
 
-  conteudo.innerHTML = \`
+  conteudo.innerHTML = `
     <div class="admin-header">
       <div class="admin-header-title">
         <i data-lucide="scan-line"></i>
@@ -98,7 +98,7 @@ async function adminCarregarEscolasSelect() {
   if (!sel) return;
   sel.innerHTML = '<option value="">Selecione a Escola...</option>';
   data.forEach(e => {
-    sel.innerHTML += \`<option value="\${e.id}">\${e.nome}</option>\`;
+    sel.innerHTML += `<option value="\${e.id}">\${e.nome}</option>`;
   });
 }
 
@@ -127,7 +127,7 @@ async function adminCarregarPontosRonda() {
     const nomeEscola = escola ? escola.nome : 'Sem vínculo';
     const tol = p.tolerancia_metros || 50;
 
-    html += \`
+    html += `
       <tr>
         <td style="font-weight:bold; color:#fff;">\${p.nome}</td>
         <td style="color:#aaa;">\${nomeEscola}</td>
@@ -146,7 +146,7 @@ async function adminCarregarPontosRonda() {
           </div>
         </td>
       </tr>
-    \`;
+    `;
   });
 
   tbody.innerHTML = html;
@@ -226,7 +226,7 @@ async function adminCarregarLogsGlobaisRonda() {
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
 
-    html += \`
+    html += `
       <tr>
         <td style="color:#aaa; font-size:12px;">\${dataStr}</td>
         <td>\${nomeFunc}</td>
@@ -238,7 +238,7 @@ async function adminCarregarLogsGlobaisRonda() {
           </button>
         </td>
       </tr>
-    \`;
+    `;
   });
 
   tbody.innerHTML = html;
@@ -270,9 +270,9 @@ function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
   // Usaremos uma API publica pra facilitar a injeção da logo se necessário, ou qrcode base
   // A string do QR será um JSON stringificado ou só o ID para segurança
   const qrData = JSON.stringify({ action: "sapeacu_ronda", id: idPonto });
-  const qrUrl = \`https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=\${encodeURIComponent(qrData)}\`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=\${encodeURIComponent(qrData)}`;
 
-  modal.innerHTML = \`
+  modal.innerHTML = `
     <div style="background:#fff; padding:30px; border-radius:12px; width:400px; text-align:center; color:#333; position:relative;">
       <button onclick="document.getElementById('modalAdminQR').style.display='none'" style="position:absolute; right:15px; top:15px; background:none; border:none; font-size:20px; cursor:pointer; color:#999;">&times;</button>
       
@@ -293,7 +293,7 @@ function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
         🖨️ Imprimir Cartaz do Ponto
       </button>
     </div>
-  \`;
+  `;
   modal.style.display = 'flex';
 }
 

@@ -1,4 +1,4 @@
-// js/ponto-mobile.js
+﻿// js/ponto-mobile.js
 
 function iniciarModuloPontoMobile() {
   const dataEl = document.getElementById('pontoMobileData');

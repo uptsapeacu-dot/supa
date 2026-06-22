@@ -504,7 +504,7 @@ function preencherSelectsPermissoes() {
   }
 }
 
-function atualizarCamposPermissao() {
+async function atualizarCamposPermissao() {
   const nivelEl = document.getElementById('nivelPermissao')
   if (!nivelEl) return
   const nivel = Number(nivelEl.value)
@@ -517,12 +517,17 @@ function atualizarCamposPermissao() {
   if (checksCargos && containerCargos) {
     checksCargos.style.display = nivel === 5 ? 'block' : 'none'
     if (nivel === 5) {
-      // Puxa cargos unicos dos funcionarios
-      const cargosSet = new Set(funcionarios.map(function(f) { return f.cargo }).filter(Boolean))
-      const cargosUnicos = Array.from(cargosSet).sort()
+      containerCargos.innerHTML = '<div style="color:#aaa;text-align:center;padding:10px;">Carregando cargos...</div>'
       
+      const { data, error } = await clienteSupabase.from('cargos').select('nome').order('nome')
+      if (error || !data || data.length === 0) {
+        containerCargos.innerHTML = '<div style="color:red;text-align:center;padding:10px;">Erro ao carregar cargos ou nenhum cadastrado.</div>'
+        return
+      }
+
       containerCargos.innerHTML = ''
-      cargosUnicos.forEach(function(cargo) {
+      data.forEach(function(c) {
+        const cargo = c.nome
         const idSafe = 'chk_cargo_' + cargo.replace(/\s+/g, '')
         const item = document.createElement('div')
         item.className = 'perm-matrix-item'
@@ -544,7 +549,7 @@ function atualizarCamposPermissao() {
 // =============================================
 // EDITAR PERMISSAO (preenche form)
 // =============================================
-function editarPermissao(id) {
+async function editarPermissao(id) {
   const acesso = acessosSistema.find(function(a) { return String(a.id) === String(id) })
   if (!acesso) return
 
@@ -567,7 +572,7 @@ function editarPermissao(id) {
   _permFuncionarioSelecionadoId = acesso.funcionario_id
   document.getElementById('orgaoPermissao').value = acesso.orgao_id || ''
   document.getElementById('nivelPermissao').value = acesso.nivel
-  atualizarCamposPermissao()
+  await atualizarCamposPermissao()
 
   if (acesso.nivel === 3) {
     const el = function(id) { return document.getElementById(id) }
@@ -579,14 +584,12 @@ function editarPermissao(id) {
   }
 
   if (acesso.nivel === 5 && acesso.cargos_gerenciados) {
-    setTimeout(function() {
-      const checkboxes = document.querySelectorAll('.chk-abac-cargo')
-      checkboxes.forEach(function(chk) {
-        if (acesso.cargos_gerenciados.includes(chk.value)) {
-          chk.checked = true
-        }
-      })
-    }, 100)
+    const checkboxes = document.querySelectorAll('.chk-abac-cargo')
+    checkboxes.forEach(function(chk) {
+      if (acesso.cargos_gerenciados.includes(chk.value)) {
+        chk.checked = true
+      }
+    })
   }
 
   document.getElementById('formPermissaoTitulo').textContent = 'Editando acesso'
