@@ -28,6 +28,11 @@ function mudarAbaRelatorio(aba) {
     btnEl.style.color = '#fff';
     btnEl.style.borderBottom = '2px solid #3ea6ff';
   }
+
+  // Carregar mapa logístico somente quando a aba for aberta
+  if (aba === 'mapas' && typeof carregarMapaFuncionarios === 'function') {
+    setTimeout(function() { carregarMapaFuncionarios(); }, 100);
+  }
 }
 
 async function carregarRelatorios() {

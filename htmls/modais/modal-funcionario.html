@@ -48,7 +48,31 @@
       </div>
       <div>
         <label style="display:block; margin-bottom:4px; font-size:13px; color:#aaa;">Endereço</label>
-        <input type="text" id="enderecoFuncionario" placeholder="Rua, número, bairro, cidade" style="margin:0 0 12px 0;" />
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input type="text" id="enderecoFuncionario" placeholder="Rua, número, bairro, cidade" style="margin:0; flex:1;" oninput="_funcEnderecoInput(this.value)" />
+          <button type="button" onclick="geocodificarEndereco()" title="Buscar no mapa" style="padding:10px 14px; background:#3ea6ff; border:none; border-radius:8px; color:#000; font-weight:700; cursor:pointer; white-space:nowrap; font-size:13px;">&#128269; Buscar</button>
+        </div>
+      </div>
+
+      <!-- Mini-mapa GPS (oculto na impressao) -->
+      <div class="ocultar-na-impressao" style="margin-top:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="font-size:13px; color:#aaa;">&#128205; Localização no Mapa <span style="font-size:11px; color:#666;">(arraste o alfinete para corrigir)</span></label>
+          <a id="btnVerGoogleMaps" href="#" target="_blank" style="display:none; font-size:12px; color:#3ea6ff; text-decoration:none; gap:4px; align-items:center;" onclick="_abrirGoogleMapsFunc()">
+            &#128279; Ver no Google Maps
+          </a>
+        </div>
+        <div id="miniMapFuncionario" style="width:100%; height:220px; border-radius:10px; overflow:hidden; border:1px solid #333; background:#1a1a1a;"></div>
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <div style="flex:1;">
+            <label style="font-size:11px; color:#555; display:block; margin-bottom:2px;">Latitude</label>
+            <input type="number" step="any" id="latFuncionario" placeholder="Ex: -12.9714" style="margin:0; font-size:13px; background:#111; color:#666;" readonly />
+          </div>
+          <div style="flex:1;">
+            <label style="font-size:11px; color:#555; display:block; margin-bottom:2px;">Longitude</label>
+            <input type="number" step="any" id="lngFuncionario" placeholder="Ex: -38.5014" style="margin:0; font-size:13px; background:#111; color:#666;" readonly />
+          </div>
+        </div>
       </div>
 
       <div class="form-section-title">Cargo e Vínculo</div>

@@ -1,0 +1,73 @@
+# Especificação do Módulo: Sistema de Ronda por QR Code (Vigias)
+
+Este documento detalha o escopo, fluxo de funcionamento e a modelagem de dados necessária para a futura implementação do módulo de controle de rondas para vigias e equipe de segurança escolar.
+
+---
+
+## 1. Visão Geral
+Em vez de depender de um rastreamento contínuo via GPS em background (que consome bateria e sofre bloqueios do navegador), o sistema utilizará **Pontos de Controle com QR Code**. 
+
+O Diretor espalha QR Codes impressos em pontos críticos da escola. Durante a madrugada ou turnos de serviço, o vigia precisa ir fisicamente até esses locais, abrir a câmera pelo sistema e fazer a leitura. Ao ler, o sistema captura a **Hora Exata** e a **Localização GPS** do celular para evitar fraudes (ex: o vigia tirar foto do QR code e ler do sofá da guarita).
+
+---
+
+## 2. Fluxo de Funcionamento
+
+### Ações do Gestor (Diretor / Segurança)
+1. **Cadastro de Pontos:** No painel da escola, o Diretor acessa "Gerenciar Rondas" e cria pontos (ex: "Portão Principal", "Quadra Coberta", "Fundo do Refeitório").
+2. **Geração de QR Codes:** O sistema gera automaticamente um PDF com os QR Codes de cada ponto para impressão.
+3. **Relatórios:** O Diretor visualiza uma timeline. Ex: *"O vigia Ciro passou na Quadra às 02:15, mas pulou o ponto do Refeitório na ronda das 03:00"*.
+
+### Ações do Vigia
+1. **Iniciar Turno:** Ao chegar na escola, ele acessa o módulo "Minhas Rondas" no celular e clica em **"Iniciar Serviço"**. (O sistema checa via GPS se ele está na escola).
+2. **Realizar Ronda:** A cada intervalo definido (ex: a cada 1 hora), ele clica em **"Escanear Ponto"**. A câmera do navegador abre, ele aponta para o adesivo na parede e o sistema registra a passagem com sucesso.
+3. **Encerrar Turno:** Ao fim da escala, ele clica em "Encerrar Serviço".
+
+---
+
+## 3. Estrutura Necessária no Banco de Dados (Supabase)
+
+Para suportar esse módulo, precisaremos criar três tabelas relacionais:
+
+### Tabela 1: `pontos_ronda`
+Armazena os locais físicos onde os QR Codes estão colados dentro da escola.
+* `id` (UUID, PK)
+* `orgao_id` (UUID, FK -> orgaos.id) - *Escola a que pertence*
+* `nome` (Text) - *Ex: "Portão dos Fundos"*
+* `hash_codigo` (Text, Único) - *Uma string aleatória que vai dentro do QR Code para evitar que seja adivinhada*
+* `latitude_oficial` (Float8) - *Lat aproximada do local (opcional)*
+* `longitude_oficial` (Float8) - *Long aproximada do local (opcional)*
+* `ativo` (Boolean, default: true)
+
+### Tabela 2: `turnos_vigias`
+O "relógio de ponto" contendo a jornada de trabalho de uma noite inteira.
+* `id` (UUID, PK)
+* `orgao_id` (UUID, FK -> orgaos.id)
+* `vigia_id` (UUID, FK -> acessos_usuarios.funcionario_id)
+* `inicio_turno` (Timestamp with time zone)
+* `fim_turno` (Timestamp with time zone, Nullable)
+* `latitude_checkin` (Float8)
+* `longitude_checkin` (Float8)
+
+### Tabela 3: `registros_ronda`
+Cada vez que um QR code é lido, um registro (checkpoint) é criado aqui.
+* `id` (UUID, PK)
+* `turno_id` (UUID, FK -> turnos_vigias.id)
+* `ponto_id` (UUID, FK -> pontos_ronda.id)
+* `horario_leitura` (Timestamp with time zone) - *Sempre pega do servidor (NOW()), não do relógio do celular*
+* `latitude_lida` (Float8) - *Para cruzar e saber se a foto foi tirada longe da escola*
+* `longitude_lida` (Float8) - *Para cruzar e saber se a foto foi tirada longe da escola*
+* `distancia_metros_erro` (Float8) - *(Opcional) Calcula no backend a diferença entre onde o vigia estava e o local oficial do ponto*
+
+---
+
+## 4. Requisitos de Frontend (HTML/JS)
+
+Para implementar a câmera no navegador web (sem precisar de app nas lojas), será necessário:
+1. **Biblioteca JS:** Adicionar a biblioteca open-source `html5-qrcode` (ou similar) no projeto. Ela permite abrir a câmera traseira do celular nativamente pelo navegador.
+2. **Contexto HTTPS:** A API de câmera (`navigator.mediaDevices.getUserMedia`) e a de GPS (`navigator.geolocation`) exigem que o site esteja rodando em servidor seguro (`https://`), o que o Supabase/Netlify/Vercel já oferecem por padrão.
+3. **Tratamento de Permissões:** O frontend deve ter pop-ups amigáveis pedindo para o usuário clicar em "Permitir" quando o navegador perguntar sobre Câmera e Localização, caso contrário a leitura falhará.
+
+---
+
+**Proteção Anti-Fraude:** Ao desenhar a geração do PDF, imprima o QR Code sem a URL visível, apenas o quadrado. Se o vigia tirar uma foto do código impresso e mandar para o amigo de casa tentar ler pela tela do computador, o GPS vai dedurar que a leitura não foi feita no raio de 50 metros da escola.

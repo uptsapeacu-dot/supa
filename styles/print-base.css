@@ -15,3 +15,5 @@
   body { background: white !important; }
   #app, .login-container, .modal, .overlay { display: none !important; }
 }
+
+@media print { .ocultar-na-impressao { display: none !important; } }

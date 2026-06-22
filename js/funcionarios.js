@@ -279,6 +279,13 @@ async function abrirModalFuncionario() {
 
   document.getElementById('modalFuncionario').style.display = 'flex'
   document.getElementById('nomeFuncionario').focus()
+
+  // Inicializar o mini-mapa vazio (sem coordenadas)
+  setTimeout(function() {
+    if (typeof iniciarMiniMapaFuncionario === 'function') {
+      iniciarMiniMapaFuncionario(null, null);
+    }
+  }, 200);
 }
 
 function fecharModalFuncionario() {
@@ -321,6 +328,20 @@ async function editarFuncionario(vinculo) {
 
   document.getElementById('modalFuncionario').style.display = 'flex'
   document.getElementById('nomeFuncionario').focus()
+
+  // Inicializar mini-mapa com coordenadas existentes (se houver)
+  setTimeout(function() {
+    if (typeof iniciarMiniMapaFuncionario === 'function') {
+      var lat = vinculo.funcionarios.latitude || null;
+      var lng = vinculo.funcionarios.longitude || null;
+      iniciarMiniMapaFuncionario(lat, lng);
+      // Limpa/atualiza campos visuais
+      var latEl = document.getElementById('latFuncionario');
+      var lngEl = document.getElementById('lngFuncionario');
+      if (latEl) latEl.value = lat || '';
+      if (lngEl) lngEl.value = lng || '';
+    }
+  }, 200);
 }
 
 async function salvarFuncionario() {
@@ -387,6 +408,11 @@ async function salvarFuncionario() {
     }
 
     // === 2. MONTAR DADOS PARA O BANCO ===
+    var latEl = document.getElementById('latFuncionario');
+    var lngEl = document.getElementById('lngFuncionario');
+    var latVal = latEl && latEl.value !== '' ? parseFloat(latEl.value) : null;
+    var lngVal = lngEl && lngEl.value !== '' ? parseFloat(lngEl.value) : null;
+
     const payloadFunc = {
       nome: nome,
       telefone: telefone,
@@ -395,7 +421,9 @@ async function salvarFuncionario() {
       formacao_academica: formacao,
       endereco: endereco,
       status: novoStatus,
-      ativo: novoStatus === 'ativo'
+      ativo: novoStatus === 'ativo',
+      latitude: latVal,
+      longitude: lngVal
     };
     if (fotoUrl) payloadFunc.foto_url = fotoUrl;
 
