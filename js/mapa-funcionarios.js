@@ -77,6 +77,32 @@ function _atualizarCamposLatLng(lat, lng) {
   }
 }
 
+// Quando o usuário digita/cola números manualmente nos inputs
+function _syncMapFromInput() {
+  var latInput = document.getElementById('latFuncionario');
+  var lngInput = document.getElementById('lngFuncionario');
+  if (!latInput || !lngInput) return;
+  
+  var lat = parseFloat(latInput.value);
+  var lng = parseFloat(lngInput.value);
+  
+  if (!isNaN(lat) && !isNaN(lng)) {
+    if (_miniMapInst && _miniMapPin) {
+      _miniMapInst.setView([lat, lng], 16);
+      _miniMapPin.setLatLng([lat, lng]);
+    } else {
+      iniciarMiniMapaFuncionario(lat, lng);
+    }
+    
+    var btnGM = document.getElementById('btnVerGoogleMaps');
+    if (btnGM) {
+      btnGM.style.display = 'inline-flex';
+      btnGM.dataset.lat = lat;
+      btnGM.dataset.lng = lng;
+    }
+  }
+}
+
 // Abre o Google Maps com a coordenada salva
 function _abrirGoogleMapsFunc() {
   var btnGM = document.getElementById('btnVerGoogleMaps');
