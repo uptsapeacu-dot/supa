@@ -19,6 +19,8 @@
         <li style="margin-bottom:6px;"><strong>Nível 2 (Diretor Escolar):</strong> Acesso de gestão total apenas na escola onde o funcionário está vinculado. Pode realizar qualquer alteração na sua unidade.</li>
         <li style="margin-bottom:6px;"><strong>Nível 3 (Secretário Escolar / Coordenador):</strong> Precisa de permissões específicas concedidas pelo Diretor (ex: permissão para editar turmas, alunos, mural).</li>
         <li style="margin-bottom:6px;"><strong>Nível 4 (Professor):</strong> Acesso restrito e inteligente. O professor só consegue visualizar e lançar notas/frequência das disciplinas e turmas nas quais está diretamente vinculado.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 5 (Chefe de Equipe):</strong> Visão de gestão (ABAC) focada apenas nas profissões/cargos que gerencia. Consegue visualizar seus operacionais, definir escalas de trabalho e acompanhar o ponto eletrônico.</li>
+        <li style="margin-bottom:6px;"><strong>Nível 6 (Operacional):</strong> Acesso estritamente voltado para o App Mobile. A interface é reduzida para uma tela de leitura de QR Code para bater o Ponto/Ronda utilizando GPS do dispositivo.</li>
       </ul>
     </div>
   </div>
@@ -87,6 +89,36 @@
       <ul style="margin-top: 8px; padding-left: 20px;">
         <li style="margin-bottom:6px;"><strong>Módulos Administrativos:</strong> Ao clicar na escola na tela inicial, o professor verá que não tem acesso aos módulos gerais, isso é esperado já que ele não é secretário ou gestor e não precisa ver os módulos de cadastro.</li>
         <li style="margin-bottom:6px;"><strong>Menu Lateral Direto:</strong> Professores devem utilizar o menu <strong>"Turmas"</strong> na barra lateral esquerda (sidebar) para acessar diretamente suas disciplinas, frequência e alunos.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d6', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="shield-check" style="width:18px;height:18px;"></i> Módulo ABAC: Gestão de Equipes (Chefe)</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d6" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">A atribuição de um <strong>Chefe de Equipe (Nível 5)</strong> funciona baseada no cargo que ele coordena:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;">A Secretaria, ao dar permissão de Nível 5 para um funcionário, deve marcar no painel quais profissões ele gerencia (Ex: Vigias, Garis).</li>
+        <li style="margin-bottom:6px;">No Menu Lateral do Chefe aparecerão apenas os botões referentes às equipes liberadas para ele gerenciar.</li>
+        <li style="margin-bottom:6px;">No <em>Painel do Chefe</em> ele poderá acompanhar as informações da equipe, definir as escalas e consultar os logs de rondas ou ponto eletrônico de sua respectiva equipe.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d7', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i> Ponto Eletrônico e GPS (Operacional)</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d7" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">Para usuários <strong>Nível 6 (Operacional)</strong> o foco é realizar as verificações de ronda e o ponto através de um dispositivo móvel:</p>
+      <ul style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:6px;">O sistema abrirá automaticamente a tela do App Mobile <strong>"Bater Ponto"</strong> na inicialização.</li>
+        <li style="margin-bottom:6px;">O navegador obrigatoriamente solicitará permissão de Geolocalização (GPS). Se a permissão for negada, o sistema não autoriza a ativação do leitor de QR Code.</li>
+        <li style="margin-bottom:6px;">Ao aceitar o GPS e escanear o Código QR (colado nas escolas ou postos de trabalho), a posição exata é conferida para atestar que o operacional está presencialmente no local e a rota é registrada no banco de logs.</li>
       </ul>
     </div>
   </div>
