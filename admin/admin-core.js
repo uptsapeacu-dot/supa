@@ -59,9 +59,6 @@ async function carregarPainelSuperAdmin() {
   // Inicia lucide
   if (window.lucide) window.lucide.createIcons()
 
-  // Registra login do superadmin
-  await registrarLog('login', { tipo: 'superadmin' })
-
   // Carrega dashboard
   adminMostrarTela('dashboard')
 }
