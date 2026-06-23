@@ -372,7 +372,7 @@ function atualizarInterfaceModo() {
 
   const btnAddFuncionario = document.getElementById('btnAddFuncionario')
   if (btnAddFuncionario) {
-    const podeCriarFuncionarios = isSecretaria() || (escolaAtual && podeAcessarModulo('funcionarios', escolaAtual))
+    const podeCriarFuncionarios = isSecretaria()
     btnAddFuncionario.style.display = (modoEdicaoAtivo && podeCriarFuncionarios) ? 'flex' : 'none'
   }
 

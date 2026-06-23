@@ -211,7 +211,10 @@ async function carregarFuncionariosDaTela() {
       btnDel.innerHTML = '<i data-lucide="trash-2" style="width:16px; height:16px;"></i>'
       btnDel.title = 'Desvincular'
       btnDel.onclick = function() { removerVinculoFuncionario(vinculo.id) }
-      actionsDiv.appendChild(btnDel)
+      
+      if (isSecretaria()) {
+        actionsDiv.appendChild(btnDel)
+      }
     }
 
     if (actionsDiv.children.length > 0) {
@@ -293,6 +296,7 @@ async function editarFuncionario(vinculo) {
   document.getElementById('formacaoFuncionario').value = vinculo.funcionarios.formacao_academica || ''
   document.getElementById('enderecoFuncionario').value = vinculo.funcionarios.endereco || ''
   document.getElementById('statusFuncionario').value = statusAtual
+  document.getElementById('statusFuncionario').disabled = !isSecretaria()
   document.getElementById('statusObservacao').value = ''
   document.getElementById('statusObservacaoBox').style.display = (statusAtual === 'afastado' || statusAtual === 'desligado') ? 'block' : 'none'
   
@@ -344,6 +348,13 @@ async function salvarFuncionario() {
 
   if (!nome || !email) {
     alert('Nome e Email são obrigatórios')
+    return
+  }
+
+  if (!funcionarioEditandoId && !isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode cadastrar ou associar um novo funcionário globalmente.')
+    btn.disabled = false
+    btn.innerText = 'Salvar'
     return
   }
 
@@ -411,6 +422,11 @@ async function salvarFuncionario() {
       longitude: lngVal
     };
     if (fotoUrl) payloadFunc.foto_url = fotoUrl;
+
+    if (!isSecretaria()) {
+      delete payloadFunc.status;
+      delete payloadFunc.ativo;
+    }
 
     var funcionarioId = funcionarioEditandoId
 
@@ -497,6 +513,10 @@ async function salvarFuncionario() {
 }
 
 async function removerVinculoFuncionario(vinculoId) {
+  if (!isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode desvincular funcionários.')
+    return
+  }
   if (!confirm('Deseja desvincular este funcionário da escola?')) return
   const { error } = await clienteSupabase.from('vinculos_funcionarios').update({ ativo: false }).eq('id', vinculoId)
   if (error) { alert('Erro ao desvincular'); return; }
