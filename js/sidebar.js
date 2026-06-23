@@ -133,7 +133,8 @@ function mostrarTela(tela) {
     'financeiro',
     'ocorrencias',
     'painel-chefe',
-    'ponto-mobile'
+    'ponto-mobile',
+    'calendario'
   ]
 
   telas.forEach(function(id) {
