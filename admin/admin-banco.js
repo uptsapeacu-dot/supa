@@ -77,6 +77,7 @@ async function adminRenderizarBanco() {
       '</div>' +
 
     '</div>'
+  if (window.lucide) { window.lucide.createIcons(); }
 }
 
 function adminBtnExportar(tabela, label) {

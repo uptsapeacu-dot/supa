@@ -1,4 +1,4 @@
-﻿// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
+// ====== RELATÃ“RIOS ESPECÍFICOS DA ESCOLA ======
 
 async function carregarRelatoriosEscola() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -214,7 +214,7 @@ async function carregarRelatorioOcorrenciasLocal() {
   const { data, error } = await query;
 
   if (error || !data) {
-    container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Erro ao carregar ocorrências: \${error ? error.message : 'Dados não encontrados'}</div>`;
+    container.innerHTML = `<div class="empty-state" style="color:#ef4444;">Erro ao carregar ocorrências: ${error ? error.message : 'Dados não encontrados'}</div>`;
     return;
   }
 

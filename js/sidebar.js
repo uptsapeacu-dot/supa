@@ -48,6 +48,7 @@ function aplicarVisibilidadeSidebar() {
         btn.innerHTML = `<span class="menu-icon"><i data-lucide="shield"></i></span><span class="menu-text">Equipe ${cargo}</span>`;
         containerChefias.appendChild(btn);
       });
+      if (window.lucide) { window.lucide.createIcons(); }
     }
     return
   }

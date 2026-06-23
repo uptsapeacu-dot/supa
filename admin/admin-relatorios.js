@@ -38,6 +38,7 @@ async function adminRenderizarRelatorios() {
       '</div>' +
       '<div id="adminRelatorioConteudo" style="margin-top:20px;"></div>' +
     '</div>'
+  if (window.lucide) { window.lucide.createIcons(); }
 }
 
 async function adminRelatorioAcessosMensais() {

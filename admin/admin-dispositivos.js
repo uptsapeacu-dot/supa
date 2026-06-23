@@ -80,6 +80,7 @@ async function adminRenderizarDispositivos() {
         '<div>A coleta de coordenadas GPS sera ativada em uma versao futura. O banco de dados ja esta preparado com as colunas <code>latitude</code> e <code>longitude</code> na tabela <code>access_logs</code>. A implementacao exigira solicitar permissao de localizacao ao usuario no primeiro login.</div>' +
       '</div>' +
     '</div>'
+  if (window.lucide) { window.lucide.createIcons(); }
 }
 
 // Parser simples de User-Agent para extrair SO e navegador
