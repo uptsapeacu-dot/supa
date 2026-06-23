@@ -30,6 +30,7 @@ async function carregarPainelSuperAdmin() {
     'admin/admin-cargos.js',
     'admin/admin-acessos.js',
     'admin/admin-banco.js',
+    'admin/admin-lixeira.js',
     'admin/admin-relatorios.js',
     'admin/admin-dispositivos.js',
     'admin/admin-rondas.js'
@@ -89,6 +90,7 @@ function adminMostrarTela(tela) {
     case 'acessos':      adminRenderizarAcessos(); break
     case 'logs':         adminRenderizarLogs(); break
     case 'auditoria':    adminRenderizarAuditoria(); break
+    case 'lixeira':      adminRenderizarLixeira(); break
     case 'dispositivos': adminRenderizarDispositivos(); break
     case 'banco':        adminRenderizarBanco(); break
     case 'configuracoes': adminRenderizarConfiguracoes(); break

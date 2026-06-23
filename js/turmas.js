@@ -1174,9 +1174,9 @@ async function salvarTurma() {
 }
 
 async function excluirTurma(id) {
-  if (!confirm('Tem certeza que deseja excluir esta turma?')) return;
-  const { error } = await clienteSupabase.from('turmas').delete().eq('id', id);
-  if (error) { alert('Erro ao excluir: ' + error.message); return; }
+  if (!confirm('Tem certeza que deseja arquivar esta turma? Ela será movida para a Lixeira Global.')) return;
+  const { error } = await clienteSupabase.from('turmas').update({ ativo: false }).eq('id', id);
+  if (error) { alert('Erro ao arquivar: ' + error.message); return; }
   await carregarTurmasDaTela();
 }
 

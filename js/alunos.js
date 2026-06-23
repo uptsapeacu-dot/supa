@@ -164,11 +164,9 @@ function renderizarAlunos() {
 }
 
 async function excluirAluno(alunoId) {
-  if (!confirm('Deseja excluir este aluno?')) return
-  var { error: errFreq } = await clienteSupabase.from('frequencia').delete().eq('aluno_id', alunoId)
-  if (errFreq) console.error('Erro ao excluir frequência:', errFreq)
-  var { error } = await clienteSupabase.from('alunos').delete().eq('id', alunoId)
-  if (error) { alert('Erro ao excluir aluno'); return }
+  if (!confirm('Deseja excluir este aluno? Ele será arquivado na Lixeira Global.')) return
+  var { error } = await clienteSupabase.from('alunos').update({ ativo: false }).eq('id', alunoId)
+  if (error) { alert('Erro ao arquivar aluno'); return }
   await carregarAlunos()
 }
 
