@@ -1,4 +1,4 @@
-﻿// js/painel-chefe.js
+// js/painel-chefe.js
 let _operacionaisChefeCache = [];
 
 function mudarAbaChefe(aba) {
@@ -130,7 +130,7 @@ async function carregarAlertasChefe() {
     .select('*, funcionarios(nome), pontos_ronda(nome)')
     .in('funcionario_id', idsEquipe)
     .eq('status', 'ALERTA')
-    .order('horario', { ascending: false })
+    .order('horario_leitura', { ascending: false })
     .limit(30);
     
   if (error) {
@@ -145,8 +145,8 @@ async function carregarAlertasChefe() {
   
   let html = '';
   data.forEach(log => {
-    const d = new Date(log.horario);
-    const dataStr = d.toLocaleDateString('pt-BR') + ' às ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const d = new Date(log.horario_leitura);
+    const dataStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
     const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Inválido';
     

@@ -26,6 +26,11 @@ function mudarAbaRelatorio(aba) {
   if (aba === 'mapas' && typeof carregarMapaFuncionarios === 'function') {
     setTimeout(function() { carregarMapaFuncionarios(); }, 100);
   }
+
+  // Carregar relatorio de presença e rondas
+  if (aba === 'presenca' && typeof relatorioPresenca === 'function') {
+    setTimeout(function() { relatorioPresenca(); }, 100);
+  }
 }
 
 function voltarGridRelatorios() {

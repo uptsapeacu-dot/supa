@@ -1,4 +1,4 @@
-﻿// ============================================
+// ============================================
 // ADMIN-RONDAS.JS — Módulo de Controle Global de Rondas/GPS
 // ============================================
 
@@ -205,7 +205,7 @@ async function adminCarregarLogsGlobaisRonda() {
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
     .select('*, funcionarios(nome), pontos_ronda(nome)')
-    .order('horario', { ascending: false })
+    .order('horario_leitura', { ascending: false })
     .limit(50);
 
   if (error) {
@@ -220,7 +220,7 @@ async function adminCarregarLogsGlobaisRonda() {
 
   let html = '';
   data.forEach(log => {
-    const d = new Date(log.horario);
+    const d = new Date(log.horario_leitura);
     const dataStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
     const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';

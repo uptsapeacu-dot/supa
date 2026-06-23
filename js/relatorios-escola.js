@@ -260,7 +260,7 @@ async function carregarRelatorioPresencaLocal() {
     .from('registros_ronda')
     .select('*, funcionarios(nome)')
     .in('ponto_id', pontosIds)
-    .order('horario', { ascending: false })
+    .order('horario_leitura', { ascending: false })
     .limit(100);
 
   if (error) {
