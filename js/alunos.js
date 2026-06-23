@@ -1,4 +1,4 @@
-﻿// ==========================================
+// ==========================================
 // HELPERS DE CHECKBOX
 // ==========================================
 function coletarCheckboxes(grupo) {
@@ -143,7 +143,7 @@ function renderizarAlunos() {
       btnEditar.className = 'btn-editar'
       btnEditar.title = 'Editar aluno'
       btnEditar.type = 'button'
-      btnEditar.textContent = 'âœŽ'
+      btnEditar.innerHTML = '<i data-lucide="edit-2" style="width: 14px; height: 14px;"></i>'
       btnEditar.onclick = function() { editarAluno(aluno) }
       actionsDiv.appendChild(btnEditar)
 
@@ -151,7 +151,7 @@ function renderizarAlunos() {
       btnExcluir.className = 'btn-excluir-card'
       btnExcluir.title = 'Excluir aluno'
       btnExcluir.type = 'button'
-      btnExcluir.textContent = 'ðŸ—‘'
+      btnExcluir.innerHTML = '<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>'
       btnExcluir.onclick = function() { excluirAluno(aluno.id) }
       actionsDiv.appendChild(btnExcluir)
     }

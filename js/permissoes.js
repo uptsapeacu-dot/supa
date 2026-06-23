@@ -511,6 +511,11 @@ async function atualizarCamposPermissao() {
   const checks = document.getElementById('checksPermissoes')
   if (checks) checks.style.display = nivel === 3 ? 'block' : 'none'
 
+  const orgaoSelect = document.getElementById('orgaoPermissao')
+  if (orgaoSelect && orgaoSelect.parentElement) {
+    orgaoSelect.parentElement.style.display = (nivel === 1 || nivel === 5) ? 'none' : 'block'
+  }
+
   const checksCargos = document.getElementById('checksABACCargos')
   const containerCargos = document.getElementById('containerCargosChefe')
   
@@ -625,9 +630,8 @@ async function salvarPermissao() {
   const funcionarioId = document.getElementById('funcionarioPermissaoHidden').value
   const orgaoId = document.getElementById('orgaoPermissao').value
   const nivel = Number(document.getElementById('nivelPermissao').value)
-
   if (!funcionarioId || !nivel) { toastPerm('Selecione um funcionário e um nível de acesso.', 'aviso'); return }
-  if (!orgaoId && nivel !== 1) { toastPerm('Selecione a escola / órgão.', 'aviso'); return }
+  if (!orgaoId && nivel !== 1 && nivel !== 5) { toastPerm('Selecione a escola / órgão.', 'aviso'); return }
   if (!isSecretaria() && nivel === 2) { toastPerm('Somente a Secretaria pode atribuir o nível Diretor.', 'aviso'); return }
 
   if (!permissaoEditando) {
