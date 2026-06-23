@@ -139,6 +139,34 @@
         <li style="margin-bottom:6px;">O navegador obrigatoriamente solicitará permissão de Geolocalização (GPS). Se a permissão for negada, o sistema não autoriza a ativação do leitor de QR Code.</li>
         <li style="margin-bottom:6px;">Ao aceitar o GPS e escanear o Código QR (colado nas escolas ou postos de trabalho), a posição exata é conferida para atestar que o operacional está presencialmente no local e a rota é registrada no banco de logs.</li>
       </ul>
+  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d8', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="book-open" style="width:18px;height:18px;"></i> Roteiro Completo: Criação de Vigias e Rondas</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d8" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <div style="margin-top: 16px; background: #2a2a2a; border-radius: 6px; padding: 12px; border-left: 4px solid #3ea6ff;">
+        <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px;">1. Criando Pontos de Ronda (Super Administrador)</h4>
+        <ol style="padding-left: 20px; margin-bottom: 12px;">
+          <li style="margin-bottom: 4px;">Acesse o <strong>Super Painel</strong> Administrativo na aba lateral (exige conta de nível máximo).</li>
+          <li style="margin-bottom: 4px;">Clique em <strong>Controle de Rondas</strong>.</li>
+          <li style="margin-bottom: 4px;">Preencha o formulário informando: nome do ponto, escola na qual ele fica, raio de tolerância (em metros), e Latitude/Longitude exatas.</li>
+        </ol>
+
+        <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px;">2. Criando o Chefe de Vigias (Acesso: Diretor)</h4>
+        <ol style="padding-left: 20px; margin-bottom: 12px;">
+          <li style="margin-bottom: 4px;">Em <strong>Funcionários</strong>, crie a ficha do chefe da segurança.</li>
+          <li style="margin-bottom: 4px;">Em <strong>Permissões</strong>, selecione <strong>Nível 5 - Chefe de Equipe</strong>.</li>
+          <li style="margin-bottom: 4px;">Nas caixas de cargos subordinados, marque ou escreva <strong>Vigia</strong>. Isso habilitará a aba 'Meu Setor' no painel dele exclusivamente para controlar os vigias.</li>
+        </ol>
+
+        <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px;">3. Criando o Vigia Operacional</h4>
+        <ol style="padding-left: 20px; margin-bottom: 12px;">
+          <li style="margin-bottom: 4px;">Em <strong>Funcionários</strong>, cadastre o vigia escrevendo <strong>Vigia</strong> exatamente no campo Cargo/Função.</li>
+          <li style="margin-bottom: 4px;">Em <strong>Permissões</strong>, atribua <strong>Nível 6 - Operacional Mobile</strong>, garantindo que a escola selecionada é a mesma escola da sua lotação física.</li>
+          <li style="margin-bottom: 4px;">Ao fazer login, este usuário enxergará somente a tela de Ponto/QR Code. O chefe dele poderá ver seus logs em tempo real na aba Meu Setor.</li>
+        </ol>
+      </div>
     </div>
   </div>
 
