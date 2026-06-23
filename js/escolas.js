@@ -119,7 +119,9 @@ function renderizarEscolas() {
       }
 
       actions.appendChild(editBtn)
-      actions.appendChild(deleteBtn)
+      if (isSecretaria()) {
+        actions.appendChild(deleteBtn)
+      }
       card.appendChild(actions)
     }
 
@@ -232,12 +234,16 @@ function voltarParaEscola() {
 }
 
 function abrirModalEscola() {
+  if (!isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode cadastrar novas escolas.')
+    return
+  }
   escolaEditando = null
   document.getElementById('tituloModalEscola').innerText = 'Nova Escola'
   document.getElementById('nomeEscola').value = ''
   document.getElementById('logoEscola').value = ''
   document.getElementById('previewLogoEscola').style.display = 'none'
-  document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
+  document.getElementById('labelLogoEscola').innerHTML = '🖼️ Selecionar Logo da Escola *'
   document.getElementById('msgLogoObrigatoria').style.display = 'none'
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
@@ -247,32 +253,33 @@ function abrirModalEditarEscola() {
   const escola = escolas.find(function(e) { return e.id === escolaAtual })
   if (!escola) return
 
-  escolaEditando = escola.id
+  escolaEditando = escola
   document.getElementById('tituloModalEscola').innerText = 'Editar Escola'
   document.getElementById('nomeEscola').value = escola.nome
   document.getElementById('logoEscola').value = ''
+  document.getElementById('previewLogoEscola').style.display = 'block'
+  document.getElementById('previewLogoEscola').src = escola.logo_url || ''
+  document.getElementById('labelLogoEscola').innerHTML = '🖼️ Trocar Logo da Escola (Opcional)'
   document.getElementById('msgLogoObrigatoria').style.display = 'none'
-
-  if (escola.logo_url) {
-    document.getElementById('imgPreviewLogo').src = escola.logo_url
-    document.getElementById('previewLogoEscola').style.display = 'block'
-    document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Trocar Logo (opcional)'
-  } else {
-    document.getElementById('previewLogoEscola').style.display = 'none'
-    document.getElementById('labelLogoEscola').innerHTML = 'ðŸ“· Selecionar Logo da Escola *'
-  }
-
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
 }
 
 async function excluirEscola() {
+  if (!isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode excluir escolas definitivamente.')
+    return
+  }
   const escola = escolas.find(function(e) { return e.id === escolaAtual })
   if (!escola) return
   await excluirEscolaConfirmado(escola.id, escola.nome, true)
 }
 
 async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
+  if (!isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode excluir escolas definitivamente.')
+    return
+  }
   if (redirecionar === undefined) redirecionar = false
 
   if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
@@ -335,6 +342,12 @@ async function salvarEscola() {
 
   if (!nome) {
     alert('Informe o nome da escola')
+    return
+  }
+
+  // BLINDAGEM: Se estiver criando uma NOVA escola, só a Secretaria pode fazer isso
+  if (!escolaEditando && !isSecretaria()) {
+    alert('Acesso negado: Apenas a Secretaria pode criar uma nova escola no sistema.')
     return
   }
 

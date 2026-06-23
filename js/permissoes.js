@@ -488,8 +488,10 @@ function preencherSelectsPermissoes() {
     if (isSecretaria()) selectNivel.innerHTML += '<option value="2">Nivel 2 &mdash; Diretor</option>'
     selectNivel.innerHTML += '<option value="3">Nivel 3 &mdash; Coordenador</option>'
     selectNivel.innerHTML += '<option value="4">Nivel 4 &mdash; Professor</option>'
-    selectNivel.innerHTML += '<option value="5">Nivel 5 &mdash; Chefe de Equipe</option>'
-    selectNivel.innerHTML += '<option value="6">Nivel 6 &mdash; Operacional</option>'
+    if (isSecretaria()) {
+      selectNivel.innerHTML += '<option value="5">Nivel 5 &mdash; Chefe de Equipe</option>'
+      selectNivel.innerHTML += '<option value="6">Nivel 6 &mdash; Operacional</option>'
+    }
   }
 
   const selectFiltroOrgao = document.getElementById('filtroOrgaoPermissao')
@@ -632,7 +634,11 @@ async function salvarPermissao() {
   const nivel = Number(document.getElementById('nivelPermissao').value)
   if (!funcionarioId || !nivel) { toastPerm('Selecione um funcionário e um nível de acesso.', 'aviso'); return }
   if (!orgaoId && nivel !== 1 && nivel !== 5) { toastPerm('Selecione a escola / órgão.', 'aviso'); return }
-  if (!isSecretaria() && nivel === 2) { toastPerm('Somente a Secretaria pode atribuir o nível Diretor.', 'aviso'); return }
+  
+  if (!isSecretaria() && (nivel === 1 || nivel === 2 || nivel === 5 || nivel === 6)) { 
+    toastPerm('Acesso Negado: Apenas a Secretaria pode atribuir níveis administrativos globais ou móveis.', 'aviso')
+    return 
+  }
 
   if (!permissaoEditando) {
     const duplicado = acessosSistema.find(function(a) {
