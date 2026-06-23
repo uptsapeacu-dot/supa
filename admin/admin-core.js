@@ -216,6 +216,10 @@ async function adminRenderizarConfiguracoes() {
     .maybeSingle()
 
   const anoAtual = config ? config.ano_letivo : new Date().getFullYear()
+  const b1 = config && config.data_fim_b1 ? config.data_fim_b1 : ''
+  const b2 = config && config.data_fim_b2 ? config.data_fim_b2 : ''
+  const b3 = config && config.data_fim_b3 ? config.data_fim_b3 : ''
+  const b4 = config && config.data_fim_b4 ? config.data_fim_b4 : ''
   const msgManutencao = config ? (config.mensagem_manutencao || '') : ''
 
   conteudo.innerHTML =
@@ -231,6 +235,15 @@ async function adminRenderizarConfiguracoes() {
           '<div style="display:flex;gap:10px;align-items:center;">' +
             '<input id="cfgAnoLetivo" type="number" value="' + anoAtual + '" min="2020" max="2099" style="width:120px;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px 12px;font-size:16px;font-weight:700;">' +
             '<button class="admin-btn admin-btn-primary" onclick="adminSalvarConfig()"><i data-lucide="save"></i> Salvar</button>' +
+          '</div>' +
+          '<div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--admin-border2);">' +
+            '<div class="admin-panel-title" style="margin-bottom:14px; font-size: 14px;"><i data-lucide="lock"></i> Bloqueio de Fechamento de Diário (Bimestres)</div>' +
+            '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">' +
+              '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 1º Bimestre</label><input type="date" id="cfgFimB1" value="' + b1 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
+              '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 2º Bimestre</label><input type="date" id="cfgFimB2" value="' + b2 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
+              '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 3º Bimestre</label><input type="date" id="cfgFimB3" value="' + b3 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
+              '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 4º Bimestre</label><input type="date" id="cfgFimB4" value="' + b4 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
+            '</div>' +
           '</div>' +
           '<div id="cfgAnoFeedback" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
@@ -261,11 +274,23 @@ async function adminRenderizarConfiguracoes() {
 
 async function adminSalvarConfig() {
   const ano = parseInt(document.getElementById('cfgAnoLetivo').value)
+  const b1 = document.getElementById('cfgFimB1') ? document.getElementById('cfgFimB1').value || null : null
+  const b2 = document.getElementById('cfgFimB2') ? document.getElementById('cfgFimB2').value || null : null
+  const b3 = document.getElementById('cfgFimB3') ? document.getElementById('cfgFimB3').value || null : null
+  const b4 = document.getElementById('cfgFimB4') ? document.getElementById('cfgFimB4').value || null : null
   const msg = document.getElementById('cfgMsgManutencao').value.trim()
 
   const { error } = await clienteSupabase
     .from('configuracoes_sistema')
-    .update({ ano_letivo: ano, mensagem_manutencao: msg || null, updated_at: new Date().toISOString() })
+    .update({ 
+      ano_letivo: ano, 
+      data_fim_b1: b1,
+      data_fim_b2: b2,
+      data_fim_b3: b3,
+      data_fim_b4: b4,
+      mensagem_manutencao: msg || null, 
+      updated_at: new Date().toISOString() 
+    })
     .eq('id', 1)
 
   if (error) {

@@ -141,18 +141,20 @@ async function iniciarSistema() {
   }
   // ============================================
 
-  // ====== BANNER DE MANUTENCAO ======
-  verificarBannerManutencao()
+  // ====== CONFIGURACOES GLOBAIS ======
+  await carregarConfiguracoesGlobais()
   // ==================================
 }
 
-async function verificarBannerManutencao() {
+async function carregarConfiguracoesGlobais() {
   try {
     const { data: config } = await clienteSupabase
       .from('configuracoes_sistema')
-      .select('mensagem_manutencao')
+      .select('*')
       .eq('id', 1)
       .maybeSingle()
+
+    configGlobal = config || {}
 
     // Remove banner anterior se existir
     const bannerAntigo = document.getElementById('bannerManutencao')

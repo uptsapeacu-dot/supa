@@ -1080,7 +1080,9 @@ async function abrirModalTurma() {
   professoresSelecionados = [];
   document.getElementById('tituloModalTurma').innerText = 'Nova Turma';
   document.getElementById('nomeTurma').value = '';
-  document.getElementById('anoTurma').value = new Date().getFullYear();
+  const anoGlobal = configGlobal && configGlobal.ano_letivo ? parseInt(configGlobal.ano_letivo) : new Date().getFullYear();
+  document.getElementById('anoTurma').value = anoGlobal;
+  document.getElementById('anoTurma').disabled = true;
   document.getElementById('turnoTurma').value = 'Matutino';
   document.getElementById('capacidadeTurma').value = 30;
   
@@ -1099,7 +1101,9 @@ async function editarTurma(turma) {
   professoresSelecionados = [];
   document.getElementById('tituloModalTurma').innerText = 'Editar Turma';
   document.getElementById('nomeTurma').value = turma.nome || '';
-  document.getElementById('anoTurma').value = turma.ano_letivo || new Date().getFullYear();
+  const anoGlobal = configGlobal && configGlobal.ano_letivo ? parseInt(configGlobal.ano_letivo) : new Date().getFullYear();
+  document.getElementById('anoTurma').value = turma.ano_letivo || anoGlobal;
+  document.getElementById('anoTurma').disabled = true;
   document.getElementById('turnoTurma').value = turma.turno || 'Matutino';
   document.getElementById('capacidadeTurma').value = turma.capacidade || 30;
   if (turma.turmas_professores && turma.turmas_professores.length > 0) {

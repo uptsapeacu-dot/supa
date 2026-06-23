@@ -110,6 +110,10 @@
           <span class="menu-icon"><i data-lucide="bar-chart-2"></i></span>
           <span class="menu-text">Relatórios</span>
         </button>
+        <button id="menu-calendario" onclick="mostrarTela('calendario')" title="Calendário Global" style="display:none; border-left: 3px solid #ff4f4f; background: #fff1f1;">
+          <span class="menu-icon"><i data-lucide="calendar-clock" style="color:#ff4f4f"></i></span>
+          <span class="menu-text" style="color:#ff4f4f; font-weight: 600;">Ano Letivo</span>
+        </button>
         <button id="menu-diretrizes" onclick="mostrarTela('diretrizes')" title="Diretrizes do Sistema">
           <span class="menu-icon"><i data-lucide="book-check"></i></span>
           <span class="menu-text">Diretrizes</span>
@@ -211,6 +215,9 @@
 
       <!-- PERMISSÕES -->
       <section id="permissoes" style="display:none"></section>
+      <section id="relatorios" style="display:none"></section>
+      <section id="calendario" style="display:none"></section>
+      <section id="perfil" style="display:none"></section>
 
       <!-- FINANCEIRO -->
       <section id="financeiro" style="display:none"></section>
@@ -283,6 +290,7 @@
         { url: 'htmls/financeiro.html', target: 'financeiro' },
         { url: 'htmls/diretrizes.html', target: 'diretrizes' },
         { url: 'htmls/relatorios.html', target: 'relatorios' },
+        { url: 'htmls/calendario-global.html', target: 'calendario' },
         { url: 'htmls/ficha-impressao.html', target: 'container-ficha-impressao' },
         { url: 'htmls/boletim-impressao.html', target: 'container-boletim-impressao' },
         { url: 'htmls/modais/modal-aluno.html', target: 'container-modal-aluno' },

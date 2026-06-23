@@ -17,6 +17,7 @@ let funcionarioEditandoId = null
 let muralFuncionarios = []
 let calendarMes = new Date().getMonth()
 let calendarAno = new Date().getFullYear()
+let configGlobal = null
 
 function isProfessorOuCoordenador() {
   return acessosAtual.some(function(acesso) {

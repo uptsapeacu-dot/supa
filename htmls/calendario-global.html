@@ -1,0 +1,108 @@
+<div class="card" style="max-width: 600px; margin: 0 auto; margin-top: 40px; padding: 30px;">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 8px;">
+    <div style="background: #ff4f4f22; color: #ff4f4f; padding: 12px; border-radius: 12px;">
+      <i data-lucide="calendar-clock" style="width: 24px; height: 24px;"></i>
+    </div>
+    <div>
+      <h2 style="margin: 0; font-size: 20px; font-weight: 600; color: #1f2937;">Configurações Globais de Ano Letivo</h2>
+      <p style="margin: 4px 0 0 0; color: #6b7280; font-size: 14px;">Defina o relógio oficial da rede municipal de Sapeaçu.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 24px;">
+    <div class="form-group">
+      <label>Ano Letivo Corrente</label>
+      <input type="number" id="inputAnoLetivo" class="form-control" placeholder="Ex: 2026" style="font-size: 18px; font-weight: bold;">
+      <small style="color: #6b7280; margin-top: 4px; display: block;">Todas as escolas que criarem turmas herdarão este ano automaticamente.</small>
+    </div>
+
+    <div class="form-group" style="margin-top: 24px;">
+      <h3 style="font-size: 14px; font-weight: 600; color: #374151; margin-bottom: 12px; border-bottom: 1px solid #e5e7eb; padding-bottom: 8px;">Bloqueio de Fechamento de Diário</h3>
+      
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <div>
+          <label>Fim do 1º Bimestre</label>
+          <input type="date" id="inputFimB1" class="form-control">
+        </div>
+        <div>
+          <label>Fim do 2º Bimestre</label>
+          <input type="date" id="inputFimB2" class="form-control">
+        </div>
+        <div>
+          <label>Fim do 3º Bimestre</label>
+          <input type="date" id="inputFimB3" class="form-control">
+        </div>
+        <div>
+          <label>Fim do 4º Bimestre</label>
+          <input type="date" id="inputFimB4" class="form-control">
+        </div>
+      </div>
+      <small style="color: #6b7280; margin-top: 8px; display: block;">Após estas datas, o lançamento de notas nesses bimestres será travado nas escolas.</small>
+    </div>
+
+    <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb; display: flex; justify-content: flex-end;">
+      <button class="btn btn-primary" id="btnSalvarCalendario" onclick="salvarCalendarioGlobal()" style="display: flex; align-items: center; gap: 8px; font-weight: 600;">
+        <i data-lucide="save" style="width: 18px; height: 18px;"></i> Salvar Configurações
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  setTimeout(() => {
+    if (window.lucide) window.lucide.createIcons();
+    carregarTelaCalendario();
+  }, 100);
+
+  function carregarTelaCalendario() {
+    if (typeof configGlobal !== 'undefined' && configGlobal) {
+      document.getElementById('inputAnoLetivo').value = configGlobal.ano_letivo || '';
+      document.getElementById('inputFimB1').value = configGlobal.data_fim_b1 || '';
+      document.getElementById('inputFimB2').value = configGlobal.data_fim_b2 || '';
+      document.getElementById('inputFimB3').value = configGlobal.data_fim_b3 || '';
+      document.getElementById('inputFimB4').value = configGlobal.data_fim_b4 || '';
+    }
+  }
+
+  async function salvarCalendarioGlobal() {
+    const btn = document.getElementById('btnSalvarCalendario');
+    const ano = document.getElementById('inputAnoLetivo').value.trim();
+    const b1 = document.getElementById('inputFimB1').value || null;
+    const b2 = document.getElementById('inputFimB2').value || null;
+    const b3 = document.getElementById('inputFimB3').value || null;
+    const b4 = document.getElementById('inputFimB4').value || null;
+
+    if (!ano) {
+      alert('O Ano Letivo é obrigatório.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.innerHTML = 'Salvando...';
+
+    const payload = {
+      ano_letivo: ano,
+      data_fim_b1: b1,
+      data_fim_b2: b2,
+      data_fim_b3: b3,
+      data_fim_b4: b4
+    };
+
+    const { error } = await clienteSupabase
+      .from('configuracoes_sistema')
+      .update(payload)
+      .eq('id', 1);
+
+    btn.disabled = false;
+    btn.innerHTML = '<i data-lucide="save" style="width: 18px; height: 18px;"></i> Salvar Configurações';
+    if (window.lucide) window.lucide.createIcons();
+
+    if (error) {
+      alert('Erro ao salvar as configurações: ' + error.message);
+    } else {
+      // Atualiza o cache
+      configGlobal = { ...configGlobal, ...payload };
+      alert('Calendário Global atualizado com sucesso!');
+    }
+  }
+</script>
