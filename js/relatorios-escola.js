@@ -303,14 +303,12 @@ async function carregarRelatorioPresencaLocal() {
   `;
 
   logs.forEach(log => {
-    const dataObj = new Date(log.horario);
-    const dataStr = dataObj.toLocaleDateString('pt-BR') + ' às ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
+    const dataObj = new Date(log.horario_leitura);
+    const dataStr = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
     
-    // Identificar o nome do ponto
-    const pontoObj = pontos.find(p => p.id === log.ponto_id);
-    const nomePonto = pontoObj ? pontoObj.nome : 'Desconhecido';
-
+    const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
+    const pontoOrigem = pontos.find(p => p.id === log.ponto_id);
+    const nomePonto = pontoOrigem ? pontoOrigem.nome : 'Ponto Excluído';
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
 
     html += `

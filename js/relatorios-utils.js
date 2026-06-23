@@ -28,8 +28,8 @@ function mudarAbaRelatorio(aba) {
   }
 
   // Carregar relatorio de presença e rondas
-  if (aba === 'presenca' && typeof relatorioPresenca === 'function') {
-    setTimeout(function() { relatorioPresenca(); }, 100);
+  if (aba === 'presenca' && typeof carregarRelatorioPresencaLocal === 'function') {
+    setTimeout(function() { carregarRelatorioPresencaLocal(); }, 100);
   }
 }
 
