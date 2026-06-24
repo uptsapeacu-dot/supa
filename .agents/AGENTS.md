@@ -1,4 +1,4 @@
-﻿# Regras Gerais de Projeto
+# Regras Gerais de Projeto
 
 - Sempre utilizar a codificação de caracteres UTF-8 quando modificar, criar ou salvar qualquer arquivo (especialmente arquivos `.js`, `.html`, `.css` ou scripts `.ps1`). Em PowerShell, por exemplo, sempre especifique `[System.Text.Encoding]::UTF8` ao usar métodos de escrita ou de leitura do .NET, e force `-Encoding UTF8` caso use cmdlets. Isso evitará corrompimento de caracteres com acentos ou caracteres especiais em Windows (que pode ler como Windows-1252/ANSI).
 - Ao gerar e injetar conteúdo HTML dinamicamente através do JavaScript (via `.innerHTML`, `.insertAdjacentHTML` ou afins) que contenha ícones da biblioteca Lucide (tags como `<i data-lucide="..."></i>`), é obrigatório incluir a chamada `if (window.lucide) { lucide.createIcons(); }` logo em seguida, para garantir que o SVG seja renderizado corretamente no DOM.
@@ -13,3 +13,5 @@
 - **Ambiente de Automação Instalado:** O Windows agora possui nativamente **Python, Node.js e Git**. Você pode e deve usá-los intensivamente (como o `git grep` para buscas relâmpago ou scripts Python/Node no terminal) para acelerar processamentos pesados, buscas e a entrega de códigos no projeto.
 
 - **Gatilho de Execução do Motor ('execute e use o motor'):** Quando o usuário autorizar a execução usando exatamente esta frase, você DEVE assumir uma postura de 'engenharia reversa e segurança extrema'. Antes de fazer qualquer substituição, você é obrigado a: (1) Rodar scripts Python/Node no terminal ou usar git grep para escanear se as funções a serem alteradas possuem conexões/dependências invisíveis em outros arquivos; (2) Inspecionar extensamente o arquivo via iew_file para entender o escopo de variáveis e evitar sobreposição; (3) Se a modificação for complexa, prefira gerar um script automatizado de Node/Python para aplicar o patch validando a sintaxe ou, se usar ferramentas nativas de edição, fazer em blocos precisos e cirúrgicos. Nunca use replace cego sem ler os arredores da função primeiro.
+
+- **Pop-ups e Modais com Estilo:** Ao criar ou modificar pop-ups, toasts ou janelas modais, é obrigatório utilizar a biblioteca Lucide (`<i data-lucide="..."></i>`) para a exibição de ícones, garantindo um design premium. Lembre-se sempre de executar `lucide.createIcons()` após a renderização.

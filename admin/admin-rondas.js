@@ -169,9 +169,11 @@ async function adminCriarPontoRonda() {
     localizacao = { latitude: parseFloat(lat), longitude: parseFloat(lng) };
   }
 
+  const qrHash = btoa(nome + Date.now() + Math.random());
+  
   const { error } = await clienteSupabase
     .from('pontos_ronda')
-    .insert([{ nome, escola_id, localizacao, tolerancia_metros: tolerancia }]);
+    .insert([{ nome, escola_id, localizacao, tolerancia_metros: tolerancia, qr_code_hash: qrHash }]);
 
   if (error) {
     alert('Erro ao criar ponto: ' + error.message);
