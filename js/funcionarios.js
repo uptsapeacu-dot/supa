@@ -517,9 +517,27 @@ async function removerVinculoFuncionario(vinculoId) {
     alert('Acesso negado: Apenas a Secretaria pode desvincular funcionários.')
     return
   }
-  if (!confirm('Deseja desvincular este funcionário da escola?')) return
+  if (!confirm('Deseja desvincular este funcionário da escola? Isso também revogará automaticamente todas as permissões de acesso ao sistema que ele possui nesta unidade.')) return
+  
+  // 1. Descobrir de qual funcionário e escola estamos falando
+  const { data: vinculo } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .select('funcionario_id, orgao_id')
+    .eq('id', vinculoId)
+    .single()
+
+  // 2. Desativar a lotação
   const { error } = await clienteSupabase.from('vinculos_funcionarios').update({ ativo: false }).eq('id', vinculoId)
   if (error) { alert('Erro ao desvincular'); return; }
+
+  // 3. Revogar permissões (Cadeado de Segurança)
+  if (vinculo) {
+    await clienteSupabase.from('acessos_usuarios')
+      .update({ ativo: false })
+      .eq('funcionario_id', vinculo.funcionario_id)
+      .eq('orgao_id', vinculo.orgao_id)
+  }
+
   await carregarFuncionariosDaTela()
 }
 
