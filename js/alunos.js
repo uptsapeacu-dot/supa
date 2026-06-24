@@ -97,8 +97,28 @@ function renderizarAlunos() {
   alunosFiltrados.forEach(function(aluno) {
     const item = document.createElement('div')
     item.className = 'item-aluno'
+    item.style.display = 'flex'
+    item.style.alignItems = 'center'
+    item.style.gap = '16px'
+
+    const avatarDiv = document.createElement('div')
+    avatarDiv.style.cssText = 'width: 48px; height: 48px; min-width: 48px; border-radius: 50%; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #334155; color: #fff; font-weight: 600; font-size: 16px; border: 2px solid #3ea6ff;'
+    
+    if (aluno.foto_url && aluno.foto_url.trim() !== '') {
+      const img = document.createElement('img')
+      img.src = aluno.foto_url
+      img.style.cssText = 'width: 100%; height: 100%; object-fit: cover;'
+      avatarDiv.appendChild(img)
+    } else {
+      const n = aluno.nome ? aluno.nome.trim() : 'SN'
+      avatarDiv.textContent = n.substring(0, 2).toUpperCase()
+    }
+    
+    item.appendChild(avatarDiv)
 
     const info = document.createElement('div')
+    info.style.flex = '1'
+
     const nome = document.createElement('strong')
     nome.textContent = aluno.nome || 'Sem nome'
 
@@ -249,12 +269,17 @@ function limparCamposModalAluno() {
     'telPaiAluno','turmaAluno','rotaTransporteAluno','restricoesSaudeAluno',
     'dataMatriculaAluno',
     'ruaAluno','numeroAluno','cepAluno','bairroAluno','cidadeEndAluno','ufEndAluno',
-    'covidQuandoAluno','alergiaMedQuaisAluno','motivoNaoVacinacaoAluno','restricaoAlimentarQuaisAluno'
+    'covidQuandoAluno','alergiaMedQuaisAluno','motivoNaoVacinacaoAluno','restricaoAlimentarQuaisAluno',
+    'fotoUrlAluno'
   ]
   campos.forEach(function(id) {
     const el = document.getElementById(id)
     if (el) el.value = ''
   })
+  
+  if (document.getElementById('previewFotoAluno')) {
+    document.getElementById('previewFotoAluno').innerHTML = '<i data-lucide="camera" style="color:#94a3b8;"></i>';
+  }
 
   // Selects simples
   const selects = {
@@ -303,6 +328,11 @@ async function editarAluno(aluno) {
   document.getElementById('nascimentoAluno').value = aluno.data_nascimento || ''
   document.getElementById('serieAluno').value = aluno.serie || ''
   document.getElementById('enderecoAluno').value = aluno.endereco || ''
+  document.getElementById('fotoUrlAluno').value = aluno.foto_url || ''
+  
+  if (document.getElementById('previewFotoAluno')) {
+    document.getElementById('previewFotoAluno').innerHTML = aluno.foto_url ? '<img src="' + aluno.foto_url + '" style="width:100%;height:100%;object-fit:cover;">' : '<i data-lucide="camera" style="color:#94a3b8;"></i>';
+  }
 
   const dados = aluno.dados_matricula || {}
 
@@ -468,6 +498,7 @@ async function salvarAluno() {
     endereco: document.getElementById('enderecoAluno').value.trim(),
     serie: document.getElementById('serieAluno').value.trim(),
     data_nascimento: document.getElementById('nascimentoAluno').value || null,
+    foto_url: document.getElementById('fotoUrlAluno').value.trim(),
     escola_id: escolaId,
     turma_id: turmaIdSelecionada || null,
     dados_matricula: pacoteDeDados

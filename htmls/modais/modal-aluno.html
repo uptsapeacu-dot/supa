@@ -1,6 +1,6 @@
 <div class="modal" id="modalAluno">
   <div class="modal-box modal-box-large">
-    <div class="modal-topo">
+    <div class="modal-topção">
       <h2 id="tituloModal">Cadastro de Aluno</h2>
       <button class="fechar" onclick="fecharModalAluno()" aria-label="Fechar modal">×</button>
     </div>
@@ -13,6 +13,15 @@
     </div>
     <!-- IDENTIFICAÇÃO -->
     <h3 class="form-section-title" style="margin-top:0;">Identificação Básica</h3>
+    <div style="display:flex; gap:16px; align-items:center; margin-bottom: 16px;">
+      <div id="previewFotoAluno" style="width: 80px; height: 80px; min-width: 80px; border-radius: 50%; background: #334155; display: flex; align-items: center; justify-content: center; overflow: hidden; border: 2px solid #3ea6ff;">
+        <i data-lucide="camera" style="color: #94a3b8;"></i>
+      </div>
+      <div style="flex:1;">
+        <label style="font-size:12px; color:#aaa; display:block; margin-bottom:4px;">Foto 3x4 (URL Opcional)</label>
+        <input type="text" id="fotoUrlAluno" placeholder="Cole o link da foto do aluno..." style="margin-bottom:0;" oninput="document.getElementById('previewFotoAluno').innerHTML = this.value ? '<img src=\''+this.value+'\' style=\'width:100%;height:100%;object-fit:cover;\'>' : '<i data-lucide=\'camera\' style=\'color:#94a3b8;\'></i>'; if(window.lucide) window.lucide.createIcons();" />
+      </div>
+    </div>
     <div class="form-grid-2">
       <input type="text" id="nomeAluno" placeholder="Nome Completo do Aluno *" />
       <div>
@@ -64,7 +73,7 @@
       <input type="text" id="nisAluno" placeholder="Nº do NIS" />
       <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
     </div>
-    <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
+    <input type="text" id="certidaçãoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
     <div class="form-grid-3" style="margin-top: 12px;">
       <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
       <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
@@ -92,7 +101,7 @@
       <input type="date" id="dataMatriculaAluno" title="Data da Matrícula" />
     </div>
     <div class="form-grid-2">
-      <select id="localizacaoAluno">
+      <select id="localizacaçãoAluno">
         <option value="Zona Urbana">Zona Urbana</option>
         <option value="Zona Rural">Zona Rural</option>
       </select>
@@ -134,7 +143,7 @@
       <input type="text" id="ufEndAluno" placeholder="31 - UF" maxlength="2" />
       <div>
         <label style="font-size:12px;color:#aaa;">32 - Área de localização</label>
-        <select id="areaLocalizacaoAluno">
+        <select id="areaLocalizacaçãoAluno">
           <option value="Urbana">Urbana</option>
           <option value="Rural">Rural</option>
         </select>
@@ -196,7 +205,7 @@
       </div>
       <div>
         <label style="font-size:12px;color:#aaa;">40 - Restrição a exercício físico?</label>
-        <select id="restricaoExercicioAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+        <select id="restricaçãoExercicioAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
       <div>
         <label style="font-size:12px;color:#aaa;">41 - Teve COVID-19?</label>
@@ -204,10 +213,10 @@
       </div>
     </div>
     <div class="form-grid-2">
-      <input type="text" id="covidQuandoAluno" placeholder="Se Sim ao COVID-19, quando?" />
+      <input type="text" id="covidQuandoAluno" placeholder="Se Sim ação COVID-19, quando?" />
       <div>
         <label style="font-size:12px;color:#aaa;">43 - Situação Vacinal COVID</label>
-        <select id="situacaoVacinalAluno">
+        <select id="situacaçãoVacinalAluno">
           <option value="">Não informado</option>
           <option value="D1">D1</option>
           <option value="D2">D2</option>
@@ -223,13 +232,13 @@
       </div>
       <input type="text" id="alergiaMedQuaisAluno" placeholder="Se Sim, quais medicamentos/matérias?" />
     </div>
-    <input type="text" id="motivoNaoVacinacaoAluno" placeholder="44 - Se não vacinado, por qual motivo?" style="margin-top: 12px;" />
+    <input type="text" id="motivoNaçãoVacinacaçãoAluno" placeholder="44 - Se não vacinado, por qual motivo?" style="margin-top: 12px;" />
     <div class="form-grid-2" style="margin-top: 12px;">
       <div>
         <label style="font-size:12px;color:#aaa;">45 - Restrições alimentares?</label>
-        <select id="restricaoAlimentarAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
+        <select id="restricaçãoAlimentarAluno"><option value="Não">Não</option><option value="Sim">Sim</option></select>
       </div>
-      <input type="text" id="restricaoAlimentarQuaisAluno" placeholder="Se Sim, quais restrições alimentares?" />
+      <input type="text" id="restricaçãoAlimentarQuaisAluno" placeholder="Se Sim, quais restrições alimentares?" />
     </div>
 
     <!-- NEE (item 50) -->
