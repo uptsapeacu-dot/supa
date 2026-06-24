@@ -193,6 +193,9 @@ function abrirEscola(escolaId) {
 function renderizarModulosDaEscola() {
   const lista = document.getElementById('modulosDaEscola')
   lista.innerHTML = ''
+  
+  const oldBtn = document.getElementById('containerBtnVigia')
+  if (oldBtn) oldBtn.remove()
 
   const modulosPermitidos = modulosEscola.filter(function(modulo) {
     return podeAcessarModulo(modulo.id, escolaAtual)
@@ -204,6 +207,13 @@ function renderizarModulosDaEscola() {
       abrirModuloEscola(escolaAtual, 'turmas');
       return;
     }
+    
+    const isVigia = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.OPERACIONAL && a.ativo);
+    if (isVigia) {
+      renderizarPainelVigiaEscola(lista);
+      return;
+    }
+    
     lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>';
     return;
   }
@@ -227,6 +237,87 @@ function renderizarModulosDaEscola() {
 function voltarParaEscolas() {
   limparEscolaAtual()
 }
+
+// ====== PAINEL EXCLUSIVO DO VIGIA NA ESCOLA ======
+async function renderizarPainelVigiaEscola(listaContainer) {
+  // 1. Criar o botão verde abaixo do título da escola
+  const header = document.querySelector('.page-header');
+  if (header) {
+    let containerBtn = document.createElement('div');
+    containerBtn.id = 'containerBtnVigia';
+    containerBtn.style.marginTop = '15px';
+    containerBtn.style.width = '100%';
+    header.parentNode.insertBefore(containerBtn, header.nextSibling);
+    
+    containerBtn.innerHTML = `
+      <button class="btn-login" style="background: #22c55e; color: #000; width: 100%; max-width: 300px; padding: 16px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="mostrarTela('ponto-mobile')">
+        <i data-lucide="qr-code" style="width: 20px; height: 20px;"></i> Bater Ponto
+      </button>
+    `;
+  }
+
+  // 2. Estruturar o painel de histórico
+  listaContainer.innerHTML = `
+    <div style="width: 100%; max-width: 600px; text-align: left; margin-top: 20px;">
+      <h3 style="color: #f8fafc; margin-bottom: 15px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="history"></i> Seu Histórico de Pontos
+      </h3>
+      <div id="historicoVigiaEscola">
+        <div style="text-align:center; color:#94a3b8; padding:20px;">Carregando histórico...</div>
+      </div>
+    </div>
+  `;
+  if (window.lucide) window.lucide.createIcons();
+
+  // 3. Buscar os registros e renderizar
+  const { data, error } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*, pontos_ronda(nome, localizacao)')
+    .eq('funcionario_id', funcionarioAtual.id)
+    .order('horario_leitura', { ascending: false })
+    .limit(10);
+
+  const histContainer = document.getElementById('historicoVigiaEscola');
+  if (!histContainer) return;
+
+  if (error || !data || data.length === 0) {
+    histContainer.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro encontrado.</div>';
+    return;
+  }
+
+  let html = '';
+  data.forEach(log => {
+    const d = new Date(log.horario_leitura);
+    const horaStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const dataStr = d.toLocaleDateString('pt-BR');
+    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
+    const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
+    
+    let margemErroHtml = '';
+    if (log.status === 'ALERTA' && log.pontos_ronda && log.pontos_ronda.localizacao && log.pontos_ronda.localizacao.latitude) {
+      if (typeof calcularDistanciaMetros === 'function') {
+        const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
+        const distKm = (dist / 1000).toFixed(2);
+        margemErroHtml = \`<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro \${distKm} km</div>\`;
+      }
+    }
+    
+    html += \`
+      <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">\${nomePonto}</div>
+          <div style="color: #94a3b8; font-size: 12px;">\${dataStr} às \${horaStr}</div>
+          \${margemErroHtml}
+        </div>
+        <div style="color: \${corStatus}; border: 1px solid \${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
+          \${log.status}
+        </div>
+      </div>
+    \`;
+  });
+  histContainer.innerHTML = html;
+}
+
 
 function voltarParaEscola() {
   if (escolaAtual != null && escolaAtual !== '') abrirEscola(escolaAtual)
