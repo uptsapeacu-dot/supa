@@ -24,3 +24,85 @@ window.toggleDiretriz = function(id, btn) {
   }
 }
 
+
+
+// Calcula as omissões dos últimos 7 dias para um funcionário (Global)
+async function calcularAuditoriaRondasGlobal(funcionarioId, escolaId) {
+  const dataHoje = new Date();
+  const dataSeteDias = new Date();
+  dataSeteDias.setDate(dataHoje.getDate() - 7);
+  dataSeteDias.setHours(0,0,0,0);
+
+  // Busca escalas do funcionário
+  let q = clienteSupabase
+    .from('escala_vigias')
+    .select('*')
+    .eq('funcionario_id', funcionarioId);
+  if (escolaId) q = q.eq('escola_id', escolaId);
+  const { data: escalas } = await q;
+
+  if (!escalas || escalas.length === 0) return [];
+
+  // Busca registros de ronda reais nos últimos 7 dias
+  const { data: registros } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*')
+    .eq('funcionario_id', funcionarioId)
+    .gte('horario_leitura', dataSeteDias.toISOString());
+
+  // Busca justificativas
+  const { data: justificativas } = await clienteSupabase
+    .from('justificativas_ronda')
+    .select('*')
+    .in('escala_id', escalas.map(e => e.id))
+    .gte('data_referencia', dataSeteDias.toISOString().split('T')[0]);
+
+  let relatorio = [];
+
+  for (let i = 0; i <= 7; i++) {
+    const dataRef = new Date(dataSeteDias);
+    dataRef.setDate(dataRef.getDate() + i);
+    const dataRefStr = dataRef.toISOString().split('T')[0];
+
+    if (dataRef > dataHoje && dataRefStr !== dataHoje.toISOString().split('T')[0]) continue;
+
+    escalas.forEach(escala => {
+      const dataHoraPrevista = new Date(dataRefStr + 'T' + escala.horario_previsto);
+      if (dataHoraPrevista > dataHoje) return;
+
+      const margemAntes = new Date(dataHoraPrevista.getTime() - 60 * 60 * 1000);
+      const margemDepois = new Date(dataHoraPrevista.getTime() + 60 * 60 * 1000);
+
+      const bateu = registros.find(r => {
+        const t = new Date(r.horario_leitura).getTime();
+        return t >= margemAntes.getTime() && t <= margemDepois.getTime();
+      });
+
+      const justificativa = justificativas.find(j => j.escala_id === escala.id && j.data_referencia === dataRefStr);
+
+      if (!bateu) {
+        relatorio.push({
+          data: dataRefStr,
+          escala: escala,
+          status: justificativa ? 'JUSTIFICADO' : 'OMISSAO',
+          justificativa: justificativa ? justificativa.texto : null
+        });
+      } else {
+        relatorio.push({
+          data: dataRefStr,
+          escala: escala,
+          status: 'CUMPRIDO',
+          registro: bateu
+        });
+      }
+    });
+  }
+
+  relatorio.sort((a,b) => {
+    const d1 = new Date(a.data + 'T' + a.escala.horario_previsto);
+    const d2 = new Date(b.data + 'T' + b.escala.horario_previsto);
+    return d2 - d1;
+  });
+
+  return relatorio;
+}

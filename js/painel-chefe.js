@@ -251,9 +251,14 @@ async function renderizarGestaoEscolaChefia(container) {
             <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Cargo: ${v.cargo}</div>
             ${badgeHorarios}
           </div>
-          <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
-            <i data-lucide="clock" style="width:16px;height:16px;margin-right:4px;"></i> Configurar
-          </button>
+          <div style="display:flex; flex-direction:column; gap:5px;">
+    <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
+      <i data-lucide="clock" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Configurar
+    </button>
+    <button class="btn-clear" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalAuditoriaChefe('${func.id}', '${func.nome}', escolaAtual)">
+      <i data-lucide="clipboard-list" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Auditoria (Omissões)
+    </button>
+  </div>
         </div>
       `;
     });
@@ -388,4 +393,195 @@ async function salvarPlantao() {
   fecharModalPlantao();
   toast('Plantão atualizado com sucesso!', 'sucesso');
   renderizarGestaoEscolaChefia(document.getElementById('modulosDaEscola'));
+}
+
+
+// ==========================================
+// AUDITORIA DE OMISSÕES (NÍVEL 5 e NÍVEL 6)
+// ==========================================
+
+// Calcula as omissões dos últimos 7 dias para um funcionário
+async function calcularAuditoria(funcionarioId, escolaId) {
+  const dataHoje = new Date();
+  const dataSeteDias = new Date();
+  dataSeteDias.setDate(dataHoje.getDate() - 7);
+  dataSeteDias.setHours(0,0,0,0);
+
+  // Busca escalas do funcionário
+  const { data: escalas } = await clienteSupabase
+    .from('escala_vigias')
+    .select('*')
+    .eq('funcionario_id', funcionarioId)
+    .eq('escola_id', escolaId);
+
+  if (!escalas || escalas.length === 0) return [];
+
+  // Busca registros de ronda reais nos últimos 7 dias
+  const { data: registros } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*')
+    .eq('funcionario_id', funcionarioId)
+    .gte('horario_leitura', dataSeteDias.toISOString());
+
+  // Busca justificativas
+  const { data: justificativas } = await clienteSupabase
+    .from('justificativas_ronda')
+    .select('*')
+    .in('escala_id', escalas.map(e => e.id))
+    .gte('data_referencia', dataSeteDias.toISOString().split('T')[0]);
+
+  let relatorio = [];
+
+  // Iterar pelos últimos 7 dias
+  for (let i = 0; i <= 7; i++) {
+    const dataRef = new Date(dataSeteDias);
+    dataRef.setDate(dataRef.getDate() + i);
+    const dataRefStr = dataRef.toISOString().split('T')[0];
+
+    // Pular dias no futuro
+    if (dataRef > dataHoje && dataRefStr !== dataHoje.toISOString().split('T')[0]) continue;
+
+    escalas.forEach(escala => {
+      const [hora, minuto] = escala.horario_previsto.split(':');
+      const dataHoraPrevista = new Date(dataRefStr + 'T' + escala.horario_previsto);
+      
+      // Se a hora prevista ainda não chegou hoje, ignorar
+      if (dataHoraPrevista > dataHoje) return;
+
+      // Procurar se bateu o ponto (Margem: 1 hora antes e 1 hora depois)
+      const margemAntes = new Date(dataHoraPrevista.getTime() - 60 * 60 * 1000);
+      const margemDepois = new Date(dataHoraPrevista.getTime() + 60 * 60 * 1000);
+
+      const bateu = registros.find(r => {
+        const t = new Date(r.horario_leitura).getTime();
+        return t >= margemAntes.getTime() && t <= margemDepois.getTime();
+      });
+
+      const justificativa = justificativas.find(j => j.escala_id === escala.id && j.data_referencia === dataRefStr);
+
+      if (!bateu) {
+        relatorio.push({
+          data: dataRefStr,
+          escala: escala,
+          status: justificativa ? 'JUSTIFICADO' : 'OMISSAO',
+          justificativa: justificativa ? justificativa.texto : null
+        });
+      } else {
+        relatorio.push({
+          data: dataRefStr,
+          escala: escala,
+          status: 'CUMPRIDO',
+          registro: bateu
+        });
+      }
+    });
+  }
+
+  // Ordenar decrescente
+  relatorio.sort((a,b) => {
+    const d1 = new Date(a.data + 'T' + a.escala.horario_previsto);
+    const d2 = new Date(b.data + 'T' + b.escala.horario_previsto);
+    return d2 - d1;
+  });
+
+  return relatorio;
+}
+
+// -------------------------------------
+// MODAL DE AUDITORIA (Chefe)
+// -------------------------------------
+
+function injetarModalAuditoriaChefe() {
+  if (document.getElementById('modalAuditoriaChefe')) return;
+  const modalHtml = `
+    <div id="modalAuditoriaChefe" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:600px; padding:25px; max-height:80vh; display:flex; flex-direction:column;">
+        <h3 style="color:#f8fafc; margin-top:0; margin-bottom:5px;">Auditoria de Omissões (7 dias)</h3>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;" id="nomeFuncAuditoria">Funcionário</p>
+
+        <div id="listaAuditoriaChefe" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <!-- Injetado dinamicamente -->
+        </div>
+
+        <button class="btn-clear" style="border:1px solid #475569; color:#cbd5e1; padding:10px; border-radius:6px;" onclick="document.getElementById('modalAuditoriaChefe').style.display='none'">Fechar</button>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function abrirModalAuditoriaChefe(funcId, funcNome, escId) {
+  injetarModalAuditoriaChefe();
+  document.getElementById('nomeFuncAuditoria').innerText = funcNome;
+  const lista = document.getElementById('listaAuditoriaChefe');
+  lista.innerHTML = '<div style="color:#aaa; text-align:center;">Analisando registros e omissões...</div>';
+  document.getElementById('modalAuditoriaChefe').style.display = 'flex';
+
+  const relatorio = await calcularAuditoriaRondasGlobal(funcId, escId);
+  
+  if (relatorio.length === 0) {
+    lista.innerHTML = '<div class="empty-state">O funcionário não possui plantões definidos nesta escola.</div>';
+    return;
+  }
+
+  let html = '';
+  relatorio.forEach(item => {
+    const dataBr = item.data.split('-').reverse().join('/');
+    const hora = item.escala.horario_previsto.substring(0,5);
+
+    if (item.status === 'CUMPRIDO') {
+      html += `
+        <div style="background:#0f172a; border-left:4px solid #22c55e; padding:12px; border-radius:4px; display:flex; justify-content:space-between;">
+          <div>
+            <div style="color:#cbd5e1; font-weight:bold;">${dataBr} - ${hora} (${item.escala.tipo_horario})</div>
+            <div style="color:#22c55e; font-size:12px; margin-top:4px;">Ponto batido corretamente</div>
+          </div>
+        </div>
+      `;
+    } else if (item.status === 'JUSTIFICADO') {
+      html += `
+        <div style="background:#0f172a; border-left:4px solid #f59e0b; padding:12px; border-radius:4px; display:flex; justify-content:space-between;">
+          <div>
+            <div style="color:#cbd5e1; font-weight:bold;">${dataBr} - ${hora} (${item.escala.tipo_horario})</div>
+            <div style="color:#f59e0b; font-size:12px; margin-top:4px;">Omissão Justificada: "${item.justificativa}"</div>
+          </div>
+        </div>
+      `;
+    } else {
+      // OMISSAO
+      html += `
+        <div style="background:#0f172a; border-left:4px solid #ef4444; padding:12px; border-radius:4px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="color:#cbd5e1; font-weight:bold;">${dataBr} - ${hora} (${item.escala.tipo_horario})</div>
+            <div style="color:#ef4444; font-size:12px; margin-top:4px; font-weight:bold;">Faltou bater o ponto</div>
+          </div>
+          <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:6px 10px; border-radius:4px; font-size:12px; font-weight:bold;" onclick="justificarOmissao('${item.escala.id}', '${item.data}', '${funcId}', '${funcNome}', '${escId}')">
+            Justificar
+          </button>
+        </div>
+      `;
+    }
+  });
+  lista.innerHTML = html;
+}
+
+async function justificarOmissao(escalaId, dataRef, funcId, funcNome, escId) {
+  const motivo = prompt('Digite a justificativa oral dada pelo vigia:');
+  if (!motivo) return;
+
+  const { error } = await clienteSupabase
+    .from('justificativas_ronda')
+    .insert([{
+      escala_id: escalaId,
+      data_referencia: dataRef,
+      texto: motivo,
+      justificado_por: funcionarioAtual.id
+    }]);
+
+  if (error) {
+    alert('Erro ao justificar: ' + error.message);
+  } else {
+    toast('Justificativa salva com sucesso', 'sucesso');
+    abrirModalAuditoriaChefe(funcId, funcNome, escId); // recarregar
+  }
 }

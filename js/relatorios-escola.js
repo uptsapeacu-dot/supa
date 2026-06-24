@@ -593,3 +593,114 @@ async function renderizarDadosRelatorioEvasao() {
   window.htmlImpressaoFrequencia = htmlImpressao;
 }
 
+
+
+// ===================================
+// INJEÇÃO DA AUDITORIA GLOBAL NÍVEL 1
+// ===================================
+
+async function abrirAuditoriaGeral(escId) {
+  if (!escId) {
+    alert('Selecione uma escola primeiro para ver as omissões dos vigias.');
+    return;
+  }
+  
+  if (!document.getElementById('modalAuditoriaGeralNivel1')) {
+    const m = `
+      <div id="modalAuditoriaGeralNivel1" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:800px; padding:25px; max-height:85vh; display:flex; flex-direction:column;">
+          <h3 style="color:#f8fafc; margin-top:0; margin-bottom:20px; border-bottom:1px solid #334155; padding-bottom:10px;">Auditoria Global de Omissões da Escola (Últimos 7 dias)</h3>
+          
+          <div id="listaAuditoriaGeralNivel1" style="flex:1; overflow-y:auto; display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+            <!-- Conteúdo injetado aqui -->
+          </div>
+
+          <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:10px; border-radius:6px; font-weight:bold; width:120px; align-self:flex-end;" onclick="document.getElementById('modalAuditoriaGeralNivel1').style.display='none'">Fechar</button>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', m);
+  }
+
+  const container = document.getElementById('listaAuditoriaGeralNivel1');
+  container.innerHTML = '<div style="color:#94a3b8; text-align:center;">Mapeando quadros de escala e cruzando com todos os pontos... Aguarde.</div>';
+  document.getElementById('modalAuditoriaGeralNivel1').style.display = 'flex';
+
+  try {
+    // Buscar todos os funcionarios que têm escala nesta escola
+    const { data: escalasDaEscola } = await clienteSupabase
+      .from('escala_vigias')
+      .select('funcionario_id, funcionarios(nome)')
+      .eq('escola_id', escId);
+    
+    if (!escalasDaEscola || escalasDaEscola.length === 0) {
+      container.innerHTML = '<div class="empty-state">Nenhuma escala de plantão encontrada para os funcionários desta escola.</div>';
+      return;
+    }
+
+    const uniqueFuncs = [];
+    escalasDaEscola.forEach(e => {
+      if (!uniqueFuncs.find(f => f.id === e.funcionario_id)) {
+        uniqueFuncs.push({id: e.funcionario_id, nome: e.funcionarios.nome});
+      }
+    });
+
+    let todasOmissoes = [];
+
+    // Gerar auditoria de cada um
+    for (const f of uniqueFuncs) {
+      const rel = await calcularAuditoriaRondasGlobal(f.id, escId);
+      const pendencias = rel.filter(x => x.status === 'OMISSAO' || x.status === 'JUSTIFICADO');
+      pendencias.forEach(p => {
+        p.nomeVigia = f.nome;
+        todasOmissoes.push(p);
+      });
+    }
+
+    if (todasOmissoes.length === 0) {
+      container.innerHTML = '<div class="empty-state" style="color:#22c55e;">Excelente! Nenhuma omissão detectada nos últimos 7 dias.</div>';
+      return;
+    }
+
+    // Ordenar todas as omissões globalmente
+    todasOmissoes.sort((a,b) => {
+      const d1 = new Date(a.data + 'T' + a.escala.horario_previsto);
+      const d2 = new Date(b.data + 'T' + b.escala.horario_previsto);
+      return d2 - d1;
+    });
+
+    let htmlO = '';
+    todasOmissoes.forEach(p => {
+      const dataBr = p.data.split('-').reverse().join('/');
+      const hora = p.escala.horario_previsto.substring(0,5);
+      
+      if (p.status === 'OMISSAO') {
+        htmlO += `
+          <div style="background: #1f2937; border-left: 4px solid #ef4444; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">${p.nomeVigia}</div>
+              <div style="color: #94a3b8; font-size: 12px;">${dataBr} às ${hora} (Plantão ${p.escala.tipo_horario})</div>
+              <div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">OMISSÃO: Faltou Bater o Ponto</div>
+            </div>
+          </div>
+        `;
+      } else {
+        htmlO += `
+          <div style="background: #1f2937; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 12px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">${p.nomeVigia}</div>
+              <div style="color: #94a3b8; font-size: 12px;">${dataBr} às ${hora} (Plantão ${p.escala.tipo_horario})</div>
+              <div style="color: #f59e0b; font-size: 11px; margin-top: 4px; font-weight: bold;">JUSTIFICADO: ${p.justificativa}</div>
+            </div>
+          </div>
+        `;
+      }
+    });
+
+    container.innerHTML = htmlO;
+    if (window.lucide) lucide.createIcons();
+
+  } catch (err) {
+    container.innerHTML = '<div style="color:#ef4444; padding:10px;">Erro ao calcular: ' + err.message + '</div>';
+  }
+}

@@ -112,6 +112,24 @@ async function onScanSuccess(decodedText, decodedResult) {
     }
 
     const idPonto = dados.id;
+
+    // --- ANTI-SPAM (COOLDOWN 60 MINUTOS) ---
+    const sessentaMinAtras = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+    const { data: ultimoReg } = await clienteSupabase
+      .from('registros_ronda')
+      .select('horario_leitura')
+      .eq('funcionario_id', funcionarioAtual.id)
+      .eq('ponto_id', idPonto)
+      .gte('horario_leitura', sessentaMinAtras)
+      .order('horario_leitura', { ascending: false })
+      .limit(1);
+
+    if (ultimoReg && ultimoReg.length > 0) {
+      alert('Você já registrou a sua presença neste ponto recentemente. Aguarde 60 minutos para um novo registro.');
+      return;
+    }
+    // -------------------------------------
+
     const { data: ponto, error } = await clienteSupabase
       .from('pontos_ronda')
       .select('nome, escola_id, localizacao, tolerancia_metros')
@@ -175,6 +193,44 @@ async function carregarUltimosRegistrosMobile() {
   const lista = document.getElementById('listaUltimosPontos');
   if (!lista || !funcionarioAtual) return;
 
+  lista.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Analisando registros e pendências...</div>';
+
+  let html = '';
+
+  // 1. Puxar Auditoria (para achar buracos/justificativas)
+  if (typeof calcularAuditoriaRondasGlobal === 'function') {
+    const auditoria = await calcularAuditoriaRondasGlobal(funcionarioAtual.id, null);
+    const pendencias = auditoria.filter(a => a.status === 'OMISSAO' || a.status === 'JUSTIFICADO');
+    
+    pendencias.forEach(p => {
+      const dataBr = p.data.split('-').reverse().join('/');
+      const hora = p.escala.horario_previsto.substring(0,5);
+      
+      if (p.status === 'OMISSAO') {
+        html += `
+          <div style="background: #1f2937; border-left: 4px solid #ef4444; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">Plantão ${p.escala.tipo_horario}</div>
+              <div style="color: #94a3b8; font-size: 12px;">${dataBr} às ${hora}</div>
+              <div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">Faltou bater o ponto</div>
+            </div>
+          </div>
+        `;
+      } else {
+        html += `
+          <div style="background: #1f2937; border-left: 4px solid #f59e0b; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">Plantão ${p.escala.tipo_horario}</div>
+              <div style="color: #94a3b8; font-size: 12px;">${dataBr} às ${hora}</div>
+              <div style="color: #f59e0b; font-size: 11px; margin-top: 4px; font-weight: bold;">Justificado: ${p.justificativa}</div>
+            </div>
+          </div>
+        `;
+      }
+    });
+  }
+
+  // 2. Puxar registros brutos (batidas reais)
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
     .select('*, pontos_ronda(nome, localizacao)')
@@ -182,44 +238,39 @@ async function carregarUltimosRegistrosMobile() {
     .order('horario_leitura', { ascending: false })
     .limit(10);
 
-  if (error) {
-    lista.innerHTML = '<div style="color: #ef4444; font-size: 14px; text-align: center; padding: 10px;">Erro ao carregar registros.</div>';
-    return;
+  if (!error && data) {
+    data.forEach(log => {
+      const d = new Date(log.horario_leitura);
+      const horaStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+      const dataStr = d.toLocaleDateString('pt-BR');
+      const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
+      const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
+      
+      let margemErroHtml = '';
+      if (log.status === 'ALERTA' && log.pontos_ronda && log.pontos_ronda.localizacao && log.pontos_ronda.localizacao.latitude) {
+        const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
+        const distKm = (dist / 1000).toFixed(2);
+        margemErroHtml = `<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro ${distKm} km</div>`;
+      }
+      
+      html += `
+        <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
+            <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
+            ${margemErroHtml}
+          </div>
+          <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
+            ${log.status}
+          </div>
+        </div>
+      `;
+    });
   }
 
-  if (!data || data.length === 0) {
-    lista.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro recente encontrado.</div>';
-    return;
+  if (html === '') {
+    lista.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro ou pendência recente encontrado.</div>';
+  } else {
+    lista.innerHTML = html;
   }
-
-  let html = '';
-  data.forEach(log => {
-    const d = new Date(log.horario_leitura);
-    const horaStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const dataStr = d.toLocaleDateString('pt-BR');
-    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
-    const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
-    
-    let margemErroHtml = '';
-    if (log.status === 'ALERTA' && log.pontos_ronda && log.pontos_ronda.localizacao && log.pontos_ronda.localizacao.latitude) {
-      const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
-      const distKm = (dist / 1000).toFixed(2);
-      margemErroHtml = `<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro ${distKm} km</div>`;
-    }
-    
-    html += `
-      <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-        <div>
-          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
-          <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
-          ${margemErroHtml}
-        </div>
-        <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
-          ${log.status}
-        </div>
-      </div>
-    `;
-  });
-
-  lista.innerHTML = html;
 }
