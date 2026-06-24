@@ -239,29 +239,26 @@ async function carregarRelatorioPresencaLocal() {
   const container = document.getElementById('conteudo-presenca');
   if (!container) return;
 
-  // Busca os registros de ronda para esta escola
-  // registros_ronda tem funcionario_id, horario, latitude, longitude, status e ponto_id
-  // mas como escolaAtual filtra pela escola, precisamos verificar como ligamos a escola ao registro.
-  // Vamos buscar via ponto de ronda:
-  const { data: pontos } = await clienteSupabase
-    .from('pontos_ronda')
-    .select('id, nome, localizacao')
-    .eq('escola_id', escolaAtual);
-
-  if (!pontos || pontos.length === 0) {
-    container.innerHTML = '<div class="empty-state">Nenhum ponto de ronda ou presença cadastrado para esta unidade.</div>';
-    window.htmlImpressaoPresenca = '<p>Nenhum ponto de ronda ou presença cadastrado para esta unidade.</p>';
-    return;
-  }
-
-  const pontosIds = pontos.map(p => p.id);
-
-  const { data: logs, error } = await clienteSupabase
+  let query = clienteSupabase
     .from('registros_ronda')
-    .select('*, funcionarios(nome)')
-    .in('ponto_id', pontosIds)
+    .select('*, funcionarios(nome), pontos_ronda!inner(id, nome, escola_id)')
     .order('horario_leitura', { ascending: false })
     .limit(100);
+
+  if (escolaAtual) {
+    query = query.eq('pontos_ronda.escola_id', escolaAtual);
+  } else if (!isSecretaria()) {
+    const idsPermitidos = acessosAtual.filter(a => a.ativo && a.orgao_id).map(a => a.orgao_id);
+    if (idsPermitidos.length > 0) {
+      query = query.in('pontos_ronda.escola_id', idsPermitidos);
+    } else {
+      container.innerHTML = '<div class="empty-state">Sem acesso a escolas.</div>';
+      window.htmlImpressaoPresenca = '<p>Sem acesso a escolas.</p>';
+      return;
+    }
+  }
+
+  const { data: logs, error } = await query;
 
   if (error) {
     container.innerHTML = '<div class="empty-state" style="color:red;">Erro ao buscar registros de presença.</div>';
@@ -307,8 +304,7 @@ async function carregarRelatorioPresencaLocal() {
     const dataStr = dataObj.toLocaleDateString('pt-BR') + ' ' + dataObj.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
     
     const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
-    const pontoOrigem = pontos.find(p => p.id === log.ponto_id);
-    const nomePonto = pontoOrigem ? pontoOrigem.nome : 'Ponto Excluído';
+    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
 
     html += `
