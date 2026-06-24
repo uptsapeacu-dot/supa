@@ -172,3 +172,220 @@ async function carregarAlertasChefe() {
   tbody.innerHTML = html;
   if (window.lucide) window.lucide.createIcons();
 }
+
+
+// ==========================================
+// GESTÃO OPERACIONAL DA ESCOLA (NÍVEL 5)
+// ==========================================
+
+async function renderizarGestaoEscolaChefia(container) {
+  container.innerHTML = '<div style="color:#aaa; text-align:center;">Carregando painel de gestão...</div>';
+
+  let cargosSet = new Set();
+  acessosAtual.forEach(a => {
+    if (a.nivel === PERFIS.CHEFE_EQUIPE && a.cargos_gerenciados) {
+      a.cargos_gerenciados.forEach(c => cargosSet.add(c));
+    }
+  });
+  const cargosArr = Array.from(cargosSet);
+
+  if (cargosArr.length === 0) {
+    container.innerHTML = '<div class="empty-state">Você não possui cargos configurados para gerenciar.</div>';
+    return;
+  }
+
+  // Buscar vigias lotados nesta escola
+  const { data: vinculos, error } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .select('*, funcionarios(*)')
+    .eq('orgao_id', escolaAtual)
+    .eq('ativo', true);
+
+  if (error) {
+    container.innerHTML = '<div class="empty-state" style="color:red;">Erro ao buscar equipe.</div>';
+    return;
+  }
+
+  const equipe = vinculos.filter(v => v.funcionarios && cargosArr.includes(v.funcionarios.profissao));
+
+  // Buscar escalas existentes para esses funcionários nesta escola
+  const idsEquipe = equipe.map(v => v.funcionario_id);
+  let escalas = [];
+  if (idsEquipe.length > 0) {
+    const { data: escData } = await clienteSupabase
+      .from('escala_vigias')
+      .select('*')
+      .eq('escola_id', escolaAtual)
+      .in('funcionario_id', idsEquipe)
+      .order('horario_previsto');
+    if (escData) escalas = escData;
+  }
+
+  let html = `
+    <div style="width:100%; max-width:800px; margin: 0 auto; text-align:left;">
+      <h3 style="color:#f8fafc; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="users"></i> Equipe Operacional da Escola
+      </h3>
+  `;
+
+  if (equipe.length === 0) {
+    html += '<div class="empty-state">Nenhum funcionário operacional lotado nesta escola.</div>';
+  } else {
+    html += '<div style="display:flex; flex-direction:column; gap:10px;">';
+    equipe.forEach(v => {
+      const func = v.funcionarios;
+      const escalasDoFunc = escalas.filter(e => e.funcionario_id === func.id);
+      
+      let badgeHorarios = '';
+      if (escalasDoFunc.length === 0) {
+        badgeHorarios = '<span style="color:#f59e0b; font-size:12px;">Nenhum plantão definido</span>';
+      } else {
+        const horariosArr = escalasDoFunc.map(e => e.horario_previsto.substring(0,5));
+        badgeHorarios = `<span style="color:#3ea6ff; font-size:12px; font-weight:bold;">Plantão: ${horariosArr.join(', ')}</span>`;
+      }
+
+      html += `
+        <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:15px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="color:#f8fafc; font-weight:bold; font-size:15px; margin-bottom:4px;">${func.nome}</div>
+            <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Cargo: ${func.profissao}</div>
+            ${badgeHorarios}
+          </div>
+          <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
+            <i data-lucide="clock" style="width:16px;height:16px;margin-right:4px;"></i> Configurar
+          </button>
+        </div>
+      `;
+    });
+    html += '</div>';
+  }
+
+  html += '</div>';
+  container.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+
+  injetarModalPlantaoSeNecessario();
+}
+
+function injetarModalPlantaoSeNecessario() {
+  if (document.getElementById('modalConfigurarPlantao')) return;
+
+  const modalHtml = `
+    <div id="modalConfigurarPlantao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:400px; padding:25px;">
+        <h3 style="color:#f8fafc; margin-top:0; margin-bottom:5px;">Configurar Plantão</h3>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;" id="nomeFuncPlantao">Funcionário</p>
+
+        <input type="hidden" id="plantaoFuncionarioId">
+
+        <div id="listaHorariosPlantao" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
+          <!-- Injetado dinamicamente -->
+        </div>
+
+        <button class="btn-clear" style="width:100%; border:1px dashed #3b82f6; color:#3ea6ff; padding:10px; border-radius:6px; font-weight:bold; margin-bottom:20px;" onclick="adicionarLinhaHorarioPlantao('', 'EXTRA')">
+          <i data-lucide="plus" style="width:16px;height:16px;vertical-align:middle;"></i> Adicionar Horário
+        </button>
+
+        <div style="display:flex; gap:10px;">
+          <button class="btn-login" style="background:#3b82f6; flex:1;" onclick="salvarPlantao()">Salvar</button>
+          <button class="btn-clear" style="flex:1; border:1px solid #475569; color:#cbd5e1;" onclick="fecharModalPlantao()">Cancelar</button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
+
+async function abrirModalConfigurarPlantao(funcId, funcNome) {
+  document.getElementById('plantaoFuncionarioId').value = funcId;
+  document.getElementById('nomeFuncPlantao').innerText = funcNome;
+  
+  const lista = document.getElementById('listaHorariosPlantao');
+  lista.innerHTML = '<div style="color:#aaa; text-align:center;">Carregando...</div>';
+  document.getElementById('modalConfigurarPlantao').style.display = 'flex';
+
+  const { data, error } = await clienteSupabase
+    .from('escala_vigias')
+    .select('*')
+    .eq('escola_id', escolaAtual)
+    .eq('funcionario_id', funcId)
+    .order('horario_previsto');
+
+  lista.innerHTML = '';
+  
+  if (data && data.length > 0) {
+    data.forEach(e => adicionarLinhaHorarioPlantao(e.horario_previsto.substring(0,5), e.tipo_horario));
+  } else {
+    // Exigência Padrão
+    adicionarLinhaHorarioPlantao('07:00', 'ENTRADA');
+    adicionarLinhaHorarioPlantao('19:00', 'SAIDA');
+  }
+}
+
+function adicionarLinhaHorarioPlantao(horaVal = '', tipoVal = 'EXTRA') {
+  const lista = document.getElementById('listaHorariosPlantao');
+  const div = document.createElement('div');
+  div.style.display = 'flex';
+  div.style.gap = '8px';
+  div.style.alignItems = 'center';
+  div.className = 'linha-horario-plantao';
+  
+  div.innerHTML = `
+    <select class="input-form" style="width:110px; padding:8px; font-size:13px;">
+      <option value="ENTRADA" ${tipoVal === 'ENTRADA' ? 'selected' : ''}>Entrada</option>
+      <option value="SAIDA" ${tipoVal === 'SAIDA' ? 'selected' : ''}>Saída</option>
+      <option value="EXTRA" ${tipoVal === 'EXTRA' ? 'selected' : ''}>Ronda</option>
+    </select>
+    <input type="time" class="input-form" style="flex:1; padding:8px;" value="${horaVal}">
+    <button class="btn-clear" style="color:#ef4444; padding:8px;" onclick="this.parentElement.remove()">
+      <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
+    </button>
+  `;
+  lista.appendChild(div);
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function fecharModalPlantao() {
+  document.getElementById('modalConfigurarPlantao').style.display = 'none';
+}
+
+async function salvarPlantao() {
+  const funcId = document.getElementById('plantaoFuncionarioId').value;
+  const linhas = document.querySelectorAll('.linha-horario-plantao');
+  
+  let novosHorarios = [];
+  linhas.forEach(l => {
+    const tipo = l.querySelector('select').value;
+    const hora = l.querySelector('input').value;
+    if (hora) {
+      novosHorarios.push({
+        funcionario_id: funcId,
+        escola_id: escolaAtual,
+        tipo_horario: tipo,
+        horario_previsto: hora + ':00'
+      });
+    }
+  });
+
+  // Limpa escalas anteriores deste funcionário nesta escola
+  await clienteSupabase
+    .from('escala_vigias')
+    .delete()
+    .eq('escola_id', escolaAtual)
+    .eq('funcionario_id', funcId);
+
+  if (novosHorarios.length > 0) {
+    const { error } = await clienteSupabase
+      .from('escala_vigias')
+      .insert(novosHorarios);
+    
+    if (error) {
+      alert('Erro ao salvar escala: ' + error.message);
+      return;
+    }
+  }
+
+  fecharModalPlantao();
+  toast('Plantão atualizado com sucesso!', 'sucesso');
+  renderizarGestaoEscolaChefia(document.getElementById('modulosDaEscola'));
+}

@@ -214,6 +214,16 @@ function renderizarModulosDaEscola() {
       return;
     }
     
+    const isChefe = acessosAtual.some(a => a.nivel === PERFIS.CHEFE_EQUIPE && a.ativo);
+    if (isChefe) {
+      if (typeof renderizarGestaoEscolaChefia === 'function') {
+        renderizarGestaoEscolaChefia(lista);
+      } else {
+        lista.innerHTML = '<div class="empty-state">Erro: Módulo de chefia não carregado.</div>';
+      }
+      return;
+    }
+    
     lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>';
     return;
   }
