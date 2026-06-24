@@ -206,7 +206,7 @@ async function renderizarGestaoEscolaChefia(container) {
     return;
   }
 
-  const equipe = vinculos.filter(v => v.funcionarios && cargosArr.includes(v.funcionarios.profissao));
+  const equipe = vinculos.filter(v => v.funcionarios && cargosArr.includes(v.cargo));
 
   // Buscar escalas existentes para esses funcionários nesta escola
   const idsEquipe = equipe.map(v => v.funcionario_id);
@@ -248,7 +248,7 @@ async function renderizarGestaoEscolaChefia(container) {
         <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:15px; display:flex; justify-content:space-between; align-items:center;">
           <div>
             <div style="color:#f8fafc; font-weight:bold; font-size:15px; margin-bottom:4px;">${func.nome}</div>
-            <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Cargo: ${func.profissao}</div>
+            <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Cargo: ${v.cargo}</div>
             ${badgeHorarios}
           </div>
           <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
