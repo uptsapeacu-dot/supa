@@ -298,22 +298,22 @@ async function renderizarPainelVigiaEscola(listaContainer) {
       if (typeof calcularDistanciaMetros === 'function') {
         const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
         const distKm = (dist / 1000).toFixed(2);
-        margemErroHtml = \`<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro \${distKm} km</div>\`;
+        margemErroHtml = `<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro ${distKm} km</div>`;
       }
     }
     
-    html += \`
+    html += `
       <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
         <div>
-          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">\${nomePonto}</div>
-          <div style="color: #94a3b8; font-size: 12px;">\${dataStr} às \${horaStr}</div>
-          \${margemErroHtml}
+          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
+          <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
+          ${margemErroHtml}
         </div>
-        <div style="color: \${corStatus}; border: 1px solid \${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
-          \${log.status}
+        <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
+          ${log.status}
         </div>
       </div>
-    \`;
+    `;
   });
   histContainer.innerHTML = html;
 }
