@@ -12,7 +12,9 @@ function aplicarVisibilidadeSidebar() {
     permissoes: document.getElementById('menu-permissoes'),
     relatorios: document.getElementById('menu-relatorios'),
     calendario: document.getElementById('menu-calendario'),
-    perfil: document.getElementById('menu-perfil')
+    perfil: document.getElementById('menu-perfil'),
+    diretrizes: document.getElementById('menu-diretrizes'),
+    ajudaChefe: document.getElementById('menu-ajuda-chefe')
   }
 
   Object.keys(menus).forEach(function(chave) {
@@ -33,7 +35,9 @@ function aplicarVisibilidadeSidebar() {
   }
 
   if (nivel === PERFIS.CHEFE_EQUIPE) {
+    if (menus.home) menus.home.style.display = 'flex'
     if (menus.perfil) menus.perfil.style.display = 'flex'
+    if (menus.ajudaChefe) menus.ajudaChefe.style.display = 'flex'
     if (containerChefias) {
       let cargosSet = new Set();
       acessosAtual.forEach(function(acesso) {
@@ -64,6 +68,7 @@ function aplicarVisibilidadeSidebar() {
 
   if (menus.home) menus.home.style.display = 'flex'
   if (menus.perfil) menus.perfil.style.display = 'flex' // Agora todos os níveis podem mudar a senha
+  if (menus.diretrizes) menus.diretrizes.style.display = 'flex'
 
   modulosEscola.forEach(function(modulo) {
     const menu = menus[modulo.id]

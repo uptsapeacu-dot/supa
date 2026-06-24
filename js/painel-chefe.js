@@ -152,12 +152,19 @@ async function carregarAlertasChefe() {
     
     // O sistema salvará uma msg tipo "Fora do raio (150m)" no status ou log, vamos extrair se houver, ou assumir.
     // Como a especificação diz que o alerta é distância:
+    const mapBtn = (log.latitude && log.longitude) ? `<button class="btn-clear" style="margin-top:4px; display:inline-block; color:#3ea6ff; font-size:12px; font-weight:bold; cursor:pointer;" onclick="window.open('https://www.google.com/maps?q=${log.latitude},${log.longitude}', '_blank')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;"></i> Ver Mapa</button>` : '';
+
     html += `
       <tr style="background-color:rgba(245,158,11,0.05);">
         <td style="color:#aaa;">${dataStr}</td>
         <td style="color:#fff; font-weight:bold;">${nomeFunc}</td>
         <td>${nomePonto}</td>
-        <td style="color:#f59e0b; font-weight:bold;"><i data-lucide="map-pin-off" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fora do raio permitido</td>
+        <td style="color:#f59e0b; font-weight:bold;">
+          <div style="display:flex; flex-direction:column; align-items:flex-start;">
+            <span><i data-lucide="map-pin-off" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fora do raio permitido</span>
+            ${mapBtn}
+          </div>
+        </td>
       </tr>
     `;
   });
