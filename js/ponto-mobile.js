@@ -1,4 +1,4 @@
-﻿// js/ponto-mobile.js
+// js/ponto-mobile.js
 
 function iniciarModuloPontoMobile() {
   const dataEl = document.getElementById('pontoMobileData');
@@ -9,6 +9,7 @@ function iniciarModuloPontoMobile() {
   }
 
   verificarPermissoesGPS();
+  carregarUltimosRegistrosMobile();
 }
 
 function verificarPermissoesGPS() {
@@ -154,8 +155,8 @@ async function onScanSuccess(decodedText, decodedResult) {
       alert(`ALERTA: Ponto registrado fora do local oficial!\nDistância calculada: ${Math.round(distancia)}m\nSua chefia foi notificada.`);
     }
 
-    // Recarrega ultimos registros na tela do app mobile se houver a função
-    // carregarUltimosRegistrosMobile(); 
+    // Recarrega ultimos registros na tela do app mobile
+    carregarUltimosRegistrosMobile(); 
     
   } catch (err) {
     console.error(err);
@@ -167,4 +168,49 @@ async function onScanSuccess(decodedText, decodedResult) {
 
 function onScanFailure(error) {
   // Chamado constantemente enquanto o scanner tenta focar. Ignoramos.
+}
+
+async function carregarUltimosRegistrosMobile() {
+  const lista = document.getElementById('listaUltimosPontos');
+  if (!lista || !funcionarioAtual) return;
+
+  const { data, error } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*, pontos_ronda(nome)')
+    .eq('funcionario_id', funcionarioAtual.id)
+    .order('horario_leitura', { ascending: false })
+    .limit(10);
+
+  if (error) {
+    lista.innerHTML = '<div style="color: #ef4444; font-size: 14px; text-align: center; padding: 10px;">Erro ao carregar registros.</div>';
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    lista.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro recente encontrado.</div>';
+    return;
+  }
+
+  let html = '';
+  data.forEach(log => {
+    const d = new Date(log.horario_leitura);
+    const horaStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const dataStr = d.toLocaleDateString('pt-BR');
+    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
+    const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
+    
+    html += `
+      <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
+          <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
+        </div>
+        <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
+          ${log.status}
+        </div>
+      </div>
+    `;
+  });
+
+  lista.innerHTML = html;
 }

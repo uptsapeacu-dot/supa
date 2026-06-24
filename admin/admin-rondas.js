@@ -90,7 +90,7 @@ async function adminRenderizarRondas() {
 }
 
 async function adminCarregarEscolasSelect() {
-  const { data } = await clienteSupabase.from('orgaos').select('id, nome').order('nome');
+  const { data } = await clienteSupabase.from('escolas').select('id, nome').order('nome');
   if (!data) return;
   _adminRondasEscolasCache = data;
 
@@ -166,6 +166,9 @@ async function adminCriarPontoRonda() {
 
   let localizacao = null;
   if (lat && lng) {
+    if (isNaN(parseFloat(lat)) || isNaN(parseFloat(lng))) {
+      return alert('Erro: As coordenadas de Latitude e Longitude devem ser números válidos.');
+    }
     localizacao = { latitude: parseFloat(lat), longitude: parseFloat(lng) };
   }
 
