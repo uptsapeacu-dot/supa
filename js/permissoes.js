@@ -48,10 +48,24 @@ async function carregarTelaPermissoes() {
 async function carregarFuncionarios() {
   const { data } = await clienteSupabase
     .from('funcionarios')
-    .select('*')
+    .select('*, vinculos_funcionarios(orgao_id, ativo)')
     .eq('ativo', true)
     .order('nome', { ascending: true })
-  funcionarios = data || []
+    
+  if (isSecretaria()) {
+    funcionarios = data || []
+  } else {
+    const orgaosPermitidos = acessosAtual
+      .filter(function(a) { return a.nivel === 2 && a.orgao_id })
+      .map(function(a) { return a.orgao_id })
+      
+    funcionarios = (data || []).filter(function(f) {
+      if (!f.vinculos_funcionarios) return false;
+      return f.vinculos_funcionarios.some(function(v) {
+        return v.ativo === true && orgaosPermitidos.includes(v.orgao_id)
+      })
+    })
+  }
 }
 
 async function carregarOrgaos() {

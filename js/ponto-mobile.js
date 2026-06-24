@@ -150,9 +150,10 @@ async function onScanSuccess(decodedText, decodedResult) {
     if (insertErr) throw new Error('Falha ao gravar ponto: ' + insertErr.message);
 
     if (statusBatida === 'OK') {
-      alert(`Ponto registrado com SUCESSO!\nLocal: ${ponto.nome}\nDistância calculada: ${Math.round(distancia)}m`);
+      alert(`Ponto registrado com SUCESSO!\nLocal: ${ponto.nome}`);
     } else {
-      alert(`ALERTA: Ponto registrado fora do local oficial!\nDistância calculada: ${Math.round(distancia)}m\nSua chefia foi notificada.`);
+      // Quando for ALERTA, mostramos apenas sucesso para não assustar o funcionário (o chefe recebe o alerta via banco)
+      alert(`Ponto registrado com SUCESSO!\nLocal: ${ponto.nome}`);
     }
 
     // Recarrega ultimos registros na tela do app mobile
@@ -176,7 +177,7 @@ async function carregarUltimosRegistrosMobile() {
 
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
-    .select('*, pontos_ronda(nome)')
+    .select('*, pontos_ronda(nome, localizacao)')
     .eq('funcionario_id', funcionarioAtual.id)
     .order('horario_leitura', { ascending: false })
     .limit(10);
@@ -199,11 +200,19 @@ async function carregarUltimosRegistrosMobile() {
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
     
+    let margemErroHtml = '';
+    if (log.status === 'ALERTA' && log.pontos_ronda && log.pontos_ronda.localizacao && log.pontos_ronda.localizacao.latitude) {
+      const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
+      const distKm = (dist / 1000).toFixed(2);
+      margemErroHtml = `<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro ${distKm} km</div>`;
+    }
+    
     html += `
       <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
         <div>
           <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
           <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
+          ${margemErroHtml}
         </div>
         <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
           ${log.status}
