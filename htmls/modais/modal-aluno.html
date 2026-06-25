@@ -73,7 +73,7 @@
       <input type="text" id="nisAluno" placeholder="Nº do NIS" />
       <input type="text" id="susAluno" placeholder="Nº Cartão do SUS" />
     </div>
-    <input type="text" id="certidaçãoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
+    <input type="text" id="certidaoAluno" placeholder="Certidão de Nascimento (Modelo antigo ou matrícula nova)" style="margin-top: 12px;"/>
     <div class="form-grid-3" style="margin-top: 12px;">
       <input type="text" id="nacionalidadeAluno" placeholder="Nacionalidade" value="BRASILEIRA" />
       <input type="text" id="cidadeNascAluno" placeholder="Cidade de Nascimento" />
@@ -101,7 +101,7 @@
       <input type="date" id="dataMatriculaAluno" title="Data da Matrícula" />
     </div>
     <div class="form-grid-2">
-      <select id="localizacaçãoAluno">
+      <select id="localizacaoAluno">
         <option value="Zona Urbana">Zona Urbana</option>
         <option value="Zona Rural">Zona Rural</option>
       </select>
@@ -126,6 +126,16 @@
       <label class="checkbox-item"><input type="checkbox" id="transporteAluno"> Utiliza Transporte Público?</label>
       <input type="text" id="rotaTransporteAluno" placeholder="Se Sim, qual a rota?" />
     </div>
+    
+    <div class="form-grid-2" style="margin-top: 12px;">
+      <select id="situacaoVacinalAluno">
+        <option value="">Situação Vacinal</option>
+        <option value="Em dia">Em dia</option>
+        <option value="Atrasada">Atrasada</option>
+        <option value="Não Vacinado">Não Vacinado</option>
+      </select>
+      <input type="text" id="motivoNaoVacinacaoAluno" placeholder="Se atrasada/não vacinado, qual o motivo?" />
+    </div>
     <input type="text" id="restricoesSaudeAluno" placeholder="Outras observações de saúde (campo livre)" style="margin-top: 12px;" />
 
     <!-- ENDEREÇO RESIDENCIAL (Página 2 da Ficha) -->
@@ -143,7 +153,7 @@
       <input type="text" id="ufEndAluno" placeholder="31 - UF" maxlength="2" />
       <div>
         <label style="font-size:12px;color:#aaa;">32 - Área de localização</label>
-        <select id="areaLocalizacaçãoAluno">
+        <select id="areaLocalizacaoAluno">
           <option value="Urbana">Urbana</option>
           <option value="Rural">Rural</option>
         </select>
