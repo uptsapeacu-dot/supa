@@ -2,7 +2,7 @@
 // ADMIN-ESCOLAS.JS — Gestão Global de Escolas
 // ============================================
 
-let _adminEscolasCache = []
+var _adminEscolasCache = []
 
 async function adminRenderizarEscolas() {
   const conteudo = document.getElementById('adminConteudo')
