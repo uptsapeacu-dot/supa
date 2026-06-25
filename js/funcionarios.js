@@ -114,7 +114,7 @@ async function carregarFuncionariosDaTela() {
   const btnPrintTodos = document.getElementById('btnImprimirTodos');
   if (btnPrintTodos) btnPrintTodos.style.display = temPermissaoGeral ? 'block' : 'none';
   const btnGestaoLot = document.getElementById('btnGestaoLotacoes');
-  if (btnGestaoLot && usuarioAtual && usuarioAtual.nivel === 1) btnGestaoLot.style.display = 'block';
+  if (btnGestaoLot && isSecretaria()) btnGestaoLot.style.display = 'block';
 
 
   function pegarIniciais(nome) {

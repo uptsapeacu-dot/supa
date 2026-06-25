@@ -186,7 +186,7 @@ function renderizarAlunos() {
 async function excluirAluno(alunoId) {
   if (!confirm('Deseja excluir este aluno? Ele será arquivado na Lixeira Global.')) return
   var { error } = await clienteSupabase.from('alunos').update({ ativo: false }).eq('id', alunoId)
-  if (error) { alert('Erro ao arquivar aluno'); return }
+  if (error) { alert('Erro ao arquivar aluno: ' + error.message); return }
   await carregarAlunos()
 }
 
@@ -361,7 +361,7 @@ async function editarAluno(aluno) {
   // Matrícula
   if (document.getElementById('tipoMatriculaAluno')) document.getElementById('tipoMatriculaAluno').value = dados.tipo_matricula || ''
   if (document.getElementById('dataMatriculaAluno')) document.getElementById('dataMatriculaAluno').value = dados.data_matricula || ''
-  if (document.getElementById('localizacaoAluno')) document.getElementById('').value = dados.localizacao || 'Zona Urbana'
+  if (document.getElementById('localizacaoAluno')) document.getElementById('localizacaoAluno').value = dados.localizacao || 'Zona Urbana'
   if (document.getElementById('turnoAluno')) document.getElementById('turnoAluno').value = dados.turno || ''
   if (document.getElementById('turmaAluno')) document.getElementById('turmaAluno').value = dados.turma || ''
 
@@ -377,7 +377,7 @@ async function editarAluno(aluno) {
   if (document.getElementById('bairroAluno')) document.getElementById('bairroAluno').value = dados.bairro || ''
   if (document.getElementById('cidadeEndAluno')) document.getElementById('cidadeEndAluno').value = dados.cidade_end || ''
   if (document.getElementById('ufEndAluno')) document.getElementById('ufEndAluno').value = dados.uf_end || ''
-  if (document.getElementById('areaLocalizacaoAluno')) document.getElementById('').value = dados.area_localizacao || 'Urbana'
+  if (document.getElementById('areaLocalizacaoAluno')) document.getElementById('areaLocalizacaoAluno').value = dados.area_localizacao || 'Urbana'
   if (document.getElementById('areaDiferenciadaAluno')) document.getElementById('areaDiferenciadaAluno').value = dados.area_diferenciada || 'Não está em área diferenciada'
 
   // Recursos
@@ -517,7 +517,7 @@ async function salvarAluno() {
   btnSalvar.disabled = false
   btnSalvar.innerText = 'Gravar Aluno'
 
-  if (resposta.error) { console.log(resposta.error); alert('Erro ao salvar aluno'); return }
+  if (resposta.error) { console.log(resposta.error); alert('Erro ao salvar aluno: ' + resposta.error.message); return }
 
   fecharModalAluno()
   await carregarAlunos()

@@ -18,3 +18,8 @@
 
 
 - **Alteração de Formulários:** NUNCA remova ou suprima campos (inputs, selects, textareas) de formulários (HTML ou JS) por iniciativa própria, mesmo que pareçam desnecessários ou poluam o visual. Você não tem autonomia para suprimir campos, a menos que o usuário dê a ordem expressamente.
+
+- **INTEGRIDADE DE FORMULÁRIOS:** É terminantemente proibido suprimir, apagar ou "limpar" inputs, selects, textareas ou botões de qualquer formulário durante edições ou refatorações, a menos que o usuário ordene explicitamente a remoção daquele campo específico.
+- **REFERÊNCIA OBRIGATÓRIA DE SCRIPTS:** Sempre que você criar um novo arquivo JavaScript, sua primeira ação subsequente DEVE ser garantir que ele foi importado no arquivo HTML correspondente usando a tag `<script src="...">`.
+- **CHECKLIST DE INJEÇÃO DINÂMICA:** Toda vez que você gerar elementos dinâmicos no JS (modais, pop-ups, cards), você é obrigado a verificar duas coisas: (A) Se o elemento foi de fato injetado no DOM (appendChild/innerHTML) e (B) Se todas as bibliotecas visuais foram reinicializadas logo em seguida (ex: `lucide.createIcons()`).
+- **BARRAS DE DIRETÓRIO (SLASHES):** NUNCA utilize barras invertidas (`\`) em contextos Web (URLs, caminhos de importação no HTML, rotas no JS). Caminhos de front-end devem SEMPRE utilizar barras normais (`/`), independentemente do ambiente local ser Windows. Reserve as barras invertidas APENAS para comandos de terminal ou scripts de sistema operacional.
