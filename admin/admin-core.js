@@ -25,6 +25,7 @@ async function carregarPainelSuperAdmin() {
 
   // Injeta os scripts do admin dinamicamente
   const scripts = [
+    'admin/admin-escolas.js',
     'admin/admin-logs.js',
     'admin/admin-usuarios.js',
     'admin/admin-cargos.js',
@@ -83,6 +84,7 @@ function adminMostrarTela(tela) {
 
   switch (tela) {
     case 'dashboard':    adminRenderizarDashboard(); break
+    case 'escolas':      adminRenderizarEscolas(); break
     case 'usuarios':     adminRenderizarUsuarios(); break
     case 'cargos':       adminRenderizarCargos(); break
     case 'acessos':      adminRenderizarAcessos(); break

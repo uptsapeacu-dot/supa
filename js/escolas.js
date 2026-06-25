@@ -109,19 +109,7 @@ function renderizarEscolas() {
         document.getElementById('nomeEscola').focus()
       }
 
-      const deleteBtn = document.createElement('button')
-      deleteBtn.className = 'card-action-btn btn-delete-card'
-      deleteBtn.innerHTML = '<i data-lucide="trash-2" style="width:16px;height:16px;color:#ef4444;"></i>'
-      deleteBtn.title = 'Excluir escola'
-      deleteBtn.onclick = function(e) {
-        e.stopPropagation()
-        excluirEscolaConfirmado(escola.id, escola.nome)
-      }
-
       actions.appendChild(editBtn)
-      if (isSecretaria()) {
-        actions.appendChild(deleteBtn)
-      }
       card.appendChild(actions)
     }
 
@@ -364,71 +352,6 @@ function abrirModalEditarEscola() {
   document.getElementById('msgLogoObrigatoria').style.display = 'none'
   document.getElementById('modalEscola').style.display = 'flex'
   document.getElementById('nomeEscola').focus()
-}
-
-async function excluirEscola() {
-  if (!isSecretaria()) {
-    alert('Acesso negado: Apenas a Secretaria pode excluir escolas definitivamente.')
-    return
-  }
-  const escola = escolas.find(function(e) { return e.id === escolaAtual })
-  if (!escola) return
-  await excluirEscolaConfirmado(escola.id, escola.nome, true)
-}
-
-async function excluirEscolaConfirmado(escolaId, nomeEscola, redirecionar) {
-  if (!isSecretaria()) {
-    alert('Acesso negado: Apenas a Secretaria pode excluir escolas definitivamente.')
-    return
-  }
-  if (redirecionar === undefined) redirecionar = false
-
-  if (!confirm('Deseja excluir a escola ' + nomeEscola + '? Todos os vínculos e dados associados serão removidos.')) return
-
-  try {
-    var { data: listOrgaos, error: errOrgaos } = await clienteSupabase.from('orgaos').select('id').eq('escola_id', escolaId)
-    if (errOrgaos) throw errOrgaos
-
-    var orgaoIds = (listOrgaos || []).map(function(o) { return o.id })
-
-    if (orgaoIds.length > 0) {
-      var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').delete().in('orgao_id', orgaoIds)
-      if (errVinc) throw errVinc
-
-      var { error: errAces } = await clienteSupabase.from('acessos_usuarios').delete().in('orgao_id', orgaoIds)
-      if (errAces) throw errAces
-    }
-
-    var { data: alunosEscola } = await clienteSupabase.from('alunos').select('id').eq('escola_id', escolaId)
-    var alunoIds = (alunosEscola || []).map(function(a) { return a.id })
-
-    if (alunoIds.length > 0) {
-      await clienteSupabase.from('frequencia').delete().in('aluno_id', alunoIds)
-    }
-
-    await clienteSupabase.from('alunos').delete().eq('escola_id', escolaId)
-    await clienteSupabase.from('orgaos').delete().eq('escola_id', escolaId)
-
-    const extensoes = ['png', 'jpg', 'jpeg', 'webp', 'gif']
-    for (var i = 0; i < extensoes.length; i++) {
-      await clienteSupabase.storage.from('logos-escolas').remove(['escola-' + escolaId + '.' + extensoes[i]])
-    }
-
-    var { data: deletedEscola, error: errEscDel } = await clienteSupabase.from('escolas').delete().eq('id', escolaId).select()
-    if (errEscDel) throw errEscDel
-
-    if (!deletedEscola || deletedEscola.length === 0) {
-      throw new Error('A exclusão foi bloqueada pelas políticas de segurança (RLS).')
-    }
-
-    alert('Escola ' + nomeEscola + ' excluída com sucesso!')
-    if (redirecionar) limparEscolaAtual()
-
-    await carregarEscolas()
-  } catch (err) {
-    console.error('Erro ao excluir escola:', err)
-    alert('Erro ao excluir escola: ' + (err.message || err))
-  }
 }
 
 function fecharModalEscola() {
