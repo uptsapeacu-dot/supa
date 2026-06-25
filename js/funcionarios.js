@@ -838,11 +838,11 @@ function fecharModalGestaoLotacoes() {
 }
 
 async function carregarTodosFuncionariosGestao() {
-  // 1. Buscar todos os funcionários ativos
+  // 1. Buscar todos os funcionários ativos (CORRIGIDO: usar status)
   const { data: funcData, error: errFunc } = await clienteSupabase
     .from('funcionarios')
     .select('id, nome, cpf, status')
-    .eq('ativo', true);
+    .eq('status', 'ativo');
 
   if (errFunc) {
     document.getElementById('listaFuncionariosGestao').innerHTML = '<div style="color:#ef4444; padding:10px;">Erro ao carregar funcionários.</div>';
@@ -860,9 +860,10 @@ async function carregarTodosFuncionariosGestao() {
     vincData.forEach(v => lotadosSet.add(v.funcionario_id));
   }
 
-  // Mapear cache
+  // Mapear cache (CORRIGIDO: fallback para nome nulo)
   _gestaoLotacoesCache = funcData.map(f => ({
     ...f,
+    nome: f.nome || 'Sem Nome',
     temLotacao: lotadosSet.has(f.id)
   }));
 
