@@ -241,7 +241,7 @@ async function carregarRelatorioPresencaLocal() {
 
   let query = clienteSupabase
     .from('registros_ronda')
-    .select('*, funcionarios(nome), pontos_ronda!inner(id, nome, escola_id)')
+    .select('*, funcionarios(nome), pontos_ronda!inner(id, nome, escola_id, localizacao)')
     .order('horario_leitura', { ascending: false })
     .limit(100);
 
@@ -307,8 +307,12 @@ async function carregarRelatorioPresencaLocal() {
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
     const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
 
-    html += `
-      <tr style="border-bottom:1px solid #333;">
+    const pLat = log.pontos_ronda && log.pontos_ronda.localizacao ? log.pontos_ronda.localizacao.latitude : '';
+    const pLng = log.pontos_ronda && log.pontos_ronda.localizacao ? log.pontos_ronda.localizacao.longitude : '';
+    const lLat = log.latitude || '';
+    const lLng = log.longitude || '';
+
+    html += `<tr style="border-bottom:1px solid #333; cursor:pointer;" class="linha-log-ronda" onclick="abrirMapaLogRonda('${pLat}', '${pLng}', '${lLat}', '${lLng}', '${nomePonto}', '${nomeFunc}')">
         <td style="padding:12px; color:#aaa;">${dataStr}</td>
         <td style="padding:12px; color:#fff; font-weight:500;">${nomeFunc}</td>
         <td style="padding:12px; color:#aaa;">${nomePonto}</td>
