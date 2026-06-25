@@ -347,7 +347,7 @@ async function editarAluno(aluno) {
   if (document.getElementById('rgAluno')) document.getElementById('rgAluno').value = dados.rg || ''
   if (document.getElementById('nisAluno')) document.getElementById('nisAluno').value = dados.nis || ''
   if (document.getElementById('susAluno')) document.getElementById('susAluno').value = dados.sus || ''
-  if (document.getElementById('certidaoAluno')) (document.getElementById('certidaoAluno') ? document.getElementById('certidaoAluno').value : '') = dados.certidao || ''
+  if (document.getElementById('certidaoAluno')) document.getElementById('certidaoAluno').value = dados.certidao || ''
   if (document.getElementById('nacionalidadeAluno')) document.getElementById('nacionalidadeAluno').value = dados.nacionalidade || 'BRASILEIRA'
   if (document.getElementById('cidadeNascAluno')) document.getElementById('cidadeNascAluno').value = dados.cidade_nasc || ''
   if (document.getElementById('ufNascAluno')) document.getElementById('ufNascAluno').value = dados.uf_nasc || ''
@@ -361,7 +361,7 @@ async function editarAluno(aluno) {
   // Matrícula
   if (document.getElementById('tipoMatriculaAluno')) document.getElementById('tipoMatriculaAluno').value = dados.tipo_matricula || ''
   if (document.getElementById('dataMatriculaAluno')) document.getElementById('dataMatriculaAluno').value = dados.data_matricula || ''
-  if (document.getElementById('localizacaoAluno')) (document.getElementById('localizacaoAluno') ? document.getElementById('localizacaoAluno').value : '') = dados.localizacao || 'Zona Urbana'
+  if (document.getElementById('localizacaoAluno')) document.getElementById('').value = dados.localizacao || 'Zona Urbana'
   if (document.getElementById('turnoAluno')) document.getElementById('turnoAluno').value = dados.turno || ''
   if (document.getElementById('turmaAluno')) document.getElementById('turmaAluno').value = dados.turma || ''
 
@@ -377,7 +377,7 @@ async function editarAluno(aluno) {
   if (document.getElementById('bairroAluno')) document.getElementById('bairroAluno').value = dados.bairro || ''
   if (document.getElementById('cidadeEndAluno')) document.getElementById('cidadeEndAluno').value = dados.cidade_end || ''
   if (document.getElementById('ufEndAluno')) document.getElementById('ufEndAluno').value = dados.uf_end || ''
-  if (document.getElementById('areaLocalizacaoAluno')) (document.getElementById('areaLocalizacaoAluno') ? document.getElementById('areaLocalizacaoAluno').value : '') = dados.area_localizacao || 'Urbana'
+  if (document.getElementById('areaLocalizacaoAluno')) document.getElementById('').value = dados.area_localizacao || 'Urbana'
   if (document.getElementById('areaDiferenciadaAluno')) document.getElementById('areaDiferenciadaAluno').value = dados.area_diferenciada || 'Não está em área diferenciada'
 
   // Recursos
@@ -389,15 +389,15 @@ async function editarAluno(aluno) {
   if (document.getElementById('convulsoesAluno')) document.getElementById('convulsoesAluno').value = dados.convulsoes || 'Não'
   if (document.getElementById('asmaAluno')) document.getElementById('asmaAluno').value = dados.asma || 'Não'
   if (document.getElementById('infeccoesAluno')) document.getElementById('infeccoesAluno').value = dados.infeccoes || 'Não'
-  if (document.getElementById('restricaoExercicioAluno')) (document.getElementById('restricaoExercicioAluno') ? document.getElementById('restricaoExercicioAluno').value : '') = dados.restricao_exercicio || 'Não'
+  if (document.getElementById('restricaoExercicioAluno')) document.getElementById('').value = dados.restricao_exercicio || 'Não'
   if (document.getElementById('covidAluno')) document.getElementById('covidAluno').value = dados.covid || 'Não'
   if (document.getElementById('covidQuandoAluno')) document.getElementById('covidQuandoAluno').value = dados.covid_quando || ''
-  if (document.getElementById('situacaoVacinalAluno')) (document.getElementById('situacaoVacinalAluno') ? document.getElementById('situacaoVacinalAluno').value : '') = dados.situacao_vacinal || ''
+  if (document.getElementById('situacaoVacinalAluno')) document.getElementById('').value = dados.situacao_vacinal || ''
   if (document.getElementById('alergiaMedAluno')) document.getElementById('alergiaMedAluno').value = dados.alergia_med || 'Não'
   if (document.getElementById('alergiaMedQuaisAluno')) document.getElementById('alergiaMedQuaisAluno').value = dados.alergia_med_quais || ''
-  if (document.getElementById('motivoNaoVacinacaoAluno')) (document.getElementById('motivoNaoVacinacaoAluno') ? document.getElementById('motivoNaoVacinacaoAluno').value : '') = dados.motivo_nao_vac || ''
-  if (document.getElementById('restricaoAlimentarAluno')) (document.getElementById('restricaoAlimentarAluno') ? document.getElementById('restricaoAlimentarAluno').value : '') = dados.restricao_alimentar || 'Não'
-  if (document.getElementById('restricaoAlimentarQuaisAluno')) (document.getElementById('restricaoAlimentarQuaisAluno') ? document.getElementById('restricaoAlimentarQuaisAluno').value : '') = dados.restricao_alim_quais || ''
+  if (document.getElementById('motivoNaoVacinacaoAluno')) document.getElementById('').value = dados.motivo_nao_vac || ''
+  if (document.getElementById('restricaoAlimentarAluno')) document.getElementById('').value = dados.restricao_alimentar || 'Não'
+  if (document.getElementById('restricaoAlimentarQuaisAluno')) document.getElementById('').value = dados.restricao_alim_quais || ''
 
   // NEE e Deficiência
   if (document.getElementById('neeAluno')) document.getElementById('neeAluno').value = dados.nee || 'Não'
