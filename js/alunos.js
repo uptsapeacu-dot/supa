@@ -389,15 +389,15 @@ async function editarAluno(aluno) {
   if (document.getElementById('convulsoesAluno')) document.getElementById('convulsoesAluno').value = dados.convulsoes || 'Não'
   if (document.getElementById('asmaAluno')) document.getElementById('asmaAluno').value = dados.asma || 'Não'
   if (document.getElementById('infeccoesAluno')) document.getElementById('infeccoesAluno').value = dados.infeccoes || 'Não'
-  if (document.getElementById('restricaoExercicioAluno')) document.getElementById('').value = dados.restricao_exercicio || 'Não'
+  if (document.getElementById('restricaoExercicioAluno')) document.getElementById('restricaoExercicioAluno').value = dados.restricao_exercicio || 'Não'
   if (document.getElementById('covidAluno')) document.getElementById('covidAluno').value = dados.covid || 'Não'
   if (document.getElementById('covidQuandoAluno')) document.getElementById('covidQuandoAluno').value = dados.covid_quando || ''
-  if (document.getElementById('situacaoVacinalAluno')) document.getElementById('').value = dados.situacao_vacinal || ''
+  if (document.getElementById('situacaoVacinalAluno')) document.getElementById('situacaoVacinalAluno').value = dados.situacao_vacinal || ''
   if (document.getElementById('alergiaMedAluno')) document.getElementById('alergiaMedAluno').value = dados.alergia_med || 'Não'
   if (document.getElementById('alergiaMedQuaisAluno')) document.getElementById('alergiaMedQuaisAluno').value = dados.alergia_med_quais || ''
-  if (document.getElementById('motivoNaoVacinacaoAluno')) document.getElementById('').value = dados.motivo_nao_vac || ''
-  if (document.getElementById('restricaoAlimentarAluno')) document.getElementById('').value = dados.restricao_alimentar || 'Não'
-  if (document.getElementById('restricaoAlimentarQuaisAluno')) document.getElementById('').value = dados.restricao_alim_quais || ''
+  if (document.getElementById('motivoNaoVacinacaoAluno')) document.getElementById('motivoNaoVacinacaoAluno').value = dados.motivo_nao_vac || ''
+  if (document.getElementById('restricaoAlimentarAluno')) document.getElementById('restricaoAlimentarAluno').value = dados.restricao_alimentar || 'Não'
+  if (document.getElementById('restricaoAlimentarQuaisAluno')) document.getElementById('restricaoAlimentarQuaisAluno').value = dados.restricao_alim_quais || ''
 
   // NEE e Deficiência
   if (document.getElementById('neeAluno')) document.getElementById('neeAluno').value = dados.nee || 'Não'
@@ -438,7 +438,7 @@ async function salvarAluno() {
     rg: document.getElementById('rgAluno').value.trim(),
     nis: document.getElementById('nisAluno').value.trim(),
     sus: document.getElementById('susAluno').value.trim(),
-    certidao: (document.getElementById('certidaoAluno') ? (document.getElementById('certidaoAluno') ? document.getElementById('certidaoAluno').value : '').trim() : ''),
+    certidao: (document.getElementById('certidaoAluno') ? document.getElementById('certidaoAluno').value.trim() : ''),
     nacionalidade: document.getElementById('nacionalidadeAluno').value.trim(),
     cidade_nasc: document.getElementById('cidadeNascAluno').value.trim(),
     uf_nasc: document.getElementById('ufNascAluno').value.trim(),
@@ -480,9 +480,9 @@ async function salvarAluno() {
     situacao_vacinal: (document.getElementById('situacaoVacinalAluno') ? document.getElementById('situacaoVacinalAluno').value : ''),
     alergia_med: document.getElementById('alergiaMedAluno').value,
     alergia_med_quais: document.getElementById('alergiaMedQuaisAluno').value.trim(),
-    motivo_nao_vac: (document.getElementById('motivoNaoVacinacaoAluno') ? (document.getElementById('motivoNaoVacinacaoAluno') ? document.getElementById('motivoNaoVacinacaoAluno').value : '').trim() : ''),
+    motivo_nao_vac: (document.getElementById('motivoNaoVacinacaoAluno') ? document.getElementById('motivoNaoVacinacaoAluno').value.trim() : ''),
     restricao_alimentar: (document.getElementById('restricaoAlimentarAluno') ? document.getElementById('restricaoAlimentarAluno').value : ''),
-    restricao_alim_quais: (document.getElementById('restricaoAlimentarQuaisAluno') ? (document.getElementById('restricaoAlimentarQuaisAluno') ? document.getElementById('restricaoAlimentarQuaisAluno').value : '').trim() : ''),
+    restricao_alim_quais: (document.getElementById('restricaoAlimentarQuaisAluno') ? document.getElementById('restricaoAlimentarQuaisAluno').value.trim() : ''),
     // NEE e Deficiência
     nee: document.getElementById('neeAluno').value,
     nee_tipos: coletarCheckboxes('nee'),
