@@ -202,7 +202,7 @@ function renderizarModulosDaEscola() {
   })
 
   if (modulosPermitidos.length === 0) {
-    const isProfessor = acessosAtual.some(a => a.orgaos && a.orgaos.escola_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
+    const isProfessor = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
     if (isProfessor) {
       abrirModuloEscola(escolaAtual, 'turmas');
       return;
