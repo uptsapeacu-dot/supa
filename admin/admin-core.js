@@ -281,7 +281,8 @@ async function adminSalvarConfig() {
 
   const { error } = await clienteSupabase
     .from('configuracoes_sistema')
-    .update({ 
+    .upsert({ 
+      id: 1,
       ano_letivo: ano, 
       data_fim_b1: b1,
       data_fim_b2: b2,
@@ -290,11 +291,14 @@ async function adminSalvarConfig() {
       mensagem_manutencao: msg || null, 
       updated_at: new Date().toISOString() 
     })
-    .eq('id', 1)
 
   if (error) {
     alert('Erro ao salvar: ' + error.message)
     return
+  }
+
+  if (typeof carregarConfiguracoesGlobais === 'function') {
+    await carregarConfiguracoesGlobais();
   }
 
   await registrarAuditoria('alterar_configuracoes', 'configuracoes_sistema', null, null, { ano_letivo: ano, mensagem_manutencao: msg })
@@ -304,10 +308,14 @@ async function adminSalvarConfig() {
 async function adminLimparMsgManutencao() {
   const { error } = await clienteSupabase
     .from('configuracoes_sistema')
-    .update({ mensagem_manutencao: null, updated_at: new Date().toISOString() })
-    .eq('id', 1)
+    .upsert({ id: 1, mensagem_manutencao: null, updated_at: new Date().toISOString() })
 
   if (error) { alert('Erro: ' + error.message); return }
+
+  if (typeof carregarConfiguracoesGlobais === 'function') {
+    await carregarConfiguracoesGlobais();
+  }
+
   adminRenderizarConfiguracoes()
 }
 

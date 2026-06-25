@@ -11,7 +11,6 @@ function aplicarVisibilidadeSidebar() {
     alunos: document.getElementById('menu-alunos'),
     permissoes: document.getElementById('menu-permissoes'),
     relatorios: document.getElementById('menu-relatorios'),
-    calendario: document.getElementById('menu-calendario'),
     perfil: document.getElementById('menu-perfil'),
     diretrizes: document.getElementById('menu-diretrizes'),
     ajudaChefe: document.getElementById('menu-ajuda-chefe')
@@ -100,12 +99,9 @@ function aplicarVisibilidadeSidebar() {
     return a.nivel === 3 && a.pode_turmas === true && a.ativo
   })
   if (menus.relatorios) menus.relatorios.style.display = podeVerRelatorios ? 'flex' : 'none'
-
-  // Calendário Global: Apenas para Secretário Municipal
-  if (menus.calendario) {
-    menus.calendario.style.display = (funcionarioAtual && funcionarioAtual.secretario_municipal === true) ? 'flex' : 'none'
-  }
 }
+
+
 
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('recolhido')
