@@ -197,33 +197,33 @@ function renderizarModulosDaEscola() {
   const oldBtn = document.getElementById('containerBtnVigia')
   if (oldBtn) oldBtn.remove()
 
+  const isProfessor = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
+  if (isProfessor) {
+    abrirModuloEscola(escolaAtual, 'turmas');
+    return;
+  }
+  
+  const isVigia = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.OPERACIONAL && a.ativo);
+  if (isVigia) {
+    renderizarPainelVigiaEscola(lista);
+    return;
+  }
+  
+  const isChefe = acessosAtual.some(a => a.nivel === PERFIS.CHEFE_EQUIPE && a.ativo);
+  if (isChefe) {
+    if (typeof renderizarGestaoEscolaChefia === 'function') {
+      renderizarGestaoEscolaChefia(lista);
+    } else {
+      lista.innerHTML = '<div class="empty-state">Erro: Módulo de chefia não carregado.</div>';
+    }
+    return;
+  }
+
   const modulosPermitidos = modulosEscola.filter(function(modulo) {
     return podeAcessarModulo(modulo.id, escolaAtual)
   })
 
   if (modulosPermitidos.length === 0) {
-    const isProfessor = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
-    if (isProfessor) {
-      abrirModuloEscola(escolaAtual, 'turmas');
-      return;
-    }
-    
-    const isVigia = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.OPERACIONAL && a.ativo);
-    if (isVigia) {
-      renderizarPainelVigiaEscola(lista);
-      return;
-    }
-    
-    const isChefe = acessosAtual.some(a => a.nivel === PERFIS.CHEFE_EQUIPE && a.ativo);
-    if (isChefe) {
-      if (typeof renderizarGestaoEscolaChefia === 'function') {
-        renderizarGestaoEscolaChefia(lista);
-      } else {
-        lista.innerHTML = '<div class="empty-state">Erro: Módulo de chefia não carregado.</div>';
-      }
-      return;
-    }
-    
     lista.innerHTML = '<div class="empty-state">Você não tem acesso aos módulos desta escola.</div>';
     return;
   }
