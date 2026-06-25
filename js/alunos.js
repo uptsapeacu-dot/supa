@@ -269,17 +269,17 @@ function limparCamposModalAluno() {
     'telPaiAluno','turmaAluno','rotaTransporteAluno','restricoesSaudeAluno',
     'dataMatriculaAluno',
     'ruaAluno','numeroAluno','cepAluno','bairroAluno','cidadeEndAluno','ufEndAluno',
-    'covidQuandoAluno','alergiaMedQuaisAluno','motivoNaoVacinacaoAluno','restricaoAlimentarQuaisAluno',
-    'fotoUrlAluno'
+    'covidQuandoAluno','alergiaMedQuaisAluno','motivoNaoVacinacaoAluno','restricaoAlimentarQuaisAluno'
   ]
   campos.forEach(function(id) {
     const el = document.getElementById(id)
     if (el) el.value = ''
   })
   
-  if (document.getElementById('previewFotoAluno')) {
-    document.getElementById('previewFotoAluno').innerHTML = '<i data-lucide="camera" style="color:#94a3b8;"></i>';
-  }
+  document.getElementById('nomeAluno').value = ''
+  document.getElementById('nascimentoAluno').value = ''
+  if (document.getElementById('fotoUploadAluno')) document.getElementById('fotoUploadAluno').value = ''
+  document.getElementById('previewFotoAluno').innerHTML = '<i data-lucide="camera" style="color:#94a3b8;"></i>';
 
   // Selects simples
   const selects = {
@@ -328,10 +328,12 @@ async function editarAluno(aluno) {
   if (document.getElementById('nascimentoAluno')) document.getElementById('nascimentoAluno').value = aluno.data_nascimento || ''
   if (document.getElementById('serieAluno')) document.getElementById('serieAluno').value = aluno.serie || ''
   if (document.getElementById('enderecoAluno')) document.getElementById('enderecoAluno').value = aluno.endereco || ''
-  if (document.getElementById('fotoUrlAluno')) document.getElementById('fotoUrlAluno').value = aluno.foto_url || ''
   
-  if (document.getElementById('previewFotoAluno')) {
-    document.getElementById('previewFotoAluno').innerHTML = aluno.foto_url ? '<img src="' + aluno.foto_url + '" style="width:100%;height:100%;object-fit:cover;">' : '<i data-lucide="camera" style="color:#94a3b8;"></i>';
+  if (document.getElementById('fotoUploadAluno')) document.getElementById('fotoUploadAluno').value = ''
+  if (aluno.foto_url && aluno.foto_url.trim() !== '') {
+    document.getElementById('previewFotoAluno').innerHTML = '<img src="' + aluno.foto_url + '" style="width:100%;height:100%;object-fit:cover;">'
+  } else {
+    document.getElementById('previewFotoAluno').innerHTML = '<i data-lucide="camera" style="color:#94a3b8;"></i>'
   }
 
   const dados = aluno.dados_matricula || {}
@@ -492,20 +494,44 @@ async function salvarAluno() {
 
   const turmaIdSelecionada = document.getElementById('turmaIdAluno')?.value || null
 
+  btnSalvar.disabled = true
+  btnSalvar.innerText = 'Salvando...'
+
+  let fotoFinal = null;
+  const fotoInput = document.getElementById('fotoUploadAluno');
+  
+  if (fotoInput && fotoInput.files && fotoInput.files.length > 0) {
+    btnSalvar.innerText = 'Enviando foto...';
+    const file = fotoInput.files[0];
+    const fileExt = file.name.split('.').pop();
+    const fileName = `aluno_${Date.now()}.${fileExt}`;
+    
+    const { error: uploadError } = await clienteSupabase.storage.from('fotos_alunos').upload(fileName, file);
+    if (uploadError) {
+      btnSalvar.disabled = false;
+      btnSalvar.innerText = 'Gravar Aluno';
+      alert("Erro no upload da foto: " + uploadError.message);
+      return;
+    }
+    
+    const { data: publicData } = clienteSupabase.storage.from('fotos_alunos').getPublicUrl(fileName);
+    fotoFinal = publicData.publicUrl;
+  } else if (alunoEditando) {
+    const alunoAtual = alunos.find(a => a.id === alunoEditando);
+    if (alunoAtual) fotoFinal = alunoAtual.foto_url;
+  }
+
   const dadosAluno = {
     nome: nome,
     telefone: document.getElementById('telefoneAluno').value.trim(),
     endereco: document.getElementById('enderecoAluno').value.trim(),
     serie: document.getElementById('serieAluno').value.trim(),
     data_nascimento: document.getElementById('nascimentoAluno').value || null,
-    foto_url: document.getElementById('fotoUrlAluno').value.trim(),
+    foto_url: fotoFinal,
     escola_id: escolaId,
     turma_id: turmaIdSelecionada || null,
     dados_matricula: pacoteDeDados
   }
-
-  btnSalvar.disabled = true
-  btnSalvar.innerText = 'Salvando...'
 
   let resposta
   if (alunoEditando) {
