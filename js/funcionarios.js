@@ -823,7 +823,7 @@ async function abrirModalGestaoLotacoes() {
   document.getElementById('listaFuncionariosGestao').innerHTML = '<div style="color:#aaa; text-align:center; padding:20px; font-size:13px;">Carregando funcionários...</div>';
   
   // Preencher selects
-  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaosCache.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
+  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaos.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
   document.getElementById('gestaoNovaEscola').innerHTML = escolasHtml;
   document.getElementById('gestaoMoverDestino').innerHTML = escolasHtml;
   
