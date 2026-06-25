@@ -808,11 +808,15 @@ function imprimirTodosFuncionarios() {
 // GESTÃO DE LOTAÇÕES (NÍVEL 1)
 // ==========================================
 
+let _gestaoLotacoesCache = [];
+let _gestaoFiltroAtivo = 'todos';
+
 async function abrirModalGestaoLotacoes() {
   document.getElementById('modalGestaoLotacoes').style.display = 'flex';
   document.getElementById('buscaGestaoFuncionario').value = '';
-  document.getElementById('resultadoBuscaGestao').style.display = 'none';
   document.getElementById('gestaoFuncionarioAtivo').style.display = 'none';
+  document.getElementById('gestaoEstadoVazio').style.display = 'flex';
+  document.getElementById('listaFuncionariosGestao').innerHTML = '<div style="color:#aaa; text-align:center; padding:20px; font-size:13px;">Carregando funcionários...</div>';
   
   // Preencher selects
   const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaosCache.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
@@ -821,50 +825,117 @@ async function abrirModalGestaoLotacoes() {
   
   const cargos = ["Vigia", "Porteiro", "Gari", "Merendeira", "Auxiliar de Serviços Gerais", "Zelador"];
   document.getElementById('gestaoNovoCargo').innerHTML = '<option value="">Selecione um cargo...</option>' + cargos.map(c => `<option value="${c}">${c}</option>`).join('');
+
+  await carregarTodosFuncionariosGestao();
 }
 
 function fecharModalGestaoLotacoes() {
   document.getElementById('modalGestaoLotacoes').style.display = 'none';
 }
 
-async function pesquisarFuncionarioGestao() {
-  const termo = document.getElementById('buscaGestaoFuncionario').value.trim();
-  const resDiv = document.getElementById('resultadoBuscaGestao');
-  
-  if (termo.length < 3) {
-    resDiv.style.display = 'block';
-    resDiv.innerHTML = '<span style="color:#aaa;">Digite pelo menos 3 letras.</span>';
-    return;
-  }
-  
-  resDiv.style.display = 'block';
-  resDiv.innerHTML = '<span style="color:#aaa;">Buscando...</span>';
-  
-  const { data, error } = await clienteSupabase
+async function carregarTodosFuncionariosGestao() {
+  // 1. Buscar todos os funcionários ativos
+  const { data: funcData, error: errFunc } = await clienteSupabase
     .from('funcionarios')
     .select('id, nome, cpf, status')
-    .ilike('nome', `%${termo}%`)
-    .limit(10);
-    
-  if (error || !data.length) {
-    resDiv.innerHTML = '<span style="color:#ef4444;">Nenhum funcionário encontrado.</span>';
+    .eq('ativo', true);
+
+  if (errFunc) {
+    document.getElementById('listaFuncionariosGestao').innerHTML = '<div style="color:#ef4444; padding:10px;">Erro ao carregar funcionários.</div>';
     return;
   }
-  
-  let html = '';
-  data.forEach(f => {
-    html += `<div style="padding:8px; cursor:pointer; border-bottom:1px solid #333; color:#fff;" onclick="selecionarFuncionarioGestao('${f.id}', '${f.nome.replace(/'/g, "\'")}', '${f.status}')" onmouseover="this.style.background='#374151'" onmouseout="this.style.background='transparent'">${f.nome} (${f.status})</div>`;
-  });
-  
-  resDiv.innerHTML = html;
+
+  // 2. Buscar vínculos ativos para saber quem tem lotação
+  const { data: vincData, error: errVinc } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .select('funcionario_id')
+    .eq('ativo', true);
+
+  const lotadosSet = new Set();
+  if (vincData) {
+    vincData.forEach(v => lotadosSet.add(v.funcionario_id));
+  }
+
+  // Mapear cache
+  _gestaoLotacoesCache = funcData.map(f => ({
+    ...f,
+    temLotacao: lotadosSet.has(f.id)
+  }));
+
+  // Ordenar alfabeticamente
+  _gestaoLotacoesCache.sort((a, b) => a.nome.localeCompare(b.nome));
+
+  setFiltroGestaoLotacoes('todos');
 }
 
-function selecionarFuncionarioGestao(id, nome, status) {
-  document.getElementById('resultadoBuscaGestao').style.display = 'none';
-  document.getElementById('buscaGestaoFuncionario').value = '';
+function setFiltroGestaoLotacoes(filtro) {
+  _gestaoFiltroAtivo = filtro;
+  
+  // Atualiza botões
+  const btns = ['Todos', 'Sem', 'Com'];
+  btns.forEach(b => {
+    const el = document.getElementById('btnFiltroGestao' + b);
+    if (el) {
+      if (b.toLowerCase() === filtro || (filtro === 'sem' && b === 'Sem') || (filtro === 'com' && b === 'Com')) {
+        el.style.background = '#3ea6ff';
+        el.style.color = '#000';
+      } else {
+        el.style.background = '#2a2a2a';
+        el.style.color = '#fff';
+      }
+    }
+  });
+
+  filtrarListaGestaoLotacoes();
+}
+
+function filtrarListaGestaoLotacoes() {
+  const termo = document.getElementById('buscaGestaoFuncionario').value.toLowerCase().trim();
+  const container = document.getElementById('listaFuncionariosGestao');
+  
+  let filtrados = _gestaoLotacoesCache.filter(f => {
+    if (termo && !f.nome.toLowerCase().includes(termo) && !(f.cpf && f.cpf.includes(termo))) {
+      return false;
+    }
+    if (_gestaoFiltroAtivo === 'sem' && f.temLotacao) return false;
+    if (_gestaoFiltroAtivo === 'com' && !f.temLotacao) return false;
+    return true;
+  });
+
+  if (filtrados.length === 0) {
+    container.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:13px;">Nenhum encontrado.</div>';
+    return;
+  }
+
+  let html = '';
+  filtrados.forEach(f => {
+    const icone = f.temLotacao ? '<i data-lucide="check-circle-2" style="width:14px; height:14px; color:#10b981;"></i>' : '<i data-lucide="alert-circle" style="width:14px; height:14px; color:#f59e0b;"></i>';
+    html += `
+      <div style="padding:10px; cursor:pointer; background:#181818; border:1px solid #2a2a2a; border-radius:8px; display:flex; align-items:center; gap:10px;" 
+           onclick="selecionarFuncionarioGestao('${f.id}', '${f.nome.replace(/'/g, "\\'")}', '${f.cpf || ''}', '${f.status}')"
+           onmouseover="this.style.borderColor='#3ea6ff'" onmouseout="this.style.borderColor='#2a2a2a'">
+        <div style="width:32px; height:32px; border-radius:50%; background:#2a2a2a; display:flex; align-items:center; justify-content:center; color:#aaa; font-weight:bold; font-size:12px; flex-shrink:0;">
+          ${f.nome.charAt(0).toUpperCase()}
+        </div>
+        <div style="flex:1; overflow:hidden;">
+          <div style="color:#fff; font-size:13px; font-weight:bold; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${f.nome}</div>
+          <div style="color:#666; font-size:11px;">${f.cpf || 'Sem CPF'}</div>
+        </div>
+        <div title="${f.temLotacao ? 'Possui Lotação' : 'Sem Lotação'}">${icone}</div>
+      </div>
+    `;
+  });
+  
+  container.innerHTML = html;
+  if (window.lucide) lucide.createIcons();
+}
+
+function selecionarFuncionarioGestao(id, nome, cpf, status) {
+  document.getElementById('gestaoEstadoVazio').style.display = 'none';
   
   document.getElementById('gestaoFuncionarioId').value = id;
   document.getElementById('gestaoNomeFuncionario').innerText = nome;
+  document.getElementById('gestaoCpfFuncionario').innerText = cpf ? `CPF: ${cpf}` : 'Sem CPF';
   document.getElementById('gestaoStatusFuncionario').innerText = status;
   
   const b = document.getElementById('gestaoStatusFuncionario');
@@ -939,6 +1010,13 @@ async function adicionarNovaLotacaoGestao() {
   document.getElementById('gestaoNovoCargo').value = '';
   carregarLotacoesAtivasGestao(funcId);
   carregarFuncionariosDaTela();
+  
+  // Atualiza cache e re-renderiza lista lateral
+  const funcIndex = _gestaoLotacoesCache.findIndex(f => f.id === funcId);
+  if (funcIndex !== -1) {
+    _gestaoLotacoesCache[funcIndex].temLotacao = true;
+    filtrarListaGestaoLotacoes();
+  }
 }
 
 async function moverLotacaoGestao() {
