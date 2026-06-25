@@ -55,7 +55,7 @@ async function adminCarregarEscolas() {
     .order('nome', { ascending: true })
 
   if (error) {
-    tbody.innerHTML = `<tr><td colspan="2" style="color:#ef4444;">Erro ao carregar: \${error.message}</td></tr>`
+    tbody.innerHTML = `<tr><td colspan="2" style="color:#ef4444;">Erro ao carregar: ${error.message}</td></tr>`
     return
   }
 
@@ -78,12 +78,12 @@ function adminPopularTabelaEscolas() {
     const tr = document.createElement('tr')
     
     tr.innerHTML = `
-      <td><strong>\${esc.nome}</strong></td>
+      <td><strong>${esc.nome}</strong></td>
       <td style="text-align:center; display:flex; gap:8px; justify-content:center;">
-        <button class="admin-btn-icon" onclick="adminEditarEscola('\${esc.id}')" title="Editar Escola">
+        <button class="admin-btn-icon" onclick="adminEditarEscola('${esc.id}')" title="Editar Escola">
           <i data-lucide="edit" style="width:16px;height:16px;color:#3ea6ff;"></i>
         </button>
-        <button class="admin-btn-icon" onclick="adminExcluirEscola('\${esc.id}', '\${esc.nome.replace(/'/g, "\\\\'")}')" title="Excluir Escola">
+        <button class="admin-btn-icon" onclick="adminExcluirEscola('${esc.id}', '${esc.nome.replace(/'/g, "\\\\'")}')" title="Excluir Escola">
           <i data-lucide="trash-2" style="width:16px;height:16px;color:#ef4444;"></i>
         </button>
       </td>
@@ -134,7 +134,7 @@ async function adminAtualizarEscola(id, nome) {
 }
 
 async function adminExcluirEscola(id, nome) {
-  if (!confirm(`Tem certeza absoluta que deseja EXCLUIR a escola "\${nome}"?\\n\\nIsso falhará se a escola ainda possuir turmas cadastradas.`)) return
+  if (!confirm(`Tem certeza absoluta que deseja EXCLUIR a escola "${nome}"?\\n\\nIsso falhará se a escola ainda possuir turmas cadastradas.`)) return
 
   try {
     // 1. Tenta limpar Alunos e Frequências da escola
