@@ -223,9 +223,14 @@ async function renderizarGestaoEscolaChefia(container) {
 
   let html = `
     <div style="width:100%; max-width:800px; margin: 0 auto; text-align:left;">
-      <h3 style="color:#f8fafc; font-size:18px; margin-bottom:20px; display:flex; align-items:center; gap:8px;">
-        <i data-lucide="users"></i> Equipe Operacional da Escola
-      </h3>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+        <h3 style="color:#f8fafc; font-size:18px; margin:0; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="users"></i> Equipe Operacional da Escola
+        </h3>
+        <button class="btn-clear" style="background:#22c55e; color:#fff; padding:8px 16px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalAlocarOperacional()">
+          <i data-lucide="user-plus" style="width:16px;height:16px;margin-right:6px;vertical-align:middle;"></i> Lotar Servidor
+        </button>
+      </div>
   `;
 
   if (equipe.length === 0) {
@@ -257,6 +262,9 @@ async function renderizarGestaoEscolaChefia(container) {
     </button>
     <button class="btn-clear" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalAuditoriaChefe('${func.id}', '${func.nome}', escolaAtual)">
       <i data-lucide="clipboard-list" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Auditoria (Omissões)
+    </button>
+    <button class="btn-clear" style="background:#ef4444; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px; margin-top:4px;" onclick="removerLotacaoOperacional('${v.id}', '${func.nome}')">
+      <i data-lucide="user-minus" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Remover Lotação
     </button>
   </div>
         </div>
@@ -584,4 +592,185 @@ async function justificarOmissao(escalaId, dataRef, funcId, funcNome, escId) {
     toast('Justificativa salva com sucesso', 'sucesso');
     abrirModalAuditoriaChefe(funcId, funcNome, escId); // recarregar
   }
+}
+
+
+// ==========================================
+// ABAC: LOTAÇÃO E DESVINCULAÇÃO DE OPERACIONAIS
+// ==========================================
+
+let _cargosGerenciadosChefeCache = [];
+
+async function abrirModalAlocarOperacional() {
+  if (!document.getElementById('modalLotacaoChefia')) {
+    const modalHtml = `
+      <div id="modalLotacaoChefia" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:600px; padding:25px; display:flex; flex-direction:column; max-height:85vh;">
+          <h3 style="color:#f8fafc; margin-top:0; margin-bottom:5px;">Lotar Servidor Operacional nesta Escola</h3>
+          <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Busque um funcionário que já possua o cargo gerenciado por você (ex: Vigia) no município e aloque-o para trabalhar nesta unidade.</p>
+
+          <div style="display:flex; gap:10px; margin-bottom:20px;">
+            <input type="text" id="buscaLotacaoChefia" placeholder="Buscar por nome..." style="flex:1; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:6px; padding:10px; font-size:14px;" onkeyup="if(event.key === 'Enter') pesquisarServidorAlocacao()">
+            <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:10px 15px; border-radius:6px; font-weight:bold;" onclick="pesquisarServidorAlocacao()">
+              Buscar
+            </button>
+          </div>
+
+          <div id="listaResultadosLotacaoChefia" style="flex:1; overflow-y:auto; border:1px solid #334155; border-radius:6px; background:#0f172a; padding:10px; display:flex; flex-direction:column; gap:8px;">
+            <div style="color:#64748b; text-align:center; padding:20px;">Use a barra de busca acima.</div>
+          </div>
+
+          <div style="display:flex; justify-content:flex-end; margin-top:20px;">
+            <button class="btn-clear" style="border:1px solid #475569; color:#cbd5e1; padding:10px 20px; border-radius:6px; font-weight:bold;" onclick="document.getElementById('modalLotacaoChefia').style.display='none'">Cancelar</button>
+          </div>
+        </div>
+      </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+  }
+
+  // Preencher cargos gerenciados
+  _cargosGerenciadosChefeCache = [];
+  acessosAtual.forEach(a => {
+    if (a.nivel === PERFIS.CHEFE_EQUIPE && a.cargos_gerenciados && a.ativo) {
+      a.cargos_gerenciados.forEach(c => _cargosGerenciadosChefeCache.push(c));
+    }
+  });
+
+  document.getElementById('buscaLotacaoChefia').value = '';
+  document.getElementById('listaResultadosLotacaoChefia').innerHTML = '<div style="color:#64748b; text-align:center; padding:20px;">Use a barra de busca acima.</div>';
+  document.getElementById('modalLotacaoChefia').style.display = 'flex';
+}
+
+async function pesquisarServidorAlocacao() {
+  const busca = document.getElementById('buscaLotacaoChefia').value.trim();
+  const container = document.getElementById('listaResultadosLotacaoChefia');
+
+  if (!busca || busca.length < 3) {
+    container.innerHTML = '<div style="color:#f59e0b; text-align:center; padding:10px;">Digite pelo menos 3 caracteres.</div>';
+    return;
+  }
+
+  container.innerHTML = '<div style="color:#94a3b8; text-align:center; padding:10px;">Buscando...</div>';
+
+  try {
+    // Busca na tabela de funcionários
+    const { data: funcData, error: funcError } = await clienteSupabase
+      .from('funcionarios')
+      .select('id, nome, email, cpf')
+      .ilike('nome', `%${busca}%`)
+      .eq('ativo', true)
+      .limit(30);
+
+    if (funcError) throw funcError;
+
+    if (!funcData || funcData.length === 0) {
+      container.innerHTML = '<div style="color:#64748b; text-align:center; padding:10px;">Nenhum funcionário ativo encontrado com esse nome.</div>';
+      return;
+    }
+
+    const idsFunc = funcData.map(f => f.id);
+
+    // Checa se eles possuem um vínculo ativo com o cargo que o chefe gerencia
+    const { data: vincData, error: vincError } = await clienteSupabase
+      .from('vinculos_funcionarios')
+      .select('funcionario_id, cargo, orgaos(id, nome)')
+      .in('funcionario_id', idsFunc)
+      .in('cargo', _cargosGerenciadosChefeCache)
+      .eq('ativo', true);
+
+    if (vincError) throw vincError;
+
+    let html = '';
+    
+    funcData.forEach(f => {
+      // Filtrar vínculos deste funcionário que batem com os cargos do chefe
+      const vinculosChefe = vincData ? vincData.filter(v => v.funcionario_id === f.id) : [];
+      
+      if (vinculosChefe.length === 0) {
+        // Ignora ou informa que não tem a profissão gerenciada (vamos ignorar para manter limpo, só mostra quem o chefe gerencia)
+        return; 
+      }
+
+      // O cargo que vamos usar pra alocar (pega o primeiro match)
+      const cargoOficial = vinculosChefe[0].cargo;
+      
+      // Checa se já está na escola atual
+      const jaNaEscola = vinculosChefe.some(v => v.orgaos && v.orgaos.id === escolaAtual);
+      
+      let btnHtml = '';
+      if (jaNaEscola) {
+        btnHtml = `<button class="btn-clear" disabled style="background:#475569; color:#94a3b8; padding:6px 12px; border-radius:4px; font-size:12px; cursor:not-allowed;">Já Lotado</button>`;
+      } else {
+        btnHtml = `<button class="btn-clear" style="background:#22c55e; color:#fff; padding:6px 12px; border-radius:4px; font-size:12px; font-weight:bold;" onclick="alocarOperacionalEscola('${f.id}', '${cargoOficial}', '${f.nome}')">Lotar Aqui</button>`;
+      }
+
+      html += `
+        <div style="background:#1e293b; border:1px solid #334155; padding:12px; border-radius:6px; display:flex; justify-content:space-between; align-items:center;">
+          <div>
+            <div style="color:#f8fafc; font-weight:bold; font-size:14px; margin-bottom:2px;">${f.nome}</div>
+            <div style="color:#94a3b8; font-size:12px;">Cargo Base: ${cargoOficial}</div>
+          </div>
+          <div>${btnHtml}</div>
+        </div>
+      `;
+    });
+
+    if (!html) {
+      container.innerHTML = '<div style="color:#f59e0b; text-align:center; padding:10px;">Nenhum funcionário encontrado exerce os cargos da sua equipe.</div>';
+    } else {
+      container.innerHTML = html;
+    }
+
+  } catch (err) {
+    container.innerHTML = `<div style="color:red; text-align:center; padding:10px;">Erro: ${err.message}</div>`;
+  }
+}
+
+async function alocarOperacionalEscola(funcId, cargo, nome) {
+  if (!confirm(`Deseja alocar ${nome} nesta escola sob o cargo de ${cargo}?`)) return;
+
+  const btn = event.currentTarget;
+  btn.innerText = 'Alocando...';
+  btn.disabled = true;
+
+  const { error } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .insert([{
+      funcionario_id: funcId,
+      orgao_id: escolaAtual,
+      cargo: cargo,
+      ativo: true
+    }]);
+
+  if (error) {
+    alert('Erro ao alocar servidor: ' + error.message);
+    btn.innerText = 'Lotar Aqui';
+    btn.disabled = false;
+    return;
+  }
+
+  document.getElementById('modalLotacaoChefia').style.display = 'none';
+  
+  // Recarrega o painel pra mostrar o cara novo
+  const lista = document.getElementById('modulosDaEscola');
+  if (lista) renderizarGestaoEscolaChefia(lista);
+}
+
+async function removerLotacaoOperacional(vinculoId, nome) {
+  if (!confirm(`Tem certeza que deseja REMOVER a lotação de ${nome} desta escola? O servidor deixará de aparecer na sua escala local.`)) return;
+
+  const { error } = await clienteSupabase
+    .from('vinculos_funcionarios')
+    .delete()
+    .eq('id', vinculoId);
+
+  if (error) {
+    alert('Erro ao remover lotação: ' + error.message);
+    return;
+  }
+
+  // Recarrega o painel pra sumir com o cara
+  const lista = document.getElementById('modulosDaEscola');
+  if (lista) renderizarGestaoEscolaChefia(lista);
 }
