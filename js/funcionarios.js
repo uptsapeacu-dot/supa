@@ -376,14 +376,14 @@ async function salvarFuncionario() {
     return
   }
 
-  if (!orgaoId && isSecretaria()) {
-    if (orgaos.length === 0) {
-      var { data: orgaosBuscados } = await clienteSupabase.from('orgaos').select('*').eq('ativo', true).order('nome', { ascending: true })
-      orgaos = orgaosBuscados || []
-    }
-    if (orgaos.length > 0) orgaoId = orgaos[0].id
-    else { alert('Nenhum órgão disponível. Cadastre uma escola primeiro.'); return }
-  }
+  // if (!orgaoId && isSecretaria()) {
+  //   if (orgaos.length === 0) {
+  //     var { data: orgaosBuscados } = await clienteSupabase.from('orgaos').select('*').eq('ativo', true).order('nome', { ascending: true })
+  //     orgaos = orgaosBuscados || []
+  //   }
+  //   if (orgaos.length > 0) orgaoId = orgaos[0].id
+  //   else { alert('Nenhum órgão disponível. Cadastre uma escola primeiro.'); return }
+  // }
 
   btn.disabled = true
   btn.innerText = 'Processando...'
@@ -441,8 +441,10 @@ async function salvarFuncionario() {
       var { error: errFunc } = await clienteSupabase.from('funcionarios').update(payloadFunc).eq('id', funcionarioEditandoId)
       if (errFunc) throw errFunc
 
-      var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo }).eq('id', vinculoEditando)
-      if (errVinc) throw errVinc
+      if (vinculoEditando) {
+        var { error: errVinc } = await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo }).eq('id', vinculoEditando)
+        if (errVinc) throw errVinc
+      }
 
       // Registrar histórico de status se mudou
       if (statusAnterior !== novoStatus) {
@@ -489,13 +491,15 @@ async function salvarFuncionario() {
         }
       }
 
-      var { data: vincExistente } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioId).eq('orgao_id', orgaoId).eq('ativo', true).maybeSingle()
+      if (orgaoId) {
+        var { data: vincExistente } = await clienteSupabase.from('vinculos_funcionarios').select('id').eq('funcionario_id', funcionarioId).eq('orgao_id', orgaoId).eq('ativo', true).maybeSingle()
 
-      if (!vincExistente) {
-        var { error: errVinc2 } = await clienteSupabase.from('vinculos_funcionarios').insert([{ funcionario_id: funcionarioId, orgao_id: orgaoId, cargo: cargo, ativo: true }])
-        if (errVinc2) throw errVinc2
-      } else {
-        await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo, ativo: true }).eq('id', vincExistente.id)
+        if (!vincExistente) {
+          var { error: errVinc2 } = await clienteSupabase.from('vinculos_funcionarios').insert([{ funcionario_id: funcionarioId, orgao_id: orgaoId, cargo: cargo, ativo: true }])
+          if (errVinc2) throw errVinc2
+        } else {
+          await clienteSupabase.from('vinculos_funcionarios').update({ cargo: cargo, ativo: true }).eq('id', vincExistente.id)
+        }
       }
     }
 
