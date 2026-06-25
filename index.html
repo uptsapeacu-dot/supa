@@ -217,8 +217,7 @@
       <!-- PERMISSÕES -->
       <div id="tela-financeiro" class="tela" style="display:none;"></div>
       <div id="tela-ponto-mobile" class="tela" style="display:none;"></div>
-      <div id="tela-ajuda-chefe" class="tela" style="display:none;"></div>
-      <div id="tela-painel-chefe" class="tela" style="display:none;"></div>
+      <section id="ajuda-chefe" style="display:none"></section>
       <section id="permissoes" style="display:none"></section>
       <section id="relatorios" style="display:none"></section>
       <section id="calendario" style="display:none"></section>
@@ -307,7 +306,8 @@
         { url: 'htmls/modais/modal-sucesso.html', target: 'container-modal-sucesso' },
         { url: 'htmls/modais/modal-primeiro-acesso.html', target: 'container-modal-primeiro-acesso' },
         { url: 'htmls/painel-chefe.html', target: 'painel-chefe' },
-        { url: 'htmls/ponto-mobile.html', target: 'ponto-mobile' }
+        { url: 'htmls/ponto-mobile.html', target: 'ponto-mobile' },
+        { url: 'htmls/ajuda-chefe.html', target: 'ajuda-chefe' }
       ];
 
       await Promise.allSettled(components.map(async (comp) => {

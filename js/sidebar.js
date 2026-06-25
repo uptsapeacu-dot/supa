@@ -135,7 +135,8 @@ function mostrarTela(tela) {
     'ocorrencias',
     'painel-chefe',
     'ponto-mobile',
-    'calendario'
+    'calendario',
+    'ajuda-chefe'
   ]
 
   telas.forEach(function(id) {

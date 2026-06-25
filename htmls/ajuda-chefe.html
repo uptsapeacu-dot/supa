@@ -1,36 +1,81 @@
-<div class="page-header" style="margin-bottom: 25px;">
-  <h1>Ajuda do Sistema</h1>
+<div class="content-header">
+  <h2><i data-lucide="help-circle"></i> Ajuda e Instruções — Chefe de Equipe</h2>
+  <p>Guia rápido de como gerenciar seus operacionais, plantões e auditorias.</p>
 </div>
 
-<div class="card-painel" style="max-width: 800px;">
-  <h2 style="color: #f8fafc; font-size: 18px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-    <i data-lucide="info" style="color: #3b82f6;"></i> Como utilizar o Painel da Chefia
-  </h2>
+<div class="card-painel" style="max-width: 900px; margin: 0 auto; margin-top: 20px;">
   
-  <p style="color: #94a3b8; line-height: 1.6; margin-bottom: 20px;">
-    Este painel foi desenhado para facilitar a gestão e a fiscalização da sua equipe operacional em tempo real. Abaixo estão as diretrizes de como interpretar e agir com as informações disponíveis.
-  </p>
-
-  <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-    <h3 style="color: #f8fafc; font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-      <i data-lucide="map-pin" style="color: #22c55e;"></i> Visualização da Equipe
+  <div style="border-bottom: 1px solid #334155; padding-bottom: 20px; margin-bottom: 20px;">
+    <h3 style="color:#f8fafc; font-size:18px; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+      <i data-lucide="shield-check" style="color:#3b82f6;"></i> Bem-vindo ao Painel da Chefia
     </h3>
-    <ul style="color: #cbd5e1; padding-left: 20px; line-height: 1.6;">
-      <li style="margin-bottom: 8px;">Na seção <b>Equipe (Locais Atuais)</b>, você verá onde cada funcionário bateu o ponto pela última vez.</li>
-      <li style="margin-bottom: 8px;">O status <b>Online</b> indica que o último ponto foi registrado hoje. <b>Offline</b> indica ausência de registros recentes.</li>
-      <li>Você pode entrar em contato com os funcionários a partir daqui para remanejamentos ou avisos urgentes.</li>
-    </ul>
+    <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
+      Sua conta possui acesso Nível 5. Isso significa que você gerencia categorias específicas de funcionários (ex: Vigias) em todas as escolas da rede municipal. 
+      Neste sistema, você tem total autonomia para montar a equipe de cada escola, definir os plantões e acompanhar o ponto eletrônico em tempo real.
+    </p>
   </div>
 
-  <div style="background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
-    <h3 style="color: #f8fafc; font-size: 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
-      <i data-lucide="alert-triangle" style="color: #ef4444;"></i> Alertas de Deslocamento
-    </h3>
-    <ul style="color: #cbd5e1; padding-left: 20px; line-height: 1.6;">
-      <li style="margin-bottom: 8px;">A seção <b>Alertas de Ponto</b> exibe automaticamente registros de funcionários que bateram o ponto muito distantes da escola designada (fora da tolerância de metros permitida).</li>
-      <li style="margin-bottom: 8px;">Estes alertas indicam possíveis infrações ou marcações de ponto feitas de casa ou em trânsito.</li>
-      <li>Você pode clicar no botão <b style="color:#3ea6ff">Ver Mapa</b> ao lado de qualquer alerta para abrir o Google Maps na posição exata em que o funcionário estava quando o ponto foi registrado, podendo comparar com o endereço da escola.</li>
-    </ul>
+  <div style="display:grid; grid-template-columns: 1fr; gap: 20px;">
+
+    <!-- Card 1 -->
+    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:20px;">
+      <h4 style="color:#f8fafc; margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="users" style="color:#22c55e;"></i> Como Alocar ou Remover Membros da Equipe
+      </h4>
+      <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
+        Ao clicar em uma Escola na tela inicial, você acessa o painel de gestão daquela unidade.
+      </p>
+      <ul style="color:#cbd5e1; font-size:14px; margin-top:10px; padding-left:20px;">
+        <li style="margin-bottom:6px;"><strong>Adicionar Funcionário:</strong> Clique no botão verde <strong>[ + Lotar Servidor ]</strong>. Na janela que se abrir, digite o nome do vigia que deseja alocar nesta escola e clique em <em>Lotar Aqui</em>. Ele será vinculado instantaneamente.</li>
+        <li style="margin-bottom:6px;"><strong>Remover Funcionário:</strong> Para transferir ou retirar um vigia desta escola, clique no botão vermelho <strong>[ Remover Lotação ]</strong> ao lado do nome dele. Ele desaparecerá da sua lista local.</li>
+      </ul>
+    </div>
+
+    <!-- Card 2 -->
+    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:20px;">
+      <h4 style="color:#f8fafc; margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="clock" style="color:#eab308;"></i> Como Configurar as Escalas (Plantões)
+      </h4>
+      <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
+        O relógio de ponto só aceita batidas se o vigia tiver uma escala configurada. Para definir o horário de trabalho de um vigia na escola:
+      </p>
+      <ul style="color:#cbd5e1; font-size:14px; margin-top:10px; padding-left:20px;">
+        <li style="margin-bottom:6px;">Clique no botão azul <strong>Configurar</strong> embaixo do nome dele.</li>
+        <li style="margin-bottom:6px;">Selecione os dias da semana em que ele trabalhará.</li>
+        <li style="margin-bottom:6px;">Defina o horário de Entrada e Saída (ou horários de ronda específicos).</li>
+      </ul>
+      <div style="background:rgba(234,179,8,0.1); border-left:3px solid #eab308; padding:10px; margin-top:10px; font-size:13px; color:#fde047;">
+        <strong>Atenção:</strong> Há uma trava anti-spam de 60 minutos. Um vigia não conseguirá bater o mesmo ponto repetidamente em um intervalo menor que uma hora.
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:20px;">
+      <h4 style="color:#f8fafc; margin-top:0; margin-bottom:10px; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="clipboard-list" style="color:#ef4444;"></i> Auditoria de Omissões e Justificativas
+      </h4>
+      <p style="color:#94a3b8; font-size:14px; line-height:1.6;">
+        O sistema possui uma inteligência de auditoria que cruza a <em>Escala Prevista</em> com as <em>Batidas Reais</em> do celular do vigia. Se ele faltar ou pular um horário, isso gera uma <strong>Omissão</strong>.
+      </p>
+      <ul style="color:#cbd5e1; font-size:14px; margin-top:10px; padding-left:20px;">
+        <li style="margin-bottom:6px;">Para ver quem faltou ao plantão, clique no botão <strong>Auditoria (Omissões)</strong> na ficha do servidor.</li>
+        <li style="margin-bottom:6px;">Se a falta for justificada (ex: atestado médico, folga acordada), você, como chefe, deve clicar no botão azul <strong>Justificar</strong> e digitar o motivo.</li>
+        <li style="margin-bottom:6px;"><strong>Prazo:</strong> Você tem até <strong>7 dias</strong> para justificar uma falta. Após esse prazo, o sistema trava o registro e ele é enviado definitivamente como falta para a Secretaria.</li>
+      </ul>
+    </div>
+
+  </div>
+
+  <div style="margin-top: 30px; text-align: center; border-top: 1px dashed #334155; padding-top: 20px;">
+    <p style="color:#64748b; font-size:13px;">
+      Em caso de dúvidas técnicas, entre em contato com o administrador do sistema (Nível 1).
+    </p>
   </div>
 
 </div>
+
+<script>
+  if (window.lucide) {
+    lucide.createIcons();
+  }
+</script>
