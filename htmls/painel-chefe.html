@@ -14,9 +14,7 @@
   <button class="perm-view-tab" id="tabChefeEscalas" onclick="mudarAbaChefe('escalas')">
     <i data-lucide="calendar-clock"></i> Escalas de Plantão
   </button>
-  <button class="perm-view-tab" id="tabChefePontos" onclick="mudarAbaChefe('pontos')">
-    <i data-lucide="map-pin"></i> Pontos de Ronda (QR)
-  </button>
+
   <button class="perm-view-tab" id="tabChefeRegistros" onclick="mudarAbaChefe('registros')">
     <i data-lucide="clipboard-list"></i> Registros e Logs
   </button>
@@ -63,16 +61,7 @@
   </div>
 </div>
 
-<div id="abaChefePontos" style="display:none;">
-  <div class="permissions-box">
-    <h2>Pontos Físicos de Ronda</h2>
-    <p style="color:#94a3b8; font-size:14px; margin-bottom:15px;">Cadastre os locais onde haverá leitura de QR Code. Depois você poderá imprimir as etiquetas.</p>
-    <button class="btn-novo" style="margin-bottom:20px;" onclick="abrirModalNovoPonto()">Novo Ponto de Ronda</button>
-    <div id="listaPontosChefe">
-      <!-- Populado via JS -->
-    </div>
-  </div>
-</div>
+
 
 <div id="abaChefeRegistros" style="display:none;">
   <div class="permissions-box">

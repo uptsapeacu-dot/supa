@@ -444,13 +444,17 @@ function isGestorEscolar() {
   return acessosAtual.some(function(acesso) { return acesso.nivel === PERFIS.GESTOR && acesso.ativo })
 }
 
+function isChefeEquipe() {
+  return acessosAtual.some(function(acesso) { return acesso.nivel === PERFIS.CHEFE_EQUIPE && acesso.ativo })
+}
+
 function idsEscolasPermitidas() {
-  if (isSecretaria()) return escolas.map(function(escola) { return escola.id })
+  if (isSecretaria() || isChefeEquipe()) return escolas.map(function(escola) { return escola.id })
   return acessosAtual.filter(function(acesso) { return acesso.orgaos && acesso.orgaos.escola_id }).map(function(acesso) { return acesso.orgaos.escola_id })
 }
 
 function podeAcessarModulo(moduloId, escolaId) {
-  if (isSecretaria()) return true
+  if (isSecretaria() || (isChefeEquipe() && moduloId === 'chefia')) return true
   const modulo = modulosEscola.find(function(item) { return item.id === moduloId })
   if (!modulo) return false
   const acesso = acessosAtual.find(function(item) { return item.orgaos && item.orgaos.escola_id === escolaId && item.ativo })

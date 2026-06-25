@@ -4,7 +4,6 @@ let _operacionaisChefeCache = [];
 function mudarAbaChefe(aba) {
   document.getElementById('abaChefeFuncionarios').style.display = 'none';
   document.getElementById('abaChefeEscalas').style.display = 'none';
-  document.getElementById('abaChefePontos').style.display = 'none';
   document.getElementById('abaChefeRegistros').style.display = 'none';
   document.getElementById('abaChefeAlertas').style.display = 'none';
   
@@ -16,9 +15,7 @@ function mudarAbaChefe(aba) {
   } else if (aba === 'escalas') {
     document.getElementById('abaChefeEscalas').style.display = 'block';
     document.getElementById('tabChefeEscalas').classList.add('active');
-  } else if (aba === 'pontos') {
-    document.getElementById('abaChefePontos').style.display = 'block';
-    document.getElementById('tabChefePontos').classList.add('active');
+    carregarEscalasChefe();
   } else if (aba === 'registros') {
     document.getElementById('abaChefeRegistros').style.display = 'block';
     document.getElementById('tabChefeRegistros').classList.add('active');
@@ -107,9 +104,6 @@ function filtrarOperacionais() {
   renderizarOperacionaisChefe(filtrados);
 }
 
-function abrirModalNovoPonto() {
-  toastMapa('Acesse o Painel Administrativo Root para gerenciar Pontos de Ronda.', 'aviso');
-}
 
 async function carregarAlertasChefe() {
   const tbody = document.getElementById('listaAlertasChefe');
@@ -399,10 +393,8 @@ async function salvarPlantao() {
   }
 
   fecharModalPlantao();
-  toast('Plantão atualizado com sucesso!', 'sucesso');
-  renderizarGestaoEscolaChefia(document.getElementById('modulosDaEscola'));
+  carregarEscalasChefe();
 }
-
 
 // ==========================================
 // AUDITORIA DE OMISSÕES (NÍVEL 5 e NÍVEL 6)
@@ -753,8 +745,8 @@ async function alocarOperacionalEscola(funcId, cargo, nome) {
   document.getElementById('modalLotacaoChefia').style.display = 'none';
   
   // Recarrega o painel pra mostrar o cara novo
-  const lista = document.getElementById('modulosDaEscola');
-  if (lista) renderizarGestaoEscolaChefia(lista);
+  // Recarrega o painel
+  carregarEscalasChefe();
 }
 
 async function removerLotacaoOperacional(vinculoId, nome) {
@@ -771,6 +763,15 @@ async function removerLotacaoOperacional(vinculoId, nome) {
   }
 
   // Recarrega o painel pra sumir com o cara
-  const lista = document.getElementById('modulosDaEscola');
-  if (lista) renderizarGestaoEscolaChefia(lista);
+  carregarEscalasChefe();
+}
+
+function carregarEscalasChefe() {
+  const container = document.getElementById('listaEscalasChefe');
+  if (!container) return;
+  if (!escolaAtual) {
+    container.innerHTML = '<div class="empty-state">Selecione uma escola no topo para configurar as escalas locais.</div>';
+    return;
+  }
+  renderizarGestaoEscolaChefia(container);
 }
