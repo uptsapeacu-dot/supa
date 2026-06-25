@@ -822,8 +822,15 @@ async function abrirModalGestaoLotacoes() {
   document.getElementById('gestaoEstadoVazio').style.display = 'flex';
   document.getElementById('listaFuncionariosGestao').innerHTML = '<div style="color:#aaa; text-align:center; padding:20px; font-size:13px;">Carregando funcionários...</div>';
   
+  // Garantir que os órgãos estejam carregados para popular os selects de destino
+  let orgaosLista = orgaos;
+  if (!orgaosLista || orgaosLista.length === 0) {
+    const { data: orgData } = await clienteSupabase.from('orgaos').select('id, nome').eq('ativo', true).order('nome', { ascending: true });
+    if (orgData) orgaosLista = orgData;
+  }
+
   // Preencher selects
-  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaos.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
+  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaosLista.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
   document.getElementById('gestaoNovaEscola').innerHTML = escolasHtml;
   document.getElementById('gestaoMoverDestino').innerHTML = escolasHtml;
   
