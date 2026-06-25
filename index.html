@@ -119,10 +119,10 @@
           <span class="menu-icon"><i data-lucide="help-circle"></i></span>
           <span class="menu-text">Ajuda</span>
         </button>
-        <button id="menu-financeiro" onclick="mostrarTela('financeiro')" title="Financeiro" style="display:none">
+        <!-- <button id="menu-financeiro" onclick="mostrarTela('financeiro')" title="Financeiro" style="display:none">
           <span class="menu-icon"><i data-lucide="wallet"></i></span>
           <span class="menu-text">Financeiro</span>
-        </button>
+        </button> -->
         <button id="menu-ponto-mobile" onclick="mostrarTela('ponto-mobile')" title="Ponto Eletrônico" style="display:none">
           <span class="menu-icon"><i data-lucide="scan-line"></i></span>
           <span class="menu-text">Bater Ponto</span>
@@ -156,12 +156,20 @@
           <div class="global-header-title">Sapeaçu Painel Escolar</div>
           <span class="global-header-school header-escola-nome"></span>
         </div>
-        <div class="mode-toggle-container">
-          <span class="mode-text">Modo Visualização</span>
-          <label class="switch">
-            <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
-            <span class="slider"></span>
-          </label>
+        <div style="display:flex; align-items:center; gap:20px;">
+          <!-- SINO DE NOTIFICAÇÕES -->
+          <div class="notificacoes-bell" onclick="togglePainelNotificacoes()" style="position:relative; cursor:pointer;">
+            <i data-lucide="bell" style="width:22px; height:22px; color:#aaa;"></i>
+            <span id="badgeNotificacoesDesktop" style="display:none; position:absolute; top:-5px; right:-5px; background:#ef4444; color:#fff; font-size:10px; font-weight:bold; border-radius:50%; width:16px; height:16px; text-align:center; line-height:16px;">0</span>
+          </div>
+          
+          <div class="mode-toggle-container">
+            <span class="mode-text">Modo Visualização</span>
+            <label class="switch">
+              <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
+              <span class="slider"></span>
+            </label>
+          </div>
         </div>
       </div>
 
@@ -178,12 +186,19 @@
         </div>
         <div class="topbar-mobile-row2">
           <span class="global-header-school header-escola-nome"></span>
-          <div class="mode-toggle-container">
-            <span class="mode-text">Visualização</span>
-            <label class="switch">
-              <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
-              <span class="slider"></span>
-            </label>
+          <div style="display:flex; align-items:center; gap:16px;">
+            <!-- SINO MOBILE -->
+            <div class="notificacoes-bell" onclick="togglePainelNotificacoes()" style="position:relative; cursor:pointer;">
+              <i data-lucide="bell" style="width:20px; height:20px; color:#aaa;"></i>
+              <span id="badgeNotificacoesMobile" style="display:none; position:absolute; top:-4px; right:-4px; background:#ef4444; color:#fff; font-size:10px; font-weight:bold; border-radius:50%; width:16px; height:16px; text-align:center; line-height:16px;">0</span>
+            </div>
+            <div class="mode-toggle-container">
+              <span class="mode-text">Editar</span>
+              <label class="switch">
+                <input type="checkbox" class="btn-modo-edicao" onchange="tentarAtivarModoEdicao(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
           </div>
         </div>
       </div>
@@ -251,6 +266,14 @@
   <div id="container-ficha-impressao"></div>
   <div id="container-boletim-impressao"></div>
   <div id="container-modal-primeiro-acesso"></div>
+  
+  <!-- NOTIFICAÇÕES E TRANSFERÊNCIAS -->
+  <div id="container-modal-notificacoes"></div>
+  <div id="container-modal-transferir-aluno"></div>
+  <div id="container-modal-detalhes-transferencia"></div>
+  
+</main>
+</div>
 
   <!-- SCRIPTS -->
   <script src="js/estado-global.js"></script>
@@ -262,6 +285,8 @@
   <script src="js/escolas.js"></script>
   <script src="js/alunos.js"></script>
   <script src="js/funcionarios.js"></script>
+  <script src="js/notificacoes.js"></script>
+  <script src="js/ocorrencias.js"></script>
   <script src="js/permissoes.js"></script>
   <script src="js/mural.js"></script>
   <script src="js/turmas.js"></script>
@@ -305,6 +330,9 @@
         { url: 'htmls/modais/modal-movimentacoes.html', target: 'container-modal-movimentacoes' },
         { url: 'htmls/modais/modal-sucesso.html', target: 'container-modal-sucesso' },
         { url: 'htmls/modais/modal-primeiro-acesso.html', target: 'container-modal-primeiro-acesso' },
+        { url: 'htmls/modais/modal-notificacoes.html', target: 'container-modal-notificacoes' },
+        { url: 'htmls/modais/modal-transferir-aluno.html', target: 'container-modal-transferir-aluno' },
+        { url: 'htmls/modais/modal-detalhes-transferencia.html', target: 'container-modal-detalhes-transferencia' },
         { url: 'htmls/painel-chefe.html', target: 'painel-chefe' },
         { url: 'htmls/ponto-mobile.html', target: 'ponto-mobile' },
         { url: 'htmls/ajuda-chefe.html', target: 'ajuda-chefe' }

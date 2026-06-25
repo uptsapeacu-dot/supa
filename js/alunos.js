@@ -167,13 +167,13 @@ function renderizarAlunos() {
       btnEditar.onclick = function() { editarAluno(aluno) }
       actionsDiv.appendChild(btnEditar)
 
-      const btnExcluir = document.createElement('button')
-      btnExcluir.className = 'btn-excluir-card'
-      btnExcluir.title = 'Excluir aluno'
-      btnExcluir.type = 'button'
-      btnExcluir.innerHTML = '<i data-lucide="trash-2" style="width: 14px; height: 14px;"></i>'
-      btnExcluir.onclick = function() { excluirAluno(aluno.id) }
-      actionsDiv.appendChild(btnExcluir)
+      const btnTransferir = document.createElement('button')
+      btnTransferir.className = 'btn-excluir-card'
+      btnTransferir.title = 'Solicitar Transferência'
+      btnTransferir.type = 'button'
+      btnTransferir.innerHTML = '<i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i>'
+      btnTransferir.onclick = function() { abrirModalTransferencia(aluno.id, aluno.nome) }
+      actionsDiv.appendChild(btnTransferir)
     }
 
     item.appendChild(actionsDiv)
@@ -183,12 +183,7 @@ function renderizarAlunos() {
   if (window.lucide) lucide.createIcons()
 }
 
-async function excluirAluno(alunoId) {
-  if (!confirm('Deseja excluir este aluno? Ele será arquivado na Lixeira Global.')) return
-  var { error } = await clienteSupabase.from('alunos').update({ ativo: false }).eq('id', alunoId)
-  if (error) { alert('Erro ao arquivar aluno: ' + error.message); return }
-  await carregarAlunos()
-}
+// O aluno não pode mais ser excluído diretamente. Fluxo de Transferência Interna.
 
 function limparFiltros() {
   if (document.getElementById('buscaAluno')) document.getElementById('buscaAluno').value = ''

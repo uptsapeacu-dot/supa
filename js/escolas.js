@@ -150,6 +150,9 @@ function abrirEscola(escolaId) {
 
   escolaAtual = school.id
   document.getElementById('tituloEscola').innerText = school.nome
+  
+  // Dispara evento para módulos que dependem da escola logada (ex: Notificações)
+  window.dispatchEvent(new Event('escola_selecionada'));
 
   document.querySelectorAll('.header-escola-nome').forEach(function(headerEscola) {
     const logoHeader = school.logo_url
