@@ -41,7 +41,7 @@ async function carregarPainelSuperAdmin() {
   for (const src of scripts) {
     await new Promise(function(resolve) {
       const s = document.createElement('script')
-      s.src = src + '?v=4'
+      s.src = src + '?v=5'
       s.onload = resolve
       s.onerror = function() { console.error('Falha ao carregar ' + src); resolve(); }
       document.head.appendChild(s)
@@ -286,8 +286,7 @@ async function adminSalvarConfig() {
 
   const { error } = await clienteSupabase
     .from('configuracoes_sistema')
-    .upsert({ 
-      id: 1,
+    .update({ 
       ano_letivo: ano, 
       data_fim_b1: b1,
       data_fim_b2: b2,
@@ -296,6 +295,7 @@ async function adminSalvarConfig() {
       mensagem_manutencao: msg || null, 
       updated_at: new Date().toISOString() 
     })
+    .eq('id', 1)
 
   if (error) {
     alert('Erro ao salvar: ' + error.message)
@@ -313,7 +313,8 @@ async function adminSalvarConfig() {
 async function adminLimparMsgManutencao() {
   const { error } = await clienteSupabase
     .from('configuracoes_sistema')
-    .upsert({ id: 1, mensagem_manutencao: null, updated_at: new Date().toISOString() })
+    .update({ mensagem_manutencao: null, updated_at: new Date().toISOString() })
+    .eq('id', 1)
 
   if (error) { alert('Erro: ' + error.message); return }
 
