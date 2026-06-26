@@ -260,8 +260,9 @@ async function renderizarGestaoEscolaChefia(container) {
       if (escalasDoFunc.length === 0) {
         badgeHorarios = '<span style="color:#f59e0b; font-size:12px;">Nenhum plantão definido</span>';
       } else {
-        const horariosArr = escalasDoFunc.map(e => e.horario_previsto.substring(0,5));
-        badgeHorarios = `<span style="color:#3ea6ff; font-size:12px; font-weight:bold;">Plantão: ${horariosArr.join(', ')}</span>`;
+        const diasUnicos = new Set(escalasDoFunc.map(e => e.data_escala));
+        const numPlantoes = diasUnicos.size > 0 && !diasUnicos.has(null) ? diasUnicos.size : Math.floor(escalasDoFunc.length / 2);
+        badgeHorarios = `<span style="color:#3ea6ff; font-size:12px; font-weight:bold;">${numPlantoes} plantões agendados</span>`;
       }
 
       html += `
@@ -310,27 +311,50 @@ async function renderizarGestaoEscolaChefia(container) {
   injetarModalPlantaoSeNecessario();
 }
 
+
+let diasEscalaSelecionados = new Set();
+let mesEscalaAtual = new Date().getMonth();
+let anoEscalaAtual = new Date().getFullYear();
+
 function injetarModalPlantaoSeNecessario() {
   if (document.getElementById('modalConfigurarPlantao')) return;
 
   const modalHtml = `
     <div id="modalConfigurarPlantao" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
-      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:400px; padding:25px;">
-        <h3 style="color:#f8fafc; margin-top:0; margin-bottom:5px;">Configurar Plantão</h3>
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; width:90%; max-width:450px; padding:25px; max-height: 90vh; overflow-y:auto;">
+        <h3 style="color:#f8fafc; margin-top:0; margin-bottom:5px;">Configuração de Escalas</h3>
         <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;" id="nomeFuncPlantao">Funcionário</p>
 
         <input type="hidden" id="plantaoFuncionarioId">
 
-        <div id="listaHorariosPlantao" style="display:flex; flex-direction:column; gap:10px; margin-bottom:20px;">
-          <!-- Injetado dinamicamente -->
+        <div style="display:flex; gap:10px; margin-bottom: 20px;">
+          <div style="flex:1;">
+            <label style="color:#94a3b8; font-size:12px; display:block; margin-bottom:4px;">Entrada</label>
+            <input type="time" id="escalaHoraEntrada" class="input-form" style="width:100%; padding:8px;" value="18:00">
+          </div>
+          <div style="flex:1;">
+            <label style="color:#94a3b8; font-size:12px; display:block; margin-bottom:4px;">Saída (Dia seguinte)</label>
+            <input type="time" id="escalaHoraSaida" class="input-form" style="width:100%; padding:8px;" value="06:00">
+          </div>
         </div>
 
-        <button class="btn-clear" style="width:100%; border:1px dashed #3b82f6; color:#3ea6ff; padding:10px; border-radius:6px; font-weight:bold; margin-bottom:20px;" onclick="adicionarLinhaHorarioPlantao('', 'EXTRA')">
-          <i data-lucide="plus" style="width:16px;height:16px;vertical-align:middle;"></i> Adicionar Horário
-        </button>
+        <div style="background:#0f172a; border:1px solid #334155; border-radius:8px; padding:15px; margin-bottom:20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <button class="btn-clear" style="color:#cbd5e1; padding:4px;" onclick="mudarMesEscala(-1)"><i data-lucide="chevron-left"></i></button>
+            <div id="escalaMesAnoLabel" style="color:#f8fafc; font-weight:bold; font-size:14px;">Mês Ano</div>
+            <button class="btn-clear" style="color:#cbd5e1; padding:4px;" onclick="mudarMesEscala(1)"><i data-lucide="chevron-right"></i></button>
+          </div>
+          
+          <div style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; text-align:center; color:#94a3b8; font-size:12px; font-weight:bold; margin-bottom:10px;">
+            <div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div>
+          </div>
+          <div id="escalaCalendarioGrid" style="display:grid; grid-template-columns:repeat(7, 1fr); gap:5px; text-align:center;">
+            <!-- Grid de dias -->
+          </div>
+        </div>
 
         <div style="display:flex; gap:10px;">
-          <button class="btn-login" style="background:#3b82f6; flex:1;" onclick="salvarPlantao()">Salvar</button>
+          <button class="btn-login" style="background:#3b82f6; flex:1;" onclick="salvarPlantao()">Salvar Escala</button>
           <button class="btn-clear" style="flex:1; border:1px solid #475569; color:#cbd5e1;" onclick="fecharModalPlantao()">Cancelar</button>
         </div>
       </div>
@@ -339,53 +363,97 @@ function injetarModalPlantaoSeNecessario() {
   document.body.insertAdjacentHTML('beforeend', modalHtml);
 }
 
+function renderizarCalendarioEscala() {
+  const grid = document.getElementById('escalaCalendarioGrid');
+  const label = document.getElementById('escalaMesAnoLabel');
+  grid.innerHTML = '';
+  
+  const meses = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  label.innerText = meses[mesEscalaAtual] + ' ' + anoEscalaAtual;
+  
+  const primeiroDia = new Date(anoEscalaAtual, mesEscalaAtual, 1).getDay();
+  const ultimoDia = new Date(anoEscalaAtual, mesEscalaAtual + 1, 0).getDate();
+  
+  for (let i = 0; i < primeiroDia; i++) {
+    grid.innerHTML += '<div></div>';
+  }
+  
+  for (let dia = 1; dia <= ultimoDia; dia++) {
+    const dataStr = anoEscalaAtual + '-' + String(mesEscalaAtual + 1).padStart(2, '0') + '-' + String(dia).padStart(2, '0');
+    const isSelecionado = diasEscalaSelecionados.has(dataStr);
+    
+    const divDia = document.createElement('div');
+    divDia.innerText = dia;
+    divDia.style.padding = '8px 0';
+    divDia.style.borderRadius = '6px';
+    divDia.style.cursor = 'pointer';
+    divDia.style.fontSize = '14px';
+    divDia.style.transition = 'all 0.2s';
+    
+    if (isSelecionado) {
+      divDia.style.background = '#3b82f6';
+      divDia.style.color = '#fff';
+      divDia.style.fontWeight = 'bold';
+    } else {
+      divDia.style.background = 'rgba(255,255,255,0.05)';
+      divDia.style.color = '#cbd5e1';
+      divDia.onmouseover = () => divDia.style.background = 'rgba(255,255,255,0.1)';
+      divDia.onmouseout = () => divDia.style.background = 'rgba(255,255,255,0.05)';
+    }
+    
+    divDia.onclick = () => {
+      if (diasEscalaSelecionados.has(dataStr)) {
+        diasEscalaSelecionados.delete(dataStr);
+      } else {
+        diasEscalaSelecionados.add(dataStr);
+      }
+      renderizarCalendarioEscala();
+    };
+    
+    grid.appendChild(divDia);
+  }
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function mudarMesEscala(delta) {
+  mesEscalaAtual += delta;
+  if (mesEscalaAtual > 11) {
+    mesEscalaAtual = 0;
+    anoEscalaAtual++;
+  } else if (mesEscalaAtual < 0) {
+    mesEscalaAtual = 11;
+    anoEscalaAtual--;
+  }
+  renderizarCalendarioEscala();
+}
+
 async function abrirModalConfigurarPlantao(funcId, funcNome) {
   document.getElementById('plantaoFuncionarioId').value = funcId;
   document.getElementById('nomeFuncPlantao').innerText = funcNome;
   
-  const lista = document.getElementById('listaHorariosPlantao');
-  lista.innerHTML = '<div style="color:#aaa; text-align:center;">Carregando...</div>';
+  diasEscalaSelecionados.clear();
+  mesEscalaAtual = new Date().getMonth();
+  anoEscalaAtual = new Date().getFullYear();
+  
   document.getElementById('modalConfigurarPlantao').style.display = 'flex';
+  document.getElementById('escalaCalendarioGrid').innerHTML = '<div style="grid-column: span 7; padding:20px; color:#aaa;">Carregando...</div>';
 
   const { data, error } = await clienteSupabase
     .from('escala_vigias')
     .select('*')
     .eq('escola_id', escolaAtual)
     .eq('funcionario_id', funcId)
-    .order('horario_previsto');
+    .not('data_escala', 'is', null);
 
-  lista.innerHTML = '';
-  
   if (data && data.length > 0) {
-    data.forEach(e => adicionarLinhaHorarioPlantao(e.horario_previsto.substring(0,5), e.tipo_horario));
-  } else {
-    // Exigência Padrão
-    adicionarLinhaHorarioPlantao('07:00', 'ENTRADA');
-    adicionarLinhaHorarioPlantao('19:00', 'SAIDA');
+    data.forEach(e => {
+      diasEscalaSelecionados.add(e.data_escala);
+      if (e.tipo_horario === 'ENTRADA') document.getElementById('escalaHoraEntrada').value = e.horario_previsto.substring(0,5);
+      if (e.tipo_horario === 'SAIDA') document.getElementById('escalaHoraSaida').value = e.horario_previsto.substring(0,5);
+    });
   }
-}
 
-function adicionarLinhaHorarioPlantao(horaVal = '', tipoVal = 'EXTRA') {
-  const lista = document.getElementById('listaHorariosPlantao');
-  const div = document.createElement('div');
-  div.style.display = 'flex';
-  div.style.gap = '8px';
-  div.style.alignItems = 'center';
-  div.className = 'linha-horario-plantao';
-  
-  div.innerHTML = `
-    <select class="input-form" style="width:110px; padding:8px; font-size:13px;">
-      <option value="ENTRADA" ${tipoVal === 'ENTRADA' ? 'selected' : ''}>Entrada</option>
-      <option value="SAIDA" ${tipoVal === 'SAIDA' ? 'selected' : ''}>Saída</option>
-      <option value="EXTRA" ${tipoVal === 'EXTRA' ? 'selected' : ''}>Ronda</option>
-    </select>
-    <input type="time" class="input-form" style="flex:1; padding:8px;" value="${horaVal}">
-    <button class="btn-clear" style="color:#ef4444; padding:8px;" onclick="this.parentElement.remove()">
-      <i data-lucide="trash-2" style="width:18px;height:18px;"></i>
-    </button>
-  `;
-  lista.appendChild(div);
-  if (window.lucide) window.lucide.createIcons();
+  renderizarCalendarioEscala();
 }
 
 function fecharModalPlantao() {
@@ -394,23 +462,33 @@ function fecharModalPlantao() {
 
 async function salvarPlantao() {
   const funcId = document.getElementById('plantaoFuncionarioId').value;
-  const linhas = document.querySelectorAll('.linha-horario-plantao');
+  const horaEntrada = document.getElementById('escalaHoraEntrada').value;
+  const horaSaida = document.getElementById('escalaHoraSaida').value;
+  
+  if (!horaEntrada || !horaSaida) {
+    alert("Defina os horários padrão de entrada e saída.");
+    return;
+  }
   
   let novosHorarios = [];
-  linhas.forEach(l => {
-    const tipo = l.querySelector('select').value;
-    const hora = l.querySelector('input').value;
-    if (hora) {
-      novosHorarios.push({
-        funcionario_id: funcId,
-        escola_id: escolaAtual,
-        tipo_horario: tipo,
-        horario_previsto: hora + ':00'
-      });
-    }
+  diasEscalaSelecionados.forEach(dataStr => {
+    novosHorarios.push({
+      funcionario_id: funcId,
+      escola_id: escolaAtual,
+      data_escala: dataStr,
+      tipo_horario: 'ENTRADA',
+      horario_previsto: horaEntrada + ':00'
+    });
+    novosHorarios.push({
+      funcionario_id: funcId,
+      escola_id: escolaAtual,
+      data_escala: dataStr, // Usa a mesma data do plantão (a saída é do mesmo plantão, mesmo sendo dia seguinte fisicamente)
+      tipo_horario: 'SAIDA',
+      horario_previsto: horaSaida + ':00'
+    });
   });
 
-  // Limpa escalas anteriores deste funcionário nesta escola
+  // Limpa escalas anteriores deste funcionário nesta escola (apenas as que têm data_escala)
   await clienteSupabase
     .from('escala_vigias')
     .delete()
@@ -478,6 +556,15 @@ async function calcularAuditoria(funcionarioId, escolaId) {
     if (dataRef > dataHoje && dataRefStr !== dataHoje.toISOString().split('T')[0]) continue;
 
     escalas.forEach(escala => {
+      if (escala.data_escala) {
+        let expectedDataRef = escala.data_escala;
+        if (escala.tipo_horario === 'SAIDA' && parseInt(escala.horario_previsto.split(':')[0]) < 12) {
+            let d = new Date(escala.data_escala + 'T12:00:00');
+            d.setDate(d.getDate() + 1);
+            expectedDataRef = d.toISOString().split('T')[0];
+        }
+        if (expectedDataRef !== dataRefStr) return;
+      }
       const [hora, minuto] = escala.horario_previsto.split(':');
       const dataHoraPrevista = new Date(dataRefStr + 'T' + escala.horario_previsto);
       

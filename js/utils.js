@@ -1,4 +1,4 @@
-﻿﻿function textoOuVazio(valor) {
+﻿function textoOuVazio(valor) {
   return valor && String(valor).trim() ? valor : '-'
 }
 
@@ -67,6 +67,15 @@ async function calcularAuditoriaRondasGlobal(funcionarioId, escolaId) {
     if (dataRef > dataHoje && dataRefStr !== dataHoje.toISOString().split('T')[0]) continue;
 
     escalas.forEach(escala => {
+      if (escala.data_escala) {
+        let expectedDataRef = escala.data_escala;
+        if (escala.tipo_horario === 'SAIDA' && parseInt(escala.horario_previsto.split(':')[0]) < 12) {
+            let d = new Date(escala.data_escala + 'T12:00:00');
+            d.setDate(d.getDate() + 1);
+            expectedDataRef = d.toISOString().split('T')[0];
+        }
+        if (expectedDataRef !== dataRefStr) return;
+      }
       const dataHoraPrevista = new Date(dataRefStr + 'T' + escala.horario_previsto);
       if (dataHoraPrevista > dataHoje) return;
 
