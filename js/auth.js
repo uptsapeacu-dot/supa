@@ -200,9 +200,8 @@ async function carregarConfiguracoesGlobais() {
 }
 
 async function carregarFuncionarioAtual() {
-  const {
-    data: { user }
-  } = await clienteSupabase.auth.getUser()
+  const { data } = await clienteSupabase.auth.getSession()
+  const user = data?.session?.user
 
   if (!user) return false
 
