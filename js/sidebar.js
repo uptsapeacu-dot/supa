@@ -44,12 +44,14 @@ function aplicarVisibilidadeSidebar() {
           acesso.cargos_gerenciados.forEach(function(c) { cargosSet.add(c); });
         }
       });
+      const showCargoSuffix = cargosSet.size > 1;
       cargosSet.forEach(function(cargo) {
         const btn = document.createElement('button');
         btn.onclick = function() { mostrarTelaPainelChefe(cargo); };
         btn.title = 'Equipe: ' + cargo;
         btn.id = 'menu-chefe-' + cargo.replace(/\s+/g, '-').toLowerCase();
-        btn.innerHTML = `<span class="menu-icon"><i data-lucide="shield"></i></span><span class="menu-text">Equipe ${cargo}</span>`;
+        const menuLabel = showCargoSuffix ? `Equipe (${cargo})` : 'Equipe';
+        btn.innerHTML = `<span class="menu-icon"><i data-lucide="users"></i></span><span class="menu-text">${menuLabel}</span>`;
         containerChefias.appendChild(btn);
       });
       if (window.lucide) { window.lucide.createIcons(); }
@@ -204,7 +206,7 @@ function mostrarTelaPainelChefe(cargo) {
   
   // Atualiza título dinâmico na tela do chefe
   const title = document.getElementById('tituloPainelChefe');
-  if (title) title.textContent = 'Gestão: Equipe de ' + cargo;
+  if (title) title.textContent = 'Equipe: ' + cargo;
 
   // Marca todos os botões de chefia como inativos, e ativa apenas este
   document.querySelectorAll('#menu-dinamico-chefias button').forEach(function(b) {

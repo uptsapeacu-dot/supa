@@ -19,6 +19,7 @@ function mudarAbaChefe(aba) {
   } else if (aba === 'registros') {
     document.getElementById('abaChefeRegistros').style.display = 'block';
     document.getElementById('tabChefeRegistros').classList.add('active');
+    carregarRegistrosChefe();
   } else if (aba === 'alertas') {
     document.getElementById('abaChefeAlertas').style.display = 'block';
     document.getElementById('tabChefeAlertas').classList.add('active');
@@ -61,33 +62,38 @@ async function carregarDadosPainelChefe(cargo) {
 }
 
 function renderizarOperacionaisChefe(lista) {
-  const tbody = document.getElementById('listaOperacionaisChefe');
-  if (!tbody) return;
+  const container = document.getElementById('listaOperacionaisChefe');
+  if (!container) return;
   if (!lista || lista.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="3" style="text-align:center;color:#64748b;">Nenhum funcionário encontrado neste cargo.</td></tr>';
+    container.innerHTML = '<div class="empty-state" style="color:#64748b;">Nenhum funcionário encontrado neste cargo.</div>';
     return;
   }
   
   let html = '';
   lista.forEach(function(f) {
     html += `
-      <tr>
-        <td>
-          <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:32px;height:32px;background:#3b82f6;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:bold;">
-              ${f.nome.charAt(0).toUpperCase()}
-            </div>
-            ${f.nome}
+      <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px; justify-content:space-between; width:100%;">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <div style="width:40px; height:40px; border-radius:50%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">
+            ${f.nome.charAt(0).toUpperCase()}
           </div>
-        </td>
-        <td style="color:#94a3b8;">${f.email || 'Sem email'}</td>
-        <td>
-          <span style="background:rgba(34,197,94,0.2);color:#22c55e;padding:4px 8px;border-radius:4px;font-size:12px;">Ativo</span>
-        </td>
-      </tr>
+          <div>
+            <div style="color:#f8fafc; font-weight:bold; font-size:14px; margin-bottom:2px;">${f.nome}</div>
+            <div style="color:#94a3b8; font-size:12px; display:flex; align-items:center; gap:4px;">
+              <i data-lucide="mail" style="width:12px; height:12px;"></i> ${f.email || 'Sem e-mail'}
+            </div>
+          </div>
+        </div>
+        <div>
+          <span style="background:rgba(34,197,94,0.1); color:#22c55e; padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; display:inline-flex; align-items:center; gap:4px;">
+            <i data-lucide="check-circle" style="width:12px; height:12px;"></i> Ativo
+          </span>
+        </div>
+      </div>
     `;
   });
-  tbody.innerHTML = html;
+  container.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
 }
 
 function filtrarOperacionais() {
@@ -107,20 +113,17 @@ function filtrarOperacionais() {
   renderizarOperacionaisChefe(filtrados);
 }
 
-
 async function carregarAlertasChefe() {
-  const tbody = document.getElementById('listaAlertasChefe');
-  if (!tbody) return;
+  const container = document.getElementById('listaAlertasChefe');
+  if (!container) return;
   
-  // Pegar todos os operacionais do cargo atual para filtrar os registros apenas deles
   if (_operacionaisChefeCache.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;">Sem operacionais na equipe.</td></tr>';
+    container.innerHTML = '<div class="empty-state">Sem operacionais na equipe.</div>';
     return;
   }
   
   const idsEquipe = _operacionaisChefeCache.map(f => f.id);
-  
-  tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#aaa;">Buscando alertas...</td></tr>';
+  container.innerHTML = '<div class="empty-state">Buscando alertas...</div>';
   
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
@@ -132,12 +135,12 @@ async function carregarAlertasChefe() {
     
   if (error) {
     console.error("Supabase Error:", error);
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Erro ao carregar alertas: ' + escapeHTML(error.message) + '</td></tr>';
+    container.innerHTML = '<div class="empty-state" style="color:#ef4444;">Erro ao carregar alertas: ' + escapeHTML(error.message) + '</div>';
     return;
   }
   
   if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#22c55e;">Nenhum alerta recente encontrado.</td></tr>';
+    container.innerHTML = '<div class="empty-state" style="color:#22c55e; border:1px solid rgba(34,197,94,0.2); background:rgba(34,197,94,0.05);">Nenhum alerta recente encontrado.</div>';
     return;
   }
   
@@ -148,28 +151,105 @@ async function carregarAlertasChefe() {
     const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
     const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Inválido';
     
-    // O sistema salvará uma msg tipo "Fora do raio (150m)" no status ou log, vamos extrair se houver, ou assumir.
-    // Como a especificação diz que o alerta é distância:
     const pLat = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.latitude : '';
     const pLng = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.longitude : '';
-    const mapBtn = (log.latitude && log.longitude) ? `<button class="btn-clear" style="margin-top:4px; display:inline-block; color:#3ea6ff; font-size:12px; font-weight:bold; cursor:pointer;" onclick="abrirMapaLogRonda('${pLat}', '${pLng}', '${log.latitude}', '${log.longitude}', '${nomePonto}', '${nomeFunc}')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;"></i> Ver Mapa</button>` : '';
+    const mapBtn = (log.latitude && log.longitude) ? `
+      <button class="btn-clear" style="margin-top:8px; color:#3ea6ff; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px;" onclick="abrirMapaLogRonda('${pLat}', '${pLng}', '${log.latitude}', '${log.longitude}', '${nomePonto}', '${nomeFunc}')">
+        <i data-lucide="map" style="width:14px;height:14px;"></i> Ver Mapa
+      </button>
+    ` : '';
 
     html += `
-      <tr style="background-color:rgba(245,158,11,0.05);">
-        <td style="color:#aaa;">${dataStr}</td>
-        <td style="color:#fff; font-weight:bold;">${nomeFunc}</td>
-        <td>${nomePonto}</td>
-        <td style="color:#f59e0b; font-weight:bold;">
-          <div style="display:flex; flex-direction:column; align-items:flex-start;">
-            <span><i data-lucide="map-pin-off" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"></i> Fora do raio permitido</span>
-            ${mapBtn}
-          </div>
-        </td>
-      </tr>
+      <div style="background:rgba(245,158,11,0.05); border:1px solid rgba(245,158,11,0.3); border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#aaa; font-size:12px;">${dataStr}</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; color:#f59e0b; background:rgba(245,158,11,0.1); padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">
+            <i data-lucide="map-pin-off" style="width:12px; height:12px;"></i> Fora do raio
+          </span>
+        </div>
+        <div style="color:#fff; font-weight:bold; font-size:14px;">${nomeFunc}</div>
+        <div style="color:#cbd5e1; font-size:13px; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="map-pin" style="width:14px; height:14px; color:#94a3b8;"></i> Local exigido: ${nomePonto}
+        </div>
+        ${mapBtn}
+      </div>
     `;
   });
   
-  tbody.innerHTML = html;
+  container.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+}
+
+async function carregarRegistrosChefe() {
+  const container = document.getElementById('listaRegistrosChefe');
+  if (!container) return;
+  
+  if (_operacionaisChefeCache.length === 0) {
+    container.innerHTML = '<div class="empty-state">Sem operacionais na equipe.</div>';
+    return;
+  }
+  
+  const idsEquipe = _operacionaisChefeCache.map(f => f.id);
+  container.innerHTML = '<div class="empty-state">Buscando registros...</div>';
+  
+  const { data, error } = await clienteSupabase
+    .from('registros_ronda')
+    .select('*, funcionarios(nome), pontos_ronda(nome, localizacao)')
+    .in('funcionario_id', idsEquipe)
+    .order('horario_leitura', { ascending: false })
+    .limit(30);
+    
+  if (error) {
+    console.error("Supabase Error:", error);
+    container.innerHTML = '<div class="empty-state" style="color:#ef4444;">Erro ao carregar registros: ' + escapeHTML(error.message) + '</div>';
+    return;
+  }
+  
+  if (!data || data.length === 0) {
+    container.innerHTML = '<div class="empty-state">Nenhum registro encontrado.</div>';
+    return;
+  }
+  
+  let html = '<div style="display:flex; flex-direction:column; gap:10px;">';
+  data.forEach(log => {
+    const d = new Date(log.horario_leitura);
+    const dataStr = d.toLocaleDateString('pt-BR') + ' ' + d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
+    const nomeFunc = log.funcionarios ? log.funcionarios.nome : 'Desconhecido';
+    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Inválido';
+    const isAlerta = log.status === 'ALERTA' || !log.valido;
+    
+    const statusColor = isAlerta ? '#f59e0b' : '#10b981';
+    const statusBg = isAlerta ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)';
+    const statusText = isAlerta ? 'Alerta (Fora do Raio)' : 'Sucesso (No local)';
+    const icon = isAlerta ? 'alert-triangle' : 'check-circle';
+    
+    const pLat = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.latitude : '';
+    const pLng = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.longitude : '';
+    const mapBtn = (log.latitude && log.longitude) ? `
+      <button class="btn-clear" style="margin-top:8px; color:#3ea6ff; font-size:12px; font-weight:bold; cursor:pointer; display:flex; align-items:center; gap:4px;" onclick="abrirMapaLogRonda('${pLat}', '${pLng}', '${log.latitude}', '${log.longitude}', '${nomePonto}', '${nomeFunc}')">
+        <i data-lucide="map" style="width:14px;height:14px;"></i> Ver Mapa
+      </button>
+    ` : '';
+
+    html += `
+      <div style="background:#1e293b; border:1px solid ${isAlerta ? 'rgba(245,158,11,0.3)' : '#334155'}; border-radius:12px; padding:14px; display:flex; flex-direction:column; gap:8px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span style="color:#94a3b8; font-size:12px;">${dataStr}</span>
+          <span style="display:inline-flex; align-items:center; gap:4px; color:${statusColor}; background:${statusBg}; padding:4px 8px; border-radius:12px; font-size:11px; font-weight:bold;">
+            <i data-lucide="${icon}" style="width:12px; height:12px;"></i> ${statusText}
+          </span>
+        </div>
+        <div style="color:#f8fafc; font-weight:bold; font-size:14px;">${nomeFunc}</div>
+        <div style="color:#cbd5e1; font-size:13px; display:flex; align-items:center; gap:4px;">
+          <i data-lucide="map-pin" style="width:14px; height:14px; color:#94a3b8;"></i> ${nomePonto}
+        </div>
+        ${mapBtn}
+      </div>
+    `;
+  });
+  html += '</div>';
+  
+  container.innerHTML = html;
   if (window.lucide) window.lucide.createIcons();
 }
 
