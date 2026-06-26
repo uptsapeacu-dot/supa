@@ -267,3 +267,17 @@ function excluirAviso(avisoId) {
   carregarAvisos()
 }
 
+function mudarFiltroMural(dias) {
+  const input = document.getElementById('filtroDataMural');
+  if (!input) return;
+  
+  let dataAtual = input.value ? new Date(input.value + 'T12:00:00') : new Date();
+  dataAtual.setDate(dataAtual.getDate() + dias);
+  
+  const y = dataAtual.getFullYear();
+  const m = String(dataAtual.getMonth() + 1).padStart(2, '0');
+  const d = String(dataAtual.getDate()).padStart(2, '0');
+  
+  input.value = `${y}-${m}-${d}`;
+  carregarAvisos();
+}
