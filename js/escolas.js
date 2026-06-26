@@ -20,7 +20,7 @@ async function carregarEscolas() {
 
   const todas = data || []
 
-  if (isSecretaria()) {
+  if (isSecretaria() || (typeof isChefeEquipe === 'function' && isChefeEquipe())) {
     escolas = todas
   } else {
     const idsPermitidos = acessosAtual

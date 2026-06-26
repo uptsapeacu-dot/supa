@@ -178,7 +178,8 @@ function renderizarViewFuncionario() {
     // Tags de vinculos
     const tagsHtml = grupo.acessos.map(function(a) {
       const orgNome = a.orgaos ? a.orgaos.nome : 'Geral'
-      const nivelLabel = a.nivel === 1 ? 'Secretaria' : a.nivel === 2 ? 'Diretor' : a.nivel === 3 ? 'Coordenador' : 'Professor'
+      const nomesNiveis = { 1: 'Secretaria', 2: 'Diretor', 3: 'Coordenador', 4: 'Professor', 5: 'Chefe de Equipe', 6: 'Operacional' };
+      const nivelLabel = nomesNiveis[a.nivel] || 'Professor';
       const statusDot = a.ativo ? '#22c55e' : '#ef4444'
       return '<span class="perm-func-tag"><i data-lucide="building-2"></i>' + orgNome + ' &bull; ' + nivelLabel + ' <span style="color:' + statusDot + '; margin-left: 2px;">&#9679;</span></span>'
     }).join('')
@@ -329,7 +330,7 @@ function fecharModalEquipeEscola() {
 // HELPER: RENDERIZA CARD DE VINCULO
 // =============================================
 function renderizarVinculoCard(acesso, mostrarEscola) {
-  const nomes = { 1: 'Secretaria', 2: 'Diretor', 3: 'Coordenador', 4: 'Professor' }
+  const nomes = { 1: 'Secretaria', 2: 'Diretor', 3: 'Coordenador', 4: 'Professor', 5: 'Chefe de Equipe', 6: 'Operacional' }
   const nivelLabel = nomes[acesso.nivel] || 'N' + acesso.nivel
   const orgNome = acesso.orgaos ? acesso.orgaos.nome : 'Geral'
   const funcNome = acesso.funcionarios ? (acesso.funcionarios.nome || acesso.funcionarios.email) : 'Funcionario'
