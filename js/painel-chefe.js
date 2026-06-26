@@ -270,7 +270,7 @@ async function renderizarGestaoEscolaChefia(container) {
           <div style="display:flex; justify-content:space-between; align-items:flex-start;">
             <div style="display:flex; gap:12px; align-items:center;">
               <div style="width:48px; height:48px; border-radius:50%; background:#0f172a; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; border: 1px solid #334155;">
-                ${func.foto_url ? \`<img src="\${func.foto_url}" style="width:100%; height:100%; object-fit:cover;" />\` : \`<i data-lucide="user" style="color:#94a3b8; width:24px; height:24px;"></i>\`}
+                ${func.foto_url ? `<img src="${func.foto_url}" style="width:100%; height:100%; object-fit:cover;" />` : `<i data-lucide="user" style="color:#94a3b8; width:24px; height:24px;"></i>`}
               </div>
               <div>
                 <div style="color:#f8fafc; font-weight:bold; font-size:15px; margin-bottom:2px;">${func.nome}</div>

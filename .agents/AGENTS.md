@@ -29,3 +29,13 @@
 - **SINTAXE DE TEMPLATE LITERALS:** Toda vez que criar ou alterar scripts Javascript que contenham crases (template literals), tome extremo cuidado para NÃO digitar barras invertidas (`\`) antes delas, o que pode causar um `Uncaught SyntaxError` invisível que quebra todo o carregamento do módulo.
 
 - **BOTÃO VOLTAR EM NOVAS TELAS:** Toda vez que criar uma tela nova, você DEVE garantir que ela tenha um botão flutuante para voltar ao menu inicial.
+
+- **LISTENER EM BUSCAS:** Toda vez que criar ou refatorar um campo de busca (input search) dentro de um HTML dinâmico, certifique-se rigidamente de que a propriedade "oninput" ou "onkeyup" está sendo chamada corretamente e aponta para uma função global existente, evitando que o usuário digite e nada aconteça.
+
+- **CRUZAMENTO DE MADRUGADA:** Toda vez que criar ou alterar funções que calculem auditorias de horários, lembre-se sempre que turnos que cruzam a meia-noite (ex: Entrada 18h e Saída 06h) exigem a adição de +1 dia na data de verificação da saída para evitar gerar falsas omissões no sistema.
+
+- **INTEGRIDADE DE CHAVES ESTRANGEIRAS:** Nunca tente fazer um delete ou update profundo em um funcionário ou escola sem antes varrer e limpar as dependências secundárias (escala_vigias, registros_ronda), para evitar que o Supabase bloqueie a operação por Violação de Restrição de Chave Estrangeira (Foreign Key Constraint).
+
+- **TIPAGEM SUPABASE:** Ao fazer consultas no Supabase, preste atenção extrema: se a query pode retornar nulo ou um objeto único (.single()), NUNCA aplique um .forEach() ou um .map() direto na resposta sem antes fazer uma checagem rigorosa de array vazio (ex: `if (data && data.length > 0)`), prevenindo o erro fatal "forEach is not a function".
+
+- **PRESERVAÇÃO DE ESTILOS:** Toda vez que for recriar um card ou botão que já existia no código, recupere e mantenha todas as classes CSS utilitárias que já estavam nele. Não substitua um botão premium por um botão genérico só para fazê-lo funcionar; a estética deve ser prioridade máxima.
