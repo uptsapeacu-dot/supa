@@ -9,10 +9,10 @@
         <img id="imgPreviewLogo" src="" alt="Preview da logo" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #3ea6ff;" />
       </div>
       <label for="logoEscola" id="labelLogoEscola" style="display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%; padding: 13px; margin-top: 12px; border-radius: 10px; border: 1px dashed #3f3f3f; background: #121212; color: #aaa; font-size: 14px; cursor: pointer; transition: border-color 0.2s, color 0.2s;" onmouseover="this.style.borderColor='#3ea6ff'; this.style.color='#3ea6ff';" onmouseout="this.style.borderColor='#3f3f3f'; this.style.color='#aaa';">
-        📷 Selecionar Logo da Escola *
+        <i data-lucide="image" style="width:18px;height:18px;"></i> Selecionar Logo da Escola *
       </label>
       <input type="file" id="logoEscola" accept="image/*" style="display: none;" onchange="previewLogo(this)" />
-      <span id="msgLogoObrigatoria" style="display:none; color:#ff5b5b; font-size:12px; margin-top:4px;">⚠️ A logo é obrigatória para cadastrar uma escola.</span>
+      <span id="msgLogoObrigatoria" style="display:none; align-items:center; color:#ff5b5b; font-size:12px; margin-top:4px;"><i data-lucide="alert-triangle" style="width:14px;height:14px;margin-right:4px;"></i> A logo é obrigatória para cadastrar uma escola.</span>
       <button class="btn-login" id="btnSalvarEscola" onclick="salvarEscola()" style="margin-top: 20px;">Salvar escola</button>
     </div>
   </div>
