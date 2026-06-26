@@ -139,6 +139,13 @@ function renderizarAlunos() {
       infoHtml += '<strong>Série:</strong> ' + aluno.serie.trim() + '<br>'
     }
     
+    let nomeEscola = 'Sem escola'
+    if (typeof escolas !== 'undefined' && escolas && aluno.escola_id) {
+      const esc = escolas.find(function(e) { return e.id === aluno.escola_id })
+      if (esc) nomeEscola = esc.nome
+    }
+    infoHtml += '<strong>Escola:</strong> ' + nomeEscola + '<br>'
+    
     detalhes.innerHTML = infoHtml
 
     info.appendChild(nome)
@@ -198,6 +205,19 @@ function preencherSeletorEscolaAluno(escolaPreSelecionada) {
   const seletor = document.getElementById('seletorEscolaAluno')
   const select = document.getElementById('escolaDoAluno')
 
+  // Se estiver editando, oculta o seletor da ficha e apenas guarda o id da escola selecionada
+  if (alunoEditando) {
+    seletor.style.display = 'none'
+    if (select) {
+      select.innerHTML = ''
+      const opt = document.createElement('option')
+      opt.value = escolaPreSelecionada || ''
+      opt.selected = true
+      select.appendChild(opt)
+    }
+    return
+  }
+
   if (isSecretaria() && (escolaAtual == null || escolaAtual === '')) {
     seletor.style.display = 'block'
     select.innerHTML = '<option value="">-- Selecione a Escola --</option>'
@@ -209,6 +229,11 @@ function preencherSeletorEscolaAluno(escolaPreSelecionada) {
       if (escola.id === escolaPreSelecionada) opt.selected = true
       select.appendChild(opt)
     })
+
+    // Adiciona listener para recarregar as turmas ao mudar de escola
+    select.onchange = function() {
+      carregarTurmasDoSeletorAluno(null)
+    }
   } else {
     seletor.style.display = 'none'
   }
