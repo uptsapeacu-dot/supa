@@ -221,7 +221,7 @@ function adminRenderizarCardsUsuarios(lista) {
         '<button class="admin-btn admin-btn-ghost" title="Ver logs de acesso" onclick="adminVerLogsDoUsuario(\'' + func.id + '\', \'' + email + '\')">' +
           '<i data-lucide="activity"></i>' +
         '</button>' +
-        '<button class="admin-btn admin-btn-ghost" title="Resetar senha" onclick="adminResetarSenha(\'' + email + '\')">' +
+        '<button class="admin-btn admin-btn-ghost" title="Resetar senha" onclick="adminAbrirModalReset(\'' + func.auth_user_id + '\', \'' + email + '\', \'' + nome + '\')">' +
           '<i data-lucide="key-round"></i>' +
         '</button>' +
         (!isAdmin ? '<button class="admin-btn admin-btn-danger" title="Suspender conta" onclick="adminSuspenderFuncionario(\'' + func.id + '\')">' +
@@ -252,21 +252,68 @@ function adminFiltrarUsuarios() {
   if (window.lucide) window.lucide.createIcons()
 }
 
-async function adminResetarSenha(email) {
-  if (!email) return
-  if (!confirm('Enviar email de redefinicao de senha para: ' + email + '?')) return
-
-  const { error } = await clienteSupabase.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin
-  })
-
-  if (error) {
-    alert('Erro ao enviar email: ' + error.message)
-    return
+function adminAbrirModalReset(authId, email, nome) {
+  if (!authId || authId === 'undefined') {
+    alert('Este usuário ainda não possui um ID de autenticação válido.');
+    return;
   }
 
-  await registrarAuditoria('reset_senha', 'funcionarios', null, { email: email }, null)
-  alert('Email de redefinicao enviado para ' + email)
+  const modal = document.createElement('div')
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;'
+  modal.id = 'modalAdminResetSenha'
+  modal.innerHTML =
+    '<div style="background:#101010;border:1px solid #2a2a2a;border-radius:14px;padding:24px;max-width:400px;width:100%;">' +
+      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
+        '<h3 style="color:#fff;margin:0;display:flex;align-items:center;gap:8px;"><i data-lucide="key-round" style="color:#a855f7;"></i> Resetar Senha</h3>' +
+        '<button onclick="this.closest(\'#modalAdminResetSenha\').remove()" style="background:transparent;border:none;color:#888;cursor:pointer;"><i data-lucide="x"></i></button>' +
+      '</div>' +
+      '<p style="color:#a0aec0;font-size:14px;margin-bottom:20px;">Defina a nova senha para <strong>' + (nome || email) + '</strong>. Esta ação não requer confirmação por e-mail.</p>' +
+      '<div style="margin-bottom:20px;">' +
+        '<label style="display:block;color:#cbd5e1;font-size:13px;margin-bottom:6px;">Nova Senha</label>' +
+        '<input type="text" id="inputNovaSenhaReset" value="#painel#" style="width:100%;padding:10px;background:#1e1e1e;border:1px solid #333;color:#fff;border-radius:8px;font-family:monospace;font-size:16px;">' +
+      '</div>' +
+      '<div style="display:flex;justify-content:flex-end;gap:12px;">' +
+        '<button onclick="this.closest(\'#modalAdminResetSenha\').remove()" style="background:#222;color:#fff;border:1px solid #333;padding:8px 16px;border-radius:8px;cursor:pointer;">Cancelar</button>' +
+        '<button id="btnConfirmarReset" onclick="adminExecutarResetSenha(\'' + authId + '\', \'' + email + '\')" style="background:#a855f7;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px;">Confirmar Reset</button>' +
+      '</div>' +
+    '</div>'
+
+  document.body.appendChild(modal)
+  if (window.lucide) window.lucide.createIcons()
+}
+
+async function adminExecutarResetSenha(authId, email) {
+  const input = document.getElementById('inputNovaSenhaReset')
+  const novaSenha = input.value.trim()
+  const btn = document.getElementById('btnConfirmarReset')
+
+  if (novaSenha.length < 6) {
+    alert('A senha deve ter pelo menos 6 caracteres.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<i data-lucide="loader-2" class="lucide-spin" style="width:16px;height:16px;"></i> Processando...';
+  if (window.lucide) window.lucide.createIcons();
+
+  const { error } = await clienteSupabase.rpc('reset_user_password', {
+    uid: authId,
+    new_pass: novaSenha
+  });
+
+  if (error) {
+    alert('Erro ao resetar senha: ' + error.message);
+    btn.disabled = false;
+    btn.innerHTML = 'Confirmar Reset';
+    return;
+  }
+
+  await registrarAuditoria('reset_senha_direto', 'funcionarios', authId, { email: email }, { method: 'rpc' });
+  
+  const modal = document.getElementById('modalAdminResetSenha');
+  if (modal) modal.remove();
+  
+  adminShowFeedback('<i data-lucide="check-circle" style="width:14px;height:14px;vertical-align:middle;"></i> Senha redefinida com sucesso!', 'sucesso');
 }
 
 async function adminSuspenderFuncionario(funcId) {
