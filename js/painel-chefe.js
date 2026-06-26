@@ -124,7 +124,7 @@ async function carregarAlertasChefe() {
   
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
-    .select('*, funcionarios(nome), pontos_ronda(nome, latitude, longitude)')
+    .select('*, funcionarios(nome), pontos_ronda(nome, localizacao)')
     .in('funcionario_id', idsEquipe)
     .eq('status', 'ALERTA')
     .order('horario_leitura', { ascending: false })
@@ -149,8 +149,8 @@ async function carregarAlertasChefe() {
     
     // O sistema salvará uma msg tipo "Fora do raio (150m)" no status ou log, vamos extrair se houver, ou assumir.
     // Como a especificação diz que o alerta é distância:
-    const pLat = log.pontos_ronda ? log.pontos_ronda.latitude : '';
-    const pLng = log.pontos_ronda ? log.pontos_ronda.longitude : '';
+    const pLat = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.latitude : '';
+    const pLng = (log.pontos_ronda && log.pontos_ronda.localizacao) ? log.pontos_ronda.localizacao.longitude : '';
     const mapBtn = (log.latitude && log.longitude) ? `<button class="btn-clear" style="margin-top:4px; display:inline-block; color:#3ea6ff; font-size:12px; font-weight:bold; cursor:pointer;" onclick="abrirMapaLogRonda('${pLat}', '${pLng}', '${log.latitude}', '${log.longitude}', '${nomePonto}', '${nomeFunc}')"><i data-lucide="map" style="width:14px;height:14px;vertical-align:middle;"></i> Ver Mapa</button>` : '';
 
     html += `

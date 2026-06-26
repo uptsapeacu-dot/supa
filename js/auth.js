@@ -132,6 +132,12 @@ async function iniciarSistema() {
   })
   atualizarInterfaceModo()
 
+  if (isChefeEquipe() && !isSecretaria()) {
+    document.querySelectorAll('.mode-toggle-container').forEach(function(el) {
+      el.style.display = 'none'
+    })
+  }
+
   mostrarTela('home')
   await carregarEscolas()
 
