@@ -415,7 +415,7 @@ function atualizarInterfaceModo() {
 
   const formNovoAviso = document.getElementById('formNovoAviso')
   if (formNovoAviso) {
-    const podePostarMural = escolaAtual && (isSecretaria() || podeAcessarModulo('mural', escolaAtual))
+    const podePostarMural = isSecretaria() || (escolaAtual && podeAcessarModulo('mural', escolaAtual))
     formNovoAviso.style.display = (modoEdicaoAtivo && podePostarMural) ? 'block' : 'none'
   }
 
