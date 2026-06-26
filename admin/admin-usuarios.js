@@ -299,7 +299,7 @@ async function adminExecutarResetSenha(authId, email) {
   if (window.lucide) window.lucide.createIcons();
 
   const { error } = await clienteSupabase.rpc('reset_user_password', {
-    uid: authId,
+    p_uid: authId,
     new_pass: novaSenha
   });
 
