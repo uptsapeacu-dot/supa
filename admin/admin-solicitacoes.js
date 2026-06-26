@@ -14,7 +14,7 @@ async function adminRenderizarSolicitacoes() {
     .select('*, funcionarios(id, nome, cpf), orgaos(id, nome)')
     .eq('status_aprovacao', 'pendente')
     .eq('ativo', true)
-    .order('data_solicitacao', { ascending: false });
+    .order('created_at', { ascending: false });
 
   if (error) {
     conteudo.innerHTML = '<div class="admin-alert admin-alert-danger"><i data-lucide="alert-triangle"></i> Erro ao carregar solicitações: ' + error.message + '</div>';
@@ -187,9 +187,9 @@ async function adminConfirmarRejeicao(vinculoId, nomeFunc) {
   document.getElementById('adminModalRejeicaoLotacao').remove();
   
   if (typeof adminToast === 'function') {
-    adminToast(\`Lotação rejeitada com sucesso.\`, 'aviso');
+    adminToast('Lotação rejeitada com sucesso.', 'aviso');
   } else {
-    alert(\`Lotação rejeitada com sucesso.\`);
+    alert('Lotação rejeitada com sucesso.');
   }
   
   adminRenderizarSolicitacoes();
