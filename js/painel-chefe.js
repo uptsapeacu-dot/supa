@@ -265,23 +265,38 @@ async function renderizarGestaoEscolaChefia(container) {
       }
 
       html += `
-        <div style="background:#1e293b; border:1px solid #334155; border-radius:8px; padding:15px; display:flex; justify-content:space-between; align-items:center;">
-          <div>
-            <div style="color:#f8fafc; font-weight:bold; font-size:15px; margin-bottom:4px;">${func.nome}</div>
-            <div style="color:#94a3b8; font-size:12px; margin-bottom:6px;">Cargo: ${v.cargo}</div>
-            ${badgeHorarios}
+        <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:16px; display:flex; flex-direction:column; gap:12px; margin-bottom: 10px;">
+          <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+            <div style="display:flex; gap:12px; align-items:center;">
+              <div style="width:48px; height:48px; border-radius:50%; background:#0f172a; flex-shrink:0; overflow:hidden; display:flex; align-items:center; justify-content:center; border: 1px solid #334155;">
+                ${func.foto_url ? \`<img src="\${func.foto_url}" style="width:100%; height:100%; object-fit:cover;" />\` : \`<i data-lucide="user" style="color:#94a3b8; width:24px; height:24px;"></i>\`}
+              </div>
+              <div>
+                <div style="color:#f8fafc; font-weight:bold; font-size:15px; margin-bottom:2px;">${func.nome}</div>
+                <div style="color:#94a3b8; font-size:12px; display:flex; align-items:center; gap:4px;">
+                  <i data-lucide="briefcase" style="width:12px; height:12px;"></i> ${v.cargo}
+                </div>
+              </div>
+            </div>
+            
+            <button class="btn-clear" style="color:#ef4444; padding:6px; border-radius:6px; background:rgba(239,68,68,0.1); cursor:pointer; transition: background 0.2s;" title="Remover Lotação" onclick="removerLotacaoOperacional('${v.id}', '${func.nome}')" onmouseover="this.style.background='rgba(239,68,68,0.2)'" onmouseout="this.style.background='rgba(239,68,68,0.1)'">
+              <i data-lucide="user-minus" style="width:16px;height:16px;"></i>
+            </button>
           </div>
-          <div style="display:flex; flex-direction:column; gap:5px;">
-    <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
-      <i data-lucide="clock" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Configurar
-    </button>
-    <button class="btn-clear" style="background:#1e293b; border:1px solid #475569; color:#cbd5e1; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px;" onclick="abrirModalAuditoriaChefe('${func.id}', '${func.nome}', escolaAtual)">
-      <i data-lucide="clipboard-list" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Auditoria (Omissões)
-    </button>
-    <button class="btn-clear" style="background:#ef4444; color:#fff; padding:8px 12px; border-radius:6px; font-weight:bold; font-size:13px; margin-top:4px;" onclick="removerLotacaoOperacional('${v.id}', '${func.nome}')">
-      <i data-lucide="user-minus" style="width:14px;height:14px;margin-right:4px;vertical-align:middle;"></i> Remover Lotação
-    </button>
-  </div>
+
+          <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid #334155; padding-top:12px; flex-wrap:wrap; gap:10px;">
+            <div>
+              ${badgeHorarios}
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn-clear" style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:#cbd5e1; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="abrirModalAuditoriaChefe('${func.id}', '${func.nome}', escolaAtual)">
+                <i data-lucide="clipboard-list" style="width:14px;height:14px;"></i> Auditoria
+              </button>
+              <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:6px 12px; border-radius:6px; font-weight:bold; font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer;" onclick="abrirModalConfigurarPlantao('${func.id}', '${func.nome}')">
+                <i data-lucide="clock" style="width:14px;height:14px;"></i> Escala
+              </button>
+            </div>
+          </div>
         </div>
       `;
     });
