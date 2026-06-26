@@ -221,7 +221,7 @@ function adminRenderizarCardsUsuarios(lista) {
         '<button class="admin-btn admin-btn-ghost" title="Ver logs de acesso" onclick="adminVerLogsDoUsuario(\'' + func.id + '\', \'' + email + '\')">' +
           '<i data-lucide="activity"></i>' +
         '</button>' +
-        '<button class="admin-btn admin-btn-ghost" title="Resetar senha" onclick="adminAbrirModalReset(\'' + func.auth_user_id + '\', \'' + email + '\', \'' + nome + '\')">' +
+        '<button class="admin-btn admin-btn-ghost" title="Resetar senha" onclick="adminAbrirModalReset(\'' + func.auth_user_id + '\', \'' + email + '\', \'' + (nome || '').replace(/\'/g, "\\'") + '\')">' +
           '<i data-lucide="key-round"></i>' +
         '</button>' +
         (!isAdmin ? '<button class="admin-btn admin-btn-danger" title="Suspender conta" onclick="adminSuspenderFuncionario(\'' + func.id + '\')">' +
@@ -257,6 +257,8 @@ function adminAbrirModalReset(authId, email, nome) {
     alert('Este usuário ainda não possui um ID de autenticação válido.');
     return;
   }
+  const modalAntigo = document.getElementById('modalAdminResetSenha');
+  if (modalAntigo) modalAntigo.remove();
 
   const modal = document.createElement('div')
   modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;'
