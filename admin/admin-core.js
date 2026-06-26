@@ -248,6 +248,7 @@ async function adminRenderizarConfiguracoes() {
               '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 3º Bimestre</label><input type="date" id="cfgFimB3" value="' + b3 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
               '<div><label style="color:var(--admin-muted); font-size: 12px; display: block; margin-bottom: 4px;">Fim do 4º Bimestre</label><input type="date" id="cfgFimB4" value="' + b4 + '" style="width:100%;background:#0d0d0d;border:1px solid var(--admin-border2);color:white;border-radius:8px;padding:8px;font-size:14px;"></div>' +
             '</div>' +
+            '<button class="admin-btn admin-btn-primary" style="margin-top:12px;" onclick="adminSalvarConfig()"><i data-lucide="save"></i> Salvar Datas</button>' +
           '</div>' +
           '<div id="cfgAnoFeedback" style="display:none;margin-top:10px;"></div>' +
         '</div>' +
