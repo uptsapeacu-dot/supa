@@ -666,7 +666,7 @@ async function abrirModalAuditoriaChefe(funcId, funcNome, escId) {
         <div style="background:#0f172a; border-left:4px solid #f59e0b; padding:12px; border-radius:4px; display:flex; justify-content:space-between;">
           <div>
             <div style="color:#cbd5e1; font-weight:bold;">${dataBr} - ${hora} (${item.escala.tipo_horario})</div>
-            <div style="color:#f59e0b; font-size:12px; margin-top:4px;">Omissão Justificada: "${item.justificativa}"</div>
+            <div style="color:#f59e0b; font-size:12px; margin-top:4px;">Omissão Justificada: "${escapeHTML(item.justificativa)}"</div>
           </div>
         </div>
       `;

@@ -1,5 +1,15 @@
-﻿function textoOuVazio(valor) {
+function textoOuVazio(valor) {
   return valor && String(valor).trim() ? valor : '-'
+}
+
+function escapeHTML(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function formatarDataBR(dataSql) {

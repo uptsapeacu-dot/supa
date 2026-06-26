@@ -694,7 +694,7 @@ async function abrirAuditoriaGeral(escId) {
             <div>
               <div style="color: #f8fafc; font-weight: bold; font-size: 15px; margin-bottom: 4px;">${p.nomeVigia}</div>
               <div style="color: #94a3b8; font-size: 12px;">${dataBr} às ${hora} (Plantão ${p.escala.tipo_horario})</div>
-              <div style="color: #f59e0b; font-size: 11px; margin-top: 4px; font-weight: bold;">JUSTIFICADO: ${p.justificativa}</div>
+              <div style="color: #f59e0b; font-size: 11px; margin-top: 4px; font-weight: bold;">JUSTIFICADO: ${escapeHTML(p.justificativa)}</div>
             </div>
           </div>
         `;
