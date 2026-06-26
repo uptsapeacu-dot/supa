@@ -156,6 +156,11 @@ function fecharModalAniversariante() {
 function carregarAvisos() {
   const lista = document.getElementById('listaAvisos')
   if (!lista) return
+  
+  if (typeof renderizarCheckboxEscolasMural === 'function') {
+    renderizarCheckboxEscolasMural()
+  }
+
   let avisosGlobais = []
   
   if (escolaAtual != null && escolaAtual !== '') {
@@ -209,8 +214,8 @@ function carregarAvisos() {
     left.appendChild(autor)
     left.appendChild(meta)
     header.appendChild(left)
-    // O botão excluir avisa só aparece se houver uma escola selecionada e tiver edição ativa
-    if (temPermissaoEdicao && escolaAtual) {
+    // O botão excluir aparece se houver permissão de edição
+    if (temPermissaoEdicao) {
       const btnDel = document.createElement('button')
       btnDel.className = 'btn-editar'
       btnDel.style.background = '#ff5b5b'
@@ -224,7 +229,8 @@ function carregarAvisos() {
     content.style.marginTop = '10px'
     content.style.color = '#eee'
     content.style.whiteSpace = 'pre-wrap'
-    content.textContent = aviso.texto
+    // Proteção XSS com suporte a múltiplas linhas
+    content.innerHTML = typeof escapeHTML === 'function' ? escapeHTML(aviso.texto).replace(/\n/g, '<br>') : aviso.texto
     card.appendChild(header)
     card.appendChild(content)
     lista.appendChild(card)
@@ -240,9 +246,6 @@ function publicarAviso() {
     return
   }
 
-  const key = 'mural_avisos_' + escolaAtual
-  const avisos = JSON.parse(localStorage.getItem(key) || '[]')
-
   const novo = {
     id: 'aviso_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9),
     texto: texto,
@@ -250,20 +253,57 @@ function publicarAviso() {
     autor: funcionarioAtual ? (funcionarioAtual.nome || funcionarioAtual.email) : 'Usuário'
   }
 
-  avisos.unshift(novo)
-  localStorage.setItem(key, JSON.stringify(avisos))
+  let alvos = []
+  if (escolaAtual != null && escolaAtual !== '') {
+    alvos = [escolaAtual]
+  } else {
+    // Pegar as marcadas no checkbox
+    const chks = document.querySelectorAll('.chk-mural-escola:checked')
+    chks.forEach(function(c) { alvos.push(c.value) })
+    
+    if (alvos.length === 0) {
+      alert('Selecione pelo menos uma escola para publicar.')
+      return
+    }
+  }
+
+  alvos.forEach(function(idEscola) {
+    const key = 'mural_avisos_' + idEscola
+    const avisos = JSON.parse(localStorage.getItem(key) || '[]')
+    avisos.unshift(novo)
+    localStorage.setItem(key, JSON.stringify(avisos))
+  })
 
   textarea.value = ''
+  // Limpar os checkboxes após postar
+  const chkTodos = document.getElementById('chkMuralTodasEscolas')
+  if (chkTodos) chkTodos.checked = false
+  document.querySelectorAll('.chk-mural-escola').forEach(function(c) { c.checked = false })
+  
   carregarAvisos()
   alert('Comunicado publicado!')
 }
 
 function excluirAviso(avisoId) {
   if (!confirm('Deseja excluir este comunicado?')) return
-  const key = 'mural_avisos_' + escolaAtual
-  let avisos = JSON.parse(localStorage.getItem(key) || '[]')
-  avisos = avisos.filter(function(a) { return a.id !== avisoId })
-  localStorage.setItem(key, JSON.stringify(avisos))
+  
+  let alvos = []
+  if (escolaAtual != null && escolaAtual !== '') {
+    alvos = [escolaAtual]
+  } else {
+    alvos = idsEscolasPermitidas()
+  }
+
+  alvos.forEach(function(idEscola) {
+    const key = 'mural_avisos_' + idEscola
+    let avisos = JSON.parse(localStorage.getItem(key) || '[]')
+    const sizeInicial = avisos.length
+    avisos = avisos.filter(function(a) { return a.id !== avisoId })
+    if (avisos.length !== sizeInicial) {
+      localStorage.setItem(key, JSON.stringify(avisos))
+    }
+  })
+  
   carregarAvisos()
 }
 
@@ -279,5 +319,54 @@ function mudarFiltroMural(dias) {
   const d = String(dataAtual.getDate()).padStart(2, '0');
   
   input.value = `${y}-${m}-${d}`;
-  carregarAvisos();
+}
+
+function renderizarCheckboxEscolasMural() {
+  const container = document.getElementById('containerEscolasMural');
+  if (!container) return;
+
+  if (escolaAtual != null && escolaAtual !== '') {
+    container.style.display = 'none';
+    return;
+  }
+
+  const temPermissao = modoEdicaoAtivo && (isSecretaria() || (escolaAtual && podeAcessarModulo('mural', escolaAtual)));
+  if (!temPermissao && !isSecretaria()) {
+    container.style.display = 'none';
+    return;
+  }
+
+  container.style.display = 'block';
+  let html = '<div style="margin-bottom:8px; font-weight:bold; color:#cbd5e1;">Destinatários (Selecione as escolas):</div>';
+  html += '<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; cursor:pointer; color:#f1f1f1;">';
+  html += '<input type="checkbox" id="chkMuralTodasEscolas" onchange="toggleTodasEscolasMural(this)" style="width:16px; height:16px; accent-color:#3b82f6;">';
+  html += '<span>Toda a Rede (Selecionar Todas)</span></label>';
+
+  const idsPermitidos = idsEscolasPermitidas();
+  const escolasPermitidas = escolas.filter(function(e) { return idsPermitidos.includes(e.id); });
+
+  html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:150px; overflow-y:auto; padding-right:5px;" id="listaCheckboxesEscolasMural">';
+  escolasPermitidas.forEach(function(e) {
+    html += '<label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#cbd5e1;">';
+    html += '<input type="checkbox" class="chk-mural-escola" value="' + e.id + '" style="accent-color:#3b82f6;" onchange="verificarToggleTodasEscolasMural()">';
+    html += '<span>' + (typeof escapeHTML === 'function' ? escapeHTML(e.nome) : e.nome) + '</span></label>';
+  });
+  html += '</div>';
+
+  container.innerHTML = html;
+}
+
+function toggleTodasEscolasMural(chkTodos) {
+  const chks = document.querySelectorAll('.chk-mural-escola');
+  chks.forEach(function(c) { c.checked = chkTodos.checked; });
+}
+
+function verificarToggleTodasEscolasMural() {
+  const chkTodos = document.getElementById('chkMuralTodasEscolas');
+  const chks = document.querySelectorAll('.chk-mural-escola');
+  if (!chkTodos || chks.length === 0) return;
+  
+  let todosMarcados = true;
+  chks.forEach(function(c) { if (!c.checked) todosMarcados = false; });
+  chkTodos.checked = todosMarcados;
 }
