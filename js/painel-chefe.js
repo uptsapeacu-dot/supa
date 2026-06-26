@@ -91,15 +91,18 @@ function renderizarOperacionaisChefe(lista) {
 }
 
 function filtrarOperacionais() {
-  const busca = (document.getElementById('buscaOperacional').value || '').toLowerCase();
-  if (!busca) {
+  const buscaStr = (document.getElementById('buscaOperacional').value || '').toLowerCase().trim();
+  if (!buscaStr) {
     renderizarOperacionaisChefe(_operacionaisChefeCache);
     return;
   }
   
+  const buscaNum = buscaStr.replace(/\D/g, '');
+
   const filtrados = _operacionaisChefeCache.filter(function(f) {
-    return (f.nome && f.nome.toLowerCase().includes(busca)) ||
-           (f.cpf && f.cpf.replace(/\D/g, '').includes(busca.replace(/\D/g, '')))
+    const matchNome = f.nome && f.nome.toLowerCase().includes(buscaStr);
+    const matchCpf = f.cpf && buscaNum !== '' && String(f.cpf).replace(/\D/g, '').includes(buscaNum);
+    return matchNome || matchCpf;
   });
   renderizarOperacionaisChefe(filtrados);
 }
@@ -640,6 +643,11 @@ async function pesquisarServidorAlocacao() {
 
   if (!busca || busca.length < 3) {
     container.innerHTML = '<div style="color:#f59e0b; text-align:center; padding:10px;">Digite pelo menos 3 caracteres.</div>';
+    return;
+  }
+  
+  if (!_cargosGerenciadosChefeCache || _cargosGerenciadosChefeCache.length === 0) {
+    container.innerHTML = '<div style="color:#f59e0b; text-align:center; padding:10px;">Você não possui cargos gerenciados configurados para sua conta.</div>';
     return;
   }
 
