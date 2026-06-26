@@ -220,7 +220,7 @@ function carregarAvisos() {
       btnDel.className = 'btn-editar'
       btnDel.style.background = '#ff5b5b'
       btnDel.style.color = '#120000'
-      btnDel.textContent = 'ðŸ—‘ï¸'
+      btnDel.innerHTML = '<i data-lucide="trash-2" style="width:16px;height:16px;"></i>'
       btnDel.title = 'Excluir aviso'
       btnDel.onclick = function() { excluirAviso(aviso.id) }
       header.appendChild(btnDel)
@@ -235,6 +235,7 @@ function carregarAvisos() {
     card.appendChild(content)
     lista.appendChild(card)
   })
+  if (window.lucide) lucide.createIcons()
 }
 
 function publicarAviso() {
@@ -337,18 +338,18 @@ function renderizarCheckboxEscolasMural() {
   }
 
   container.style.display = 'block';
-  let html = '<div style="margin-bottom:8px; font-weight:bold; color:#cbd5e1;">Destinatários (Selecione as escolas):</div>';
-  html += '<label style="display:flex; align-items:center; gap:8px; margin-bottom:10px; cursor:pointer; color:#f1f1f1;">';
-  html += '<input type="checkbox" id="chkMuralTodasEscolas" onchange="toggleTodasEscolasMural(this)" style="width:16px; height:16px; accent-color:#3b82f6;">';
-  html += '<span>Toda a Rede (Selecionar Todas)</span></label>';
+  let html = '<div style="margin-bottom:10px; font-weight:600; color:#e2e8f0; font-size:14px;">Destinatários (Selecione as escolas):</div>';
+  html += '<label style="display:flex; align-items:center; gap:10px; margin-bottom:12px; cursor:pointer; color:#f8fafc; padding:12px; background:#2a2a2a; border-radius:8px; border:1px solid #475569; transition:all 0.2s;" onmouseover="this.style.borderColor=\'#3b82f6\'" onmouseout="this.style.borderColor=\'#475569\'">';
+  html += '<input type="checkbox" id="chkMuralTodasEscolas" onchange="toggleTodasEscolasMural(this)" style="width:18px; height:18px; accent-color:#3b82f6; cursor:pointer;">';
+  html += '<span style="font-weight:500;">Toda a Rede (Selecionar Todas)</span></label>';
 
   const idsPermitidos = idsEscolasPermitidas();
   const escolasPermitidas = escolas.filter(function(e) { return idsPermitidos.includes(e.id); });
 
-  html += '<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; max-height:150px; overflow-y:auto; padding-right:5px;" id="listaCheckboxesEscolasMural">';
+  html += '<div style="display:flex; flex-direction:column; gap:6px; max-height:180px; overflow-y:auto; padding-right:5px;" id="listaCheckboxesEscolasMural">';
   escolasPermitidas.forEach(function(e) {
-    html += '<label style="display:flex; align-items:center; gap:8px; cursor:pointer; font-size:13px; color:#cbd5e1;">';
-    html += '<input type="checkbox" class="chk-mural-escola" value="' + e.id + '" style="accent-color:#3b82f6;" onchange="verificarToggleTodasEscolasMural()">';
+    html += '<label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-size:13px; color:#cbd5e1; padding:8px 12px; background:#1e293b; border-radius:6px; border:1px solid #334155; transition:all 0.2s;" onmouseover="this.style.background=\'#334155\'" onmouseout="this.style.background=\'#1e293b\'">';
+    html += '<input type="checkbox" class="chk-mural-escola" value="' + e.id + '" style="width:16px; height:16px; accent-color:#3b82f6; cursor:pointer;" onchange="verificarToggleTodasEscolasMural()">';
     html += '<span>' + (typeof escapeHTML === 'function' ? escapeHTML(e.nome) : e.nome) + '</span></label>';
   });
   html += '</div>';

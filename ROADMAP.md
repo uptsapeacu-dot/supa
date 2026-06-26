@@ -20,6 +20,7 @@ Este arquivo será nosso guia. Ele contém o status atual de tudo o que foi soli
 - [ ] **Dashboard da Secretaria:** Trazer métricas reais em tempo real para a `home.html`.
 - [ ] **Sistema de Avaliações (Boletins):** Transformar o visual atual em uma tela de lançamento real de notas (bimestres, trimestres).
 - [ ] **Relatórios:** Ampliar os relatórios estatísticos para incluir reprovação, aprovação e gráficos.
+- [ ] **Gestão Global de 360 Graus:** Remover as "travas antigas" que exigem a presença de `escolaAtual` para carregar UI/Funções (`auth.js`, `turmas.js`). Isso permitirá que a Secretaria cadastre alunos, gerencie turmas e visualize operações diretamente do painel global, escolhendo a escola em uma lista flutuante.
 
 ## 🔴 O que FALTA ser Implementado (Novos Módulos)
 - [ ] **Diário de Classe Digital & Chamada Digital:** Interface rápida para professores registrarem presença, conteúdo e atividades no dia a dia.
