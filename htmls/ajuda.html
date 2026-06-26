@@ -1,13 +1,14 @@
 <div class="page-header">
-  <h1>Diretrizes do Sistema</h1>
+  <h1>Central de Ajuda</h1>
 </div>
 <div class="diretrizes-layout" style="max-width: 800px; margin: 0 auto; padding: 20px;">
   
   <div style="margin-bottom: 20px;">
-    <input type="text" id="buscaDiretrizes" placeholder="Buscar conteúdos por tópico..." oninput="filtrarDiretrizes()" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 15px; outline: none;" onfocus="this.style.borderColor='#3ea6ff'" onblur="this.style.borderColor='#333'">
+    <input type="text" id="buscaDiretrizes" placeholder="Buscar conteúdos de ajuda..." oninput="filtrarDiretrizes()" style="width: 100%; padding: 12px 16px; border-radius: 8px; border: 1px solid #333; background: #1a1a1a; color: #fff; font-size: 15px; outline: none;" onfocus="this.style.borderColor='#3ea6ff'" onblur="this.style.borderColor='#333'">
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 1: Níveis de Acesso -->
+  <div class="diretriz-card" data-tags="acesso permissão nivel hierarquia admin secretaria diretor professor chefe operacional" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d1', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="shield" style="width:18px;height:18px;"></i> Níveis de Acesso</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -25,7 +26,26 @@
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 2: Fluxo de Alocação de Diretores (NOVO) -->
+  <div class="diretriz-card" data-tags="diretor gestor alocação contratação escola email lotação permissão senha ajuda" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d9', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="user-cog" style="width:18px;height:18px;"></i> Fluxo de Alocação de Diretores</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d9" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">Para realizar a contratação e liberação de acesso de um novo Diretor Escolar, siga o fluxo padronizado e sequencial abaixo:</p>
+      <ol style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:8px;"><strong>Etapa 1 - Criação da Escola:</strong> A unidade de ensino deve estar cadastrada no sistema. O cadastro pode ser realizado por um usuário de Nível 1 (Administrador Global) ou solicitado diretamente ao Administrador do Sistema.</li>
+        <li style="margin-bottom:8px;"><strong>Etapa 2 - Cadastro e E-mail Institucional:</strong> Cadastre o novo diretor no módulo de "Funcionários". Defina o e-mail cadastrado no padrão obrigatório <code>nomecompleto@sapeacu.gov.br</code> e solicite ao administrador a criação da conta correspondente com este mesmo e-mail.</li>
+        <li style="margin-bottom:8px;"><strong>Etapa 3 - Lotação de Funcionário:</strong> Acesse as configurações de vínculos do funcionário (no painel de Funcionários) e lote o diretor na escola para a qual foi designado.</li>
+        <li style="margin-bottom:8px;"><strong>Etapa 4 - Permissão de Acesso (Nível 2):</strong> Acesse o módulo de "Permissões", ative o <strong>Modo Edição</strong> e atribua ao usuário a permissão de <strong>Nível 2 - Diretor Escolar</strong>, vinculando-o exatamente à mesma escola de sua lotação física.</li>
+        <li style="margin-bottom:8px;"><strong>Etapa 5 - Primeiro Acesso e Nova Senha:</strong> O diretor efetuará o primeiro acesso usando o e-mail cadastrado e a senha temporária configurada pelo administrador. Ao entrar no sistema, o painel exigirá a definição de uma nova senha pessoal definitiva. Concluída essa etapa, o acesso estará totalmente liberado.</li>
+      </ol>
+    </div>
+  </div>
+
+  <!-- CARD 3: Cadastro e Acesso de Professores -->
+  <div class="diretriz-card" data-tags="professor docente cadastro email permissão diário primeiro acesso" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d4', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="user-plus" style="width:18px;height:18px;"></i> Cadastro e Acesso de Professores</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -49,7 +69,8 @@
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 4: Modo de Edição -->
+  <div class="diretriz-card" data-tags="edição visualização alterar senha interruptor salvar" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d2', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="edit-3" style="width:18px;height:18px;"></i> Modo de Edição</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -64,7 +85,8 @@
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 5: Lançamentos Diários (Frequência e Notas) -->
+  <div class="diretriz-card" data-tags="notas faltas frequência diário salvar registros diários" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d3', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="calendar-check" style="width:18px;height:18px;"></i> Lançamentos Diários (Frequência e Notas)</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -72,39 +94,41 @@
     <div id="d3" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
       <p style="margin-top:10px;">A manipulação de registros essenciais do aluno exige segurança e rastreabilidade:</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
-        <li style="margin-bottom:6px;">Lançamentos por Gestãores/Secretaria exigem o Modo de Edição ativo.</li>
+        <li style="margin-bottom:6px;">Lançamentos por Gestores/Secretaria exigem o Modo de Edição ativo.</li>
         <li style="margin-bottom:6px;">Professores têm permissão nativa para lançar apenas na aba de Notas das disciplinas que ensinam e na Frequência das suas turmas.</li>
         <li style="margin-bottom:6px;">Todos os salvamentos gravam no banco de dados qual funcionário ("registrado_por") realizou a ação.</li>
       </ul>
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 6: Navegação do Professor -->
+  <div class="diretriz-card" data-tags="professor docente navegação turmas menu lateral diário" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d5', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="map" style="width:18px;height:18px;"></i> Navegação do Professor</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
     </button>
     <div id="d5" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
-      <p style="margin-top:10px;">O fluxo de navegação do professor foi otimizado para ir direto ação que interessa:</p>
+      <p style="margin-top:10px;">O fluxo de navegação do professor foi otimizado para ir direto ao que interessa:</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
-        <li style="margin-bottom:6px;"><strong>Módulos Administrativos:</strong> Ação clicar na escola na tela inicial, o professor verá que não tem acesso açãos módulos gerais, isso é esperado já que ele não é secretário ou gestãor e não precisa ver os módulos de cadastro.</li>
+        <li style="margin-bottom:6px;"><strong>Módulos Administrativos:</strong> Ao clicar na escola na tela inicial, o professor verá que não tem acesso aos módulos gerais; isso é esperado, pois ele não é secretário ou gestor.</li>
         <li style="margin-bottom:6px;"><strong>Menu Lateral Direto:</strong> Professores devem utilizar o menu <strong>"Turmas"</strong> na barra lateral esquerda (sidebar) para acessar diretamente suas disciplinas, frequência e alunos.</li>
       </ul>
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 7: Módulo ABAC: Gestão de Equipes (Chefe) -->
+  <div class="diretriz-card" data-tags="chefe equipe abac vigia porteiro gari operacional lotação" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d6', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="shield-check" style="width:18px;height:18px;"></i> Módulo ABAC: Gestão de Equipes (Chefe)</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
     </button>
     <div id="d6" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
-      <p style="margin-top:10px;">A atribuição de um <strong>Chefe de Equipe (Nível 5)</strong> funciona baseada nas profissões que ele coordena (Controle de Acesso Baseado em Atributos - ABAC):</p>
+      <p style="margin-top:10px;">A atribuição de um <strong>Chefe de Equipe (Nível 5)</strong> funciona baseada nas profissões que ele coordena (ABAC):</p>
       <ul style="margin-top: 8px; padding-left: 20px;">
         <li style="margin-bottom:6px;"><strong>Centralização de Cargos:</strong> A lista de cargos do sistema é gerenciada exclusivamente pela equipe do <strong>Super Painel Administrativo</strong>. Apenas os Super Admins podem cadastrar, editar ou remover um cargo do banco de dados global.</li>
-        <li style="margin-bottom:6px;"><strong>Atribuição:</strong> Ação conceder permissão de Nível 5 para um funcionário no menu "Permissões", o gestãor deverá marcar nas caixinhas de seleção quais profissões oficiais ele poderá gerenciar (ex: Vigias, Garis, Inspetores).</li>
+        <li style="margin-bottom:6px;"><strong>Atribuição:</strong> Ao conceder permissão de Nível 5 para um funcionário no menu "Permissões", o gestor deverá marcar nas caixinhas de seleção quais profissões oficiais ele poderá gerenciar (ex: Vigias, Garis, Inspetores).</li>
         <li style="margin-bottom:6px;">No <em>Painel do Chefe</em>, o sistema listará apenas os funcionários subordinados àquele chefe (ou seja, funcionários cujos vínculos na escola possuam os mesmos cargos que o chefe foi designado a controlar).</li>
-        <li style="margin-bottom:6px;">O Chefe poderá acompanhar as informações da equipe, definir as escalas e consultar os logs de rondas ou ponto eletrônico de sua respectiva equipe, sem ter acesso açãos módulos globais de secretaria.</li>
+        <li style="margin-bottom:6px;">O Chefe poderá acompanhar as informações da equipe, definir as escalas e consultar os logs de rondas ou ponto eletrônico de sua respectiva equipe, sem ter acesso aos módulos globais de secretaria.</li>
       </ul>
       
       <div style="margin-top: 16px; background: #2a2a2a; border-radius: 6px; padding: 12px; border-left: 4px solid #3ea6ff;">
@@ -127,7 +151,8 @@
     </div>
   </div>
 
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+  <!-- CARD 8: Ponto Eletrônico e GPS (Operacional) -->
+  <div class="diretriz-card" data-tags="ponto gps geolocation geolocalização qr code operacional mobile" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d7', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="scan-line" style="width:18px;height:18px;"></i> Ponto Eletrônico e GPS (Operacional)</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -137,9 +162,13 @@
       <ul style="margin-top: 8px; padding-left: 20px;">
         <li style="margin-bottom:6px;">O sistema abrirá automaticamente a tela do App Mobile <strong>"Bater Ponto"</strong> na inicialização.</li>
         <li style="margin-bottom:6px;">O navegador obrigatoriamente solicitará permissão de Geolocalização (GPS). Se a permissão for negada, o sistema não autoriza a ativação do leitor de QR Code.</li>
-        <li style="margin-bottom:6px;">Ação aceitar o GPS e escanear o Código QR (colado nas escolas ou postos de trabalho), a posição exata é conferida para atestar que o operacional está presencialmente no local e a rota é registrada no banco de logs.</li>
+        <li style="margin-bottom:6px;">Ao aceitar o GPS e escanear o Código QR (colado nas escolas ou postos de trabalho), a posição exata é conferida para atestar que o operacional está presencialmente no local e a rota é registrada no banco de logs.</li>
       </ul>
-  <div class="diretriz-card" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    </div>
+  </div>
+
+  <!-- CARD 9: Roteiro Completo: Criação de Vigias e Rondas -->
+  <div class="diretriz-card" data-tags="roteiro vigia ronda super painel chefe operacional qr code" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
     <button onclick="toggleDiretriz('d8', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
       <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="book-open" style="width:18px;height:18px;"></i> Roteiro Completo: Criação de Vigias e Rondas</span>
       <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
@@ -148,7 +177,7 @@
       <div style="margin-top: 16px; background: #2a2a2a; border-radius: 6px; padding: 12px; border-left: 4px solid #3ea6ff;">
         <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px;">1. Criando Pontos de Ronda (Super Administrador)</h4>
         <ol style="padding-left: 20px; margin-bottom: 12px;">
-          <li style="margin-bottom: 4px;">Acesse o <strong>Super Painel</strong> Administrativo na aba lateral (exige conta de nível máximo).</li>
+          <li style="margin-bottom: 4px;">Acesse o <strong>Super Painel</strong> Administrativo na aba lateral.</li>
           <li style="margin-bottom: 4px;">Clique em <strong>Controle de Rondas</strong>.</li>
           <li style="margin-bottom: 4px;">Preencha o formulário informando: nome do ponto, escola na qual ele fica, raio de tolerância (em metros), e Latitude/Longitude exatas.</li>
         </ol>
@@ -161,10 +190,10 @@
         </ol>
 
         <h4 style="color: #fff; margin-bottom: 8px; font-size: 14px;">3. Criando o Vigia Operacional</h4>
-        <ol style="padding-left: 20px; margin-bottom: 12px;">
+        <ol style="padding-left: 20px; margin-bottom: 0;">
           <li style="margin-bottom: 4px;">Em <strong>Funcionários</strong>, cadastre o vigia escrevendo <strong>Vigia</strong> exatamente no campo Cargo/Função.</li>
           <li style="margin-bottom: 4px;">Em <strong>Permissões</strong>, atribua <strong>Nível 6 - Operacional Mobile</strong>, garantindo que a escola selecionada é a mesma escola da sua lotação física.</li>
-          <li style="margin-bottom: 4px;">Ação fazer login, este usuário enxergará somente a tela de Ponto/QR Code. O chefe dele poderá ver seus logs em tempo real na aba Meu Setor.</li>
+          <li style="margin-bottom: 4px;">Ao fazer login, este usuário enxergará somente a tela de Ponto/QR Code. O chefe dele poderá ver seus logs em tempo real na aba Meu Setor.</li>
         </ol>
       </div>
     </div>
@@ -189,20 +218,42 @@
   }
 
   window.filtrarDiretrizes = function() {
-    const termo = document.getElementById('buscaDiretrizes').value.toLowerCase();
+    const termo = document.getElementById('buscaDiretrizes').value.toLowerCase().trim();
     const cards = document.querySelectorAll('.diretriz-card');
     
+    // Divide o termo em palavras para buscar múltiplos termos de forma flexível
+    const palavrasBusca = termo.split(/\s+/).filter(p => p.length > 1);
+    
     cards.forEach(function(card) {
-      const texto = card.textContent.toLowerCase();
-      if (texto.includes(termo)) {
+      const buttonText = card.querySelector('button').textContent.toLowerCase();
+      const contentText = card.querySelector('div[id^="d"]').textContent.toLowerCase();
+      const tags = (card.getAttribute('data-tags') || '').toLowerCase();
+      
+      const textoCompleto = buttonText + ' ' + contentText + ' ' + tags;
+      
+      // Se não houver termo de busca, exibe todos os cards e os mantém fechados
+      if (termo === '') {
         card.style.display = 'block';
-        if (termo.trim() !== '') {
-          const content = card.querySelector('div[id^="d"]');
-          const icon = card.querySelector('.d-icon');
-          if(content && content.style.display === 'none') {
-            content.style.display = 'block';
-            if(icon) icon.setAttribute('data-lucide', 'chevron-up');
-          }
+        const content = card.querySelector('div[id^="d"]');
+        const icon = card.querySelector('.d-icon');
+        if (content) content.style.display = 'none';
+        if (icon) icon.setAttribute('data-lucide', 'chevron-down');
+        return;
+      }
+      
+      // Verifica se todas as palavras da busca estão presentes no texto ou nas tags do card
+      const corresponde = palavrasBusca.every(function(palavra) {
+        return textoCompleto.includes(palavra);
+      });
+      
+      if (corresponde) {
+        card.style.display = 'block';
+        // Abre automaticamente o card se houver correspondência ativa
+        const content = card.querySelector('div[id^="d"]');
+        const icon = card.querySelector('.d-icon');
+        if (content && content.style.display === 'none') {
+          content.style.display = 'block';
+          if (icon) icon.setAttribute('data-lucide', 'chevron-up');
         }
       } else {
         card.style.display = 'none';
