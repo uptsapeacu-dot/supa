@@ -235,6 +235,12 @@ async function carregarFuncionarioAtual() {
   return true
 }
 
+function forcarAtualizacaoCache() {
+  const url = new URL(window.location.href);
+  url.searchParams.set('v', new Date().getTime());
+  window.location.href = url.toString();
+}
+
 async function logout() {
   await registrarLog('logout', { tipo: funcionarioAtual && funcionarioAtual.is_superadmin ? 'superadmin' : 'normal' })
   await clienteSupabase.auth.signOut()

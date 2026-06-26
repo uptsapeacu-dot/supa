@@ -53,7 +53,8 @@ const modulosEscola = [
   { id: 'funcionarios', nome: 'Funcionários', icone: 'users',          permissao: 'pode_funcionarios' },
   { id: 'matriculas',   nome: 'Matrículas',   icone: 'file-text',      permissao: 'pode_matriculas'   },
   { id: 'alunos',       nome: 'Alunos',       icone: 'graduation-cap', permissao: 'pode_alunos'       },
-  { id: 'ocorrencias',  nome: 'Ocorrências',  icone: 'alert-triangle', permissao: 'pode_ocorrencias'  }
+  { id: 'ocorrencias',  nome: 'Ocorrências',  icone: 'alert-triangle', permissao: 'pode_ocorrencias'  },
+  { id: 'atestados',    nome: 'Atestados',    icone: 'file-check-2',   permissao: 'pode_atestados'    }
 ]
 let alunos = []
 let alunoEditando = null
