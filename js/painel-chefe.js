@@ -124,7 +124,7 @@ async function carregarAlertasChefe() {
   
   const { data, error } = await clienteSupabase
     .from('registros_ronda')
-    .select('*, funcionarios(nome), pontos_ronda(nome)')
+    .select('*, funcionarios(nome), pontos_ronda(nome, latitude, longitude)')
     .in('funcionario_id', idsEquipe)
     .eq('status', 'ALERTA')
     .order('horario_leitura', { ascending: false })
