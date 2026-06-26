@@ -71,11 +71,15 @@ function renderizarOperacionaisChefe(lista) {
   
   let html = '';
   lista.forEach(function(f) {
+    const avatarHtml = (f.foto_url && f.foto_url.trim() !== '')
+      ? `<img src="${f.foto_url}" style="width:100%; height:100%; border-radius:50%; object-fit:cover;" />`
+      : f.nome.charAt(0).toUpperCase();
+
     html += `
       <div style="background:#1e293b; border:1px solid #334155; border-radius:12px; padding:14px; display:flex; align-items:center; gap:12px; justify-content:space-between; width:100%;">
         <div style="display:flex; align-items:center; gap:12px;">
-          <div style="width:40px; height:40px; border-radius:50%; background:#3b82f6; display:flex; align-items:center; justify-content:center; color:white; font-weight:bold; font-size:16px;">
-            ${f.nome.charAt(0).toUpperCase()}
+          <div style="width:40px; height:40px; border-radius:50%; background:#3b82f6; display:flex; align-items:center; justify-content:center; overflow:hidden; color:white; font-weight:bold; font-size:16px;">
+            ${avatarHtml}
           </div>
           <div>
             <div style="color:#f8fafc; font-weight:bold; font-size:14px; margin-bottom:2px;">${f.nome}</div>
