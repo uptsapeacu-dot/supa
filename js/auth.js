@@ -236,9 +236,33 @@ async function carregarFuncionarioAtual() {
 }
 
 function forcarAtualizacaoCache() {
-  const url = new URL(window.location.href);
-  url.searchParams.set('v', new Date().getTime());
-  window.location.href = url.toString();
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.top = '0';
+  overlay.style.left = '0';
+  overlay.style.width = '100vw';
+  overlay.style.height = '100vh';
+  overlay.style.backgroundColor = 'rgba(15, 23, 42, 0.95)';
+  overlay.style.backdropFilter = 'blur(10px)';
+  overlay.style.zIndex = '999999';
+  overlay.style.display = 'flex';
+  overlay.style.flexDirection = 'column';
+  overlay.style.justifyContent = 'center';
+  overlay.style.alignItems = 'center';
+  overlay.innerHTML = `
+    <i data-lucide="loader-2" style="color:#3ea6ff; width:50px; height:50px; margin-bottom:15px; animation: spin 1s linear infinite;"></i>
+    <h2 style="color:#f8fafc; margin:0; font-family:sans-serif;">Atualizando Sistema...</h2>
+    <p style="color:#94a3b8; font-size:14px; margin-top:8px; font-family:sans-serif;">Limpando cache e baixando novas melhorias</p>
+    <style>@keyframes spin { 100% { transform: rotate(360deg); } }</style>
+  `;
+  document.body.appendChild(overlay);
+  if (window.lucide) window.lucide.createIcons();
+
+  setTimeout(() => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('v', new Date().getTime());
+    window.location.href = url.toString();
+  }, 1000);
 }
 
 async function logout() {
