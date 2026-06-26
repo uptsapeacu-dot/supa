@@ -191,11 +191,24 @@ async function renderizarGestaoEscolaChefia(container) {
     return;
   }
 
+  const { data: orgData } = await clienteSupabase
+    .from('orgaos')
+    .select('id')
+    .eq('escola_id', escolaAtual)
+    .eq('tipo', 'escola')
+    .limit(1)
+    .maybeSingle();
+
+  if (!orgData) {
+    container.innerHTML = '<div class="empty-state">Órgão da escola não encontrado.</div>';
+    return;
+  }
+
   // Buscar vigias lotados nesta escola
   const { data: vinculos, error } = await clienteSupabase
     .from('vinculos_funcionarios')
     .select('*, funcionarios(*)')
-    .eq('orgao_id', escolaAtual)
+    .eq('orgao_id', orgData.id)
     .eq('ativo', true);
 
   if (error) {
@@ -683,7 +696,7 @@ async function pesquisarServidorAlocacao() {
     // Checa se eles possuem um vínculo ativo com o cargo que o chefe gerencia
     const { data: vincData, error: vincError } = await clienteSupabase
       .from('vinculos_funcionarios')
-      .select('funcionario_id, cargo, orgaos(id, nome)')
+      .select('funcionario_id, cargo, orgaos(id, nome, escola_id)')
       .in('funcionario_id', idsFunc)
       .in('cargo', _cargosGerenciadosChefeCache)
       .eq('ativo', true);
@@ -705,7 +718,7 @@ async function pesquisarServidorAlocacao() {
       const cargoOficial = vinculosChefe[0].cargo;
       
       // Checa se já está na escola atual
-      const jaNaEscola = vinculosChefe.some(v => v.orgaos && v.orgaos.id === escolaAtual);
+      const jaNaEscola = vinculosChefe.some(v => v.orgaos && v.orgaos.escola_id === escolaAtual);
       
       let btnHtml = '';
       if (jaNaEscola) {
@@ -743,11 +756,26 @@ async function alocarOperacionalEscola(funcId, cargo, nome) {
   btn.innerText = 'Alocando...';
   btn.disabled = true;
 
+  const { data: orgData } = await clienteSupabase
+    .from('orgaos')
+    .select('id')
+    .eq('escola_id', escolaAtual)
+    .eq('tipo', 'escola')
+    .limit(1)
+    .maybeSingle();
+
+  if (!orgData) {
+    alert('Erro: não foi possível encontrar o órgão associado a esta escola.');
+    btn.innerText = 'Lotar Aqui';
+    btn.disabled = false;
+    return;
+  }
+
   const { error } = await clienteSupabase
     .from('vinculos_funcionarios')
     .insert([{
       funcionario_id: funcId,
-      orgao_id: escolaAtual,
+      orgao_id: orgData.id,
       cargo: cargo,
       ativo: true,
       status_aprovacao: 'pendente',
