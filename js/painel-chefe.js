@@ -239,6 +239,9 @@ async function renderizarGestaoEscolaChefia(container) {
       const escalasDoFunc = escalas.filter(e => e.funcionario_id === func.id);
       
       let badgeHorarios = '';
+      if (v.status_aprovacao === 'pendente') {
+        badgeHorarios = '<span style="display:inline-flex; align-items:center; color:#f59e0b; background:rgba(245,158,11,0.1); padding:4px 8px; border-radius:12px; font-size:12px; font-weight:bold; margin-bottom:6px;"><i data-lucide="clock" style="width:14px; height:14px; margin-right:4px;"></i> Pendente de Aprovação</span><br>';
+      }
       if (escalasDoFunc.length === 0) {
         badgeHorarios = '<span style="color:#f59e0b; font-size:12px;">Nenhum plantão definido</span>';
       } else {
@@ -595,6 +598,7 @@ async function justificarOmissao(escalaId, dataRef, funcId, funcNome, escId) {
 // ==========================================
 
 let _cargosGerenciadosChefeCache = [];
+let _timeoutLotacaoChefia = null;
 
 async function abrirModalAlocarOperacional() {
   if (!document.getElementById('modalLotacaoChefia')) {
@@ -605,7 +609,7 @@ async function abrirModalAlocarOperacional() {
           <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Busque um funcionário que já possua o cargo gerenciado por você (ex: Vigia) no município e aloque-o para trabalhar nesta unidade.</p>
 
           <div style="display:flex; gap:10px; margin-bottom:20px;">
-            <input type="text" id="buscaLotacaoChefia" placeholder="Buscar por nome..." style="flex:1; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:6px; padding:10px; font-size:14px;" onkeyup="if(event.key === 'Enter') pesquisarServidorAlocacao()">
+            <input type="text" id="buscaLotacaoChefia" placeholder="Buscar por nome..." style="flex:1; background:#0f172a; border:1px solid #334155; color:#fff; border-radius:6px; padding:10px; font-size:14px;" oninput="pesquisarServidorAlocacaoDebounce()">
             <button class="btn-clear" style="background:#3b82f6; color:#fff; padding:10px 15px; border-radius:6px; font-weight:bold;" onclick="pesquisarServidorAlocacao()">
               Buscar
             </button>
@@ -635,6 +639,11 @@ async function abrirModalAlocarOperacional() {
   document.getElementById('buscaLotacaoChefia').value = '';
   document.getElementById('listaResultadosLotacaoChefia').innerHTML = '<div style="color:#64748b; text-align:center; padding:20px;">Use a barra de busca acima.</div>';
   document.getElementById('modalLotacaoChefia').style.display = 'flex';
+}
+
+function pesquisarServidorAlocacaoDebounce() {
+  if (_timeoutLotacaoChefia) clearTimeout(_timeoutLotacaoChefia);
+  _timeoutLotacaoChefia = setTimeout(pesquisarServidorAlocacao, 300);
 }
 
 async function pesquisarServidorAlocacao() {
@@ -740,7 +749,9 @@ async function alocarOperacionalEscola(funcId, cargo, nome) {
       funcionario_id: funcId,
       orgao_id: escolaAtual,
       cargo: cargo,
-      ativo: true
+      ativo: true,
+      status_aprovacao: 'pendente',
+      solicitado_por: funcionarioAtual.id
     }]);
 
   if (error) {

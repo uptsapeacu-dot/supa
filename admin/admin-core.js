@@ -34,7 +34,8 @@ async function carregarPainelSuperAdmin() {
     'admin/admin-lixeira.js',
     'admin/admin-relatorios.js',
     'admin/admin-dispositivos.js',
-    'admin/admin-rondas.js'
+    'admin/admin-rondas.js',
+    'admin/admin-solicitacoes.js'
   ]
 
   for (const src of scripts) {
@@ -96,6 +97,7 @@ function adminMostrarTela(tela) {
     case 'configuracoes': adminRenderizarConfiguracoes(); break
     case 'relatorios':   adminRenderizarRelatorios(); break
     case 'rondas':       adminRenderizarRondas(); break
+    case 'solicitacoes': adminRenderizarSolicitacoes(); break
     default:
       conteudo.innerHTML = '<div class="admin-empty"><i data-lucide="construction"></i><p>Em construcao</p></div>'
   }
