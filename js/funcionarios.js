@@ -834,8 +834,14 @@ async function abrirModalGestaoLotacoes() {
   document.getElementById('gestaoNovaEscola').innerHTML = escolasHtml;
   document.getElementById('gestaoMoverDestino').innerHTML = escolasHtml;
   
-  const cargos = ["Vigia", "Porteiro", "Gari", "Merendeira", "Auxiliar de Serviços Gerais", "Zelador"];
-  document.getElementById('gestaoNovoCargo').innerHTML = '<option value="">Selecione um cargo...</option>' + cargos.map(c => `<option value="${c}">${c}</option>`).join('');
+  const { data: cargosData } = await clienteSupabase.from('cargos').select('nome').order('nome', { ascending: true });
+  
+  const filtroCargoGestao = document.getElementById('filtroCargoGestao');
+  if (filtroCargoGestao) {
+    filtroCargoGestao.innerHTML = '<option value="">Cargo (Todos)</option>' + (cargosData || []).map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
+    filtroCargoGestao.value = '';
+  }
+  document.getElementById('gestaoNovoCargo').innerHTML = '<option value="">Selecione um cargo...</option>' + (cargosData || []).map(c => `<option value="${c.nome}">${c.nome}</option>`).join('');
 
   await carregarTodosFuncionariosGestao();
 }
@@ -856,22 +862,30 @@ async function carregarTodosFuncionariosGestao() {
     return;
   }
 
-  // 2. Buscar vínculos ativos para saber quem tem lotação
+  // 2. Buscar vínculos ativos para saber quem tem lotação e seu cargo
   const { data: vincData, error: errVinc } = await clienteSupabase
     .from('vinculos_funcionarios')
-    .select('funcionario_id')
+    .select('funcionario_id, cargo')
     .eq('ativo', true);
 
   const lotadosSet = new Set();
+  const cargosMap = new Map();
   if (vincData) {
-    vincData.forEach(v => lotadosSet.add(v.funcionario_id));
+    vincData.forEach(v => {
+      lotadosSet.add(v.funcionario_id);
+      if (!cargosMap.has(v.funcionario_id)) cargosMap.set(v.funcionario_id, []);
+      if (v.cargo && !cargosMap.get(v.funcionario_id).includes(v.cargo)) {
+        cargosMap.get(v.funcionario_id).push(v.cargo);
+      }
+    });
   }
 
   // Mapear cache (CORRIGIDO: fallback para nome nulo)
   _gestaoLotacoesCache = funcData.map(f => ({
     ...f,
     nome: f.nome || 'Sem Nome',
-    temLotacao: lotadosSet.has(f.id)
+    temLotacao: lotadosSet.has(f.id),
+    cargos: cargosMap.get(f.id) || []
   }));
 
   // Ordenar alfabeticamente
@@ -903,6 +917,8 @@ function setFiltroGestaoLotacoes(filtro) {
 
 function filtrarListaGestaoLotacoes() {
   const termo = document.getElementById('buscaGestaoFuncionario').value.toLowerCase().trim();
+  const filtroCargoEl = document.getElementById('filtroCargoGestao');
+  const cargoSel = filtroCargoEl ? filtroCargoEl.value : '';
   const container = document.getElementById('listaFuncionariosGestao');
   
   let filtrados = _gestaoLotacoesCache.filter(f => {
@@ -911,6 +927,7 @@ function filtrarListaGestaoLotacoes() {
     }
     if (_gestaoFiltroAtivo === 'sem' && f.temLotacao) return false;
     if (_gestaoFiltroAtivo === 'com' && !f.temLotacao) return false;
+    if (cargoSel && (!f.cargos || !f.cargos.includes(cargoSel))) return false;
     return true;
   });
 
