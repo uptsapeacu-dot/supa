@@ -131,7 +131,8 @@ async function carregarAlertasChefe() {
     .limit(30);
     
   if (error) {
-    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Erro ao carregar alertas.</td></tr>';
+    console.error("Supabase Error:", error);
+    tbody.innerHTML = '<tr><td colspan="4" style="text-align:center;color:#ef4444;">Erro ao carregar alertas: ' + escapeHTML(error.message) + '</td></tr>';
     return;
   }
   
