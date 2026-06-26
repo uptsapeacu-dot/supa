@@ -18,8 +18,17 @@
             </div>
             <div class="lista-alunos" id="listaAvisos"></div>
           </div>
-          <!-- Right: Birthday Calendar -->
+          <!-- Right: Birthday Calendar & Filters -->
           <div class="mural-right">
+            <div class="permissions-box" style="margin-bottom: 20px;">
+              <h2 style="margin-top:0;">Filtrar Comunicados</h2>
+              <div style="display:flex; gap:10px; align-items:center;">
+                <input type="date" id="filtroDataMural" oninput="carregarAvisos()" style="flex:1; padding:10px; border-radius:8px; background:#121212; border:1px solid #3f3f3f; color:#f1f1f1; font-family:inherit; outline:none; cursor:pointer;" />
+                <button class="btn-clear" onclick="document.getElementById('filtroDataMural').value=''; carregarAvisos()" style="padding:10px;" title="Limpar Filtro">
+                  <i data-lucide="x" style="width:16px;height:16px;"></i>
+                </button>
+              </div>
+            </div>
             <div class="permissions-box">
               <h2 style="margin-top:0;">Calendário de Aniversários</h2>
               <div class="calendar-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">

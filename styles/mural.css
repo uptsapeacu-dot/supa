@@ -1,6 +1,8 @@
 /* Mural Layout Split Panels */
 .mural-layout {
+  display: grid;
   grid-template-columns: 1fr 340px;
+  gap: 20px;
 }
 
 .mural-left {

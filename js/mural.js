@@ -1,4 +1,4 @@
-﻿﻿async function carregarDadosMural() {
+async function carregarDadosMural() {
   carregarAvisos()
   muralFuncionarios = []
   let orgaosPermitidos = []
@@ -176,6 +176,17 @@ function carregarAvisos() {
       return tB - tA
     })
   }
+
+  // Aplica filtro de data se houver
+  const filtroDataInput = document.getElementById('filtroDataMural');
+  if (filtroDataInput && filtroDataInput.value) {
+    const partes = filtroDataInput.value.split('-');
+    if (partes.length === 3) {
+      const dataBuscada = partes[2] + '/' + partes[1] + '/' + partes[0];
+      avisosGlobais = avisosGlobais.filter(aviso => aviso.data.startsWith(dataBuscada));
+    }
+  }
+
   if (avisosGlobais.length === 0) {
     lista.innerHTML = '<div class="empty-state">Nenhum comunicado cadastrado.</div>'
     return
