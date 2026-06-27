@@ -39,6 +39,14 @@ async function carregarNotificacoes(silencioso = false) {
 
     const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
 
+    const filtroTipoSelect = document.getElementById('filtroTipoNotificacao');
+    if (filtroTipoSelect) {
+      const optTransferencias = filtroTipoSelect.querySelector('option[value="transferencias"]');
+      if (optTransferencias) {
+        optTransferencias.style.display = podeVerTransferencias ? 'block' : 'none';
+      }
+    }
+
     if (podeVerTransferencias) {
       _notificacoesCache = data;
     } else {
@@ -469,6 +477,14 @@ async function carregarHistoricoNotificacoes() {
     ? acessosAtual.some(ac => ac.nivel == 2 && ((ac.orgaos && ac.orgaos.escola_id === escolaAtual) || ac.orgao_id === escolaAtual) && ac.ativo)
     : false;
   const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
+
+  const statusSelect = document.getElementById('historicoNotifStatus');
+  if (statusSelect) {
+    const optTransferencias = statusSelect.querySelector('option[value="transferencias"]');
+    if (optTransferencias) {
+      optTransferencias.style.display = podeVerTransferencias ? 'block' : 'none';
+    }
+  }
 
   let listagem = data || [];
   if (!podeVerTransferencias) {
