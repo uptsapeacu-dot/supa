@@ -179,7 +179,7 @@ function renderizarAlunos() {
       btnTransferir.title = 'Solicitar Transferência'
       btnTransferir.type = 'button'
       btnTransferir.innerHTML = '<i data-lucide="arrow-right-left" style="width: 14px; height: 14px;"></i>'
-      btnTransferir.onclick = function() { abrirModalTransferencia(aluno.id, aluno.nome) }
+      btnTransferir.onclick = function() { abrirModalTransferencia(aluno.id, aluno.nome, aluno.escola_id) }
       actionsDiv.appendChild(btnTransferir)
     }
 

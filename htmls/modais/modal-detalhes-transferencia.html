@@ -32,17 +32,19 @@
     <input type="hidden" id="detalhesTransfAlunoId">
 
     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:24px;">
-      <button class="btn-clear" onclick="fecharModalDetalhesTransferencia()">Fechar</button>
+      <button class="btn-clear" onclick="fecharModalDetalhesTransferencia()" style="display:flex; align-items:center; gap:6px;">
+        <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Fechar
+      </button>
       
       <div id="botoesAcaoTransferencia" style="display:flex; gap:12px;">
-        <button class="btn" style="background:#ef4444; color:#fff;" onclick="iniciarRecusaTransferencia()" id="btnIniciarRecusa">
-          Recusar
+        <button class="btn" style="background:#ef4444; color:#fff; display:flex; align-items:center; gap:6px;" onclick="iniciarRecusaTransferencia()" id="btnIniciarRecusa">
+          <i data-lucide="x-circle" style="width:16px; height:16px;"></i> Recusar
         </button>
-        <button class="btn" style="background:#ef4444; color:#fff; display:none;" onclick="confirmarRecusaTransferencia()" id="btnConfirmarRecusa">
-          Confirmar Recusa
+        <button class="btn" style="background:#ef4444; color:#fff; display:none; align-items:center; gap:6px;" onclick="confirmarRecusaTransferencia()" id="btnConfirmarRecusa">
+          <i data-lucide="alert-triangle" style="width:16px; height:16px;"></i> Confirmar Recusa
         </button>
-        <button class="btn" style="background:#10b981; color:#000;" onclick="aceitarTransferencia()" id="btnAceitarTransferencia">
-          Aceitar Aluno
+        <button class="btn" style="background:#10b981; color:#fff; display:flex; align-items:center; gap:6px; font-weight:600;" onclick="aceitarTransferencia()" id="btnAceitarTransferencia">
+          <i data-lucide="check-circle" style="width:16px; height:16px;"></i> Aceitar Aluno
         </button>
       </div>
     </div>

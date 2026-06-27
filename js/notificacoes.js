@@ -121,7 +121,7 @@ async function marcarComoLida(id) {
 // FLUXO DE SOLICITAÇÃO (ESCOLA ORIGEM)
 // ==========================================
 
-async function abrirModalTransferencia(alunoId, alunoNome) {
+async function abrirModalTransferencia(alunoId, alunoNome, escolaOrigemId) {
   document.getElementById('modalTransferirAluno').style.display = 'flex';
   document.getElementById('transfAlunoId').value = alunoId;
   document.getElementById('transfAlunoNome').innerText = alunoNome;
@@ -130,7 +130,12 @@ async function abrirModalTransferencia(alunoId, alunoNome) {
   document.getElementById('btnSalvarTransferencia').disabled = false;
   document.getElementById('btnSalvarTransferencia').innerText = 'Solicitar Transferência';
 
-  // Carregar escolas para o select (menos a atual)
+  const origemId = escolaOrigemId || escolaAtual;
+  if (document.getElementById('transfEscolaOrigemId')) {
+    document.getElementById('transfEscolaOrigemId').value = origemId || '';
+  }
+
+  // Carregar escolas para o select (menos a de origem)
   const select = document.getElementById('transfEscolaDestino');
   select.innerHTML = '<option value="">Carregando escolas...</option>';
   
@@ -138,7 +143,7 @@ async function abrirModalTransferencia(alunoId, alunoNome) {
   if (data) {
     let html = '<option value="">Selecione a escola destino...</option>';
     data.forEach(e => {
-      if (e.id !== escolaAtual) html += `<option value="${e.id}">${e.nome}</option>`;
+      if (e.id !== origemId) html += `<option value="${e.id}">${e.nome}</option>`;
     });
     select.innerHTML = html;
   }
@@ -159,6 +164,9 @@ async function salvarSolicitacaoTransferencia() {
   const btn = document.getElementById('btnSalvarTransferencia');
   btn.disabled = true;
   btn.innerText = 'Enviando...';
+
+  // Resgata o ID de origem a partir do input oculto ou fallback
+  const escolaOrigemId = document.getElementById('transfEscolaOrigemId')?.value || escolaAtual;
 
   try {
     // 1. Upload dos anexos (se houver)
@@ -189,7 +197,7 @@ async function salvarSolicitacaoTransferencia() {
       .from('transferencias_alunos')
       .insert([{
         aluno_id: alunoId,
-        escola_origem_id: escolaAtual,
+        escola_origem_id: escolaOrigemId,
         escola_destino_id: destinoId,
         observacoes: obs,
         anexos_urls: urlsAnexos,
@@ -311,7 +319,8 @@ async function aceitarTransferencia() {
 
   const btn = document.getElementById('btnAceitarTransferencia');
   btn.disabled = true;
-  btn.innerText = 'Processando...';
+  btn.innerHTML = `<i data-lucide="loader-2" style="width:16px;height:16px;" class="animate-spin"></i> Processando...`;
+  if (window.lucide) window.lucide.createIcons();
 
   try {
     // 1. Atualizar status da transferência
@@ -338,7 +347,8 @@ async function aceitarTransferencia() {
     alert(err.message);
   } finally {
     btn.disabled = false;
-    btn.innerText = 'Aceitar Aluno';
+    btn.innerHTML = `<i data-lucide="check-circle" style="width:16px;height:16px;"></i> Aceitar Aluno`;
+    if (window.lucide) window.lucide.createIcons();
   }
 }
 
@@ -357,7 +367,8 @@ async function confirmarRecusaTransferencia() {
 
   const btn = document.getElementById('btnConfirmarRecusa');
   btn.disabled = true;
-  btn.innerText = 'Recusando...';
+  btn.innerHTML = `<i data-lucide="loader-2" style="width:16px;height:16px;" class="animate-spin"></i> Recusando...`;
+  if (window.lucide) window.lucide.createIcons();
 
   try {
     // 1. Atualizar status
@@ -379,7 +390,8 @@ async function confirmarRecusaTransferencia() {
     alert('Erro ao recusar: ' + err.message);
   } finally {
     btn.disabled = false;
-    btn.innerText = 'Confirmar Recusa';
+    btn.innerHTML = `<i data-lucide="alert-triangle" style="width:16px;height:16px;"></i> Confirmar Recusa`;
+    if (window.lucide) window.lucide.createIcons();
   }
 }
 
