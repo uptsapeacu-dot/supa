@@ -8,26 +8,38 @@ var _transferenciaSelecionada = null;
 
 // Inicializa a escuta de notificações periodicamente
 setInterval(() => {
-  if (escolaAtual) carregarNotificacoes(true);
+  if (escolaAtual || isSecretaria()) carregarNotificacoes(true);
 }, 30000); // 30 segundos
 
 // CARREGAR NOTIFICAÇÕES (E ATUALIZAR SINO)
 async function carregarNotificacoes(silencioso = false) {
-  if (!escolaAtual) return;
+  const lista = document.getElementById('listaNotificacoes');
+  
+  let query = clienteSupabase.from('notificacoes_escolas').select('*');
+  
+  if (escolaAtual) {
+    query = query.eq('escola_id', escolaAtual);
+  } else if (isSecretaria()) {
+    // Secretaria Global (Nível 1 sem escola selecionada): carrega notificações de toda a rede
+  } else {
+    // Outros perfis sem escola selecionada: limpa a tela e retorna
+    if (lista && !silencioso) {
+      lista.innerHTML = '<div style="text-align:center; padding:20px; color:#666; font-size:13px;">Selecione uma escola para ver as notificações.</div>';
+    }
+    return;
+  }
 
-  const { data, error } = await clienteSupabase
-    .from('notificacoes_escolas')
-    .select('*')
-    .eq('escola_id', escolaAtual)
-    .order('created_at', { ascending: false });
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(50);
 
   if (!error && data) {
-    // Só Nível 2 (Gestor/Diretor Escolar) pode ver as notificações de transferência de aluno
+    // Só Nível 2 (Gestor/Diretor Escolar) ou Nível 1 (Secretaria Global) pode ver as notificações de transferência de aluno
     const usuarioEhGestorEscolar = (typeof acessosAtual !== 'undefined' && acessosAtual)
       ? acessosAtual.some(ac => ac.nivel === 2 && ac.orgaos && ac.orgaos.escola_id === escolaAtual && ac.ativo)
       : false;
 
-    if (usuarioEhGestorEscolar) {
+    const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
+
+    if (podeVerTransferencias) {
       _notificacoesCache = data;
     } else {
       _notificacoesCache = data.filter(n => n.tipo !== 'transferencia_aluno');
@@ -35,6 +47,11 @@ async function carregarNotificacoes(silencioso = false) {
 
     atualizarSinoNotificacoes();
     renderizarPainelNotificacoes();
+  } else if (error) {
+    console.error("Erro ao carregar notificações:", error);
+    if (lista && !silencioso) {
+      lista.innerHTML = '<div style="text-align:center; padding:20px; color:#ef4444; font-size:13px;">Erro ao carregar notificações.</div>';
+    }
   }
 }
 
@@ -307,7 +324,19 @@ async function abrirDetalhesNotificacao(notifId) {
     }
 
     if (window.lucide) window.lucide.createIcons();
+  } else {
+    // Exibir modal de detalhes gerais da notificação
+    document.getElementById('modalDetalhesGeraisNotificacao').style.display = 'flex';
+    document.getElementById('detalhesGeraisNotifTitulo').innerText = notif.titulo || 'Notificação';
+    document.getElementById('detalhesGeraisNotifMensagem').innerText = notif.mensagem || '';
+    document.getElementById('detalhesGeraisNotifData').innerText = new Date(notif.created_at).toLocaleString('pt-BR');
+    
+    if (window.lucide) window.lucide.createIcons();
   }
+}
+
+function fecharModalDetalhesGeraisNotificacao() {
+  document.getElementById('modalDetalhesGeraisNotificacao').style.display = 'none';
 }
 
 function fecharModalDetalhesTransferencia() {
@@ -399,3 +428,131 @@ async function confirmarRecusaTransferencia() {
 window.addEventListener('escola_selecionada', () => {
   carregarNotificacoes();
 });
+
+// ==========================================
+// PÁGINA DE HISTÓRICO DE NOTIFICAÇÕES
+// ==========================================
+function irParaHistoricoNotificacoes() {
+  fecharPainelNotificacoes();
+  mostrarTela('historico-notificacoes');
+}
+
+async function carregarHistoricoNotificacoes() {
+  const container = document.getElementById('listaHistoricoNotificacoes');
+  if (!container) return;
+
+  container.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa; font-size:14px;"><i data-lucide="loader-2" class="animate-spin" style="width:24px;height:24px;margin:0 auto 10px;display:block;"></i> Carregando histórico...</div>';
+  if (window.lucide) window.lucide.createIcons();
+
+  // Query data
+  let query = clienteSupabase.from('notificacoes_escolas').select('*');
+  
+  if (escolaAtual) {
+    query = query.eq('escola_id', escolaAtual);
+  } else if (isSecretaria()) {
+    // Secretaria Global (todas as escolas)
+  } else {
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:#aaa; font-size:14px;">Selecione uma escola para visualizar o histórico de notificações.</div>';
+    return;
+  }
+
+  const { data, error } = await query.order('created_at', { ascending: false }).limit(200);
+
+  if (error) {
+    console.error("Erro ao carregar histórico de notificações:", error);
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:#ef4444; font-size:14px;">Erro ao carregar notificações do banco de dados.</div>';
+    return;
+  }
+
+  // Filtro de Nível 2 para transferências
+  const usuarioEhGestorEscolar = (typeof acessosAtual !== 'undefined' && acessosAtual)
+    ? acessosAtual.some(ac => ac.nivel === 2 && ac.orgaos && ac.orgaos.escola_id === escolaAtual && ac.ativo)
+    : false;
+  const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
+
+  let listagem = data || [];
+  if (!podeVerTransferencias) {
+    listagem = listagem.filter(n => n.tipo !== 'transferencia_aluno');
+  }
+
+  // Filtros de Data
+  const dataInicio = document.getElementById('historicoNotifDataInicio').value;
+  const dataFim = document.getElementById('historicoNotifDataFim').value;
+  
+  if (dataInicio) {
+    const start = new Date(dataInicio + 'T00:00:00');
+    listagem = listagem.filter(n => new Date(n.created_at) >= start);
+  }
+  if (dataFim) {
+    const end = new Date(dataFim + 'T23:59:59');
+    listagem = listagem.filter(n => new Date(n.created_at) <= end);
+  }
+
+  // Filtro de Tipo/Status
+  const status = document.getElementById('historicoNotifStatus').value;
+  if (status === 'lidas') {
+    listagem = listagem.filter(n => n.lida);
+  } else if (status === 'nao_lidas') {
+    listagem = listagem.filter(n => !n.lida);
+  } else if (status === 'transferencias') {
+    listagem = listagem.filter(n => n.tipo === 'transferencia_aluno');
+  }
+
+  // Filtro de busca textual
+  const busca = (document.getElementById('historicoNotifBusca').value || '').toLowerCase().trim();
+  if (busca) {
+    listagem = listagem.filter(n => 
+      (n.titulo && n.titulo.toLowerCase().includes(busca)) || 
+      (n.mensagem && n.mensagem.toLowerCase().includes(busca))
+    );
+  }
+
+  if (listagem.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:#666; font-size:14px;">Nenhuma notificação corresponde aos filtros selecionados.</div>';
+    return;
+  }
+
+  // Renderizar
+  let html = '';
+  listagem.forEach(n => {
+    const icone = n.tipo === 'transferencia_aluno' ? 'arrow-right-left' : 'info';
+    const cor = n.lida ? '#1e1e24' : '#272730';
+    const borda = n.lida ? '#2d2d33' : '#3ea6ff';
+    const iconeCor = n.tipo === 'transferencia_aluno' ? '#10b981' : '#3ea6ff';
+    const badgeLida = n.lida 
+      ? '<span style="color:#666; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="eye" style="width:12px;height:12px;"></i> Lida</span>'
+      : '<span style="color:#ef4444; font-size:11px; display:inline-flex; align-items:center; gap:4px; font-weight:bold;"><i data-lucide="eye-off" style="width:12px;height:12px;"></i> Não Lida</span>';
+
+    html += `
+      <div style="background:${cor}; border:1px solid ${borda}; padding:16px; border-radius:10px; cursor:pointer; display:flex; gap:16px; align-items:flex-start; transition:transform 0.15s, background 0.15s;" 
+           onclick="abrirDetalhesNotificacao('${n.id}')"
+           onmouseover="this.style.transform='translateY(-2px)'; this.style.background='#272733';"
+           onmouseout="this.style.transform='translateY(0)'; this.style.background='${cor}';">
+        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px;">
+          <i data-lucide="${icone}" style="width:20px; height:20px; color:${iconeCor};"></i>
+        </div>
+        <div style="flex:1;">
+          <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; margin-bottom:6px;">
+            <strong style="color:#fff; font-size:14px;">${n.titulo}</strong>
+            <div style="display:flex; align-items:center; gap:12px;">
+              ${badgeLida}
+              <span style="color:#888; font-size:11px; display:inline-flex; align-items:center; gap:4px;"><i data-lucide="calendar" style="width:12px;height:12px;"></i> ${new Date(n.created_at).toLocaleString('pt-BR')}</span>
+            </div>
+          </div>
+          <p style="color:#aaa; font-size:13px; margin:0; line-height:1.5;">${n.mensagem}</p>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function limparFiltrosHistoricoNotif() {
+  if (document.getElementById('historicoNotifDataInicio')) document.getElementById('historicoNotifDataInicio').value = '';
+  if (document.getElementById('historicoNotifDataFim')) document.getElementById('historicoNotifDataFim').value = '';
+  if (document.getElementById('historicoNotifStatus')) document.getElementById('historicoNotifStatus').value = 'todas';
+  if (document.getElementById('historicoNotifBusca')) document.getElementById('historicoNotifBusca').value = '';
+  carregarHistoricoNotificacoes();
+}

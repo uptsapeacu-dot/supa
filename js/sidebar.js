@@ -138,7 +138,8 @@ function mostrarTela(tela) {
     'painel-chefe',
     'ponto-mobile',
     'calendario',
-    'ajuda-chefe'
+    'ajuda-chefe',
+    'historico-notificacoes'
   ]
 
   telas.forEach(function(id) {
@@ -194,6 +195,9 @@ function mostrarTela(tela) {
   }
   if (tela === 'ponto-mobile' && typeof iniciarModuloPontoMobile === 'function') {
     iniciarModuloPontoMobile();
+  }
+  if (tela === 'historico-notificacoes' && typeof carregarHistoricoNotificacoes === 'function') {
+    carregarHistoricoNotificacoes();
   }
   fecharSidebarMobile()
 }

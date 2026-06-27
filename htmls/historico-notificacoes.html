@@ -1,0 +1,46 @@
+<div class="page-header" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+  <h1>Histórico de Notificações</h1>
+  <button class="btn-clear" onclick="mostrarTela('home')" style="display:flex; align-items:center; gap:6px;">
+    <i data-lucide="home" style="width:16px;height:16px;"></i> Menu Inicial
+  </button>
+</div>
+
+<!-- Filtros e Busca -->
+<div style="background:#1f1f23; border:1px solid #2f2f33; border-radius:12px; padding:16px; margin-bottom:20px; display:flex; flex-wrap:wrap; gap:16px; align-items:flex-end;">
+  <div style="flex:1; min-width:180px;">
+    <label style="color:#aaa; display:block; margin-bottom:6px; font-size:12px;">Data de Início</label>
+    <input type="date" id="historicoNotifDataInicio" class="form-input" style="width:100%;" onchange="carregarHistoricoNotificacoes()">
+  </div>
+  <div style="flex:1; min-width:180px;">
+    <label style="color:#aaa; display:block; margin-bottom:6px; font-size:12px;">Data de Fim</label>
+    <input type="date" id="historicoNotifDataFim" class="form-input" style="width:100%;" onchange="carregarHistoricoNotificacoes()">
+  </div>
+  <div style="flex:1; min-width:180px;">
+    <label style="color:#aaa; display:block; margin-bottom:6px; font-size:12px;">Status / Tipo</label>
+    <select id="historicoNotifStatus" class="form-input" style="width:100%;" onchange="carregarHistoricoNotificacoes()">
+      <option value="todas">Todas</option>
+      <option value="lidas">Lidas</option>
+      <option value="nao_lidas">Não Lidas</option>
+      <option value="transferencias">Apenas Transferências</option>
+    </select>
+  </div>
+  <div style="flex:2; min-width:220px;">
+    <label style="color:#aaa; display:block; margin-bottom:6px; font-size:12px;">Pesquisa rápida</label>
+    <input type="text" id="historicoNotifBusca" class="form-input" style="width:100%;" placeholder="Buscar no título ou mensagem..." oninput="carregarHistoricoNotificacoes()">
+  </div>
+  <div>
+    <button class="btn-clear" onclick="limparFiltrosHistoricoNotif()" style="height:40px; display:flex; align-items:center; gap:6px;">
+      <i data-lucide="refresh-cw" style="width:16px;height:16px;"></i> Limpar
+    </button>
+  </div>
+</div>
+
+<!-- Listagem -->
+<div id="listaHistoricoNotificacoes" style="display:flex; flex-direction:column; gap:12px; min-height:200px;">
+  <!-- Injetado via JS -->
+</div>
+
+<!-- Botão flutuante para voltar ao menu inicial (Regra AGENTS.md) -->
+<button onclick="mostrarTela('home')" style="position:fixed; bottom:20px; right:20px; width:50px; height:50px; border-radius:50%; background:#3ea6ff; color:#000; display:flex; align-items:center; justify-content:center; border:none; box-shadow:0 4px 12px rgba(0,0,0,0.4); cursor:pointer; z-index:9999;" title="Voltar ao início">
+  <i data-lucide="arrow-left" style="width:24px;height:24px;"></i>
+</button>
