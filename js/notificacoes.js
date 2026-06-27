@@ -22,7 +22,17 @@ async function carregarNotificacoes(silencioso = false) {
     .order('created_at', { ascending: false });
 
   if (!error && data) {
-    _notificacoesCache = data;
+    // Só Nível 2 (Gestor/Diretor Escolar) pode ver as notificações de transferência de aluno
+    const usuarioEhGestorEscolar = (typeof acessosAtual !== 'undefined' && acessosAtual)
+      ? acessosAtual.some(ac => ac.nivel === 2 && ac.orgaos && ac.orgaos.escola_id === escolaAtual && ac.ativo)
+      : false;
+
+    if (usuarioEhGestorEscolar) {
+      _notificacoesCache = data;
+    } else {
+      _notificacoesCache = data.filter(n => n.tipo !== 'transferencia_aluno');
+    }
+
     atualizarSinoNotificacoes();
     renderizarPainelNotificacoes();
   }
