@@ -34,7 +34,7 @@ async function carregarNotificacoes(silencioso = false) {
   if (!error && data) {
     // Só Nível 2 (Gestor/Diretor Escolar) ou Nível 1 (Secretaria Global) pode ver as notificações de transferência de aluno
     const usuarioEhGestorEscolar = (typeof acessosAtual !== 'undefined' && acessosAtual)
-      ? acessosAtual.some(ac => ac.nivel === 2 && ac.orgaos && ac.orgaos.escola_id === escolaAtual && ac.ativo)
+      ? acessosAtual.some(ac => ac.nivel == 2 && ((ac.orgaos && ac.orgaos.escola_id === escolaAtual) || ac.orgao_id === escolaAtual) && ac.ativo)
       : false;
 
     const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
@@ -466,7 +466,7 @@ async function carregarHistoricoNotificacoes() {
 
   // Filtro de Nível 2 para transferências
   const usuarioEhGestorEscolar = (typeof acessosAtual !== 'undefined' && acessosAtual)
-    ? acessosAtual.some(ac => ac.nivel === 2 && ac.orgaos && ac.orgaos.escola_id === escolaAtual && ac.ativo)
+    ? acessosAtual.some(ac => ac.nivel == 2 && ((ac.orgaos && ac.orgaos.escola_id === escolaAtual) || ac.orgao_id === escolaAtual) && ac.ativo)
     : false;
   const podeVerTransferencias = usuarioEhGestorEscolar || isSecretaria();
 
