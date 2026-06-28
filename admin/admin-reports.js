@@ -185,7 +185,7 @@ function adminLimparFiltrosReports() {
   const el = function(id) { const e = document.getElementById(id); if (e) e.value = ''; }
   el('adminReportsBusca'); el('adminReportsEscola'); el('adminReportsArea'); el('adminReportsStatus');
   adminReportsPage = 0;
-  adminBuscarNotificacoes();
+  adminBuscarReports();
 }
 
 function adminTabelaReports(lista) {
