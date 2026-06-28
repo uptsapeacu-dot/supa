@@ -36,7 +36,8 @@ async function carregarPainelSuperAdmin() {
     'admin/admin-dispositivos.js',
     'admin/admin-rondas.js',
     'admin/admin-solicitacoes.js',
-    'admin/admin-notificacoes.js'
+    'admin/admin-notificacoes.js',
+    'admin/admin-reports.js'
   ]
 
   for (const src of scripts) {
@@ -65,6 +66,11 @@ async function carregarPainelSuperAdmin() {
 
   // Carrega dashboard
   adminMostrarTela('dashboard')
+  
+  // Inicializa o badge e canal realtime para os reports
+  if (typeof adminInicializarReportsRealtime === 'function') {
+    adminInicializarReportsRealtime();
+  }
 }
 
 // --------------------------------------------------
@@ -100,6 +106,7 @@ function adminMostrarTela(tela) {
     case 'rondas':       adminRenderizarRondas(); break
     case 'solicitacoes': adminRenderizarSolicitacoes(); break
     case 'notificacoes': adminRenderizarNotificacoes(); break
+    case 'reports':      adminRenderizarReports(); break
     default:
       conteudo.innerHTML = '<div class="admin-empty"><i data-lucide="construction"></i><p>Em construcao</p></div>'
   }

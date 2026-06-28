@@ -1,0 +1,74 @@
+<div id="modalReport" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.85); z-index:9999; align-items:center; justify-content:center; padding:20px;">
+  <div style="background:#18181b; border:1px solid #3f3f46; border-radius:14px; max-width:550px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 20px 25px -5px rgba(0,0,0,0.5); display:flex; flex-direction:column;">
+    
+    <!-- Cabeçalho -->
+    <div style="padding:16px 20px; border-bottom:1px solid #27272a; display:flex; justify-content:space-between; align-items:center;">
+      <h3 style="margin:0; font-size:18px; color:#fff; display:flex; align-items:center; gap:8px;">
+        <i data-lucide="message-square-warning" style="color:#ef4444; width:20px; height:20px;"></i>
+        Reportar Problema / Bug
+      </h3>
+      <button onclick="fecharModalReport()" style="background:transparent; border:none; color:#a1a1aa; cursor:pointer;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#a1a1aa'">
+        <i data-lucide="x" style="width:20px; height:20px;"></i>
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <form id="formReportBug" onsubmit="enviarReportBug(event)" style="padding:20px; display:flex; flex-direction:column; gap:16px; margin:0;">
+      
+      <!-- Seletor de Área -->
+      <div>
+        <label for="reportArea" style="display:block; color:#e4e4e7; font-size:13px; font-weight:600; margin-bottom:6px;">Área do Sistema *</label>
+        <select id="reportArea" required style="width:100%; background:#09090b; border:1px solid #3f3f46; color:#fff; padding:10px; border-radius:8px; font-size:14px; outline:none;" onfocus="this.style.borderColor='#ef4444'">
+          <option value="" disabled selected>Selecione a área com problema...</option>
+          <option value="Alunos">Alunos</option>
+          <option value="Turmas">Turmas</option>
+          <option value="Funcionários">Funcionários</option>
+          <option value="Permissões">Permissões</option>
+          <option value="Ponto / Ronda">Ponto / Ronda</option>
+          <option value="Notificações">Notificações</option>
+          <option value="Outro">Outro</option>
+        </select>
+      </div>
+
+      <!-- Título -->
+      <div>
+        <label for="reportTitulo" style="display:block; color:#e4e4e7; font-size:13px; font-weight:600; margin-bottom:6px;">Título Resumido *</label>
+        <input type="text" id="reportTitulo" required maxlength="120" placeholder="Ex: Erro ao carregar mapa de rondas" style="width:100%; background:#09090b; border:1px solid #3f3f46; color:#fff; padding:10px; border-radius:8px; font-size:14px; outline:none;" onfocus="this.style.borderColor='#ef4444'">
+      </div>
+
+      <!-- Descrição -->
+      <div>
+        <label for="reportDescricao" style="display:block; color:#e4e4e7; font-size:13px; font-weight:600; margin-bottom:6px;">Descrição Detalhada *</label>
+        <textarea id="reportDescricao" required maxlength="1000" rows="5" placeholder="Descreva detalhadamente o que aconteceu, o que você tentou fazer e qual foi o comportamento inesperado..." style="width:100%; background:#09090b; border:1px solid #3f3f46; color:#fff; padding:10px; border-radius:8px; font-size:14px; outline:none; resize:none; line-height:1.5;" onfocus="this.style.borderColor='#ef4444'"></textarea>
+      </div>
+
+      <!-- Anexos de Mídia -->
+      <div>
+        <label style="display:block; color:#e4e4e7; font-size:13px; font-weight:600; margin-bottom:6px;">
+          Anexar Fotos / Vídeos (Máx 3 arquivos e 5MB por arquivo)
+        </label>
+        
+        <label for="reportArquivos" style="display:flex; align-items:center; justify-content:center; gap:8px; background:#27272a; border:1px dashed #52525b; border-radius:8px; padding:12px; color:#e4e4e7; cursor:pointer; text-align:center; font-size:13px; font-weight:500;" onmouseover="this.style.background='#3f3f46'" onmouseout="this.style.background='#27272a'">
+          <i data-lucide="paperclip" style="width:16px; height:16px; color:#ef4444;"></i>
+          Escolher arquivos de imagem ou vídeo
+        </label>
+        <input type="file" id="reportArquivos" multiple accept="image/*,video/*" onchange="atualizarPreviewMidiasReport(this)" style="display:none;">
+        
+        <!-- Preview Container -->
+        <div id="reportMediaPreview" style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;"></div>
+      </div>
+
+      <!-- Botões de Ação -->
+      <div style="padding-top:10px; border-top:1px solid #27272a; display:flex; justify-content:flex-end; gap:12px;">
+        <button type="button" onclick="fecharModalReport()" style="background:#27272a; border:none; color:#e4e4e7; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer;" onmouseover="this.style.background='#3f3f46'" onmouseout="this.style.background='#27272a'">
+          Cancelar
+        </button>
+        <button type="submit" id="btnSubmitReportBug" style="background:#ef4444; border:none; color:#fff; padding:10px 20px; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;" onmouseover="this.style.background='#dc2626'" onmouseout="this.style.background='#ef4444'">
+          Enviar Relato
+        </button>
+      </div>
+
+    </form>
+
+  </div>
+</div>

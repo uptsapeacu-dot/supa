@@ -199,69 +199,12 @@
     </div>
   </div>
 
+  <!-- Botão Reportar Problema -->
+  <div style="margin-top: 30px; text-align: center; border-top: 1px dashed #333; padding-top: 20px;">
+    <button onclick="abrirModalReport()" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+      <i data-lucide="message-square-warning" style="width: 18px; height: 18px;"></i>
+      Reportar um Problema ou Bug
+    </button>
+  </div>
+
 </div>
-
-<script>
-  window.toggleDiretriz = function(id, btn) {
-    const content = document.getElementById(id);
-    const icon = btn.querySelector('.d-icon');
-    if (content.style.display === 'none') {
-      content.style.display = 'block';
-      icon.setAttribute('data-lucide', 'chevron-up');
-    } else {
-      content.style.display = 'none';
-      icon.setAttribute('data-lucide', 'chevron-down');
-    }
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  }
-
-  window.filtrarDiretrizes = function() {
-    const termo = document.getElementById('buscaDiretrizes').value.toLowerCase().trim();
-    const cards = document.querySelectorAll('.diretriz-card');
-    
-    // Divide o termo em palavras para buscar múltiplos termos de forma flexível
-    const palavrasBusca = termo.split(/\s+/).filter(p => p.length > 1);
-    
-    cards.forEach(function(card) {
-      const buttonText = card.querySelector('button').textContent.toLowerCase();
-      const contentText = card.querySelector('div[id^="d"]').textContent.toLowerCase();
-      const tags = (card.getAttribute('data-tags') || '').toLowerCase();
-      
-      const textoCompleto = buttonText + ' ' + contentText + ' ' + tags;
-      
-      // Se não houver termo de busca, exibe todos os cards e os mantém fechados
-      if (termo === '') {
-        card.style.display = 'block';
-        const content = card.querySelector('div[id^="d"]');
-        const icon = card.querySelector('.d-icon');
-        if (content) content.style.display = 'none';
-        if (icon) icon.setAttribute('data-lucide', 'chevron-down');
-        return;
-      }
-      
-      // Verifica se todas as palavras da busca estão presentes no texto ou nas tags do card
-      const corresponde = palavrasBusca.every(function(palavra) {
-        return textoCompleto.includes(palavra);
-      });
-      
-      if (corresponde) {
-        card.style.display = 'block';
-        // Abre automaticamente o card se houver correspondência ativa
-        const content = card.querySelector('div[id^="d"]');
-        const icon = card.querySelector('.d-icon');
-        if (content && content.style.display === 'none') {
-          content.style.display = 'block';
-          if (icon) icon.setAttribute('data-lucide', 'chevron-up');
-        }
-      } else {
-        card.style.display = 'none';
-      }
-    });
-    
-    if (window.lucide) {
-      lucide.createIcons();
-    }
-  }
-</script>
