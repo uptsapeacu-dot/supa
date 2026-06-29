@@ -257,15 +257,6 @@ async function adminCarregarLogsGlobaisRonda() {
 
 async function adminDeletarLogRonda(id) {
   if (!confirm('Deseja excluir este log da base global?')) return;
-    `;
-  });
-
-  tbody.innerHTML = html;
-  if (window.lucide) window.lucide.createIcons();
-}
-
-async function adminDeletarLogRonda(id) {
-  if (!confirm('Deseja excluir este log da base global?')) return;
   const { error } = await clienteSupabase.from('registros_ronda').delete().eq('id', id);
   if (error) alert('Erro: ' + error.message);
   else adminCarregarLogsGlobaisRonda();
