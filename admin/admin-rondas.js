@@ -257,13 +257,21 @@ async function adminCarregarLogsGlobaisRonda() {
 
 async function adminDeletarLogRonda(id) {
   if (!confirm('Deseja excluir este log da base global?')) return;
+    `;
+  });
+
+  tbody.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+}
+
+async function adminDeletarLogRonda(id) {
+  if (!confirm('Deseja excluir este log da base global?')) return;
   const { error } = await clienteSupabase.from('registros_ronda').delete().eq('id', id);
   if (error) alert('Erro: ' + error.message);
   else adminCarregarLogsGlobaisRonda();
 }
 
 function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
-  // Vamos criar um modal simples na tela para exibir o QR e permitir imprimir
   let modal = document.getElementById('modalAdminQR');
   if (!modal) {
     modal = document.createElement('div');
@@ -276,9 +284,6 @@ function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
     document.body.appendChild(modal);
   }
 
-  // Gera a view (com um elemento img fake com qrcode API para simplificar se nao tiver a lib, ou usar a api goqr)
-  // Usaremos uma API publica pra facilitar a injeção da logo se necessário, ou qrcode base
-  // A string do QR será um JSON stringificado ou só o ID para segurança
   const qrData = JSON.stringify({ action: "sapeacu_ronda", id: idPonto });
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrData)}`;
 
@@ -292,8 +297,7 @@ function adminAbrirModalQR(idPonto, nomePonto, nomeEscola) {
         
         <div style="position:relative; display:inline-block; border:2px solid #000; padding:15px; border-radius:8px;">
           <img src="${qrUrl}" alt="QR Code Ponto" style="width:200px; height:200px;" />
-          <!-- A logo sobreposta ao centro -->
-          <img src="img/logo-prefeitura.png" onerror="this.style.display='none'" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; background:#fff; padding:4px; border-radius:4px;" />
+          <img src="img/icone quadrado.png" onerror="this.style.display='none'" style="position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); width:50px; background:#fff; padding:4px; border-radius:4px;" />
         </div>
         <p style="font-family:monospace; font-size:10px; color:#999; margin-top:10px;">ID: ${idPonto}</p>
         <p style="font-family:Arial; font-size:12px; font-weight:bold; color:#000; margin-top:10px;">Escaneie com o app Ponto Mobile da Prefeitura.</p>
@@ -316,5 +320,3 @@ function adminExecutarImpressaoQR() {
   printWin.document.close();
   setTimeout(() => { printWin.print(); }, 500);
 }
-
-
