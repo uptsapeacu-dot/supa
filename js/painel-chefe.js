@@ -263,6 +263,9 @@ async function carregarRegistrosChefe() {
 // ==========================================
 
 async function renderizarGestaoEscolaChefia(container) {
+  if (container) {
+    container.classList.remove('home-grid');
+  }
   container.innerHTML = '<div style="color:#aaa; text-align:center;">Carregando painel de gestão...</div>';
 
   let cargosSet = new Set();

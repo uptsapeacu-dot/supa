@@ -189,6 +189,9 @@ function abrirEscola(escolaId) {
 
 function renderizarModulosDaEscola() {
   const lista = document.getElementById('modulosDaEscola')
+  if (lista) {
+    lista.classList.add('home-grid');
+  }
   lista.innerHTML = ''
   
   const oldBtn = document.getElementById('containerBtnVigia')
@@ -258,6 +261,9 @@ let _vigia_calendarMes = new Date().getMonth();
 let _vigia_calendarAno = new Date().getFullYear();
 
 async function renderizarPainelVigiaEscola(listaContainer) {
+  if (listaContainer) {
+    listaContainer.classList.remove('home-grid');
+  }
   // Remove o botão verde de bater ponto do header se ele existir
   const oldBtn = document.getElementById('containerBtnVigia');
   if (oldBtn) oldBtn.remove();
