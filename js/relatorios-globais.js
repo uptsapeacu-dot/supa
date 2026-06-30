@@ -1,4 +1,4 @@
-﻿// ====== RELATÃ“RIOS GLOBAIS DA REDE ======
+// ====== RELATÓRIOS GLOBAIS DA REDE ======
 
 async function carregarRelatoriosGlobais() {
   const containerDesempenho = document.getElementById('conteudo-desempenho');
@@ -100,7 +100,7 @@ async function carregarRelatoriosGlobais() {
     }
   }, 100);
 
-  // 2. FREQUÃŠNCIA (Radar de Faltas 30 dias)
+  // 2. FREQUÊNCIA (Radar de Faltas 30 dias)
   const dataLimite = new Date();
   dataLimite.setDate(dataLimite.getDate() - 30);
   const dataLimiteStr = dataLimite.toISOString().split('T')[0];
@@ -122,7 +122,7 @@ async function carregarRelatoriosGlobais() {
     });
   }
 
-  let htmlFreq = '<h3 style="margin-top:0;">Radar de Faltas (Ãšltimos 30 Dias)</h3><div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:16px;">';
+  let htmlFreq = '<h3 style="margin-top:0;">Radar de Faltas (Últimos 30 Dias)</h3><div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap:16px;">';
   
   let tabelaFreqPrint = `
     <h3 style="text-align:center; font-family:Arial; margin-top:20px;">Relatório Analítico de Frequência (30 dias) - Rede Municipal</h3>
