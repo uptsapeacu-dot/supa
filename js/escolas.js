@@ -170,7 +170,7 @@ function abrirEscola(escolaId) {
   atualizarInterfaceModo()
   renderizarModulosDaEscola()
 
-  const acessoEscola = acessosAtual.find(function(a) { return a.orgao_id === escolaId && a.ativo })
+  const acessoEscola = acessosAtual.find(function(a) { return (a.orgaos && a.orgaos.escola_id === escolaId || a.orgao_id === escolaId) && a.ativo })
   const ehProfessor = acessoEscola && acessoEscola.nivel === 4 && !isSecretaria()
 
   if (ehProfessor) {
@@ -188,13 +188,13 @@ function renderizarModulosDaEscola() {
   const oldBtn = document.getElementById('containerBtnVigia')
   if (oldBtn) oldBtn.remove()
 
-  const isProfessor = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.PROFESSOR && a.ativo);
+  const isProfessor = acessosAtual.some(a => (a.orgaos && a.orgaos.escola_id === escolaAtual || a.orgao_id === escolaAtual) && a.nivel === PERFIS.PROFESSOR && a.ativo);
   if (isProfessor) {
     abrirModuloEscola(escolaAtual, 'turmas');
     return;
   }
   
-  const isVigia = acessosAtual.some(a => a.orgao_id === escolaAtual && a.nivel === PERFIS.OPERACIONAL && a.ativo);
+  const isVigia = acessosAtual.some(a => (a.orgaos && a.orgaos.escola_id === escolaAtual || a.orgao_id === escolaAtual) && a.nivel === PERFIS.OPERACIONAL && a.ativo);
   if (isVigia) {
     renderizarPainelVigiaEscola(lista);
     return;
