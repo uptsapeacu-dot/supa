@@ -27,7 +27,7 @@ Este arquivo será nosso guia. Ele contém o status atual de tudo o que foi soli
 - [ ] **Relatórios:** Ampliar os relatórios estatísticos para incluir reprovação, aprovação e gráficos.
 - [ ] **Gestão Global de 360 Graus:** Remover as "travas antigas" que exigem a presença de `escolaAtual` para carregar UI/Funções (`auth.js`, `turmas.js`). Isso permitirá que a Secretaria cadastre alunos, gerencie turmas e visualize operações diretamente do painel global, escolhendo a escola em uma lista flutuante.
 - [ ] **Adequação à Portaria 671/MTE (Sistema de Ponto):** Ajustar o módulo operacional mobile (Nível 6) para cumprir as normas legais de controle de jornada, com assinatura eletrônica de espelho de ponto, comprovante do trabalhador e exportação segura dos registros.
-
+- [ ] **Modernização do Ecossistema Web (React + Zod):** Planejar e arquitetar uma futura refatoração do Front-end (atualmente em Vanilla JS) para **React/Next.js**. O objetivo central será encapsular lógicas e evitar vazamento de variáveis globais usando estados locais. Além disso, introduzir o **Zod** para validação de esquemas (schema validation) dos retornos da API Supabase, mitigando de forma definitiva bugs de *type casting* e vazamento nulo de dados não estruturados.
 ## 🔴 O que FALTA ser Implementado (Novos Módulos)
 - [ ] **Diário de Classe Digital & Chamada Digital:** Interface rápida para professores registrarem presença, conteúdo e atividades no dia a dia.
 - [ ] **Exportação para o Censo Escolar (Educacenso/INEP):** Geração de arquivo de texto (.txt) no padrão de layout oficial de migração do INEP para importação automatizada no portal do governo.
