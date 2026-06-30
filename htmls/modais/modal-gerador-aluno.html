@@ -1,0 +1,47 @@
+<div class="modal" id="modalGeradorAlunos" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:10000; align-items:center; justify-content:center; box-sizing: border-box; padding: 20px;">
+  <div class="modal-box" style="max-width: 500px; width: 100%; background: #1e1e1e; padding: 25px; border-radius: 14px; border: 1px solid #333; box-shadow: 0 8px 32px rgba(0,0,0,0.5); box-sizing: border-box;">
+    <div class="modal-topo" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px;">
+      <h2 style="color: #fff; font-size: 20px; margin: 0; display: flex; align-items: center; gap: 8px;">
+        <i data-lucide="sparkles" style="color: #eab308; width: 22px; height: 22px;"></i> Gerar Alunos Fictícios
+      </h2>
+      <button class="fechar" onclick="fecharModalGeradorAlunos()" style="background:none; border:none; color:#888; font-size:24px; cursor:pointer;" aria-label="Fechar modal">×</button>
+    </div>
+    
+    <div style="color: #bbb; font-size: 14px; margin-bottom: 20px; line-height: 1.5;">
+      Gere alunos fictícios com dados realistas (nomes completos, CPF, SUS, RG, filiação, histórico de saúde e endereço local de Sapeaçu - BA, CEP 44530-000) distribuídos na escola e turmas.
+    </div>
+
+    <div style="display: flex; flex-direction: column; gap: 15px; text-align: left; margin-bottom: 20px;">
+      <div>
+        <label style="color: #888; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Quantidade de Alunos a Gerar</label>
+        <input type="number" id="quantidadeGerarAlunos" value="10" min="1" max="100" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #3f3f3f; background: #121212; color: #fff; box-sizing: border-box; font-size: 14px;" />
+      </div>
+
+      <div>
+        <label style="color: #888; font-size: 12px; font-weight: bold; display: block; margin-bottom: 6px;">Turma de Destino</label>
+        <select id="turmaGerarAlunos" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #3f3f3f; background: #121212; color: #fff; box-sizing: border-box; font-size: 14px;">
+          <option value="random">Distribuir Aleatoriamente entre as Turmas</option>
+          <option value="none">Sem Turma (Apenas cadastrar na Escola)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Barra de progresso para a geração -->
+    <div id="progressoGeradorAlunos" style="display: none; margin-bottom: 20px; background: #121212; border: 1px solid #333; padding: 12px; border-radius: 8px;">
+      <div style="display: flex; justify-content: space-between; font-size: 12px; color: #aaa; margin-bottom: 8px;">
+        <span id="textoProgressoGerador">Processando...</span>
+        <span id="porcentagemProgressoGerador" style="font-weight: bold; color: #eab308;">0%</span>
+      </div>
+      <div style="width: 100%; height: 8px; background: #2a2a2a; border-radius: 4px; overflow: hidden;">
+        <div id="barraProgressoGerador" style="width: 0%; height: 100%; background: #eab308; border-radius: 4px; transition: width 0.1s;"></div>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+      <button class="btn-clear" onclick="fecharModalGeradorAlunos()" style="background: #334155; color: white; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; font-size: 14px;">Cancelar</button>
+      <button class="btn-login" id="btnConfirmarGeradorAlunos" onclick="iniciarGeracaoAlunosFicticios()" style="background: #eab308; color: #050505; padding: 10px 20px; border-radius: 8px; cursor: pointer; border: none; font-weight: bold; display: flex; align-items: center; gap: 6px; font-size: 14px;">
+        <i data-lucide="play" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"></i> Iniciar Geração
+      </button>
+    </div>
+  </div>
+</div>

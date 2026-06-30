@@ -719,3 +719,325 @@ function imprimirFicha(aluno) {
   }, 300); 
 }
 
+// ==========================================
+// GERADOR DE ALUNOS FICTÍCIOS
+// ==========================================
+async function abrirModalGerarAlunosFicticios() {
+  const escolaId = escolaAtual || document.getElementById('escolaDoAluno')?.value;
+  if (!escolaId) {
+    alert('Selecione uma escola antes de abrir o gerador');
+    return;
+  }
+  
+  const select = document.getElementById('turmaGerarAlunos');
+  if (select) {
+    select.innerHTML = `
+      <option value="random">Distribuir Aleatoriamente entre as Turmas</option>
+      <option value="none">Sem Turma (Apenas cadastrar na Escola)</option>
+    `;
+    
+    const { data: turmas, error } = await clienteSupabase
+      .from('turmas')
+      .select('id, nome, turno, ano_letivo')
+      .eq('escola_id', escolaId)
+      .eq('ativo', true)
+      .order('nome', { ascending: true });
+      
+    if (!error && turmas) {
+      turmas.forEach(function(t) {
+        const opt = document.createElement('option');
+        opt.value = t.id;
+        opt.textContent = t.nome + ' (' + t.turno + ' — ' + t.ano_letivo + ')';
+        select.appendChild(opt);
+      });
+    }
+  }
+
+  const modal = document.getElementById('modalGeradorAlunos');
+  if (modal) {
+    modal.style.display = 'flex';
+    const progresso = document.getElementById('progressoGeradorAlunos');
+    if (progresso) progresso.style.display = 'none';
+    
+    const btnConfirmar = document.getElementById('btnConfirmarGeradorAlunos');
+    if (btnConfirmar) {
+      btnConfirmar.disabled = false;
+      btnConfirmar.innerHTML = '<i data-lucide="play" style="width: 16px; height: 16px; margin-right: 4px; vertical-align: middle;"></i> Iniciar Geração';
+    }
+    
+    if (window.lucide) window.lucide.createIcons();
+  }
+}
+
+function fecharModalGeradorAlunos() {
+  const modal = document.getElementById('modalGeradorAlunos');
+  if (modal) modal.style.display = 'none';
+}
+
+async function iniciarGeracaoAlunosFicticios() {
+  const qtdInput = document.getElementById('quantidadeGerarAlunos');
+  const qtd = parseInt(qtdInput?.value || '10', 10);
+  if (isNaN(qtd) || qtd < 1 || qtd > 100) {
+    alert('Por favor, informe uma quantidade entre 1 e 100.');
+    return;
+  }
+
+  const escolaId = escolaAtual || document.getElementById('escolaDoAluno')?.value;
+  if (!escolaId) {
+    alert('Escola não identificada.');
+    return;
+  }
+
+  const turmaSelect = document.getElementById('turmaGerarAlunos');
+  const turmaOpcao = turmaSelect?.value || 'random';
+
+  const btnConfirmar = document.getElementById('btnConfirmarGeradorAlunos');
+  const btnCancelar = document.querySelector('#modalGeradorAlunos .btn-clear');
+  const progressoDiv = document.getElementById('progressoGeradorAlunos');
+  const textoProgresso = document.getElementById('textoProgressoGerador');
+  const porcentagemProgresso = document.getElementById('porcentagemProgressoGerador');
+  const barraProgresso = document.getElementById('barraProgressoGerador');
+
+  if (btnConfirmar) btnConfirmar.disabled = true;
+  if (btnCancelar) btnCancelar.style.pointerEvents = 'none';
+  if (progressoDiv) progressoDiv.style.display = 'block';
+
+  try {
+    let turmasDaEscola = [];
+    const { data: tData } = await clienteSupabase
+      .from('turmas')
+      .select('id, nome, turno')
+      .eq('escola_id', escolaId)
+      .eq('ativo', true);
+    if (tData) turmasDaEscola = tData;
+
+    const _gerador_nomesMasc = ['Miguel', 'Arthur', 'Gael', 'Heitor', 'Theo', 'Davi', 'Gabriel', 'Bernardo', 'Samuel', 'João', 'Pedro', 'Lucas', 'Matheus', 'Felipe', 'Gustavo', 'Benjamin', 'Enzo', 'Joaquim', 'Nicolas', 'Daniel', 'Murilo', 'Henrique', 'Luan', 'Yago'];
+    const _gerador_nomesFem = ['Helena', 'Alice', 'Laura', 'Sophia', 'Manuela', 'Maitê', 'Liz', 'Cecília', 'Isabella', 'Luísa', 'Valentina', 'Maria', 'Giovanna', 'Beatriz', 'Clara', 'Mariana', 'Lívia', 'Júlia', 'Lara', 'Melissa', 'Yasmin', 'Lavínia', 'Antonella', 'Emanuelly'];
+    const _gerador_sobrenomes = ['Silva', 'Santos', 'Oliveira', 'Souza', 'Rodrigues', 'Ferreira', 'Alves', 'Pereira', 'Lima', 'Gomes', 'Costa', 'Ribeiro', 'Martins', 'Carvalho', 'Almeida', 'Lopes', 'Soares', 'Dias', 'Castro', 'Rocha', 'Cardoso', 'Nascimento', 'Barbosa', 'Araújo'];
+    const _gerador_ruasSapeacu = [
+      'Avenida Getúlio Vargas', 'Rua da Matriz', 'Rua Benjamin Constant', 'Praça da Bandeira', 
+      'Rua Castro Alves', 'Rua Marechal Deodoro', 'Rua Rui Barbosa', 'Rua São João', 
+      'Rua da Jaqueira', 'Avenida Sete de Setembro', 'Rua do Quiambique', 'Rua da Senzala',
+      'Praça Castro Alves', 'Rua da Estação', 'Rua da Palha', 'Rua das Flores'
+    ];
+    const _gerador_bairrosSapeacu = ['Centro', 'Quiambique', 'Baixa da Palmeira', 'Parque das Flores', 'Ribeiro', 'Senzala', 'Barreiro', 'Jardim Bahia'];
+
+    function _gerador_criarCPF() {
+      const num = Array.from({length: 9}, () => Math.floor(Math.random() * 10));
+      let soma = 0;
+      for (let i = 0; i < 9; i++) soma += num[i] * (10 - i);
+      let d1 = 11 - (soma % 11);
+      if (d1 >= 10) d1 = 0;
+      num.push(d1);
+      soma = 0;
+      for (let i = 0; i < 10; i++) soma += num[i] * (11 - i);
+      let d2 = 11 - (soma % 11);
+      if (d2 >= 10) d2 = 0;
+      num.push(d2);
+      const n = num.join('');
+      return `${n.substring(0,3)}.${n.substring(3,6)}.${n.substring(6,9)}-${n.substring(9,11)}`;
+    }
+
+    function _gerador_criarSUS() {
+      const prefixos = ['1', '2', '7', '8'];
+      const prefixo = prefixos[Math.floor(Math.random() * prefixos.length)];
+      let resto = '';
+      for (let i = 0; i < 14; i++) {
+        resto += Math.floor(Math.random() * 10);
+      }
+      return prefixo + resto;
+    }
+
+    function _gerador_criarNascimento() {
+      const anoHoje = new Date().getFullYear();
+      const anoNasc = anoHoje - (6 + Math.floor(Math.random() * 11));
+      const mes = String(1 + Math.floor(Math.random() * 12)).padStart(2, '0');
+      const dia = String(1 + Math.floor(Math.random() * 28)).padStart(2, '0');
+      return `${anoNasc}-${mes}-${dia}`;
+    }
+
+    function _gerador_sortearNomeCompleto(sexo) {
+      const primeiro = sexo === 'M' 
+        ? _gerador_nomesMasc[Math.floor(Math.random() * _gerador_nomesMasc.length)]
+        : _gerador_nomesFem[Math.floor(Math.random() * _gerador_nomesFem.length)];
+      const sob1 = _gerador_sobrenomes[Math.floor(Math.random() * _gerador_sobrenomes.length)];
+      let sob2 = _gerador_sobrenomes[Math.floor(Math.random() * _gerador_sobrenomes.length)];
+      while (sob2 === sob1) {
+        sob2 = _gerador_sobrenomes[Math.floor(Math.random() * _gerador_sobrenomes.length)];
+      }
+      return `${primeiro} ${sob1} ${sob2}`;
+    }
+
+    const novosAlunos = [];
+
+    if (textoProgresso) textoProgresso.textContent = `Gerando dados fictícios para ${qtd} alunos...`;
+    if (barraProgresso) barraProgresso.style.width = '20%';
+    if (porcentagemProgresso) porcentagemProgresso.textContent = '20%';
+
+    for (let i = 0; i < qtd; i++) {
+      const sexo = Math.random() > 0.5 ? 'M' : 'F';
+      const nomeAluno = _gerador_sortearNomeCompleto(sexo);
+      const dataNasc = _gerador_criarNascimento();
+      const cpf = _gerador_criarCPF();
+      const rg = String(Math.floor(10000000 + Math.random() * 90000000));
+      const nis = String(Math.floor(10000000000 + Math.random() * 90000000000));
+      const sus = _gerador_criarSUS();
+      const censo = String(Math.floor(10000000 + Math.random() * 90000000));
+      
+      const nomeMae = _gerador_sortearNomeCompleto('F');
+      const nomePai = _gerador_sortearNomeCompleto('M');
+      
+      const rua = _gerador_ruasSapeacu[Math.floor(Math.random() * _gerador_ruasSapeacu.length)];
+      const bairro = _gerador_bairrosSapeacu[Math.floor(Math.random() * _gerador_bairrosSapeacu.length)];
+      const numero = String(1 + Math.floor(Math.random() * 450));
+      const enderecoCompleto = `${rua}, nº ${numero}, ${bairro}, Sapeaçu - BA`;
+      
+      const d = new Date(dataNasc);
+      const idade = new Date().getFullYear() - d.getFullYear();
+      
+      let serieEstimada = '1º Ano';
+      if (idade === 6) serieEstimada = '1º Ano';
+      else if (idade === 7) serieEstimada = '2º Ano';
+      else if (idade === 8) serieEstimada = '3º Ano';
+      else if (idade === 9) serieEstimada = '4º Ano';
+      else if (idade === 10) serieEstimada = '5º Ano';
+      else if (idade === 11) serieEstimada = '6º Ano';
+      else if (idade === 12) serieEstimada = '7º Ano';
+      else if (idade === 13) serieEstimada = '8º Ano';
+      else if (idade === 14) serieEstimada = '9º Ano';
+      else if (idade >= 15) serieEstimada = 'Ensino Médio';
+
+      let tId = null;
+      let nomeTurma = '';
+      let turnoTurma = 'Matutino';
+
+      if (turmaOpcao === 'random') {
+        if (turmasDaEscola.length > 0) {
+          const tSorteada = turmasDaEscola[Math.floor(Math.random() * turmasDaEscola.length)];
+          tId = tSorteada.id;
+          nomeTurma = tSorteada.nome;
+          turnoTurma = tSorteada.turno;
+          if (nomeTurma.includes('º')) {
+            const match = nomeTurma.match(/\d+º\s+Ano/i);
+            if (match) {
+              serieEstimada = match[0];
+            }
+          }
+        }
+      } else if (turmaOpcao !== 'none') {
+        const tEspecifica = turmasDaEscola.find(t => t.id === turmaOpcao);
+        if (tEspecifica) {
+          tId = tEspecifica.id;
+          nomeTurma = tEspecifica.nome;
+          turnoTurma = tEspecifica.turno;
+          if (nomeTurma.includes('º')) {
+            const match = nomeTurma.match(/\d+º\s+Ano/i);
+            if (match) {
+              serieEstimada = match[0];
+            }
+          }
+        }
+      }
+
+      const telefone = `(75) 998${Math.floor(10 + Math.random() * 90)}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const pacoteDeDados = {
+        censo: censo,
+        cpf: cpf,
+        estado_civil: 'Solteiro(a)',
+        cor_raca: Math.random() > 0.5 ? 'Parda' : (Math.random() > 0.5 ? 'Preta' : 'Branca'),
+        sexo: sexo === 'M' ? 'Masculino' : 'Feminino',
+        rg: rg,
+        nis: nis,
+        sus: sus,
+        certidao: `${String(Math.floor(100000 + Math.random() * 900000))} 01 55 2018 1 00123 045 ${String(Math.floor(1000000 + Math.random() * 9000000))}-${String(Math.floor(10 + Math.random() * 90))}`,
+        nacionalidade: 'Brasileira',
+        cidade_nasc: Math.random() > 0.3 ? 'Sapeaçu' : 'Cruz das Almas',
+        uf_nasc: 'BA',
+        mae: nomeMae,
+        tel_mae: telefone,
+        pai: nomePai,
+        tel_pai: telefone,
+        tipo_matricula: 'Regular',
+        data_matricula: new Date().toISOString().substring(0, 10),
+        localizacao: 'Urbana',
+        turno: turnoTurma,
+        turma: nomeTurma,
+        transporte: Math.random() > 0.7,
+        rota: Math.random() > 0.7 ? 'Rota 1 - Centro' : '',
+        restricoes: Math.random() > 0.9 ? 'Restrição a lactose' : 'Nenhuma',
+        rua: rua,
+        numero: numero,
+        cep: '44530-000',
+        bairro: bairro,
+        cidade_end: 'Sapeaçu',
+        uf_end: 'BA',
+        area_localizacao: 'Urbana',
+        area_diferenciada: 'Não',
+        recursos_especiais: 'Não',
+        recursos_tipos: [],
+        diabete: 'Não',
+        convulsoes: 'Não',
+        asma: 'Não',
+        infeccoes: 'Não',
+        restricao_exercicio: 'Não',
+        covid: 'Não',
+        covid_quando: '',
+        situacao_vacinal: 'Em dia',
+        alergia_med: 'Não',
+        alergia_med_quais: '',
+        motivo_nao_vac: '',
+        restricao_alimentar: 'Não',
+        restricao_alim_quais: '',
+        nee: 'Não',
+        nee_tipos: [],
+        deficiencia: 'Não',
+        deficiencia_tipos: []
+      };
+
+      novosAlunos.push({
+        nome: nomeAluno,
+        telefone: telefone,
+        endereco: enderecoCompleto,
+        serie: serieEstimada,
+        data_nascimento: dataNasc,
+        foto_url: null,
+        escola_id: escolaId,
+        turma_id: tId,
+        dados_matricula: pacoteDeDados
+      });
+    }
+
+    if (textoProgresso) textoProgresso.textContent = `Gravando no banco do Supabase...`;
+    if (barraProgresso) barraProgresso.style.width = '60%';
+    if (porcentagemProgresso) porcentagemProgresso.textContent = '60%';
+
+    const { error: insertError } = await clienteSupabase
+      .from('alunos')
+      .insert(novosAlunos);
+
+    if (insertError) throw insertError;
+
+    if (barraProgresso) barraProgresso.style.width = '100%';
+    if (porcentagemProgresso) porcentagemProgresso.textContent = '100%';
+    if (textoProgresso) textoProgresso.textContent = `Geração concluída com sucesso!`;
+
+    await new Promise(r => setTimeout(r, 800));
+
+    fecharModalGeradorAlunos();
+    alert(`${qtd} alunos fictícios criados com sucesso e vinculados à escola e turmas correspondentes!`);
+
+    if (typeof carregarAlunos === 'function') {
+      await carregarAlunos();
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('Erro durante a geração de dados: ' + (err.message || err));
+  } finally {
+    if (btnConfirmar) btnConfirmar.disabled = false;
+    if (btnCancelar) btnCancelar.style.pointerEvents = 'auto';
+    if (progressoDiv) progressoDiv.style.display = 'none';
+  }
+}
+
