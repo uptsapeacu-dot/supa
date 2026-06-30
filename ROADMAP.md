@@ -18,7 +18,12 @@ Este arquivo será nosso guia. Ele contém o status atual de tudo o que foi soli
 ## 🟡 O que precisa ser Expandido (Refatoração e Evolução)
 - [ ] **Controle de Acesso e Perfis (Híbrido RBAC + ABAC):** Mapear e separar claramente Secretaria (Nível 1), Gestor, Coordenador, Professor e equipes. Implementar estrutura de RBAC (Role-Based Access Control) para os níveis de acesso tradicionais (1 a 6) combinada com ABAC (Attribute-Based Access Control) para avaliar restrições contextuais baseadas em atributos (como a lotação em `escola_id` e o array de `cargos_gerenciados` para o Nível 5).
 - [ ] **Dashboard da Secretaria:** Trazer métricas reais em tempo real para a `home.html`.
-- [ ] **Sistema de Avaliações (Boletins):** Transformar o visual atual em uma tela de lançamento real de notas (bimestres, trimestres).
+- [ ] **Sistema de Avaliações e Notas (Boletins):** Evoluir o visual estático e corrigir fraquezas de modelagem de notas:
+  - [ ] **Modelagem Dinâmica de Notas:** Substituir as colunas rígidas (`nota1`, `nota2`, `nota3`) da tabela `notas_alunos` por um relacionamento dinâmico de `avaliacoes` (pesos e nomes personalizados) e `notas_avaliacoes`.
+  - [ ] **Parametrização de Períodos Letivos:** Desacoplar unidades e bimestres fixos no front-end em prol de divisões flexíveis definidas no calendário letivo (bimestres ou trimestres customizáveis).
+  - [ ] **Cálculo de Médias no Backend:** Migrar a lógica de cálculo de médias e validação de aprovação do client-side (JS) para triggers/functions no banco de dados.
+  - [ ] **Suporte a Notas de Recuperação:** Adicionar suporte e campos para Recuperação Paralela e Recuperação Final (exigências legais da LDB).
+  - [ ] **Integração com Diário de Classe:** Permitir que as notas sejam associadas a atividades e conteúdos letivos lançados no diário.
 - [ ] **Relatórios:** Ampliar os relatórios estatísticos para incluir reprovação, aprovação e gráficos.
 - [ ] **Gestão Global de 360 Graus:** Remover as "travas antigas" que exigem a presença de `escolaAtual` para carregar UI/Funções (`auth.js`, `turmas.js`). Isso permitirá que a Secretaria cadastre alunos, gerencie turmas e visualize operações diretamente do painel global, escolhendo a escola em uma lista flutuante.
 - [ ] **Adequação à Portaria 671/MTE (Sistema de Ponto):** Ajustar o módulo operacional mobile (Nível 6) para cumprir as normas legais de controle de jornada, com assinatura eletrônica de espelho de ponto, comprovante do trabalhador e exportação segura dos registros.

@@ -240,83 +240,225 @@ function voltarParaEscolas() {
 }
 
 // ====== PAINEL EXCLUSIVO DO VIGIA NA ESCOLA ======
+let _vigia_calendarMes = new Date().getMonth();
+let _vigia_calendarAno = new Date().getFullYear();
+
 async function renderizarPainelVigiaEscola(listaContainer) {
-  // 1. Criar o botão verde abaixo do título da escola
-  const header = document.querySelector('.page-header');
-  if (header) {
-    let containerBtn = document.createElement('div');
-    containerBtn.id = 'containerBtnVigia';
-    containerBtn.style.marginTop = '15px';
-    containerBtn.style.width = '100%';
-    header.parentNode.insertBefore(containerBtn, header.nextSibling);
-    
-    containerBtn.innerHTML = `
-      <button class="btn-login" style="background: #22c55e; color: #000; width: 100%; max-width: 300px; padding: 16px; font-size: 16px; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="mostrarTela('ponto-mobile')">
-        <i data-lucide="qr-code" style="width: 20px; height: 20px;"></i> Bater Ponto
-      </button>
-    `;
+  // Remove o botão verde de bater ponto do header se ele existir
+  const oldBtn = document.getElementById('containerBtnVigia');
+  if (oldBtn) oldBtn.remove();
+
+  // Estrutura a tela do vigia com o calendário e a div de últimos registros
+  listaContainer.innerHTML = `
+    <div style="width: 100%; display: flex; flex-direction: column; align-items: center; gap: 20px;">
+      
+      <!-- Calendário Mensal -->
+      <div class="vigia-calendar-container">
+        <div class="vigia-calendar-header">
+          <button class="btn-clear" onclick="adminVigiaMudarMes(-1)" style="padding: 4px 10px; color: #fff; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="chevron-left" style="width:18px; height:18px;"></i>
+          </button>
+          <h3 id="vigiaMesAnoTitulo" style="margin: 0; font-size: 16px; color:#fff; font-weight: 600;">Carregando mês...</h3>
+          <button class="btn-clear" onclick="adminVigiaMudarMes(1)" style="padding: 4px 10px; color: #fff; display: flex; align-items: center; justify-content: center;">
+            <i data-lucide="chevron-right" style="width:18px; height:18px;"></i>
+          </button>
+        </div>
+        <div class="vigia-calendar-grid-header">
+          <div>DOM</div><div>SEG</div><div>TER</div><div>QUA</div><div>QUI</div><div>SEX</div><div>SÁB</div>
+        </div>
+        <div class="vigia-calendar-grid" id="vigiaCalendarGrid"></div>
+      </div>
+
+      <!-- Reaproveitamento do histórico (listaUltimosPontos) -->
+      <div class="permissions-box" style="margin-top: 10px; text-align: left; width: 100%; max-width: 600px; box-sizing: border-box;">
+        <h3 style="font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; color: #fff;">
+          <i data-lucide="history" style="width: 18px; height: 18px;"></i> Últimos Registros
+        </h3>
+        <div id="listaUltimosPontos">
+          <div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro recente encontrado.</div>
+        </div>
+      </div>
+
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+
+  // Renderiza o calendário do mês atual e carrega o histórico reaproveitado
+  await renderizarVigiaCalendario(escolaAtual);
+  if (typeof carregarUltimosRegistrosMobile === 'function') {
+    carregarUltimosRegistrosMobile();
+  }
+}
+
+async function renderizarVigiaCalendario(escolaId) {
+  const grid = document.getElementById('vigiaCalendarGrid');
+  const titulo = document.getElementById('vigiaMesAnoTitulo');
+  if (!grid || !titulo) return;
+
+  const mesesStr = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+  titulo.textContent = `${mesesStr[_vigia_calendarMes]} de ${_vigia_calendarAno}`;
+
+  const primeiroDia = new Date(_vigia_calendarAno, _vigia_calendarMes, 1);
+  const ultimoDia = new Date(_vigia_calendarAno, _vigia_calendarMes + 1, 0);
+
+  const formatISO = (d) => {
+    const ano = d.getFullYear();
+    const mes = String(d.getMonth() + 1).padStart(2, '0');
+    const dia = String(d.getDate()).padStart(2, '0');
+    return `${ano}-${mes}-${dia}`;
+  };
+
+  const dataInicioStr = formatISO(primeiroDia);
+  const dataFimStr = formatISO(ultimoDia);
+
+  const { data: escalas, error } = await clienteSupabase
+    .from('escala_vigias')
+    .select('data_escala')
+    .eq('funcionario_id', funcionarioAtual.id)
+    .eq('escola_id', escolaId)
+    .gte('data_escala', dataInicioStr)
+    .lte('data_escala', dataFimStr);
+
+  const diasDeTrabalho = new Set();
+  if (!error && escalas) {
+    escalas.forEach(e => {
+      diasDeTrabalho.add(e.data_escala);
+    });
   }
 
-  // 2. Estruturar o painel de histórico
+  grid.innerHTML = '';
+
+  const diaSemanaInicio = primeiroDia.getDay();
+  const totalDiasMes = ultimoDia.getDate();
+
+  const ultimoDiaMesAnterior = new Date(_vigia_calendarAno, _vigia_calendarMes, 0).getDate();
+  for (let i = diaSemanaInicio - 1; i >= 0; i--) {
+    const diaNum = ultimoDiaMesAnterior - i;
+    const div = document.createElement('div');
+    div.className = 'vigia-calendar-day outro-mes';
+    div.textContent = diaNum;
+    grid.appendChild(div);
+  }
+
+  const hoje = new Date();
+  for (let dia = 1; dia <= totalDiasMes; dia++) {
+    const div = document.createElement('div');
+    div.className = 'vigia-calendar-day';
+    div.textContent = dia;
+
+    const dataAtualStr = `${_vigia_calendarAno}-${String(_vigia_calendarMes + 1).padStart(2, '0')}-${String(dia).padStart(2, '0')}`;
+
+    if (diasDeTrabalho.has(dataAtualStr)) {
+      div.classList.add('trabalho');
+      div.onclick = () => abrirPontosRondaVigia(dataAtualStr, escolaId);
+    }
+
+    if (hoje.getDate() === dia && hoje.getMonth() === _vigia_calendarMes && hoje.getFullYear() === _vigia_calendarAno) {
+      div.classList.add('hoje');
+    }
+
+    grid.appendChild(div);
+  }
+
+  const totalCelulas = grid.children.length;
+  const celulasRestantes = (7 - (totalCelulas % 7)) % 7;
+  for (let i = 1; i <= celulasRestantes; i++) {
+    const div = document.createElement('div');
+    div.className = 'vigia-calendar-day outro-mes';
+    div.textContent = i;
+    grid.appendChild(div);
+  }
+
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function adminVigiaMudarMes(direcao) {
+  _vigia_calendarMes += direcao;
+  if (_vigia_calendarMes > 11) {
+    _vigia_calendarMes = 0;
+    _vigia_calendarAno += 1;
+  } else if (_vigia_calendarMes < 0) {
+    _vigia_calendarMes = 11;
+    _vigia_calendarAno -= 1;
+  }
+  if (escolaAtual) {
+    renderizarVigiaCalendario(escolaAtual);
+  }
+}
+
+async function abrirPontosRondaVigia(dataStr, escolaId) {
+  const listaContainer = document.getElementById('modulosDaEscola');
+  if (!listaContainer) return;
+
+  const dataBr = dataStr.split('-').reverse().join('/');
+
   listaContainer.innerHTML = `
-    <div style="width: 100%; max-width: 600px; text-align: left; margin-top: 20px;">
-      <h3 style="color: #f8fafc; margin-bottom: 15px; font-size: 16px; display: flex; align-items: center; gap: 8px;">
-        <i data-lucide="history"></i> Seu Histórico de Pontos
-      </h3>
-      <div id="historicoVigiaEscola">
-        <div style="text-align:center; color:#94a3b8; padding:20px;">Carregando histórico...</div>
+    <div class="vigia-pontos-lista-container">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:10px;">
+        <h3 style="color:#fff; font-size:16px; margin:0; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="map-pin" style="color:#3ea6ff; width:20px; height:20px;"></i> Locais de Ronda (${dataBr})
+        </h3>
+        <button class="btn-clear" onclick="voltarAoCalendarioVigia()" style="padding:4px 8px; color:#aaa; display:flex; align-items:center; gap:4px; font-size:13px; cursor:pointer;">
+          <i data-lucide="arrow-left" style="width:16px; height:16px;"></i> Voltar
+        </button>
+      </div>
+
+      <div id="listaPontosRondaVigia" style="display:flex; flex-direction:column; gap:10px;">
+        <div style="text-align:center; color:#94a3b8; padding:20px;">Carregando pontos de ronda...</div>
       </div>
     </div>
   `;
+
   if (window.lucide) window.lucide.createIcons();
 
-  // 3. Buscar os registros e renderizar
-  const { data, error } = await clienteSupabase
-    .from('registros_ronda')
-    .select('*, pontos_ronda(nome, localizacao)')
-    .eq('funcionario_id', funcionarioAtual.id)
-    .order('horario_leitura', { ascending: false })
-    .limit(10);
+  const { data: pontos, error } = await clienteSupabase
+    .from('pontos_ronda')
+    .select('id, nome, tolerancia_metros')
+    .eq('escola_id', escolaId)
+    .order('nome');
 
-  const histContainer = document.getElementById('historicoVigiaEscola');
-  if (!histContainer) return;
+  const pontosContainer = document.getElementById('listaPontosRondaVigia');
+  if (!pontosContainer) return;
 
-  if (error || !data || data.length === 0) {
-    histContainer.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum registro encontrado.</div>';
+  if (error || !pontos || pontos.length === 0) {
+    pontosContainer.innerHTML = '<div style="color: #64748b; font-size: 14px; text-align: center; padding: 10px;">Nenhum ponto de ronda cadastrado para esta escola.</div>';
     return;
   }
 
   let html = '';
-  data.forEach(log => {
-    const d = new Date(log.horario_leitura);
-    const horaStr = d.toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'});
-    const dataStr = d.toLocaleDateString('pt-BR');
-    const nomePonto = log.pontos_ronda ? log.pontos_ronda.nome : 'Ponto Excluído';
-    const corStatus = log.status === 'OK' ? '#22c55e' : (log.status === 'ALERTA' ? '#f59e0b' : '#ef4444');
-    
-    let margemErroHtml = '';
-    if (log.status === 'ALERTA' && log.pontos_ronda && log.pontos_ronda.localizacao && log.pontos_ronda.localizacao.latitude) {
-      if (typeof calcularDistanciaMetros === 'function') {
-        const dist = calcularDistanciaMetros(log.latitude, log.longitude, log.pontos_ronda.localizacao.latitude, log.pontos_ronda.localizacao.longitude);
-        const distKm = (dist / 1000).toFixed(2);
-        margemErroHtml = `<div style="color: #ef4444; font-size: 11px; margin-top: 4px; font-weight: bold;">margem de erro ${distKm} km</div>`;
-      }
-    }
-    
+  pontos.forEach(p => {
     html += `
-      <div style="background: #1f2937; border-radius: 8px; padding: 12px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
+      <div class="vigia-ponto-item-card" onclick="iniciarLeituraQRComPonto('${p.id}')">
         <div>
-          <div style="color: #f8fafc; font-weight: bold; font-size: 14px; margin-bottom: 4px;">${nomePonto}</div>
-          <div style="color: #94a3b8; font-size: 12px;">${dataStr} às ${horaStr}</div>
-          ${margemErroHtml}
+          <div style="color:#fff; font-weight:bold; font-size:15px; margin-bottom:4px;">${p.nome}</div>
+          <div style="color:#888; font-size:12px; display:flex; align-items:center; gap:4px;">
+            <i data-lucide="activity" style="width:12px; height:12px;"></i> Raio de Tolerância: ${p.tolerancia_metros || 50}m
+          </div>
         </div>
-        <div style="color: ${corStatus}; border: 1px solid ${corStatus}; border-radius: 4px; padding: 4px 8px; font-size: 11px; font-weight: bold;">
-          ${log.status}
+        <div style="color:#3ea6ff; display:flex; align-items:center; justify-content:center; background:rgba(62,166,255,0.1); border-radius:50%; width:36px; height:36px; border:1px solid rgba(62,166,255,0.2);">
+          <i data-lucide="qr-code" style="width:20px; height:20px;"></i>
         </div>
       </div>
     `;
   });
-  histContainer.innerHTML = html;
+
+  pontosContainer.innerHTML = html;
+  if (window.lucide) window.lucide.createIcons();
+}
+
+function voltarAoCalendarioVigia() {
+  const listaContainer = document.getElementById('modulosDaEscola');
+  if (listaContainer) {
+    renderizarPainelVigiaEscola(listaContainer);
+  }
+}
+
+function iniciarLeituraQRComPonto(idPonto) {
+  mostrarTela('ponto-mobile');
+  if (typeof iniciarLeituraQR === 'function') {
+    iniciarLeituraQR();
+  }
 }
 
 

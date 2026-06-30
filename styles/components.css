@@ -1061,3 +1061,103 @@ h1 {
 }
 .btn-add-ocorrencia:hover { background: rgba(62, 166, 255, 0.2); }
 .ocorrencias-vazio { text-align: center; color: #777; font-size: 13px; padding: 16px; background: #121212; border-radius: 8px; border: 1px dashed #333; }
+
+/* =====================
+   CALENDÁRIO DO VIGIA (NÍVEL 6)
+   ===================== */
+.vigia-calendar-container {
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin-top: 15px;
+}
+.vigia-calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+.vigia-calendar-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #fff;
+  font-weight: 600;
+}
+.vigia-calendar-grid-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-weight: bold;
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 8px;
+}
+.vigia-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+  text-align: center;
+}
+.vigia-calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fff;
+  border-radius: 50%;
+  cursor: default;
+  transition: all 0.2s;
+  user-select: none;
+}
+.vigia-calendar-day.outro-mes {
+  color: #444;
+}
+.vigia-calendar-day.trabalho {
+  background: #2563eb;
+  color: #fff;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 0 8px rgba(37, 99, 235, 0.4);
+}
+.vigia-calendar-day.trabalho:hover {
+  background: #1d4ed8;
+  transform: scale(1.1);
+}
+.vigia-calendar-day.hoje {
+  border: 2px solid #3ea6ff;
+}
+
+/* Painel de Pontos da Ronda */
+.vigia-pontos-lista-container {
+  background: #181818;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 20px;
+  width: 100%;
+  max-width: 600px;
+  box-sizing: border-box;
+  margin-top: 15px;
+  text-align: left;
+}
+.vigia-ponto-item-card {
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.vigia-ponto-item-card:hover {
+  background: #374151;
+  transform: translateY(-2px);
+  border-color: #3ea6ff;
+}

@@ -132,7 +132,8 @@ async function iniciarSistema() {
   })
   atualizarInterfaceModo()
 
-  if (isChefeEquipe() && !isSecretaria()) {
+  const nivelLogado = typeof nivelMaisAlto === 'function' ? nivelMaisAlto() : null;
+  if ((isChefeEquipe() || nivelLogado === PERFIS.OPERACIONAL) && !isSecretaria()) {
     document.querySelectorAll('.mode-toggle-container').forEach(function(el) {
       el.style.display = 'none'
     })

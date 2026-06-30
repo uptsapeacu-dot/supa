@@ -28,6 +28,7 @@ function aplicarVisibilidadeSidebar() {
   if (btnPonto) btnPonto.style.display = 'none';
 
   if (nivel === PERFIS.OPERACIONAL) {
+    if (menus.home) menus.home.style.display = 'flex'
     if (btnPonto) btnPonto.style.display = 'flex'
     if (menus.perfil) menus.perfil.style.display = 'flex'
     return
