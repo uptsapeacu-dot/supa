@@ -25,6 +25,7 @@ Este arquivo será nosso guia. Ele contém o status atual de tudo o que foi soli
 
 ## 🔴 O que FALTA ser Implementado (Novos Módulos)
 - [ ] **Diário de Classe Digital & Chamada Digital:** Interface rápida para professores registrarem presença, conteúdo e atividades no dia a dia.
+- [ ] **Exportação para o Censo Escolar (Educacenso/INEP):** Geração de arquivo de texto (.txt) no padrão de layout oficial de migração do INEP para importação automatizada no portal do governo.
 - [ ] **Programas Educacionais:** Cadastro de programas (Educação Integral, Reforço, etc.) e vinculação de alunos/professores a eles.
 - [ ] **Gestão de Ocorrências:** Registro permanente de advertências, elogios e histórico disciplinar.
 - [ ] **Cadastros Globais Estruturais:** Modalidades, Turnos, e Calendário Letivo.
