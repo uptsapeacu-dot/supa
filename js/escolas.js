@@ -170,8 +170,14 @@ function abrirEscola(escolaId) {
   atualizarInterfaceModo()
   renderizarModulosDaEscola()
 
-  const acessoEscola = acessosAtual.find(function(a) { return (a.orgaos && a.orgaos.escola_id === escolaId || a.orgao_id === escolaId) && a.ativo })
-  const ehProfessor = acessoEscola && acessoEscola.nivel === 4 && !isSecretaria()
+  const acessoEscola = acessosAtual.find(function(a) { 
+    if (!a.ativo) return false;
+    if (a.orgao_id === escolaId) return true;
+    if (Array.isArray(a.orgaos)) return a.orgaos.some(o => o.escola_id === escolaId);
+    if (a.orgaos && a.orgaos.escola_id === escolaId) return true;
+    return false;
+  })
+  const ehProfessor = acessoEscola && Number(acessoEscola.nivel) === 4 && !isSecretaria()
 
   if (ehProfessor) {
     mostrarTela('turmas')
@@ -188,13 +194,21 @@ function renderizarModulosDaEscola() {
   const oldBtn = document.getElementById('containerBtnVigia')
   if (oldBtn) oldBtn.remove()
 
-  const isProfessor = acessosAtual.some(a => (a.orgaos && a.orgaos.escola_id === escolaAtual || a.orgao_id === escolaAtual) && a.nivel === PERFIS.PROFESSOR && a.ativo);
+  function verificarAcesso(a, escolaId) {
+    if (!a.ativo) return false;
+    if (a.orgao_id === escolaId) return true;
+    if (Array.isArray(a.orgaos)) return a.orgaos.some(o => o.escola_id === escolaId);
+    if (a.orgaos && a.orgaos.escola_id === escolaId) return true;
+    return false;
+  }
+
+  const isProfessor = acessosAtual.some(a => verificarAcesso(a, escolaAtual) && Number(a.nivel) === PERFIS.PROFESSOR);
   if (isProfessor) {
     abrirModuloEscola(escolaAtual, 'turmas');
     return;
   }
   
-  const isVigia = acessosAtual.some(a => (a.orgaos && a.orgaos.escola_id === escolaAtual || a.orgao_id === escolaAtual) && a.nivel === PERFIS.OPERACIONAL && a.ativo);
+  const isVigia = acessosAtual.some(a => verificarAcesso(a, escolaAtual) && Number(a.nivel) === PERFIS.OPERACIONAL);
   if (isVigia) {
     renderizarPainelVigiaEscola(lista);
     return;
