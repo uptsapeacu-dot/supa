@@ -45,7 +45,7 @@ async function carregarPainelSuperAdmin() {
   for (const src of scripts) {
     await new Promise(function(resolve) {
       const s = document.createElement('script')
-      s.src = src + '?v=5'
+      s.src = src + '?v=' + Date.now()
       s.onload = resolve
       s.onerror = function() { console.error('Falha ao carregar ' + src); resolve(); }
       document.head.appendChild(s)
