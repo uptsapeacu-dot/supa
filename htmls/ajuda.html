@@ -199,6 +199,24 @@
     </div>
   </div>
 
+  <!-- CARD 10: Transferência de Funcionários (Lotação) -->
+  <div class="diretriz-card" data-tags="transferencia lotacao funcionario movimentacao mover escola auxiliar secretario nivel 1" style="background: #1f1f1f; border-radius: 8px; border: 1px solid #333; margin-bottom: 12px; overflow: hidden;">
+    <button onclick="toggleDiretriz('d10', this)" style="width: 100%; background: transparent; border: none; color: #fff; padding: 16px; text-align: left; display: flex; justify-content: space-between; align-items: center; cursor: pointer; font-size: 16px; font-weight: 500;">
+      <span style="display: flex; align-items: center; gap: 8px;"><i data-lucide="arrow-left-right" style="width:18px;height:18px;"></i> Transferência de Funcionários (Lotação)</span>
+      <i data-lucide="chevron-down" class="d-icon" style="transition: transform 0.2s;"></i>
+    </button>
+    <div id="d10" style="display: none; padding: 0 16px 16px; color: #aaa; font-size: 14px; line-height: 1.6; border-top: 1px solid #333;">
+      <p style="margin-top:10px;">Para transferir ou mover um funcionário (como um Auxiliar de Classe, Secretário ou Vigia) de uma escola para outra na rede municipal, utilize a funcionalidade de <strong>Gestão de Lotações</strong>:</p>
+      <ol style="margin-top: 8px; padding-left: 20px;">
+        <li style="margin-bottom:8px;"><strong>Acesse o módulo de Funcionários:</strong> No menu lateral esquerdo do Painel Escolar, clique em <strong>Funcionários</strong>.</li>
+        <li style="margin-bottom:8px;"><strong>Abra a Gestão de Lotações:</strong> No canto superior direito, clique no botão <strong>"Gestão de Lotações"</strong> (identificado com um ícone de rede/conexões). <em>Nota: Esta funcionalidade exige nível administrativo (Nível 1 - Administrador Global).</em></li>
+        <li style="margin-bottom:8px;"><strong>Selecione o Funcionário:</strong> Na lista à esquerda, procure e clique no nome do funcionário que deseja mover (você pode utilizar a barra de pesquisa para filtrar pelo nome).</li>
+        <li style="margin-bottom:8px;"><strong>Indique Origem e Destino:</strong> Na seção à direita <strong>"Mover Lotação Existente (Transferir)"</strong>, selecione a <strong>Lotação de Origem</strong> (o vínculo da escola atual do funcionário) e a <strong>Escola de Destino</strong> (a nova escola para a qual ele será alocado).</li>
+        <li style="margin-bottom:8px;"><strong>Confirme a Transferência:</strong> Clique no botão correspondente para salvar a mudança. O sistema arquivará a lotação anterior e criará o novo registro ativo para a nova escola automaticamente com o mesmo cargo.</li>
+      </ol>
+    </div>
+  </div>
+
   <!-- Botão Reportar Problema -->
   <div style="margin-top: 30px; text-align: center; border-top: 1px dashed #333; padding-top: 20px;">
     <button onclick="abrirModalReport()" style="display: inline-flex; align-items: center; gap: 8px; background: rgba(239, 68, 68, 0.1); border: 1px solid #ef4444; color: #ef4444; padding: 12px 24px; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.background='rgba(239, 68, 68, 0.2)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">

@@ -217,15 +217,15 @@ function adminRenderizarCardsUsuarios(lista) {
         '<div class="admin-user-email">' + email + '</div>' +
         '<div class="admin-user-meta">' + statusBadge + niveisLabel + (orgNomes ? '<span style="font-size:11px; color:var(--admin-muted);">' + orgNomes + '</span>' : '') + '</div>' +
       '</div>' +
-      '<div class="admin-user-actions">' +
-        '<button class="admin-btn admin-btn-ghost" title="Ver logs de acesso" onclick="adminVerLogsDoUsuario(\'' + func.id + '\', \'' + email + '\')">' +
-          '<i data-lucide="activity"></i>' +
+      '<div class="admin-user-actions" style="display:flex; gap:8px; align-items:center;">' +
+        '<button title="Ver logs de acesso" onclick="adminVerLogsDoUsuario(\'' + func.id + '\', \'' + email + '\')" style="background: rgba(62, 166, 255, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(62, 166, 255, 0.2); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;" onmouseover="this.style.background=\'rgba(62, 166, 255, 0.25)\'" onmouseout="this.style.background=\'rgba(62, 166, 255, 0.1)\'">' +
+          '<i data-lucide="activity" style="width:16px;height:16px;color:#3ea6ff;"></i>' +
         '</button>' +
-        '<button class="admin-btn admin-btn-ghost" title="Resetar senha" onclick="adminAbrirModalReset(\'' + func.auth_user_id + '\', \'' + email + '\', \'' + (nome || '').replace(/\'/g, "\\'") + '\')">' +
-          '<i data-lucide="key-round"></i>' +
+        '<button title="Resetar senha" onclick="adminAbrirModalReset(\'' + func.auth_user_id + '\', \'' + email + '\', \'' + (nome || '').replace(/\'/g, "\\'") + '\')" style="background: rgba(245, 158, 11, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(245, 158, 11, 0.2); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;" onmouseover="this.style.background=\'rgba(245, 158, 11, 0.25)\'" onmouseout="this.style.background=\'rgba(245, 158, 11, 0.1)\'">' +
+          '<i data-lucide="key-round" style="width:16px;height:16px;color:#f59e0b;"></i>' +
         '</button>' +
-        (!isAdmin ? '<button class="admin-btn admin-btn-danger" title="Suspender conta" onclick="adminSuspenderFuncionario(\'' + func.id + '\')">' +
-          '<i data-lucide="user-x"></i>' +
+        (!isAdmin ? '<button title="Suspender conta" onclick="adminSuspenderFuncionario(\'' + func.id + '\')" style="background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; width: 34px; height: 34px;" onmouseover="this.style.background=\'rgba(239, 68, 68, 0.25)\'" onmouseout="this.style.background=\'rgba(239, 68, 68, 0.1)\'">' +
+          '<i data-lucide="user-x" style="width:16px;height:16px;color:#ef4444;"></i>' +
         '</button>' : '') +
       '</div>' +
     '</div>'

@@ -825,12 +825,12 @@ async function abrirModalGestaoLotacoes() {
   // Garantir que os órgãos estejam carregados para popular os selects de destino
   let orgaosLista = orgaos;
   if (!orgaosLista || orgaosLista.length === 0) {
-    const { data: orgData } = await clienteSupabase.from('orgaos').select('id, nome').eq('ativo', true).order('nome', { ascending: true });
+    const { data: orgData } = await clienteSupabase.from('orgaos').select('id, nome, escola_id').eq('ativo', true).order('nome', { ascending: true });
     if (orgData) orgaosLista = orgData;
   }
 
   // Preencher selects
-  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaosLista.map(o => `<option value="${o.id}">${o.nome}</option>`).join('');
+  const escolasHtml = '<option value="">Selecione uma escola...</option>' + orgaosLista.map(o => `<option value="${o.id}" data-escola-id="${o.escola_id}">${o.nome}</option>`).join('');
   document.getElementById('gestaoNovaEscola').innerHTML = escolasHtml;
   document.getElementById('gestaoMoverDestino').innerHTML = escolasHtml;
   
@@ -982,7 +982,7 @@ async function carregarLotacoesAtivasGestao(funcId) {
   
   const { data, error } = await clienteSupabase
     .from('vinculos_funcionarios')
-    .select('id, cargo, orgaos(id, nome)')
+    .select('id, cargo, orgaos(id, nome, escola_id)')
     .eq('funcionario_id', funcId)
     .eq('ativo', true);
     
@@ -1004,7 +1004,7 @@ async function carregarLotacoesAtivasGestao(funcId) {
         <span style="color:#22c55e; border:1px solid #22c55e; padding:2px 6px; border-radius:4px; font-size:11px;">Ativa</span>
       </div>
     `;
-    selHtml += `<option value="${v.id}" data-cargo="${v.cargo}">${v.orgaos?.nome} (${v.cargo})</option>`;
+    selHtml += `<option value="${v.id}" data-cargo="${v.cargo}" data-escola-id="${v.orgaos?.escola_id}">${v.orgaos?.nome} (${v.cargo})</option>`;
   });
   
   container.innerHTML = html;
@@ -1013,7 +1013,9 @@ async function carregarLotacoesAtivasGestao(funcId) {
 
 async function adicionarNovaLotacaoGestao() {
   const funcId = document.getElementById('gestaoFuncionarioId').value;
-  const orgaoId = document.getElementById('gestaoNovaEscola').value;
+  const selNova = document.getElementById('gestaoNovaEscola');
+  const orgaoId = selNova.value;
+  const escolaId = selNova.options[selNova.selectedIndex]?.getAttribute('data-escola-id');
   const cargo = document.getElementById('gestaoNovoCargo').value;
   
   if (!funcId) return alert('Selecione o funcionário primeiro.');
@@ -1034,6 +1036,22 @@ async function adicionarNovaLotacaoGestao() {
   
   if (error) return alert('Erro ao adicionar lotação: ' + error.message);
   
+  // Enviar Notificação
+  const nomeFunc = document.getElementById('nomeFuncionarioGestao')?.textContent || 'Funcionário';
+  if (escolaId) {
+    try {
+      await clienteSupabase.from('notificacoes_escolas').insert([{
+        escola_id: escolaId,
+        tipo: 'movimentacao_funcionario',
+        titulo: `Chegada de Servidor: ${nomeFunc}`,
+        mensagem: `O servidor ${nomeFunc} (${cargo}) foi lotado na sua unidade escolar.`,
+        dados_json: { funcionario_id: funcId }
+      }]);
+    } catch (eNotif) {
+      console.warn('Erro ao enviar notificação de nova lotação:', eNotif);
+    }
+  }
+
   alert('Lotação adicionada com sucesso!');
   document.getElementById('gestaoNovaEscola').value = '';
   document.getElementById('gestaoNovoCargo').value = '';
@@ -1052,13 +1070,16 @@ async function moverLotacaoGestao() {
   const funcId = document.getElementById('gestaoFuncionarioId').value;
   const selOrigem = document.getElementById('gestaoMoverOrigem');
   const vinculoIdOrigem = selOrigem.value;
-  const orgaoIdDestino = document.getElementById('gestaoMoverDestino').value;
+  const selDestino = document.getElementById('gestaoMoverDestino');
+  const orgaoIdDestino = selDestino.value;
   
   if (!funcId) return alert('Selecione o funcionário primeiro.');
   if (!vinculoIdOrigem || !orgaoIdDestino) return alert('Selecione a lotação de origem e a escola de destino.');
   
   const opt = selOrigem.options[selOrigem.selectedIndex];
   const cargo = opt.getAttribute('data-cargo');
+  const escolaIdOrigem = opt.getAttribute('data-escola-id');
+  const escolaIdDestino = selDestino.options[selDestino.selectedIndex]?.getAttribute('data-escola-id');
   
   document.getElementById('modalGestaoLotacoes').style.cursor = 'wait';
   
@@ -1076,6 +1097,31 @@ async function moverLotacaoGestao() {
   
   if (err2) return alert('Lotação original arquivada, mas houve erro ao criar a nova: ' + err2.message);
   
+  // Enviar Notificações (Saída da antiga e Entrada na nova)
+  const nomeFunc = document.getElementById('nomeFuncionarioGestao')?.textContent || 'Funcionário';
+  try {
+    if (escolaIdOrigem) {
+      await clienteSupabase.from('notificacoes_escolas').insert([{
+        escola_id: escolaIdOrigem,
+        tipo: 'movimentacao_funcionario',
+        titulo: `Saída de Servidor: ${nomeFunc}`,
+        mensagem: `O servidor ${nomeFunc} (${cargo}) foi transferido da sua unidade para outra escola da rede.`,
+        dados_json: { funcionario_id: funcId }
+      }]);
+    }
+    if (escolaIdDestino) {
+      await clienteSupabase.from('notificacoes_escolas').insert([{
+        escola_id: escolaIdDestino,
+        tipo: 'movimentacao_funcionario',
+        titulo: `Chegada de Servidor: ${nomeFunc}`,
+        mensagem: `O servidor ${nomeFunc} (${cargo}) foi lotado na sua unidade escolar.`,
+        dados_json: { funcionario_id: funcId }
+      }]);
+    }
+  } catch (eNotif) {
+    console.warn('Erro ao enviar notificações de movimentação:', eNotif);
+  }
+
   alert('Lotação movida (transferida) com sucesso!');
   document.getElementById('gestaoMoverOrigem').value = '';
   document.getElementById('gestaoMoverDestino').value = '';
