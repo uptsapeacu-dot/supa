@@ -212,6 +212,8 @@ async function adminRenderizarDashboard() {
     (qtdFalhas24h > 3 ?
       '<div class="admin-alert admin-alert-danger"><i data-lucide="shield-alert"></i><div><strong>Alerta de Seguranca:</strong> Foram detectadas ' + qtdFalhas24h + ' tentativas de login invalidas nas ultimas 24 horas. Verifique a aba Logs.</div></div>'
       : '')
+
+  if (window.lucide) { lucide.createIcons(); }
 }
 
 function adminStatCard(icone, label, valor, sub, cor) {
