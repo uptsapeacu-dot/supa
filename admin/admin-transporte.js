@@ -271,7 +271,7 @@ function adminModalCriarRota() {
     optVeiculos += `<option value="${v.id}">${v.modelo} [Capacidade: ${v.capacidade}] (${v.placa})</option>`;
   });
 
-  const bairros = ['Centro', 'Quiambique', 'Senzala', 'Ribeiro', 'Baixa da Palmeira', 'Barreiro', 'Parque das Flores', 'Jardim Bahia', 'Zona Rural'];
+  const bairros = ['Centro', 'Quiambique', 'Ribeiro', 'Baixa da Palmeira', 'Barreiro', 'Parque das Flores', 'Jardim Bahia', 'Zona Rural'];
   let checkboxesBairros = '';
   bairros.forEach(b => {
     checkboxesBairros += `
@@ -401,7 +401,7 @@ function adminModalEditarRota(id) {
     }
   });
 
-  const bairros = ['Centro', 'Quiambique', 'Senzala', 'Ribeiro', 'Baixa da Palmeira', 'Barreiro', 'Parque das Flores', 'Jardim Bahia', 'Zona Rural'];
+  const bairros = ['Centro', 'Quiambique', 'Ribeiro', 'Baixa da Palmeira', 'Barreiro', 'Parque das Flores', 'Jardim Bahia', 'Zona Rural'];
   let checkboxesBairros = '';
   bairros.forEach(b => {
     const checked = (rota.itinerario || []).includes(b) ? 'checked' : '';
