@@ -102,6 +102,8 @@ function adminLimparFiltrosLog() {
 // --------------------------------------------------
 // TELA DE AUDITORIA DE ACOES
 // --------------------------------------------------
+var _adminAuditoriaCache = [];
+
 async function adminRenderizarAuditoria() {
   const conteudo = document.getElementById('adminConteudo')
   conteudo.innerHTML = '<div class="admin-panel"><div class="admin-panel-title"><i data-lucide="loader-circle"></i> Carregando auditoria...</div></div>'
@@ -110,78 +112,171 @@ async function adminRenderizarAuditoria() {
     .from('audit_logs')
     .select('*, funcionarios(nome, email)')
     .order('created_at', { ascending: false })
-    .limit(100)
+    .limit(200)
 
-  const logs = auditoria || []
+  _adminAuditoriaCache = auditoria || [];
 
-  conteudo.innerHTML =
-    '<div class="admin-panel">' +
-      '<div class="admin-panel-header">' +
-        '<div class="admin-panel-title"><i data-lucide="file-search"></i> Auditoria de Acoes Criticas</div>' +
-        '<button class="admin-btn admin-btn-ghost" onclick="adminImprimirAuditoria()"><i data-lucide="printer"></i> Imprimir Relatorio</button>' +
-      '</div>' +
+  conteudo.innerHTML = `
+    <div class="admin-panel">
+      <div class="admin-panel-header">
+        <div class="admin-panel-title"><i data-lucide="file-search"></i> Auditoria de Ações Críticas</div>
+        <button class="admin-btn admin-btn-ghost" onclick="adminImprimirAuditoria()"><i data-lucide="printer"></i> Imprimir Relatório</button>
+      </div>
 
-      '<div class="admin-alert admin-alert-info"><i data-lucide="info"></i>Registro de todas as acoes criticas realizadas no sistema: criar, editar e excluir dados importantes.</div>' +
+      <div class="admin-alert admin-alert-info"><i data-lucide="info"></i>Registro de todas as ações críticas realizadas no sistema: criar, editar e excluir dados importantes.</div>
 
-      '<div class="admin-table-wrap"><table class="admin-table">' +
-        '<thead><tr>' +
-          '<th>Data / Hora</th>' +
-          '<th>Executor</th>' +
-          '<th>Acao</th>' +
-          '<th>Tabela</th>' +
-          '<th>IP</th>' +
-          '<th>Detalhes</th>' +
-        '</tr></thead>' +
-        '<tbody>' +
-        logs.map(function(log) {
-          const dt = new Date(log.created_at)
-          const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-          const nome = (log.funcionarios && (log.funcionarios.nome || log.funcionarios.email)) || log.email_executor || '—'
-          const badgeMap = {
-            criar_funcionario: 'badge-criar', editar_funcionario: 'badge-editar',
-            excluir_acesso: 'badge-excluir', reset_senha: 'badge-edicao',
-            suspender_funcionario: 'badge-falha'
-          }
-          const badge = badgeMap[log.acao] || 'badge-criar'
-          const temDetalhes = log.dados_antes || log.dados_depois
+      <!-- Filtros -->
+      <div class="admin-filter-bar" style="display:flex; gap:10px; margin-bottom:20px; align-items:center;">
+        <input type="search" id="adminAuditBusca" placeholder="Buscar por executor (nome/e-mail)..." style="flex:2;" oninput="adminFiltrarAuditoriaLocal()" />
+        <select id="adminAuditTabela" style="flex:1;" onchange="adminFiltrarAuditoriaLocal()">
+          <option value="">Todas as Tabelas</option>
+          <option value="escolas">Escolas</option>
+          <option value="funcionarios">Funcionários</option>
+          <option value="acessos_usuarios">Acessos Usuários</option>
+          <option value="cargos">Cargos</option>
+          <option value="pontos_ronda">Pontos de Ronda</option>
+          <option value="vinculos_funcionarios">Vínculos/Lotações</option>
+          <option value="configuracoes_sistema">Configurações</option>
+        </select>
+        <select id="adminAuditAcao" style="flex:1;" onchange="adminFiltrarAuditoriaLocal()">
+          <option value="">Todas as Ações</option>
+          <option value="criar">Criar / Inserir</option>
+          <option value="editar">Editar / Atualizar</option>
+          <option value="excluir">Excluir / Deletar</option>
+          <option value="aprovar">Aprovar Lotação</option>
+          <option value="rejeitar">Rejeitar Lotação</option>
+        </select>
+      </div>
 
-          return '<tr>' +
-            '<td style="white-space:nowrap;color:var(--admin-muted);">' + dtStr + '</td>' +
-            '<td>' + nome + '</td>' +
-            '<td><span class="admin-badge ' + badge + '">' + (log.acao || '—') + '</span></td>' +
-            '<td style="font-family:monospace;font-size:11px;">' + (log.tabela_alvo || '—') + '</td>' +
-            '<td style="font-family:monospace;font-size:12px;">' + (log.ip_address || '—') + '</td>' +
-            '<td>' + (temDetalhes ? '<button class="admin-btn admin-btn-ghost" style="height:28px;font-size:11px;" onclick="adminVerDetalhesAuditoria(this)" data-antes=\'' + JSON.stringify(log.dados_antes || {}) + '\' data-depois=\'' + JSON.stringify(log.dados_depois || {}) + '\'>Ver</button>' : '—') + '</td>' +
-          '</tr>'
-        }).join('') +
-        '</tbody></table></div>' +
-    '</div>'
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Data / Hora</th>
+              <th>Executor</th>
+              <th>Ação</th>
+              <th>Tabela</th>
+              <th>IP</th>
+              <th style="width: 80px; text-align: center;">Detalhes</th>
+            </tr>
+          </thead>
+          <tbody id="adminTabelaAuditoriaBody">
+            <!-- Preenchido por adminPopularTabelaAuditoria -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  `;
+
+  if (window.lucide) window.lucide.createIcons();
+  adminPopularTabelaAuditoria(_adminAuditoriaCache);
+}
+
+function adminPopularTabelaAuditoria(logs) {
+  const tbody = document.getElementById('adminTabelaAuditoriaBody');
+  if (!tbody) return;
+
+  if (logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 20px; color:#aaa;">Nenhum registro encontrado.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = logs.map(function(log) {
+    const dt = new Date(log.created_at);
+    const dtStr = dt.toLocaleDateString('pt-BR') + ' ' + dt.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    const nome = (log.funcionarios && (log.funcionarios.nome || log.funcionarios.email)) || log.email_executor || '—';
+    
+    let badgeClass = 'badge-login';
+    if (log.acao.includes('criar') || log.acao.includes('nov')) badgeClass = 'badge-criar';
+    else if (log.acao.includes('editar') || log.acao.includes('atualiz') || log.acao.includes('edit')) badgeClass = 'badge-editar';
+    else if (log.acao.includes('excluir') || log.acao.includes('delet') || log.acao.includes('susp')) badgeClass = 'badge-excluir';
+    else if (log.acao.includes('aprov')) badgeClass = 'badge-edicao';
+    
+    const temDetalhes = log.dados_antes || log.dados_depois;
+
+    return '<tr>' +
+      '<td style="white-space:nowrap;color:var(--admin-muted);">' + dtStr + '</td>' +
+      '<td>' + nome + '</td>' +
+      '<td><span class="admin-badge ' + badgeClass + '">' + (log.acao || '—') + '</span></td>' +
+      '<td style="font-family:monospace;font-size:11px;">' + (log.tabela_alvo || '—') + '</td>' +
+      '<td style="font-family:monospace;font-size:12px;">' + (log.ip_address || '—') + '</td>' +
+      '<td style="text-align:center;">' + (temDetalhes ? '<button class="admin-btn admin-btn-ghost" style="height:28px;font-size:11px;padding: 4px 10px;" onclick="adminVerDetalhesAuditoria(this)" data-antes=\'' + JSON.stringify(log.dados_antes || {}).replace(/'/g, "&apos;") + '\' data-depois=\'' + JSON.stringify(log.dados_depois || {}).replace(/'/g, "&apos;") + '\'>Ver</button>' : '—') + '</td>' +
+    '</tr>';
+  }).join('');
+}
+
+function adminFiltrarAuditoriaLocal() {
+  const busca = (document.getElementById('adminAuditBusca')?.value || '').toLowerCase().trim();
+  const tabela = document.getElementById('adminAuditTabela')?.value || '';
+  const acao = document.getElementById('adminAuditAcao')?.value || '';
+
+  const filtrados = _adminAuditoriaCache.filter(function(log) {
+    const nome = ((log.funcionarios && (log.funcionarios.nome || log.funcionarios.email)) || log.email_executor || '').toLowerCase();
+    const passouBusca = !busca || nome.includes(busca);
+
+    const passouTabela = !tabela || log.tabela_alvo === tabela;
+
+    let passouAcao = true;
+    if (acao) {
+      passouAcao = log.acao.toLowerCase().includes(acao);
+    }
+
+    return passouBusca && passouTabela && passouAcao;
+  });
+
+  adminPopularTabelaAuditoria(filtrados);
 }
 
 function adminVerDetalhesAuditoria(btn) {
-  const antes  = JSON.parse(btn.dataset.antes  || '{}')
-  const depois = JSON.parse(btn.dataset.depois || '{}')
+  const antes  = JSON.parse(btn.dataset.antes  || '{}');
+  const depois = JSON.parse(btn.dataset.depois || '{}');
 
-  const modal = document.createElement('div')
-  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;'
-  modal.innerHTML =
-    '<div style="background:#101010;border:1px solid #2a2a2a;border-radius:14px;padding:20px;max-width:700px;width:100%;max-height:80vh;overflow-y:auto;">' +
-      '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">' +
-        '<h3 style="color:#fff;margin:0;">Detalhes da Auditoria</h3>' +
-        '<button onclick="this.closest(\'[style*=fixed]\').remove()" style="background:#1e1e1e;border:1px solid #333;color:#fff;border-radius:8px;padding:6px 12px;cursor:pointer;">Fechar</button>' +
-      '</div>' +
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">' +
-        '<div>' +
-          '<div style="color:var(--admin-muted);font-size:11px;text-transform:uppercase;margin-bottom:8px;">Antes</div>' +
-          '<pre style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:12px;font-size:11px;color:#ccc;overflow:auto;max-height:300px;">' + JSON.stringify(antes, null, 2) + '</pre>' +
-        '</div>' +
-        '<div>' +
-          '<div style="color:var(--admin-muted);font-size:11px;text-transform:uppercase;margin-bottom:8px;">Depois</div>' +
-          '<pre style="background:#0d0d0d;border:1px solid #1e1e1e;border-radius:8px;padding:12px;font-size:11px;color:#ccc;overflow:auto;max-height:300px;">' + JSON.stringify(depois, null, 2) + '</pre>' +
-        '</div>' +
-      '</div>' +
-    '</div>'
-  document.body.appendChild(modal)
+  const chaves = Array.from(new Set([...Object.keys(antes), ...Object.keys(depois)])).sort();
+  
+  let htmlDiff = '<table style="width:100%; border-collapse:collapse; color:#ccc; font-size:13px; text-align:left;">' +
+    '<thead><tr style="border-bottom:1px solid #333; color:#aaa; font-weight:bold;">' +
+      '<th style="padding:8px;">Campo</th>' +
+      '<th style="padding:8px;">Antes</th>' +
+      '<th style="padding:8px;">Depois</th>' +
+    '</tr></thead>' +
+    '<tbody>';
+
+  chaves.forEach(key => {
+    const valAntes = antes[key] !== undefined ? (typeof antes[key] === 'object' ? JSON.stringify(antes[key]) : antes[key]) : '—';
+    const valDepois = depois[key] !== undefined ? (typeof depois[key] === 'object' ? JSON.stringify(depois[key]) : depois[key]) : '—';
+    
+    const alterado = valAntes !== valDepois;
+    const bg = alterado ? 'background: rgba(245, 158, 11, 0.05);' : '';
+    const colorAntes = alterado ? 'color:#ef4444; text-decoration: line-through;' : '';
+    const colorDepois = alterado ? 'color:#22c55e; font-weight:bold;' : '';
+
+    htmlDiff += `<tr style="border-bottom:1px solid #222; ${bg}">` +
+      `<td style="padding:8px; font-family:monospace; color:#3ea6ff; font-weight:500;">${key}</td>` +
+      `<td style="padding:8px; font-family:monospace; ${colorAntes}">${valAntes}</td>` +
+      `<td style="padding:8px; font-family:monospace; ${colorDepois}">${valDepois}</td>` +
+    '</tr>';
+  });
+
+  htmlDiff += '</tbody></table>';
+
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;';
+  modal.innerHTML = `
+    <div style="background:#101010; border:1px solid #2a2a2a; border-radius:14px; padding:24px; max-width:800px; width:100%; max-height:85vh; overflow-y:auto; box-shadow: 0 15px 40px rgba(0,0,0,0.8); display:flex; flex-direction:column;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid #222; padding-bottom:15px;">
+        <h3 style="color:#fff; margin:0; display:flex; align-items:center; gap:8px;">
+          <i data-lucide="file-search" style="color:#3ea6ff;"></i>
+          Comparação de Dados Modificados
+        </h3>
+        <button onclick="this.closest('[style*=fixed]').remove()" style="background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px; padding:6px 16px; cursor:pointer; font-weight:500; transition:all 0.2s;" onmouseover="this.style.background='#222'" onmouseout="this.style.background='#1e1e1e'">Fechar</button>
+      </div>
+      <div style="flex:1; overflow:auto;">
+        ${htmlDiff}
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  if (window.lucide) window.lucide.createIcons();
 }
 
 // --------------------------------------------------

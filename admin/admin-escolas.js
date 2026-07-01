@@ -103,8 +103,11 @@ function adminAdicionarEscola() {
 
 async function adminSalvarNovaEscola(nome) {
   try {
-    const { error } = await clienteSupabase.from('escolas').insert([{ nome }])
+    const { data, error } = await clienteSupabase.from('escolas').insert([{ nome }]).select()
     if (error) throw error
+    if (typeof registrarAuditoria === 'function' && data && data[0]) {
+      await registrarAuditoria('criar_escola', 'escolas', data[0].id, null, data[0])
+    }
     alert('Escola criada com sucesso!')
     adminCarregarEscolas()
   } catch (err) {
@@ -124,8 +127,12 @@ function adminEditarEscola(id) {
 
 async function adminAtualizarEscola(id, nome) {
   try {
+    const esc = _adminEscolasCache.find(e => e.id === id)
     const { error } = await clienteSupabase.from('escolas').update({ nome }).eq('id', id)
     if (error) throw error
+    if (typeof registrarAuditoria === 'function') {
+      await registrarAuditoria('editar_escola', 'escolas', id, esc ? { nome: esc.nome } : null, { nome })
+    }
     alert('Escola atualizada com sucesso!')
     adminCarregarEscolas()
   } catch (err) {
@@ -172,6 +179,9 @@ async function adminExcluirEscola(id, nome) {
       throw error
     }
 
+    if (typeof registrarAuditoria === 'function') {
+      await registrarAuditoria('excluir_escola', 'escolas', id, { nome }, null)
+    }
     alert('Escola excluída com sucesso!')
     adminCarregarEscolas()
   } catch (err) {

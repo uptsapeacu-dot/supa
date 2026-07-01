@@ -114,6 +114,10 @@ async function adminAprovarSolicitacao(vinculoId, nomeFunc) {
     return;
   }
 
+  if (typeof registrarAuditoria === 'function') {
+    await registrarAuditoria('aprovar_lotacao_funcionario', 'vinculos_funcionarios', vinculoId, { status_aprovacao: 'pendente' }, { status_aprovacao: 'aprovado' });
+  }
+
   if (typeof adminToast === 'function') {
     adminToast(`Lotação de ${nomeFunc} aprovada com sucesso!`, 'sucesso');
   } else {
@@ -182,6 +186,10 @@ async function adminConfirmarRejeicao(vinculoId, nomeFunc) {
   if (error) {
     alert('Erro ao rejeitar solicitação: ' + error.message);
     return;
+  }
+
+  if (typeof registrarAuditoria === 'function') {
+    await registrarAuditoria('rejeitar_lotacao_funcionario', 'vinculos_funcionarios', vinculoId, { status_aprovacao: 'pendente' }, { status_aprovacao: 'rejeitado', motivo_rejeicao: motivo });
   }
 
   document.getElementById('adminModalRejeicaoLotacao').remove();

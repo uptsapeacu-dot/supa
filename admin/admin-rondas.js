@@ -177,13 +177,17 @@ async function adminCriarPontoRonda() {
 
   const qrHash = btoa(nome + Date.now() + Math.random());
   
-  const { error } = await clienteSupabase
+  const { data, error } = await clienteSupabase
     .from('pontos_ronda')
-    .insert([{ nome, escola_id, localizacao, tolerancia_metros: tolerancia, qr_code_hash: qrHash }]);
+    .insert([{ nome, escola_id, localizacao, tolerancia_metros: tolerancia, qr_code_hash: qrHash }])
+    .select();
 
   if (error) {
     alert('Erro ao criar ponto: ' + error.message);
   } else {
+    if (typeof registrarAuditoria === 'function' && data && data[0]) {
+      await registrarAuditoria('criar_ponto_ronda', 'pontos_ronda', data[0].id, null, data[0]);
+    }
     document.getElementById('adminPontoNome').value = '';
     document.getElementById('adminPontoLat').value = '';
     document.getElementById('adminPontoLng').value = '';
@@ -202,8 +206,14 @@ async function adminRegerarIDPonto(id) {
 async function adminDeletarPontoRonda(id) {
   if (!confirm('Tem certeza que deseja excluir este Ponto de Ronda?')) return;
   const { error } = await clienteSupabase.from('pontos_ronda').delete().eq('id', id);
-  if (error) alert('Erro ao excluir: ' + error.message);
-  else adminCarregarPontosRonda();
+  if (error) {
+    alert('Erro ao excluir: ' + error.message);
+  } else {
+    if (typeof registrarAuditoria === 'function') {
+      await registrarAuditoria('excluir_ponto_ronda', 'pontos_ronda', id, { id: id }, null);
+    }
+    adminCarregarPontosRonda();
+  }
 }
 
 async function adminCarregarLogsGlobaisRonda() {

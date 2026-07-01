@@ -38,7 +38,8 @@ async function carregarPainelSuperAdmin() {
     'admin/admin-solicitacoes.js',
     'admin/admin-notificacoes.js',
     'admin/admin-reports.js',
-    'admin/admin-ocorrencias.js'
+    'admin/admin-ocorrencias.js',
+    'admin/admin-transporte.js'
   ]
 
   for (const src of scripts) {
@@ -109,6 +110,7 @@ function adminMostrarTela(tela) {
     case 'notificacoes': adminRenderizarNotificacoes(); break
     case 'reports':      adminRenderizarReports(); break
     case 'ocorrencias':  adminRenderizarOcorrencias(); break
+    case 'transporte':   adminRenderizarTransporte(); break
     default:
       conteudo.innerHTML = '<div class="admin-empty"><i data-lucide="construction"></i><p>Em construcao</p></div>'
   }
@@ -168,7 +170,8 @@ async function adminRenderizarDashboard() {
     { id: 'rondas',       icon: 'scan-line',          color: '#a855f7', label: 'Controle de Rondas',  desc: 'Escalas e rotas' },
     { id: 'notificacoes', icon: 'bell-ring',          color: '#ef4444', label: 'Notificações',       desc: 'Avisos da rede' },
     { id: 'reports',      icon: 'flag',               color: '#cbd5e1', label: 'Reports de Bugs',    desc: 'Feedbacks de erros' },
-    { id: 'ocorrencias',  icon: 'alert-triangle',     color: '#eab308', label: 'Ocorrências',        desc: 'Histórico disciplinar' }
+    { id: 'ocorrencias',  icon: 'alert-triangle',     color: '#eab308', label: 'Ocorrências',        desc: 'Histórico disciplinar' },
+    { id: 'transporte',   icon: 'bus',                color: '#3ea6ff', label: 'Transporte',         desc: 'Frota e rotas escolares' }
   ];
 
   const _admin_gridHtml = '<div class="admin-panel" style="margin-bottom: 28px;">' +
