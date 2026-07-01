@@ -79,12 +79,12 @@ function adminPopularTabelaEscolas() {
     
     tr.innerHTML = `
       <td><strong>${esc.nome}</strong></td>
-      <td style="text-align:center; display:flex; gap:8px; justify-content:center;">
-        <button class="admin-btn-icon" onclick="adminEditarEscola('${esc.id}')" title="Editar Escola">
-          <i data-lucide="edit" style="width:16px;height:16px;color:#3ea6ff;"></i>
+      <td style="text-align:center; display:flex; gap:8px; justify-content:center; align-items: center; padding: 12px 8px;">
+        <button onclick="adminEditarEscola('${esc.id}')" title="Editar Escola" style="background: rgba(62, 166, 255, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(62, 166, 255, 0.2); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(62, 166, 255, 0.25)'" onmouseout="this.style.background='rgba(62, 166, 255, 0.1)'">
+          <i data-lucide="edit-3" style="width:18px;height:18px;color:#3ea6ff;"></i>
         </button>
-        <button class="admin-btn-icon" onclick="adminExcluirEscola('${esc.id}', '${esc.nome.replace(/'/g, "\\\\'")}')" title="Excluir Escola">
-          <i data-lucide="trash-2" style="width:16px;height:16px;color:#ef4444;"></i>
+        <button onclick="adminExcluirEscola('${esc.id}', '${esc.nome.replace(/'/g, "\\\\'")}')" title="Excluir Escola" style="background: rgba(239, 68, 68, 0.1); padding: 8px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.2); cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center;" onmouseover="this.style.background='rgba(239, 68, 68, 0.25)'" onmouseout="this.style.background='rgba(239, 68, 68, 0.1)'">
+          <i data-lucide="trash-2" style="width:18px;height:18px;color:#ef4444;"></i>
         </button>
       </td>
     `
