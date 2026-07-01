@@ -57,7 +57,7 @@ async function adminCarregarDadosTransporte() {
     const [resFrota, resRotas, resFuncionarios, resAlunos] = await Promise.all([
       clienteSupabase.from('transporte_frota').select('*').order('modelo'),
       clienteSupabase.from('transporte_rotas').select('*, transporte_frota(*), funcionarios(*)').order('nome_rota'),
-      clienteSupabase.from('funcionarios').select('id, nome, cargo').order('nome'),
+      clienteSupabase.from('funcionarios').select('id, nome, vinculos_funcionarios(cargo)').order('nome'),
       clienteSupabase.from('alunos').select('id, nome, escola_id, dados_matricula, rota_transporte_id, escolas(nome)').order('nome')
     ]);
 
@@ -188,7 +188,8 @@ function adminModalCriarRota() {
   // Opções de motorista (filtrando por cargos com 'mot' ou similar, ou todos)
   let optMotoristas = '<option value="">-- Selecione o Motorista --</option>';
   _adminTransporteFuncionarios.forEach(f => {
-    optMotoristas += `<option value="${f.id}">${f.nome} (${f.cargo || 'Funcionário'})</option>`;
+    const cargo = f.vinculos_funcionarios && f.vinculos_funcionarios[0] ? f.vinculos_funcionarios[0].cargo : 'Sem cargo';
+    optMotoristas += `<option value="${f.id}">${f.nome} (${cargo})</option>`;
   });
 
   // Opções de veículos ativos
