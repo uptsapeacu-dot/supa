@@ -108,10 +108,27 @@ function renderizarPainelNotificacoes() {
 
   let html = '';
   filtradas.forEach(n => {
-    const icone = n.tipo === 'transferencia_aluno' ? 'arrow-right-left' : 'info';
+    let titulo = n.titulo;
+    let mensagem = n.mensagem;
+
+    // Se o usuário for Secretaria Global (Nível 1) e estiver visualizando fora do contexto de uma escola
+    if (!escolaAtual && isSecretaria() && n.tipo === 'movimentacao_funcionario' && n.dados_json) {
+      const dj = n.dados_json;
+      if (dj.nome_servidor && dj.cargo) {
+        if (dj.escola_origem_nome && dj.escola_destino_nome) {
+          titulo = `Transferência de Servidor: ${dj.nome_servidor}`;
+          mensagem = `O servidor ${dj.nome_servidor} (${dj.cargo}) foi transferido da escola ${dj.escola_origem_nome} para a escola ${dj.escola_destino_nome}.`;
+        } else if (dj.escola_destino_nome) {
+          titulo = `Nova Lotação: ${dj.nome_servidor}`;
+          mensagem = `O servidor ${dj.nome_servidor} (${dj.cargo}) foi lotado na escola ${dj.escola_destino_nome}.`;
+        }
+      }
+    }
+
+    const icone = n.tipo === 'transferencia_aluno' ? 'arrow-right-left' : (n.tipo === 'movimentacao_funcionario' ? 'arrow-left-right' : 'info');
     const cor = n.lida ? '#27272a' : '#27272a'; // Fundo
     const borda = n.lida ? '#3f3f46' : '#3ea6ff';
-    const iconeCor = n.tipo === 'transferencia_aluno' ? '#10b981' : '#3ea6ff';
+    const iconeCor = n.tipo === 'transferencia_aluno' ? '#10b981' : (n.tipo === 'movimentacao_funcionario' ? '#f59e0b' : '#3ea6ff');
 
     html += `
       <div style="background:${cor}; border:1px solid ${borda}; padding:12px; border-radius:8px; cursor:pointer; display:flex; gap:12px; align-items:flex-start;" onclick="abrirDetalhesNotificacao('${n.id}')">
@@ -119,8 +136,8 @@ function renderizarPainelNotificacoes() {
           <i data-lucide="${icone}" style="width:16px; height:16px; color:${iconeCor};"></i>
         </div>
         <div style="flex:1;">
-          <div style="color:#fff; font-size:13px; font-weight:${n.lida ? 'normal' : 'bold'}; margin-bottom:4px;">${n.titulo}</div>
-          <div style="color:#aaa; font-size:11px; margin-bottom:6px;">${n.mensagem}</div>
+          <div style="color:#fff; font-size:13px; font-weight:${n.lida ? 'normal' : 'bold'}; margin-bottom:4px;">${titulo}</div>
+          <div style="color:#aaa; font-size:11px; margin-bottom:6px;">${mensagem}</div>
           <div style="color:#666; font-size:10px;">${new Date(n.created_at).toLocaleString('pt-BR')}</div>
         </div>
         ${!n.lida ? '<div style="width:8px; height:8px; background:#ef4444; border-radius:50%; margin-top:6px;"></div>' : ''}

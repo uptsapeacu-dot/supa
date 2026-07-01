@@ -1037,7 +1037,8 @@ async function adicionarNovaLotacaoGestao() {
   if (error) return alert('Erro ao adicionar lotação: ' + error.message);
   
   // Enviar Notificação
-  const nomeFunc = document.getElementById('nomeFuncionarioGestao')?.textContent || 'Funcionário';
+  const nomeFunc = document.getElementById('gestaoNomeFuncionario')?.textContent || 'Funcionário';
+  const nomeEscolaDestino = selNova.options[selNova.selectedIndex]?.textContent || 'Escola';
   if (escolaId) {
     try {
       await clienteSupabase.from('notificacoes_escolas').insert([{
@@ -1045,7 +1046,12 @@ async function adicionarNovaLotacaoGestao() {
         tipo: 'movimentacao_funcionario',
         titulo: `Chegada de Servidor: ${nomeFunc}`,
         mensagem: `O servidor ${nomeFunc} (${cargo}) foi lotado na sua unidade escolar.`,
-        dados_json: { funcionario_id: funcId }
+        dados_json: { 
+          funcionario_id: funcId,
+          nome_servidor: nomeFunc,
+          cargo: cargo,
+          escola_destino_nome: nomeEscolaDestino
+        }
       }]);
     } catch (eNotif) {
       console.warn('Erro ao enviar notificação de nova lotação:', eNotif);
@@ -1081,6 +1087,9 @@ async function moverLotacaoGestao() {
   const escolaIdOrigem = opt.getAttribute('data-escola-id');
   const escolaIdDestino = selDestino.options[selDestino.selectedIndex]?.getAttribute('data-escola-id');
   
+  const nomeEscolaOrigem = opt.textContent ? opt.textContent.split(' (')[0] : 'Escola Origem';
+  const nomeEscolaDestino = selDestino.options[selDestino.selectedIndex]?.textContent || 'Escola Destino';
+
   document.getElementById('modalGestaoLotacoes').style.cursor = 'wait';
   
   // Arquivar origem
@@ -1098,7 +1107,7 @@ async function moverLotacaoGestao() {
   if (err2) return alert('Lotação original arquivada, mas houve erro ao criar a nova: ' + err2.message);
   
   // Enviar Notificações (Saída da antiga e Entrada na nova)
-  const nomeFunc = document.getElementById('nomeFuncionarioGestao')?.textContent || 'Funcionário';
+  const nomeFunc = document.getElementById('gestaoNomeFuncionario')?.textContent || 'Funcionário';
   try {
     if (escolaIdOrigem) {
       await clienteSupabase.from('notificacoes_escolas').insert([{
@@ -1106,7 +1115,13 @@ async function moverLotacaoGestao() {
         tipo: 'movimentacao_funcionario',
         titulo: `Saída de Servidor: ${nomeFunc}`,
         mensagem: `O servidor ${nomeFunc} (${cargo}) foi transferido da sua unidade para outra escola da rede.`,
-        dados_json: { funcionario_id: funcId }
+        dados_json: { 
+          funcionario_id: funcId,
+          nome_servidor: nomeFunc,
+          cargo: cargo,
+          escola_origem_nome: nomeEscolaOrigem,
+          escola_destino_nome: nomeEscolaDestino
+        }
       }]);
     }
     if (escolaIdDestino) {
@@ -1115,7 +1130,13 @@ async function moverLotacaoGestao() {
         tipo: 'movimentacao_funcionario',
         titulo: `Chegada de Servidor: ${nomeFunc}`,
         mensagem: `O servidor ${nomeFunc} (${cargo}) foi lotado na sua unidade escolar.`,
-        dados_json: { funcionario_id: funcId }
+        dados_json: { 
+          funcionario_id: funcId,
+          nome_servidor: nomeFunc,
+          cargo: cargo,
+          escola_origem_nome: nomeEscolaOrigem,
+          escola_destino_nome: nomeEscolaDestino
+        }
       }]);
     }
   } catch (eNotif) {
