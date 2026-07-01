@@ -152,6 +152,43 @@ async function adminRenderizarDashboard() {
   const qtdLoginsHoje = (logsHoje || []).length
   const qtdFalhas24h  = (falhasRecentes || []).length
 
+  const _admin_shortcuts = [
+    { id: 'escolas',      icon: 'building-2',         color: '#3ea6ff', label: 'Escolas',            desc: 'Gerenciar unidades' },
+    { id: 'usuarios',     icon: 'users',              color: '#3ea6ff', label: 'Usuários',           desc: 'Contas de login' },
+    { id: 'acessos',      icon: 'key-round',          color: '#22c55e', label: 'Acessos',            desc: 'Níveis e permissões' },
+    { id: 'cargos',       icon: 'briefcase',          color: '#eab308', label: 'Cargos',             desc: 'Cargos e funções' },
+    { id: 'logs',         icon: 'activity',           color: '#a855f7', label: 'Logs de Acesso',     desc: 'Histórico de auditoria' },
+    { id: 'auditoria',    icon: 'file-search',        color: '#cbd5e1', label: 'Auditoria',          desc: 'Ficha de servidores' },
+    { id: 'lixeira',      icon: 'trash-2',            color: '#ef4444', label: 'Lixeira Global',     desc: 'Restaurar deletados' },
+    { id: 'dispositivos', icon: 'monitor-smartphone', color: '#3ea6ff', label: 'Dispositivos',       desc: 'Dispositivos mobile' },
+    { id: 'banco',        icon: 'database',           color: '#cbd5e1', label: 'Banco de Dados',     desc: 'Tabelas e encerramento' },
+    { id: 'relatorios',   icon: 'bar-chart-3',        color: '#22c55e', label: 'Relatórios',         desc: 'Gráficos e estatísticas' },
+    { id: 'configuracoes',icon: 'settings-2',         color: '#64748b', label: 'Configurações',      desc: 'Parâmetros do sistema' },
+    { id: 'solicitacoes', icon: 'user-check',         color: '#eab308', label: 'Solicitações',       desc: 'Lotação e escalas' },
+    { id: 'rondas',       icon: 'scan-line',          color: '#a855f7', label: 'Controle de Rondas',  desc: 'Escalas e rotas' },
+    { id: 'notificacoes', icon: 'bell-ring',          color: '#ef4444', label: 'Notificações',       desc: 'Avisos da rede' },
+    { id: 'reports',      icon: 'flag',               color: '#cbd5e1', label: 'Reports de Bugs',    desc: 'Feedbacks de erros' },
+    { id: 'ocorrencias',  icon: 'alert-triangle',     color: '#eab308', label: 'Ocorrências',        desc: 'Histórico disciplinar' }
+  ];
+
+  const _admin_gridHtml = '<div class="admin-panel" style="margin-bottom: 28px;">' +
+    '<div class="admin-panel-header">' +
+      '<div class="admin-panel-title"><i data-lucide="layout-grid"></i> Atalhos de Acesso Rápido</div>' +
+    '</div>' +
+    '<div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap:14px; margin-top:20px;">' +
+      _admin_shortcuts.map(function(s) {
+        return '<div class="admin-stat-card" style="cursor:pointer; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding: 20px; transition: all 0.2s;" ' +
+          'onclick="adminMostrarTela(\'' + s.id + '\')" ' +
+          'onmouseover="this.style.borderColor=\'var(--admin-border2)\'; this.style.transform=\'translateY(-2px)\'" ' +
+          'onmouseout="this.style.borderColor=\'var(--admin-border)\'; this.style.transform=\'translateY(0)\'">' +
+            '<i data-lucide="' + s.icon + '" style="width: 32px; height: 32px; color:' + s.color + '; margin-bottom: 12px;"></i>' +
+            '<div style="font-size: 14px; font-weight: bold; color: #fff; margin-bottom: 4px;">' + s.label + '</div>' +
+            '<div style="font-size: 11px; color: var(--admin-muted);">' + s.desc + '</div>' +
+          '</div>';
+      }).join('') +
+    '</div>' +
+  '</div>';
+
   conteudo.innerHTML =
     '<div class="admin-stats-grid">' +
       adminStatCard('users', 'Funcionarios', totalFuncionarios || 0, 'Total cadastrados', '') +
@@ -160,7 +197,7 @@ async function adminRenderizarDashboard() {
       adminStatCard('log-in', 'Logins Hoje', qtdLoginsHoje, 'Sessoes iniciadas', '') +
       adminStatCard('alert-triangle', 'Falhas 24h', qtdFalhas24h, 'Tentativas invalidas', qtdFalhas24h > 3 ? 'var(--admin-red)' : '') +
     '</div>' +
-
+    _admin_gridHtml +
     '<div class="admin-panel">' +
       '<div class="admin-panel-header">' +
         '<div class="admin-panel-title"><i data-lucide="activity"></i> Ultimos Eventos de Acesso</div>' +
